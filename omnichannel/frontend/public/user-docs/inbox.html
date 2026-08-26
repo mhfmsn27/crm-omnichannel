@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inbox & Chat — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Inbox & Chat</div>
+      <h1>💬 Inbox & Chat</h1>
+      <p class="page-subtitle">Pusat komunikasi omnichannel Anda — kelola semua percakapan dari WhatsApp, Instagram, Messenger, Telegram, dan Webchat dalam satu tampilan terpadu.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Fitur Utama CRMHUB</strong>
+          <p>Inbox adalah jantung dari CRMHUB. Semua pesan masuk dari berbagai channel terpusat di sini sehingga tim Anda tidak perlu berpindah-pindah aplikasi.</p>
+        </div>
+      </div>
+
+      <h2 id="tampilan">Tampilan & Layout Inbox</h2>
+      <p>Inbox terbagi menjadi tiga panel utama:</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">📋</span>
+          <div><h4>Panel Kiri — Daftar Percakapan</h4><p>Semua percakapan aktif, lengkap dengan nama kontak, preview pesan terakhir, waktu, dan indikator channel.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">💬</span>
+          <div><h4>Panel Tengah — Area Chat</h4><p>Riwayat percakapan lengkap dengan bubble pesan, status terkirim/dibaca, dan input pesan di bagian bawah.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">👤</span>
+          <div><h4>Panel Kanan — Info Kontak</h4><p>Detail profil kontak, label, catatan agent, deals terkait, dan riwayat interaksi.</p></div>
+        </div>
+      </div>
+
+      <h2 id="daftar-percakapan">Daftar Percakapan</h2>
+
+      <h3>Filter & Tampilan</h3>
+      <p>Di bagian atas daftar percakapan, terdapat beberapa tab filter:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Filter</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Semua</strong></td><td>Tampilkan semua percakapan yang belum diselesaikan</td></tr>
+            <tr><td><strong>Belum Dibaca</strong></td><td>Hanya percakapan yang memiliki pesan belum terbaca</td></tr>
+            <tr><td><strong>Saya</strong></td><td>Percakapan yang di-assign ke akun Anda</td></tr>
+            <tr><td><strong>Belum Ditugaskan</strong></td><td>Percakapan yang belum ada agent yang menangani</td></tr>
+            <tr><td><strong>Terarsip</strong></td><td>Percakapan yang sudah diarsipkan</td></tr>
+            <tr><td><strong>Diselesaikan</strong></td><td>Percakapan dengan status resolved</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Pencarian Percakapan</h3>
+      <p>Klik ikon 🔍 di bagian atas daftar percakapan untuk mencari berdasarkan nama kontak atau nomor telepon. Pencarian berlaku secara real-time saat Anda mengetik.</p>
+
+      <h3>Filter Lanjutan</h3>
+      <p>Klik ikon <strong>Filter</strong> untuk memfilter percakapan berdasarkan:</p>
+      <ul style="margin: 12px 0 16px 20px; line-height: 2;">
+        <li>Channel (WhatsApp, Instagram, Messenger, Telegram, Webchat)</li>
+        <li>Label percakapan</li>
+        <li>Agent yang ditugaskan</li>
+        <li>Status percakapan</li>
+        <li>Tingkat urgensi</li>
+      </ul>
+
+      <h3>Indikator pada Daftar Percakapan</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Indikator</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td>Lingkaran biru (angka)</td><td>Jumlah pesan belum dibaca</td></tr>
+            <tr><td>Ikon channel (WA/IG/dll)</td><td>Sumber percakapan</td></tr>
+            <tr><td>Badge label berwarna</td><td>Label yang sudah ditetapkan</td></tr>
+            <tr><td>Nama agent kecil</td><td>Agent yang sedang menangani</td></tr>
+            <tr><td>🔴 Urgent</td><td>Percakapan ditandai urgent oleh agent</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="membaca-mengirim">Membaca & Mengirim Pesan</h2>
+
+      <h3>Jenis Pesan yang Didukung</h3>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">📝</span><div><h4>Teks</h4><p>Pesan teks biasa, mendukung emoji dan format teks dasar.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🖼️</span><div><h4>Gambar</h4><p>Kirim foto/gambar langsung dari kamera atau galeri.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">📄</span><div><h4>Dokumen</h4><p>PDF, Word, Excel, dan format file lainnya.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🎵</span><div><h4>Audio/Voice</h4><p>Pesan suara atau file audio.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">📍</span><div><h4>Lokasi</h4><p>Bagikan lokasi via Google Maps.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🎬</span><div><h4>Video</h4><p>Kirim file video (ukuran tergantung batas channel).</p></div></div>
+      </div>
+
+      <h3>Cara Mengirim Pesan</h3>
+      <ol class="steps">
+        <li><strong>Klik percakapan</strong> dari daftar kiri untuk membukanya.</li>
+        <li><strong>Ketik pesan</strong> di kolom input bawah.</li>
+        <li><strong>Klik ikon lampiran</strong> (📎) untuk mengirim file, gambar, atau dokumen.</li>
+        <li><strong>Tekan Enter</strong> atau klik tombol kirim (➤) untuk mengirim.</li>
+      </ol>
+
+      <h3>Quick Reply</h3>
+      <p>Ketik <code>/</code> (garis miring) di kolom pesan untuk menampilkan daftar quick reply yang sudah disimpan. Klik salah satu untuk langsung memasukkannya ke kolom pesan.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">⚡</span>
+        <div class="callout-content">
+          <strong>Tip Produktivitas</strong>
+          <p>Simpan balasan yang sering digunakan sebagai Quick Reply agar tidak perlu mengetik ulang. Buat di menu <strong>Templates → Quick Reply</strong>.</p>
+        </div>
+      </div>
+
+      <h3>Memulai Percakapan Baru</h3>
+      <ol class="steps">
+        <li><strong>Klik tombol + (Buat Baru)</strong> di bagian atas daftar percakapan.</li>
+        <li><strong>Pilih kontak</strong> dari daftar atau masukkan nomor telepon baru.</li>
+        <li><strong>Pilih perangkat/channel</strong> yang akan digunakan untuk mengirim pesan pertama.</li>
+        <li><strong>Tulis pesan</strong> dan kirim. Percakapan baru akan muncul di daftar.</li>
+      </ol>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Perhatian untuk WhatsApp Cloud API</strong>
+          <p>Untuk memulai percakapan baru via WhatsApp Cloud API (Official), Anda harus menggunakan Template Pesan yang sudah disetujui Meta. Pesan bebas hanya bisa dikirim jika kontak sudah lebih dulu mengirim pesan dalam 24 jam terakhir.</p>
+        </div>
+      </div>
+
+      <h2 id="aksi-percakapan">Aksi Percakapan</h2>
+      <p>Setiap percakapan memiliki menu aksi yang bisa diakses melalui tombol <strong>⋮ (tiga titik)</strong> di pojok kanan atas area chat, atau dengan klik kanan pada item di daftar percakapan.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Aksi</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Tugaskan ke Agent</strong></td><td>Assign percakapan ke agent tertentu dalam tim Anda</td></tr>
+            <tr><td><strong>Tambah Label</strong></td><td>Beri label warna untuk kategorisasi (Komplain, Order, dll)</td></tr>
+            <tr><td><strong>Tandai Selesai (Resolve)</strong></td><td>Menutup percakapan dan memindahkan ke tab Diselesaikan</td></tr>
+            <tr><td><strong>Arsipkan</strong></td><td>Menyembunyikan dari inbox aktif tanpa menghapus</td></tr>
+            <tr><td><strong>Tandai Urgent</strong></td><td>Beri tanda prioritas tinggi pada percakapan</td></tr>
+            <tr><td><strong>Forward Pesan</strong></td><td>Teruskan pesan ke kontak atau percakapan lain</td></tr>
+            <tr><td><strong>Simpan ke Knowledge Base</strong></td><td>Simpan isi percakapan sebagai materi training chatbot AI</td></tr>
+            <tr><td><strong>Buka Profil Kontak</strong></td><td>Buka halaman detail kontak untuk edit info</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Me-resolve & Membuka Kembali Percakapan</h3>
+      <p>Klik tombol <strong>✓ Selesaikan</strong> di bagian atas chat untuk me-resolve. Untuk membuka kembali percakapan yang sudah resolved, klik tab <strong>Diselesaikan</strong> di daftar kiri, pilih percakapannya, lalu klik <strong>Buka Kembali</strong>.</p>
+
+      <h2 id="panel-kontak">Panel Info Kontak (Kanan)</h2>
+      <p>Panel kanan menampilkan semua informasi terkait kontak yang sedang aktif. Klik ikon <strong>ⓘ</strong> di pojok kanan atas untuk membuka/menutup panel ini.</p>
+
+      <h3>Informasi yang Tersedia</h3>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">👤</span><div><h4>Profil Kontak</h4><p>Nama, nomor telepon, email, foto profil, dan custom field lainnya.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🏷️</span><div><h4>Label</h4><p>Label yang ditambahkan ke percakapan ini.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">📝</span><div><h4>Catatan Agent</h4><p>Catatan internal yang hanya bisa dilihat oleh tim (tidak terlihat kontak).</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🔄</span><div><h4>Pipeline & Deal</h4><p>Deal CRM yang terhubung dengan kontak ini.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">📦</span><div><h4>Cek Ongkir</h4><p>Cek ongkos kirim langsung dari panel kontak tanpa keluar inbox.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🕐</span><div><h4>Riwayat</h4><p>Histori percakapan sebelumnya dengan kontak yang sama.</p></div></div>
+      </div>
+
+      <h3>Menambah Catatan Agent (Internal Note)</h3>
+      <ol class="steps">
+        <li>Di panel kanan, klik tab <strong>Catatan</strong>.</li>
+        <li>Klik <strong>+ Tambah Catatan</strong>.</li>
+        <li>Ketik catatan internal Anda (misalnya: "Kontak ini pernah komplain soal pengiriman, tangani dengan hati-hati").</li>
+        <li>Klik <strong>Simpan</strong>. Catatan ini hanya terlihat oleh tim, tidak oleh kontak.</li>
+      </ol>
+
+      <h2 id="assign-agent">Menugaskan ke Agent</h2>
+      <ol class="steps">
+        <li>Buka percakapan yang ingin ditugaskan.</li>
+        <li>Di bagian atas chat, klik dropdown <strong>Tugaskan ke...</strong> atau gunakan menu <strong>⋮ → Tugaskan ke Agent</strong>.</li>
+        <li>Pilih nama agent dari daftar yang muncul. Hanya agent yang sedang Online yang ditampilkan terlebih dulu.</li>
+        <li>Agent yang ditugaskan akan mendapat notifikasi dan percakapan akan muncul di tab <strong>Saya</strong> milik agent tersebut.</li>
+      </ol>
+
+      <div class="callout callout-success">
+        <span class="callout-icon">✨</span>
+        <div class="callout-content">
+          <strong>Auto Assignment</strong>
+          <p>Aktifkan fitur Auto Assignment di <strong>Settings → Auto Assignment</strong> agar sistem mendistribusikan chat secara otomatis dengan metode Round Robin atau Load Balancing tanpa perlu assign manual.</p>
+        </div>
+      </div>
+
+      <h2 id="label-percakapan">Label Percakapan</h2>
+      <p>Label membantu mengkategorikan percakapan agar mudah difilter dan dilaporkan.</p>
+      <ol class="steps">
+        <li>Buka percakapan, lalu klik ikon <strong>🏷️ Label</strong> di bagian atas chat.</li>
+        <li>Pilih satu atau lebih label dari daftar (misalnya: Komplain, Order, Prospek).</li>
+        <li>Label langsung tampil di daftar percakapan dan bisa digunakan sebagai filter.</li>
+      </ol>
+      <p>Kelola daftar label di <strong>Contacts → Label Management</strong>.</p>
+
+      <h2 id="forward-pesan">Forward Pesan</h2>
+      <p>Teruskan pesan tertentu ke percakapan atau kontak lain, berguna saat perlu eskalasi ke tim lain.</p>
+      <ol class="steps">
+        <li>Hover pada pesan yang ingin di-forward, lalu klik ikon <strong>↪ Forward</strong> yang muncul.</li>
+        <li>Pilih kontak tujuan atau nomor baru di modal yang muncul.</li>
+        <li>Pilih perangkat pengirim, lalu klik <strong>Kirim</strong>.</li>
+      </ol>
+
+      <h2 id="simpan-ke-kb">Simpan ke Knowledge Base</h2>
+      <p>Ubah percakapan yang bermanfaat menjadi data training untuk Chatbot AI Anda.</p>
+      <ol class="steps">
+        <li>Klik menu <strong>⋮ → Simpan ke Knowledge Base</strong> pada percakapan.</li>
+        <li>Pilih bagian percakapan yang ingin disimpan.</li>
+        <li>Tambahkan tag atau kategori jika diperlukan.</li>
+        <li>Klik <strong>Simpan</strong>. Data ini akan langsung tersedia sebagai konteks untuk chatbot.</li>
+      </ol>
+
+      <h2 id="wallpaper">Kustomisasi Wallpaper Chat</h2>
+      <p>Ubah tampilan latar belakang area chat sesuai selera Anda. Klik ikon <strong>⚙️</strong> di bagian atas chat, lalu pilih <strong>Ganti Wallpaper</strong>. Tersedia preset warna dan gambar, atau masukkan URL gambar kustom.</p>
+
+      <h2 id="ai-copilot">AI Copilot di Inbox</h2>
+      <p>AI Copilot membantu agent membalas pesan dengan lebih cepat dan tepat menggunakan kecerdasan buatan.</p>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">✍️</span><div><h4>Saran Balasan</h4><p>AI menganalisis pesan masuk dan menyarankan balasan yang relevan.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">📝</span><div><h4>Ringkasan Chat</h4><p>Ringkas percakapan panjang dalam satu klik untuk briefing cepat.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🌐</span><div><h4>Terjemahan</h4><p>Terjemahkan pesan masuk ke Bahasa Indonesia secara otomatis.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">😊</span><div><h4>Analisis Sentimen</h4><p>Deteksi apakah pelanggan senang, netral, atau tidak puas.</p></div></div>
+      </div>
+
+      <h2 id="notifikasi">Notifikasi Pesan Masuk</h2>
+      <p>CRMHUB mengirimkan notifikasi real-time ketika ada pesan masuk baru:</p>
+      <ul style="margin: 12px 0 16px 20px; line-height: 2;">
+        <li><strong>Notifikasi browser</strong> — muncul di sudut layar saat tab tidak aktif</li>
+        <li><strong>Badge angka</strong> — jumlah pesan belum dibaca di ikon browser dan sidebar</li>
+        <li><strong>Notifikasi push mobile</strong> — jika menggunakan aplikasi mobile (memerlukan Firebase FCM aktif)</li>
+        <li><strong>Bunyi notifikasi</strong> — suara masuk untuk setiap pesan baru</li>
+      </ul>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Izin Notifikasi Browser</strong>
+          <p>Saat pertama kali membuka CRMHUB, browser akan meminta izin notifikasi. Klik <strong>Izinkan</strong> agar tidak melewatkan pesan masuk penting.</p>
+        </div>
+      </div>
+
+      <h2 id="tips">Tips Penggunaan Inbox</h2>
+      <div class="callout callout-success">
+        <span class="callout-icon">🚀</span>
+        <div class="callout-content">
+          <strong>Praktik Terbaik</strong>
+          <ul style="margin-top: 8px; padding-left: 20px; line-height: 2;">
+            <li>Gunakan tab <strong>Saya</strong> untuk fokus pada percakapan yang menjadi tanggung jawab Anda.</li>
+            <li>Segera resolve percakapan yang sudah selesai agar inbox tetap bersih.</li>
+            <li>Manfaatkan Quick Reply untuk pertanyaan yang sering muncul — hemat 70% waktu pengetikan.</li>
+            <li>Aktifkan status <strong>Online</strong> saat Anda siap menerima percakapan agar Auto Assignment berjalan.</li>
+            <li>Gunakan Label secara konsisten agar laporan dan filter lebih akurat.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="dashboard.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Dashboard</div></a>
+        <a href="integrations.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Integrasi & Channel</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#tampilan">Tampilan & Layout</a>
+      <a href="#daftar-percakapan">Daftar Percakapan</a>
+      <a href="#membaca-mengirim">Membaca & Mengirim</a>
+      <a href="#aksi-percakapan">Aksi Percakapan</a>
+      <a href="#panel-kontak">Panel Info Kontak</a>
+      <a href="#assign-agent">Menugaskan ke Agent</a>
+      <a href="#label-percakapan">Label Percakapan</a>
+      <a href="#forward-pesan">Forward Pesan</a>
+      <a href="#simpan-ke-kb">Simpan ke KB</a>
+      <a href="#wallpaper">Kustomisasi Wallpaper</a>
+      <a href="#ai-copilot">AI Copilot</a>
+      <a href="#notifikasi">Notifikasi</a>
+      <a href="#tips">Tips</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('inbox.html');</script>
+</body>
+</html>

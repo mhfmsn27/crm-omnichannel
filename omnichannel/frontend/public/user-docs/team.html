@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manajemen Tim — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Manajemen<span>›</span>Manajemen Tim</div>
+      <h1>👤 Manajemen Tim</h1>
+      <p class="page-subtitle">Tambah agen, atur peran, dan kelola izin akses tim CRMHUB Anda.</p>
+
+      <p>Navigasikan ke <strong>Settings → Team & Anggota</strong> untuk mengelola seluruh anggota tim. Fitur ini memungkinkan Anda membangun tim customer service yang terstruktur dengan kontrol akses yang ketat.</p>
+
+      <h2 id="peran">Peran Bawaan</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Peran</th><th>Akses</th><th>Cocok Untuk</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-red">Admin</span></td>
+              <td>Akses penuh ke semua fitur termasuk Settings, Billing, Team, dan seluruh fitur sistem</td>
+              <td>Manajer, pemilik bisnis, IT admin</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-blue">Supervisor</span></td>
+              <td>Melihat semua percakapan, assign chat, kelola agen sesuai permission yang diberikan. Level akses ≥10.</td>
+              <td>Team leader, kepala divisi CS</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">Staff (Agent)</span></td>
+              <td>Hanya melihat dan membalas percakapan yang di-assign ke mereka. Level akses 1–9.</td>
+              <td>Staf customer service harian</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-success">
+        <span class="callout-icon">✨</span>
+        <div class="callout-content">
+          <strong>Baru: Custom Role</strong>
+          <p>Selain peran bawaan di atas, Anda kini dapat membuat <strong>Custom Role</strong> dengan nama, level akses, dan izin granular yang sepenuhnya bisa dikustomisasi. Lihat <a href="roles.html">halaman Role & Akses</a> untuk panduan lengkapnya.</p>
+        </div>
+      </div>
+
+      <h2 id="level">Level Akses & Divisi</h2>
+      <p>Setiap agent memiliki <strong>level akses</strong> (angka 1–99) dan <strong>divisi</strong> yang menentukan hierarki dalam tim:</p>
+      <ul>
+        <li><strong>Staff (Level 1–9)</strong>: Hanya melihat chat yang di-assign ke mereka. Harus bergabung ke divisi yang dipimpin Supervisor.</li>
+        <li><strong>Supervisor (Level ≥10)</strong>: Dapat melihat seluruh percakapan dalam divisi mereka, menggunakan permission tambahan.</li>
+      </ul>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Cara Kerja Divisi</strong>
+          <p>Supervisor harus membuat divisi terlebih dahulu (contoh: "SALES", "SUPPORT"). Staff kemudian bergabung ke divisi tersebut. Setiap Staff harus terdaftar dalam minimal satu divisi yang memiliki Supervisor aktif.</p>
+        </div>
+      </div>
+
+      <h2 id="tambah-agen">Cara Menambah Anggota Tim</h2>
+      <ol class="steps">
+        <li><strong>Buka Team Management</strong> — Navigasikan ke <strong>Settings → Team & Anggota</strong>.</li>
+        <li><strong>Klik Add Member</strong> — Klik tombol <em>"+ Add Member"</em> di pojok kanan atas.</li>
+        <li><strong>Isi Data Anggota</strong> — Masukkan nama lengkap, email, dan password awal.</li>
+        <li><strong>Pilih Custom Role (Opsional)</strong> — Jika tersedia, pilih custom role dari dropdown untuk mengisi role/level/permission secara otomatis.</li>
+        <li><strong>Atau Pilih Tipe Manual</strong> — Pilih Staff, Supervisor, atau Admin secara manual dan atur permission individual.</li>
+        <li><strong>Isi Divisi</strong> — Untuk Staff dan Supervisor, wajib mengisi nama divisi.</li>
+        <li><strong>Atur Akses Perangkat</strong> — Untuk Supervisor, pilih perangkat/channel mana yang dapat mereka pantau (kosongkan = semua perangkat).</li>
+        <li><strong>Simpan</strong> — Klik <em>"Add Member"</em>. Anggota dapat langsung login menggunakan email dan password yang diisi.</li>
+      </ol>
+
+      <h2 id="edit-hapus">Mengedit & Menghapus Anggota</h2>
+      <p>Klik ikon pensil (Edit) pada baris anggota untuk mengubah data, role, atau permission. Klik ikon tong sampah (Delete) untuk menghapus anggota dari tim.</p>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Tidak Bisa Hapus Diri Sendiri</strong>
+          <p>Admin tidak dapat menghapus akun dirinya sendiri dari halaman Team Management. Hubungi Super Admin jika diperlukan.</p>
+        </div>
+      </div>
+
+      <h2 id="device-akses">Akses Perangkat per Agent</h2>
+      <p>Supervisor dapat dibatasi hanya mengakses percakapan dari perangkat/channel tertentu. Misalnya, Supervisor divisi Sales hanya melihat chat dari perangkat WhatsApp Sales, bukan dari semua perangkat.</p>
+      <p>Pengaturan ini dilakukan di modal <strong>Edit Member</strong> pada bagian <em>"Device Access"</em>. Kosongkan pilihan = akses ke semua perangkat.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Batas Seat Anggota</strong>
+          <p>Jumlah anggota yang dapat ditambahkan dibatasi oleh paket langganan. Informasi penggunaan seat (misal: 3/10) ditampilkan di pojok kanan atas halaman Team Management.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="settings.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Pengaturan</div></a>
+        <a href="roles.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Role & Akses</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#peran">Peran Bawaan</a>
+      <a href="#level">Level & Divisi</a>
+      <a href="#tambah-agen">Menambah Anggota</a>
+      <a href="#edit-hapus">Edit & Hapus</a>
+      <a href="#device-akses">Akses Perangkat</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('team.html');</script>
+</body>
+</html>

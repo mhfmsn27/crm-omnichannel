@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broadcast Campaign — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Broadcast Campaign</div>
+      <h1>📢 Broadcast Campaign</h1>
+      <p class="page-subtitle">Kirim pesan massal ke ribuan kontak sekaligus dengan sistem broadcast yang canggih, terjadwal, dan terukur.</p>
+
+      <h2 id="overview">Gambaran Fitur</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">📤</span>
+          <div><h4>Broadcast Massal</h4><p>Kirim ke ribuan kontak sekaligus dengan filter segmentasi</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">⏰</span>
+          <div><h4>Penjadwalan</h4><p>Jadwalkan broadcast untuk dikirim di waktu yang tepat</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🔄</span>
+          <div><h4>Rotator Perangkat</h4><p>Distribusikan pengiriman ke banyak nomor untuk mengurangi risiko blokir</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📊</span>
+          <div><h4>Laporan Detail</h4><p>Pantau status terkirim, terbaca, dan balasan secara real-time</p></div>
+        </div>
+      </div>
+
+      <!-- BUAT CAMPAIGN -->
+      <h2 id="buat-campaign">Membuat Campaign Broadcast</h2>
+      <ol class="steps">
+        <li><strong>Buka Menu Broadcast</strong> — Klik <strong>Broadcast</strong> di sidebar, lalu klik <em>"+ Buat Campaign"</em>.</li>
+        <li><strong>Beri Nama Campaign</strong> — Masukkan nama yang mudah diidentifikasi (contoh: "Promo Lebaran 2025").</li>
+        <li><strong>Pilih Perangkat/Rotator</strong> — Pilih perangkat WhatsApp pengirim, atau pilih Rotator Group untuk distribusi ke banyak nomor.</li>
+        <li><strong>Pilih Penerima</strong> — Filter kontak berdasarkan: semua kontak, label tertentu, atau upload file CSV.</li>
+        <li><strong>Isi Pesan</strong> — Ketik pesan teks. Dapat menggunakan variabel personalisasi seperti <code>{{nama}}</code> atau <code>{{nomor}}</code>.</li>
+        <li><strong>Lampirkan Media</strong> — Opsional: tambahkan gambar, video (maks. 16MB), atau dokumen PDF (maks. 100MB).</li>
+        <li><strong>Atur Jadwal</strong> — Pilih "Kirim Sekarang" atau tentukan tanggal dan jam pengiriman.</li>
+        <li><strong>Kirim / Jadwalkan</strong> — Klik tombol untuk memulai atau menjadwalkan pengiriman.</li>
+      </ol>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Format Nomor Penting</strong>
+          <p>Pastikan nomor kontak dalam format internasional tanpa tanda + dan spasi. Contoh benar: <strong>628123456789</strong>. Bukan 08123456789 atau +628123456789.</p>
+        </div>
+      </div>
+
+      <!-- ROTATOR -->
+      <h2 id="rotator">Rotator Perangkat</h2>
+      <p>Rotator adalah grup dari beberapa perangkat WhatsApp yang bekerja bersama untuk mendistribusikan pengiriman broadcast. Saat menggunakan rotator, setiap pesan dikirim dari nomor yang berbeda secara bergantian.</p>
+
+      <h3>Manfaat Rotator</h3>
+      <ul>
+        <li>Mengurangi risiko satu nomor terblokir karena terlalu banyak mengirim</li>
+        <li>Mempercepat pengiriman broadcast karena beberapa nomor bekerja paralel</li>
+        <li>Memungkinkan broadcast ke jumlah kontak yang sangat besar</li>
+      </ul>
+
+      <h3>Cara Membuat Rotator</h3>
+      <ol class="steps">
+        <li>Buka <strong>Broadcast → Rotator</strong>.</li>
+        <li>Klik <em>"+ Buat Rotator"</em> dan beri nama grup.</li>
+        <li>Pilih perangkat-perangkat WhatsApp yang ingin digabungkan dalam rotator ini.</li>
+        <li>Atur mode distribusi: Round Robin (bergiliran) atau Random.</li>
+        <li>Simpan. Rotator siap dipilih saat membuat campaign broadcast.</li>
+      </ol>
+
+      <!-- META TEMPLATES -->
+      <h2 id="meta-templates">Template Pesan WhatsApp (Meta Templates)</h2>
+      <p>Untuk menggunakan WhatsApp Business API (Cloud API) dalam broadcast, pesan harus menggunakan template yang sudah disetujui oleh Meta/WhatsApp terlebih dahulu.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Kapan Perlu Template Meta?</strong>
+          <p>Template Meta hanya diperlukan jika Anda menggunakan integrasi <strong>WhatsApp Cloud API</strong> (bukan QR Scan). Broadcast via QR Scan tidak memerlukan persetujuan template.</p>
+        </div>
+      </div>
+
+      <h3>Cara Mengelola Template Meta</h3>
+      <ol class="steps">
+        <li>Buka <strong>Broadcast → Template WA (Meta)</strong>.</li>
+        <li>Klik <em>"+ Buat Template"</em>.</li>
+        <li>Isi nama template, kategori (Marketing, Utility, Authentication), bahasa, dan isi pesan.</li>
+        <li>Tambahkan variabel jika diperlukan (contoh: <code>{{1}}</code> untuk nama pelanggan).</li>
+        <li>Submit template untuk ditinjau oleh Meta. Proses persetujuan biasanya 1–2 hari kerja.</li>
+        <li>Setelah status menjadi <strong>Approved</strong>, template siap digunakan dalam broadcast Cloud API.</li>
+      </ol>
+      <p>Anda juga dapat melakukan sinkronisasi template dari akun Meta Business Manager dengan klik tombol <em>"Sync Template"</em>.</p>
+
+      <!-- UPSELLING -->
+      <h2 id="upselling">Broadcast Upselling (Kampanye Berulang)</h2>
+      <p>Upselling Broadcast adalah kampanye otomatis yang mengirim pesan follow-up kepada kontak yang pernah menjadi penerima broadcast sebelumnya.</p>
+
+      <h3>Cara Membuat Kampanye Upselling</h3>
+      <ol class="steps">
+        <li>Buka <strong>Broadcast → Upselling</strong>.</li>
+        <li>Klik <em>"+ Buat Kampanye Upselling"</em>.</li>
+        <li>Pilih broadcast sumber (broadcast mana yang dijadikan basis penerima).</li>
+        <li>Atur kondisi trigger: kirim ke yang sudah membaca, atau yang belum membaca, atau semua penerima.</li>
+        <li>Isi pesan follow-up.</li>
+        <li>Atur jadwal pengiriman follow-up (contoh: 3 hari setelah broadcast awal).</li>
+        <li>Aktifkan kampanye.</li>
+      </ol>
+
+      <!-- TEMPLATE PESAN -->
+      <h2 id="template-pesan">Template Pesan Broadcast</h2>
+      <p>Simpan template pesan yang sering digunakan agar tidak perlu menulis ulang setiap kali membuat campaign baru.</p>
+      <ol class="steps">
+        <li>Buka <strong>Broadcast → Template Pesan</strong>.</li>
+        <li>Klik <em>"+ Buat Template"</em>.</li>
+        <li>Beri nama template dan tulis isi pesan.</li>
+        <li>Simpan. Template tersedia untuk dipilih saat membuat broadcast berikutnya.</li>
+      </ol>
+
+      <!-- LAPORAN -->
+      <h2 id="laporan">Laporan Broadcast</h2>
+      <p>Pantau performa setiap campaign secara real-time di halaman <strong>Broadcast → Laporan</strong>:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metrik</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td>Terkirim</td><td>Pesan berhasil dikirim dari sistem CRMHUB</td></tr>
+            <tr><td>Terdeliver</td><td>Pesan berhasil diterima perangkat penerima (centang 2)</td></tr>
+            <tr><td>Dibaca</td><td>Pesan sudah dibuka penerima (centang 2 biru)</td></tr>
+            <tr><td>Gagal</td><td>Pesan gagal terkirim — biasanya nomor tidak valid atau diblokir</td></tr>
+            <tr><td>Dibalas</td><td>Penerima membalas pesan broadcast</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Laporan detail per penerima dapat diekspor ke CSV dari halaman detail campaign.</p>
+
+      <div class="page-nav">
+        <a href="integrations.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Integrasi Perangkat</div></a>
+        <a href="contacts.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Manajemen Kontak</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#overview">Gambaran Fitur</a>
+      <a href="#buat-campaign">Buat Campaign</a>
+      <a href="#rotator">Rotator Perangkat</a>
+      <a href="#meta-templates">Template Meta (Cloud API)</a>
+      <a href="#upselling">Upselling Broadcast</a>
+      <a href="#template-pesan">Template Pesan</a>
+      <a href="#laporan">Laporan Broadcast</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('broadcast.html');</script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Multi-Theme Corporate Token System ===== */
+:root {
+  --theme-accent: #2563eb;
+  --theme-accent-hover: #1d4ed8;
+}
+
+[data-theme-preset="executive"] {
+  --theme-sidebar-bg: #0f172a;
+  --theme-sidebar-text: #f8fafc;
+  --theme-sidebar-active-bg: #1e293b;
+  --theme-sidebar-active-text: #38bdf8;
+  --theme-accent: #2563eb;
+}
+
+[data-theme-preset="modern"] {
+  --theme-sidebar-bg: #1e293b;
+  --theme-sidebar-text: #f8fafc;
+  --theme-sidebar-active-bg: #4f46e5;
+  --theme-sidebar-active-text: #ffffff;
+  --theme-accent: #4f46e5;
+}
+
+[data-theme-preset="classic"] {
+  --theme-sidebar-bg: #00a884;
+  --theme-sidebar-text: #ffffff;
+  --theme-sidebar-active-bg: rgba(255, 255, 255, 0.95);
+  --theme-sidebar-active-text: #00a884;
+  --theme-accent: #00a884;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-gray-50 dark:bg-gray-950 text-slate-800 dark:text-slate-100 antialiased;
+    letter-spacing: -0.011em;
+  }
+}
+
+/* Custom scrollbar - hidden variant */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom scrollbar - visible variant */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { @apply bg-transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-gray-300 dark:bg-slate-600 rounded-full; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { @apply bg-gray-400 dark:bg-slate-500; }
+
+/* No scrollbar variant */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Touch target minimum size (44px) */
+.touch-target {
+  @apply min-w-[44px] min-h-[44px] flex items-center justify-center;
+}
+
+/* ===== Responsive Breakpoints ===== */
+@layer utilities {
+  /* Mobile (default) */
+  /* Small mobile */
+  @media (max-width: 375px) {
+    .responsive-text-sm {
+      @apply text-sm;
+    }
+  }
+
+  /* Mobile landscape */
+  @media (max-width: 640px) {
+    .responsive-heading {
+      @apply text-base font-bold leading-relaxed;
+    }
+    .responsive-padding {
+      @apply px-3 py-2;
+    }
+  }
+
+  /* Tablet */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .responsive-heading {
+      @apply text-lg font-semibold;
+    }
+  }
+
+  /* Desktop */
+  @media (min-width: 1025px) {
+    .responsive-heading {
+      @apply text-xl font-bold;
+    }
+  }
+}
+
+/* ===== Modal & Overlay Fixes ===== */
+.modal-backdrop {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm;
+}
+
+.modal-container {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+}
+
+/* Toast portal z-index - use Tailwind's z-50 layer instead of !important */
+[data-toast-portal],
+[data-toast-root] {
+  @apply z-[9999];
+}
+
+/* ===== Dark Mode Form Elements ===== */
+@layer components {
+  /* Form inputs in dark mode - using Tailwind classes instead of !important */
+  .dark input,
+  .dark select,
+  .dark textarea {
+    @apply bg-slate-900 border-slate-700 text-slate-100;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    @apply text-slate-500;
+  }
+
+  .dark input:focus,
+  .dark select:focus,
+  .dark textarea:focus {
+    @apply ring-2 ring-indigo-500 ring-offset-0 border-indigo-500 outline-none;
+  }
+
+  /* Light mode form elements */
+  input,
+  select,
+  textarea {
+    @apply bg-white dark:bg-slate-900 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-slate-100;
+  }
+
+  /* Button base styles */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-gray-100;
+  }
+
+  /* Card base */
+  .card {
+    @apply bg-white dark:bg-dark-surface rounded-xl shadow-sm border border-gray-200 dark:border-dark-border;
+  }
+
+  /* Input base */
+  .input {
+    @apply w-full px-3 py-2 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply px-2 py-0.5 text-xs font-bold rounded-full;
+  }
+
+  .badge-primary {
+    @apply bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400;
+  }
+
+  /* Empty state container */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-12 px-4 text-center;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full;
+  }
+
+  /* Dropdown fix */
+  .dropdown,
+  .dropdown-content {
+    overflow: visible;
+  }
+}
+
+/* ===== Animations ===== */
+@layer utilities {
+  .animate-in {
+    animation: animateIn 0.2s ease-out;
+  }
+
+  @keyframes animateIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .slide-in-from-bottom-2 {
+    animation: slideInBottom 0.2s ease-out;
+  }
+
+  @keyframes slideInBottom {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .zoom-in-95 {
+    animation: zoomIn 0.2s ease-out;
+  }
+
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* ===== Focus Visible for Accessibility ===== */
+*:focus-visible {
+  @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,57 @@
+services:
+  # Database PostgreSQL 17 + Vector
+  db:
+    image: ankane/pgvector:v0.5.1
+    container_name: omni-db-private-dev
+    restart: always
+    environment:
+      POSTGRES_USER: omni_user
+      POSTGRES_PASSWORD: DefaultPassword123!
+      POSTGRES_DB: omni_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # Jalankan SQL otomatis saat pertama kali naik
+      - ./init_db_v2.sql:/docker-entrypoint-initdb.d/init_db_v2.sql
+      - pgdata_private_v2:/var/lib/postgresql/data
+
+  # Redis untuk Queue/Cache
+  redis:
+    image: redis:7-alpine
+    container_name: omni-redis-private-dev
+    ports:
+      - "6379:6379"
+
+  # Backend dengan Hot Reload
+  backend:
+    build: ./backend
+    container_name: omni-backend-private-dev
+    restart: always
+    volumes:
+      - ./backend:/app
+      - /app/node_modules # Proteksi node_modules agar tidak tertimpa folder lokal
+    ports:
+      - "8998:8998"
+    env_file:
+      - .env.docker
+    depends_on:
+      - db
+      - redis
+
+  # Frontend dengan Hot Reload
+  frontend:
+    build: ./frontend
+    container_name: omni-frontend-private-dev
+    restart: always
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8998
+    depends_on:
+      - backend
+
+volumes:
+  pgdata_private_v2:

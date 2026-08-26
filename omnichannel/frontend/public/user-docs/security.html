@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keamanan — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Referensi<span>›</span>Keamanan</div>
+      <h1>🛡️ Keamanan Platform</h1>
+      <p class="page-subtitle">Panduan lengkap untuk mengamankan platform CRMHUB, melindungi data pelanggan, dan mencegah akses tidak sah.</p>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">🔒</span>
+        <div class="callout-content">
+          <strong>Keamanan adalah Tanggung Jawab Bersama</strong>
+          <p>Sebagai pengelola instance CRMHUB, Anda bertanggung jawab atas keamanan server, data pelanggan, dan akun pengguna. Ikuti semua panduan berikut untuk perlindungan maksimal.</p>
+        </div>
+      </div>
+
+      <h2 id="checklist">Checklist Keamanan Wajib</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Praktik Keamanan</th><th>Prioritas</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Gunakan SSL/HTTPS</strong></td><td><span class="badge badge-red">Wajib</span></td><td>Semua lalu lintas data harus dienkripsi dengan SSL. Pasang sertifikat SSL valid (Let's Encrypt gratis) dan redirect semua HTTP ke HTTPS.</td></tr>
+            <tr><td><strong>Aktifkan Firewall Server</strong></td><td><span class="badge badge-red">Wajib</span></td><td>Konfigurasi UFW atau iptables. Buka hanya port 80, 443, dan 22 (SSH). Blokir semua port lainnya dari akses publik.</td></tr>
+            <tr><td><strong>Backup Database Harian</strong></td><td><span class="badge badge-red">Wajib</span></td><td>Jadwalkan <code>pg_dump</code> otomatis setiap hari. Simpan backup di lokasi terpisah (cloud storage, S3, atau server lain). Test restore berkala.</td></tr>
+            <tr><td><strong>Ganti Password Default</strong></td><td><span class="badge badge-red">Wajib</span></td><td>Segera ganti password <code>superadmin@example.com</code> setelah instalasi pertama. Gunakan password minimal 16 karakter.</td></tr>
+            <tr><td><strong>Batasi Akses SSH</strong></td><td><span class="badge badge-yellow">Penting</span></td><td>Gunakan SSH key authentication, nonaktifkan password login SSH. Pertimbangkan mengubah port SSH dari 22 ke nomor non-standar.</td></tr>
+            <tr><td><strong>Update Dependensi Rutin</strong></td><td><span class="badge badge-yellow">Penting</span></td><td>Jalankan <code>npm audit</code> dan update library secara berkala. Pantau CVE untuk Node.js dan PostgreSQL.</td></tr>
+            <tr><td><strong>Proteksi .env File</strong></td><td><span class="badge badge-yellow">Penting</span></td><td>Pastikan file <code>.env</code> tidak bisa diakses via web (<code>location ~ /\.env { deny all; }</code> di Nginx). Jangan commit ke version control.</td></tr>
+            <tr><td><strong>Penggunaan JWT Secret Kuat</strong></td><td><span class="badge badge-yellow">Penting</span></td><td>Ganti <code>JWT_SECRET</code> di <code>.env</code> dengan string acak minimal 64 karakter. Jangan gunakan nilai default.</td></tr>
+            <tr><td><strong>Rate Limiting API</strong></td><td><span class="badge badge-blue">Disarankan</span></td><td>Konfigurasikan rate limiting di Nginx untuk mencegah brute force dan serangan DDoS pada endpoint API.</td></tr>
+            <tr><td><strong>Monitoring Log</strong></td><td><span class="badge badge-blue">Disarankan</span></td><td>Pantau log akses Nginx dan log aplikasi Node.js secara berkala. Gunakan tools seperti Fail2Ban untuk blokir IP mencurigakan.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="password">Kebijakan Password</h2>
+      <p>Terapkan kebijakan password yang kuat untuk semua pengguna CRMHUB:</p>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">🔢</span><div><h4>Panjang Minimal</h4><p>Gunakan minimal 12 karakter. Semakin panjang semakin baik.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🔀</span><div><h4>Kombinasi Karakter</h4><p>Gabungkan huruf besar, huruf kecil, angka, dan simbol (!@#$%).</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🔄</span><div><h4>Ganti Berkala</h4><p>Ganti password akun admin setiap 90 hari sebagai praktik terbaik.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">❌</span><div><h4>Jangan Pakai Ulang</h4><p>Gunakan password unik untuk CRMHUB, jangan sama dengan platform lain.</p></div></div>
+      </div>
+
+      <h2 id="akses-pengguna">Keamanan Akses Pengguna</h2>
+
+      <h3>Prinsip Least Privilege</h3>
+      <p>Berikan setiap anggota tim hanya izin yang mereka benar-benar butuhkan:</p>
+      <ul style="margin: 12px 0 16px 20px; line-height: 2;">
+        <li><strong>Agent/Staff</strong> — hanya akses Inbox dan fitur yang diperlukan sehari-hari</li>
+        <li><strong>Supervisor</strong> — tambah akses laporan dan manajemen agent dalam divisinya</li>
+        <li><strong>Admin</strong> — akses penuh ke pengaturan, tapi bukan Super Admin</li>
+        <li><strong>Super Admin</strong> — hanya untuk pengelola platform, jangan dibagikan ke tim operasional</li>
+      </ul>
+
+      <h3>Audit Akses Berkala</h3>
+      <p>Lakukan audit daftar pengguna minimal setiap 3 bulan:</p>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Manajemen Tim</strong>.</li>
+        <li>Review daftar anggota aktif. Hapus atau nonaktifkan akun karyawan yang sudah tidak bekerja.</li>
+        <li>Periksa apakah role setiap anggota masih sesuai dengan tanggung jawabnya.</li>
+        <li>Ganti role ke level lebih rendah jika ada yang memiliki akses berlebihan.</li>
+      </ol>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Segera Nonaktifkan Akun Karyawan yang Keluar</strong>
+          <p>Saat ada karyawan yang berhenti, segera hapus atau nonaktifkan akun mereka di CRMHUB dan cabut akses perangkat WhatsApp yang ditugaskan. Jangan menunggu.</p>
+        </div>
+      </div>
+
+      <h2 id="api-key">Keamanan API Key</h2>
+      <p>API Key digunakan untuk integrasi eksternal dan otomasi. Lindungi API Key Anda:</p>
+      <ul style="margin: 12px 0 16px 20px; line-height: 2;">
+        <li>Jangan hardcode API Key langsung di kode aplikasi — gunakan environment variable</li>
+        <li>Jangan share API Key melalui chat atau email yang tidak terenkripsi</li>
+        <li>Regenerate (buat ulang) API Key jika dicurigai bocor — langsung dari menu Developer → API Keys</li>
+        <li>Gunakan API Key berbeda untuk setiap aplikasi/integrasi agar mudah dicabut jika diperlukan</li>
+        <li>Terapkan IP whitelist pada penggunaan API Key jika memungkinkan</li>
+      </ul>
+
+      <h2 id="data-pelanggan">Perlindungan Data Pelanggan</h2>
+      <p>Data pelanggan yang tersimpan di CRMHUB bersifat sensitif dan harus dijaga kerahasiaannya:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Langkah Perlindungan</th><th>Implementasi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Enkripsi di Transit</strong></td><td>HTTPS/TLS wajib aktif untuk semua komunikasi antara browser dan server</td></tr>
+            <tr><td><strong>Enkripsi di Penyimpanan</strong></td><td>Aktifkan enkripsi disk pada VPS/server (LUKS untuk Linux)</td></tr>
+            <tr><td><strong>Retensi Data</strong></td><td>Tetapkan kebijakan berapa lama data disimpan. Hapus data yang sudah melebihi batas retensi</td></tr>
+            <tr><td><strong>Akses Database</strong></td><td>Database PostgreSQL tidak boleh terbuka ke publik. Hanya bisa diakses dari localhost atau IP server tertentu</td></tr>
+            <tr><td><strong>Anonimisasi Laporan</strong></td><td>Saat membagikan data laporan, hapus atau samarkan data identitas pribadi yang tidak diperlukan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="backup">Strategi Backup</h2>
+      <p>Kehilangan data bisa terjadi akibat kesalahan manusia, hardware failure, atau serangan. Selalu punya backup:</p>
+
+      <h3>Backup Otomatis Database</h3>
+      <p>Contoh script cron untuk backup PostgreSQL harian:</p>
+      <pre><code># Tambahkan di crontab: crontab -e
+0 2 * * * pg_dump -U postgres nama_database | gzip > /backup/crmhub_$(date +\%Y\%m\%d).sql.gz
+
+# Hapus backup lebih dari 30 hari
+0 3 * * * find /backup/ -name "crmhub_*.sql.gz" -mtime +30 -delete</code></pre>
+
+      <h3>Yang Harus Di-backup</h3>
+      <ul style="margin: 12px 0 16px 20px; line-height: 2;">
+        <li>Database PostgreSQL (semua tabel)</li>
+        <li>Folder <code>/uploads</code> (file yang diunggah pengguna)</li>
+        <li>File konfigurasi <code>.env</code> (simpan terenkripsi)</li>
+        <li>Konfigurasi Nginx/server</li>
+      </ul>
+
+      <h2 id="insiden">Respons Insiden Keamanan</h2>
+      <p>Jika Anda mencurigai adanya pelanggaran keamanan:</p>
+      <ol class="steps">
+        <li><strong>Isolasi segera</strong> — Jika ada akses tidak sah yang terdeteksi, nonaktifkan akun yang terlibat dan cabut semua token/API key aktif.</li>
+        <li><strong>Identifikasi sumber</strong> — Periksa log akses Nginx dan log aplikasi untuk mengetahui dari mana serangan berasal dan apa yang diakses.</li>
+        <li><strong>Ganti semua kredensial</strong> — Ganti JWT_SECRET, password database, password semua admin, dan regenerate semua API Key.</li>
+        <li><strong>Assess dampak</strong> — Identifikasi data apa yang mungkin terekspos. Beri tahu pengguna yang terdampak jika diperlukan.</li>
+        <li><strong>Perbaiki celah</strong> — Terapkan patch dan konfigurasi ulang sistem untuk menutup celah yang dieksploitasi.</li>
+        <li><strong>Dokumentasikan</strong> — Catat kronologi insiden, dampak, dan langkah perbaikan yang diambil.</li>
+      </ol>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Laporkan ke Support</strong>
+          <p>Jika Anda menemukan kerentanan keamanan di platform CRMHUB, laporkan segera ke tim pengembang. Jangan publikasikan celah keamanan sebelum diperbaiki.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="api.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Developer & API</div></a>
+        <a href="troubleshooting.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Pemecahan Masalah</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#checklist">Checklist Keamanan</a>
+      <a href="#password">Kebijakan Password</a>
+      <a href="#akses-pengguna">Keamanan Akses</a>
+      <a href="#api-key">Keamanan API Key</a>
+      <a href="#data-pelanggan">Data Pelanggan</a>
+      <a href="#backup">Strategi Backup</a>
+      <a href="#insiden">Respons Insiden</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('security.html');</script>
+</body>
+</html>

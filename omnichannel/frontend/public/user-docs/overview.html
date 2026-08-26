@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gambaran Sistem — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Memulai<span>›</span>Gambaran Sistem</div>
+      <h1>🗺️ Gambaran Sistem</h1>
+      <p class="page-subtitle">Pahami arsitektur dan modul utama CRMHUB sebelum mulai menggunakannya.</p>
+
+      <!-- ARSITEKTUR -->
+      <h2 id="arsitektur">Arsitektur CRMHUB</h2>
+      <p>CRMHUB adalah platform omnichannel berbasis web yang menggabungkan berbagai saluran komunikasi (WhatsApp, Messenger, Instagram, Telegram, dan Webchat) ke dalam satu inbox terpusat. Sistem dibangun di atas tiga komponen utama:</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">🖥️</span>
+          <div><h4>Frontend (Web App)</h4><p>Antarmuka pengguna berbasis React. Diakses melalui browser — tidak perlu instalasi aplikasi.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">⚙️</span>
+          <div><h4>Backend (API Server)</h4><p>Server Node.js yang menangani logika bisnis, autentikasi, dan komunikasi antar layanan.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📡</span>
+          <div><h4>WA Server (Gateway)</h4><p>Layanan khusus untuk koneksi WhatsApp via QR Scan. Menangani sesi WhatsApp Web secara real-time.</p></div>
+        </div>
+      </div>
+
+      <!-- MODUL UTAMA -->
+      <h2 id="modul">Modul Utama</h2>
+      <p>CRMHUB terdiri dari 10 modul fungsional yang dapat diaktifkan atau dinonaktifkan sesuai paket langganan:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Modul</th><th>Fungsi Utama</th><th>Halaman Dokumentasi</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>📥 Inbox</strong></td>
+              <td>Pusat percakapan terpusat dari semua channel. Agent menerima, membalas, dan mengelola chat di sini.</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong>📢 Broadcast</strong></td>
+              <td>Kirim pesan massal ke ribuan kontak sekaligus. Mendukung penjadwalan, rotator perangkat, dan template Meta.</td>
+              <td><a href="broadcast.html">Broadcast Campaign</a></td>
+            </tr>
+            <tr>
+              <td><strong>🤖 Chatbot</strong></td>
+              <td>Otomasi percakapan menggunakan Knowledge Base (Q&amp;A) atau Flow Builder (alur visual berbasis node).</td>
+              <td><a href="chatbot.html">Chatbot &amp; Flow Builder</a></td>
+            </tr>
+            <tr>
+              <td><strong>⚡ Automasi</strong></td>
+              <td>Aturan otomatis: auto reply, auto label, auto archive, auto assignment, working hours, SLA.</td>
+              <td><a href="automation.html">Automasi &amp; Customer Service</a></td>
+            </tr>
+            <tr>
+              <td><strong>👥 Kontak</strong></td>
+              <td>Manajemen database kontak: import CSV, label, segmentasi, custom field, riwayat percakapan.</td>
+              <td><a href="contacts.html">Manajemen Kontak</a></td>
+            </tr>
+            <tr>
+              <td><strong>🔄 Pipeline CRM</strong></td>
+              <td>Kelola peluang penjualan menggunakan papan Kanban bertahap. Konversi chat menjadi deal.</td>
+              <td><a href="pipeline.html">Pipeline CRM</a></td>
+            </tr>
+            <tr>
+              <td><strong>🧾 Invoicing</strong></td>
+              <td>Buat dan kirim invoice langsung ke pelanggan via WhatsApp. Lacak status pembayaran.</td>
+              <td><a href="invoicing.html">Invoice &amp; Tagihan</a></td>
+            </tr>
+            <tr>
+              <td><strong>🔧 Tools</strong></td>
+              <td>Alat produktivitas: Number Checker, Group Extractor, GMaps Scraper, WA Warmer, Follow-up Sequence, Chat Form.</td>
+              <td><a href="tools.html">Tools &amp; Produktivitas</a></td>
+            </tr>
+            <tr>
+              <td><strong>📈 Analitik</strong></td>
+              <td>Laporan performa agent, statistik broadcast, SLA, pipeline penjualan, dan customer journey.</td>
+              <td><a href="analytics.html">Laporan &amp; Analitik</a></td>
+            </tr>
+            <tr>
+              <td><strong>🔌 Developer</strong></td>
+              <td>REST API publik, webhook outbound, dan integrasi Zapier untuk menghubungkan sistem eksternal.</td>
+              <td><a href="api.html">Developer &amp; API</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CHANNEL -->
+      <h2 id="channel">Channel yang Didukung</h2>
+      <p>CRMHUB menyatukan pesan dari berbagai platform ke dalam satu inbox:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Channel</th><th>Tipe Koneksi</th><th>Keterangan</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>WhatsApp (QR Scan)</strong></td>
+              <td>Via WA Server</td>
+              <td>Nomor WhatsApp biasa — mudah dipasang, cocok untuk pemula</td>
+            </tr>
+            <tr>
+              <td><strong>WhatsApp Cloud API</strong></td>
+              <td>Meta Business API</td>
+              <td>Integrasi resmi Meta — lebih stabil, mendukung template terverifikasi &amp; centang hijau</td>
+            </tr>
+            <tr>
+              <td><strong>WhatsApp Co-Existence</strong></td>
+              <td>Aplikasi WA di perangkat</td>
+              <td>WA di Android/iOS yang sama, tanpa scan QR ulang</td>
+            </tr>
+            <tr>
+              <td><strong>Facebook Messenger</strong></td>
+              <td>Meta Graph API</td>
+              <td>Pesan dari halaman Facebook Business</td>
+            </tr>
+            <tr>
+              <td><strong>Instagram DM</strong></td>
+              <td>Meta Graph API</td>
+              <td>Direct Message Instagram (akun Professional)</td>
+            </tr>
+            <tr>
+              <td><strong>Telegram Bot</strong></td>
+              <td>Telegram Bot API</td>
+              <td>Bot Telegram yang dibuat via @BotFather</td>
+            </tr>
+            <tr>
+              <td><strong>Webchat Widget</strong></td>
+              <td>Embed kode JS</td>
+              <td>Live chat di website Anda — tanpa aplikasi tambahan di sisi pengunjung</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ALUR DATA -->
+      <h2 id="alur-data">Alur Data &amp; Pesan</h2>
+      <p>Berikut adalah alur umum bagaimana pesan masuk dan keluar dari CRMHUB:</p>
+      <ol class="steps">
+        <li><strong>Pesan Masuk</strong> — Pelanggan mengirim pesan via WhatsApp, Instagram, Telegram, atau Webchat.</li>
+        <li><strong>Gateway Menerima</strong> — WA Server (untuk QR) atau Meta API (untuk Cloud API) meneruskan pesan ke backend CRMHUB.</li>
+        <li><strong>Routing Otomatis</strong> — Sistem memeriksa aturan automasi: apakah ada auto assignment, apakah chatbot aktif, label apa yang harus diterapkan.</li>
+        <li><strong>Masuk ke Inbox</strong> — Percakapan muncul di inbox agent yang di-assign. Agent membalas langsung dari browser.</li>
+        <li><strong>Pesan Keluar</strong> — Balasan agent dikirim kembali ke pelanggan melalui channel yang sama.</li>
+        <li><strong>Data Tersimpan</strong> — Semua percakapan, kontak, dan aktivitas tercatat di database untuk laporan dan audit.</li>
+      </ol>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Real-time via WebSocket</strong>
+          <p>CRMHUB menggunakan koneksi WebSocket untuk memastikan pesan masuk muncul secara instan di inbox tanpa perlu refresh halaman.</p>
+        </div>
+      </div>
+
+      <!-- HIERARKI AKSES -->
+      <h2 id="akses">Hierarki Pengguna</h2>
+      <p>CRMHUB memiliki tiga level akses bawaan, dan mendukung <strong>Custom Role</strong> untuk izin yang lebih granular:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Level</th><th>Peran</th><th>Deskripsi Singkat</th></tr></thead>
+          <tbody>
+            <tr><td>Admin</td><td>Pemilik / Administrator</td><td>Akses penuh ke semua fitur termasuk Settings, Billing, dan manajemen tim</td></tr>
+            <tr><td>Supervisor (≥ Level 10)</td><td>Team Lead / Manajer</td><td>Bisa melihat semua chat, assign percakapan, akses laporan — sesuai izin yang diberikan Admin</td></tr>
+            <tr><td>Staff (Level 1–9)</td><td>Agent / CS</td><td>Hanya melihat dan membalas chat yang di-assign ke mereka</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Pelajari lebih lanjut di <a href="roles.html">halaman Role &amp; Akses</a> dan <a href="team.html">Manajemen Tim</a>.</p>
+
+      <!-- KONSEP PENTING -->
+      <h2 id="konsep">Konsep Penting</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Istilah</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Device / Perangkat</strong></td><td>Nomor WhatsApp yang terhubung ke CRMHUB. Satu perangkat = satu nomor WA.</td></tr>
+            <tr><td><strong>Device Slot</strong></td><td>Kuota jumlah perangkat yang dapat dihubungkan, ditentukan oleh paket langganan.</td></tr>
+            <tr><td><strong>Rotator</strong></td><td>Grup dari beberapa perangkat yang bekerja bergantian untuk distribusi broadcast besar.</td></tr>
+            <tr><td><strong>Label</strong></td><td>Tag yang ditempel ke percakapan atau kontak untuk segmentasi dan pencarian cepat.</td></tr>
+            <tr><td><strong>Flow</strong></td><td>Alur percakapan chatbot yang dirancang secara visual menggunakan Flow Builder.</td></tr>
+            <tr><td><strong>Knowledge Base</strong></td><td>Kumpulan Q&amp;A dan dokumen yang digunakan chatbot AI untuk menjawab pertanyaan bebas.</td></tr>
+            <tr><td><strong>SLA</strong></td><td>Service Level Agreement — target waktu respons dan penyelesaian percakapan oleh agent.</td></tr>
+            <tr><td><strong>CSAT</strong></td><td>Customer Satisfaction Score — skor kepuasan pelanggan setelah percakapan selesai.</td></tr>
+            <tr><td><strong>API Key</strong></td><td>Kunci autentikasi untuk mengakses Public API CRMHUB dari sistem eksternal.</td></tr>
+            <tr><td><strong>Webhook</strong></td><td>Notifikasi real-time yang dikirim CRMHUB ke URL endpoint Anda saat terjadi event tertentu.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="page-nav">
+        <a href="index.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Pengantar</div></a>
+        <a href="login.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Login &amp; Autentikasi</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#arsitektur">Arsitektur</a>
+      <a href="#modul">Modul Utama</a>
+      <a href="#channel">Channel Didukung</a>
+      <a href="#alur-data">Alur Data</a>
+      <a href="#akses">Hierarki Pengguna</a>
+      <a href="#konsep">Konsep Penting</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('overview.html');</script>
+</body>
+</html>

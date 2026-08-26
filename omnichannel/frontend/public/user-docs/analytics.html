@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laporan & Analitik — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Laporan &amp; Analitik</div>
+      <h1>📈 Laporan &amp; Analitik</h1>
+      <p class="page-subtitle">Ukur performa komunikasi bisnis Anda secara mendalam — dari volume percakapan hingga analitik lanjutan berbasis AI.</p>
+
+      <p>Menu <strong>Reports</strong> di sidebar menyediakan berbagai jenis laporan yang dapat difilter per periode, channel, dan agent. Semua laporan dapat diekspor ke format CSV/Excel.</p>
+
+      <!-- LAPORAN UMUM -->
+      <h2 id="laporan-umum">Laporan Umum</h2>
+      <p>Ringkasan performa keseluruhan platform dalam satu tampilan.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metrik</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td>Total Percakapan</td><td>Jumlah percakapan masuk dalam periode yang dipilih</td></tr>
+            <tr><td>Percakapan Terselesaikan</td><td>Jumlah chat yang ditandai selesai (resolved)</td></tr>
+            <tr><td>Rata-rata Response Time</td><td>Waktu rata-rata agent merespons pesan pertama</td></tr>
+            <tr><td>Skor CSAT</td><td>Customer Satisfaction Score — rating dari pelanggan</td></tr>
+            <tr><td>Volume per Channel</td><td>Distribusi percakapan per platform (WA, Messenger, dll)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PERFORMA AGENT -->
+      <h2 id="agent-performance">Performa Agent</h2>
+      <p>Pantau produktivitas dan kualitas kerja setiap agent secara individual.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metrik</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td>Total Chat Ditangani</td><td>Jumlah percakapan yang di-assign dan ditangani agent</td></tr>
+            <tr><td>Chat Diselesaikan</td><td>Jumlah chat yang berhasil di-resolve oleh agent</td></tr>
+            <tr><td>Rata-rata Response Time</td><td>Seberapa cepat agent rata-rata membalas pesan</td></tr>
+            <tr><td>Skor CSAT Agent</td><td>Rating kepuasan pelanggan untuk agent ini secara spesifik</td></tr>
+            <tr><td>Waktu Online</td><td>Durasi agent aktif/online di platform</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SLA & CSAT -->
+      <h2 id="sla-csat">SLA &amp; CSAT</h2>
+      <p>Laporan kepatuhan terhadap standar waktu layanan dan tingkat kepuasan pelanggan.</p>
+      <ul>
+        <li><strong>SLA Compliance Rate</strong> — Persentase percakapan yang memenuhi target First Response Time dan Resolution Time</li>
+        <li><strong>Pelanggaran SLA</strong> — Daftar percakapan yang melewati batas SLA beserta detailnya</li>
+        <li><strong>CSAT Score</strong> — Rating rata-rata kepuasan pelanggan (skala 1–5 atau 1–10)</li>
+        <li><strong>Distribusi Rating</strong> — Grafik distribusi nilai CSAT yang diberikan pelanggan</li>
+      </ul>
+
+      <!-- RESPONDER HISTORY -->
+      <h2 id="responder-history">Riwayat Responder</h2>
+      <p>Lacak riwayat semua agent yang pernah menangani setiap percakapan, termasuk waktu masuk dan keluar dari percakapan tersebut.</p>
+      <p>Berguna untuk audit: siapa yang terakhir menangani chat pelanggan, berapa lama, dan kapan.</p>
+
+      <!-- BROADCAST STATS -->
+      <h2 id="broadcast-stats">Statistik Broadcast</h2>
+      <p>Analisis performa setiap kampanye broadcast yang pernah dikirim.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metrik</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td>Terkirim</td><td>Jumlah pesan yang berhasil dikirim</td></tr>
+            <tr><td>Terdeliver</td><td>Jumlah pesan yang berhasil diterima perangkat penerima</td></tr>
+            <tr><td>Dibaca</td><td>Jumlah pesan yang sudah dibuka/dibaca penerima</td></tr>
+            <tr><td>Gagal</td><td>Jumlah pesan yang gagal terkirim beserta penyebabnya</td></tr>
+            <tr><td>Balasan</td><td>Jumlah penerima yang membalas pesan broadcast</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CHATBOT STATS -->
+      <h2 id="chatbot-stats">Statistik Chatbot</h2>
+      <p>Ukur efektivitas chatbot dan Knowledge Base Anda.</p>
+      <ul>
+        <li><strong>Total Sesi Bot</strong> — Jumlah percakapan yang ditangani bot</li>
+        <li><strong>Tingkat Keberhasilan Jawaban</strong> — Persentase pertanyaan yang dijawab bot dengan sukses</li>
+        <li><strong>Eskalasi ke Agent</strong> — Berapa banyak percakapan yang akhirnya diteruskan ke agent manusia</li>
+        <li><strong>Performa Knowledge Base</strong> — Q&amp;A mana yang paling sering digunakan dan mana yang jarang</li>
+        <li><strong>Pertanyaan Tidak Terjawab</strong> — Daftar pertanyaan yang bot tidak bisa menjawab — berguna untuk training selanjutnya</li>
+      </ul>
+
+      <!-- SALES PIPELINE -->
+      <h2 id="sales-pipeline">Laporan Pipeline Penjualan</h2>
+      <p>Analisis performa pipeline CRM dan konversi deal.</p>
+      <ul>
+        <li><strong>Total Deal per Stage</strong> — Berapa deal yang ada di setiap tahap pipeline</li>
+        <li><strong>Nilai Total Pipeline</strong> — Total estimasi nilai semua deal aktif</li>
+        <li><strong>Win Rate</strong> — Persentase deal yang berhasil ditutup (won)</li>
+        <li><strong>Average Deal Size</strong> — Rata-rata nilai per deal</li>
+        <li><strong>Conversion Funnel</strong> — Visualisasi perjalanan deal dari tahap pertama hingga penutupan</li>
+      </ul>
+
+      <!-- ADVANCED ANALYTICS -->
+      <h2 id="advanced">Analitik Lanjutan</h2>
+      <p>Laporan mendalam dengan visualisasi grafik interaktif untuk pengambilan keputusan berbasis data.</p>
+
+      <h3>Gambaran Umum (Overview)</h3>
+      <p>Dashboard analitik tingkat tinggi dengan KPI utama: volume percakapan, response time trend, CSAT trend, dan perbandingan periode sebelumnya.</p>
+
+      <h3>Analitik Percakapan</h3>
+      <p>Grafik detail volume percakapan harian/mingguan/bulanan, distribusi per jam, per channel, dan per agent.</p>
+
+      <h3>Analitik Response Time</h3>
+      <p>Tren waktu respons dari waktu ke waktu, distribusi response time (berapa persen yang di bawah target), dan breakdown per agent.</p>
+
+      <h3>Analitik Channel</h3>
+      <p>Perbandingan performa antar channel (WhatsApp, Messenger, Instagram, Telegram, Webchat) — volume, response time, dan CSAT per channel.</p>
+
+      <h3>Peak Hours (Jam Sibuk)</h3>
+      <p>Heatmap yang menampilkan jam dan hari dengan volume percakapan tertinggi — berguna untuk merencanakan jadwal shift agent.</p>
+
+      <!-- CUSTOMER JOURNEY -->
+      <h2 id="customer-journey">Customer Journey</h2>
+      <p>Lacak perjalanan setiap kontak dari pertama kali berinteraksi hingga menjadi pelanggan setia.</p>
+      <ul>
+        <li><strong>Timeline Interaksi</strong> — Urutan kronologis semua touchpoint pelanggan dengan bisnis Anda</li>
+        <li><strong>Konversi</strong> — Tandai momen ketika kontak berhasil dikonversi menjadi pelanggan</li>
+        <li><strong>Analitik Journey</strong> — Rata-rata berapa touchpoint yang dibutuhkan sebelum konversi</li>
+      </ul>
+
+      <!-- GAMIFICATION -->
+      <h2 id="gamification">Gamifikasi Tim</h2>
+      <p>Tingkatkan motivasi tim CS dengan sistem poin, pencapaian, dan leaderboard kompetitif.</p>
+      <ul>
+        <li><strong>Leaderboard</strong> — Peringkat agent berdasarkan poin yang dikumpulkan</li>
+        <li><strong>Sistem Poin</strong> — Poin diberikan untuk setiap percakapan diselesaikan, CSAT tinggi, dan target terpenuhi</li>
+        <li><strong>Statistik Personal</strong> — Setiap agent dapat melihat statistik dan pencapaian mereka sendiri</li>
+        <li><strong>Award Manual</strong> — Admin dapat memberikan bonus poin secara manual untuk penghargaan khusus</li>
+      </ul>
+
+      <!-- API LOGS -->
+      <h2 id="api-logs">Log API</h2>
+      <p>Rekam jejak semua request API yang masuk dan keluar dari sistem CRMHUB.</p>
+      <ul>
+        <li>Berguna untuk debugging integrasi dengan sistem eksternal</li>
+        <li>Menampilkan endpoint, status code, waktu request, dan payload</li>
+        <li>Dapat difilter per developer app atau per endpoint</li>
+      </ul>
+
+      <!-- EKSPOR -->
+      <h2 id="ekspor">Export Laporan</h2>
+      <p>Semua laporan di atas dapat diekspor ke format CSV/Excel:</p>
+      <ol class="steps">
+        <li>Buka laporan yang ingin diekspor.</li>
+        <li>Atur filter periode, channel, atau agent sesuai kebutuhan.</li>
+        <li>Klik tombol <em>"Export"</em> atau ikon unduh di pojok kanan atas.</li>
+        <li>File CSV akan otomatis terunduh ke komputer Anda.</li>
+      </ol>
+
+      <!-- CHAT FORM REPORT -->
+      <h2 id="chat-form-report">Laporan Chat Form</h2>
+      <p>Analisis pengisian formulir dari fitur Chat Form.</p>
+      <ul>
+        <li><strong>Total Pengisian</strong> — Berapa kali form diisi dalam periode tertentu</li>
+        <li><strong>Data Pengisian</strong> — Seluruh jawaban yang dikirim pelanggan, dapat diekspor ke CSV</li>
+        <li><strong>Sumber Traffic</strong> — Dari mana pelanggan menemukan link form</li>
+      </ul>
+
+      <div class="page-nav">
+        <a href="tools.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Tools</div></a>
+        <a href="billing.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Langganan &amp; Billing</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#laporan-umum">Laporan Umum</a>
+      <a href="#agent-performance">Performa Agent</a>
+      <a href="#sla-csat">SLA &amp; CSAT</a>
+      <a href="#responder-history">Riwayat Responder</a>
+      <a href="#broadcast-stats">Statistik Broadcast</a>
+      <a href="#chatbot-stats">Statistik Chatbot</a>
+      <a href="#sales-pipeline">Pipeline Penjualan</a>
+      <a href="#advanced">Analitik Lanjutan</a>
+      <a href="#customer-journey">Customer Journey</a>
+      <a href="#gamification">Gamifikasi Tim</a>
+      <a href="#api-logs">Log API</a>
+      <a href="#ekspor">Export Laporan</a>
+      <a href="#chat-form-report">Laporan Chat Form</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('analytics.html');</script>
+</body>
+</html>

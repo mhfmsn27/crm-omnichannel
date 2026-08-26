@@ -1,0 +1,1 @@
+export const checkLicense = (req, res, next) => next();

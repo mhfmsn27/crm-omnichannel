@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panduan Instalasi — CRMHUB OMNICHANNEL</title>
+<style>
+  /* ===== RESET & VARIABLES ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface2: #f1f5f9;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --primary: #6366f1;
+    --primary-light: #eef2ff;
+    --primary-dark: #4f46e5;
+    --green: #10b981;
+    --green-light: #ecfdf5;
+    --orange: #f59e0b;
+    --orange-light: #fffbeb;
+    --red: #ef4444;
+    --red-light: #fef2f2;
+    --blue: #3b82f6;
+    --blue-light: #eff6ff;
+    --code-bg: #1e293b;
+    --code-text: #e2e8f0;
+    --sidebar-w: 270px;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+  }
+  [data-theme="dark"] {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #152032;
+    --border: #334155;
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --text3: #475569;
+    --primary-light: #1e1b4b;
+    --green-light: #022c22;
+    --orange-light: #1c1500;
+    --red-light: #1c0707;
+    --blue-light: #0c1a33;
+    --code-bg: #0a101e;
+    --code-text: #cbd5e1;
+  }
+
+  /* ===== BASE ===== */
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ===== LAYOUT ===== */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-logo {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo h1 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -.3px;
+    line-height: 1.3;
+  }
+  .sidebar-logo p { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .nav { flex: 1; padding: 12px 10px; }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--text3);
+    padding: 8px 10px 4px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-link:hover { background: var(--surface2); color: var(--text); }
+  .nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+  .nav-link .icon { width: 16px; font-size: 14px; flex-shrink: 0; }
+  .nav-sub { padding-left: 24px; }
+  .nav-sub .nav-link { font-size: 12px; padding: 5px 8px; }
+  .sidebar-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* ===== MAIN ===== */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    min-width: 0;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+  }
+  .topbar-title { font-size: 13px; font-weight: 600; color: var(--text2); }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .btn-icon {
+    width: 32px; height: 32px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    transition: all .15s;
+  }
+  .btn-icon:hover { background: var(--surface2); color: var(--text); }
+
+  .content { padding: 40px; max-width: 900px; }
+
+  /* ===== SECTIONS ===== */
+  .section { margin-bottom: 60px; scroll-margin-top: 70px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 28px 0 12px;
+  }
+  h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text2);
+    margin: 20px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  p { color: var(--text2); margin-bottom: 12px; }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+    padding: 48px 40px;
+    color: white;
+  }
+  .hero h1 { font-size: 32px; font-weight: 900; letter-spacing: -.6px; margin-bottom: 8px; }
+  .hero p { color: rgba(255,255,255,.85); font-size: 16px; margin-bottom: 24px; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.3);
+    color: white;
+  }
+
+  /* ===== ARCH DIAGRAM ===== */
+  .arch {
+    background: var(--code-bg);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 20px 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .arch-row { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .arch-box {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid;
+    min-width: 120px;
+  }
+  .arch-box.client   { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+  .arch-box.nginx    { background: #14532d; border-color: #22c55e; color: #86efac; }
+  .arch-box.backend  { background: #1e1b4b; border-color: #8b5cf6; color: #c4b5fd; }
+  .arch-box.db       { background: #1c1400; border-color: #f59e0b; color: #fcd34d; }
+  .arch-box.redis    { background: #1c0707; border-color: #ef4444; color: #fca5a5; }
+  .arch-box.frontend { background: #0c2a1a; border-color: #10b981; color: #6ee7b7; }
+  .arch-arrow { color: #475569; font-size: 18px; }
+
+  /* ===== TABS ===== */
+  .tab-group { margin: 20px 0; }
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 9px 16px;
+    border-radius: 7px;
+    border: none;
+    background: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .tab-btn:hover { background: var(--surface); color: var(--text); }
+  .tab-btn.active { background: var(--primary); color: #fff; }
+  .tab-panel {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0 0 10px 10px;
+    padding: 24px;
+  }
+  .tab-panel.active { display: block; }
+
+  /* ===== STEPS ===== */
+  .steps { margin: 20px 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 36px;
+    bottom: -16px;
+    width: 2px;
+    background: var(--border);
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .step-body { flex: 1; padding-top: 5px; }
+  .step-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  /* ===== CODE BLOCKS ===== */
+  .code-wrap { position: relative; margin: 12px 0; }
+  .code-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: #0a1628;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid #1e293b;
+  }
+  .code-label span {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: #64748b;
+  }
+  .copy-btn {
+    padding: 3px 10px;
+    border-radius: 5px;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .copy-btn:hover { background: #334155; color: #e2e8f0; }
+  .copy-btn.copied { background: #065f46; border-color: #10b981; color: #6ee7b7; }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 16px 18px;
+    border-radius: 0 0 10px 10px;
+    overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  pre.no-label { border-radius: 10px; }
+  code:not(pre code) {
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    font-size: 12.5px;
+    background: var(--surface2);
+    color: var(--primary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* Syntax highlighting */
+  .kw { color: #93c5fd; }
+  .str { color: #86efac; }
+  .cmt { color: #475569; font-style: italic; }
+  .num { color: #fcd34d; }
+  .fn { color: #c4b5fd; }
+  .op { color: #f472b6; }
+
+  /* ===== CALLOUT ===== */
+  .callout {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border-left: 4px solid;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+  .callout.info  { background: var(--blue-light);   border-color: var(--blue);   color: var(--text2); }
+  .callout.warn  { background: var(--orange-light); border-color: var(--orange); color: var(--text2); }
+  .callout.tip   { background: var(--green-light);  border-color: var(--green);  color: var(--text2); }
+  .callout.danger{ background: var(--red-light);    border-color: var(--red);    color: var(--text2); }
+  .callout-icon  { font-size: 18px; flex-shrink: 0; line-height: 1.5; }
+  .callout strong { color: var(--text); }
+
+  /* ===== CARDS ===== */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card-icon { font-size: 24px; margin-bottom: 8px; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .card-desc { font-size: 12px; color: var(--text2); }
+  .card.required { border-left: 3px solid var(--red); }
+  .card.optional { border-left: 3px solid var(--text3); }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead { background: var(--surface2); }
+  th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .tag.required { background: #fef2f2; color: #ef4444; }
+  .tag.optional { background: var(--surface2); color: var(--text3); }
+  [data-theme="dark"] .tag.required { background: #1c0707; }
+
+  /* ===== ACCORDION ===== */
+  .accordion { margin: 12px 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .acc-item { border-bottom: 1px solid var(--border); }
+  .acc-item:last-child { border-bottom: none; }
+  .acc-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: none;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: background .15s;
+    gap: 12px;
+  }
+  .acc-btn:hover { background: var(--surface2); }
+  .acc-btn.active { background: var(--surface2); color: var(--primary); }
+  .acc-left { display: flex; align-items: center; gap: 10px; }
+  .acc-icon { font-size: 18px; }
+  .acc-chevron { transition: transform .2s; color: var(--text3); flex-shrink: 0; }
+  .acc-btn.active .acc-chevron { transform: rotate(180deg); }
+  .acc-body {
+    display: none;
+    padding: 0 18px 18px;
+    background: var(--surface);
+  }
+  .acc-body.open { display: block; }
+
+  /* ===== MIGRATION TIMELINE ===== */
+  .timeline { margin: 20px 0; }
+  .tl-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+  .tl-badge {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .tl-badge.v1  { background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; }
+  .tl-badge.v2  { background: #14532d; color: #86efac; border: 1px solid #22c55e; }
+  .tl-badge.v3  { background: #1e1b4b; color: #c4b5fd; border: 1px solid #8b5cf6; }
+  .tl-content { flex: 1; }
+  .tl-file { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .tl-desc { font-size: 12.5px; color: var(--text2); }
+  .tl-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .tl-tag {
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  /* ===== ENV TABLE ===== */
+  .env-table { margin: 16px 0; }
+  .env-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--text3);
+    padding: 10px 0 6px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .env-row {
+    display: grid;
+    grid-template-columns: 240px 1fr auto;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+    font-size: 13px;
+  }
+  .env-row:last-child { border-bottom: none; }
+  .env-key {
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 12px;
+    color: var(--primary);
+    word-break: break-all;
+    font-weight: 600;
+  }
+  .env-desc { color: var(--text2); font-size: 13px; }
+  .env-sample { font-family: 'SF Mono', Consolas, monospace; font-size: 11px; color: var(--text3); word-break: break-all; }
+
+  /* ===== PM2 COMMAND GRID ===== */
+  .cmd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .cmd-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  .cmd-title { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+  .cmd-code {
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 12.5px;
+    background: var(--code-bg);
+    color: var(--green);
+    padding: 8px 12px;
+    border-radius: 7px;
+  }
+
+  /* ===== MISC ===== */
+  ul, ol { color: var(--text2); padding-left: 20px; margin: 8px 0 16px; }
+  li { margin-bottom: 6px; font-size: 14px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); transition: transform .3s; }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0; }
+    .content { padding: 24px 20px; }
+    .topbar { padding: 12px 20px; }
+    .hero { padding: 32px 20px; }
+    .cmd-grid { grid-template-columns: 1fr; }
+    .env-row { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>CRMHUB<br>OMNICHANNEL</h1>
+    <p>Panduan Instalasi v2.0</p>
+  </div>
+  <nav class="nav">
+    <div class="nav-group">
+      <div class="nav-group-title">Mulai</div>
+      <a class="nav-link active" href="#arsitektur" onclick="setActive(this)"><span class="icon">🏗️</span> Arsitektur</a>
+      <a class="nav-link" href="#prasyarat" onclick="setActive(this)"><span class="icon">📋</span> Prasyarat</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Instalasi Lokal</div>
+      <a class="nav-link" href="#docker" onclick="setActive(this)"><span class="icon">🐳</span> Docker (Cepat)</a>
+      <a class="nav-link" href="#manual" onclick="setActive(this)"><span class="icon">🔧</span> Manual</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Produksi</div>
+      <a class="nav-link" href="#server" onclick="setActive(this)"><span class="icon">🖥️</span> Server Ubuntu</a>
+      <a class="nav-link" href="#nginx" onclick="setActive(this)"><span class="icon">⚡</span> Nginx & SSL</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Konfigurasi</div>
+      <a class="nav-link" href="#env" onclick="setActive(this)"><span class="icon">⚙️</span> Env Backend</a>
+      <a class="nav-link" href="#env-frontend" onclick="setActive(this)"><span class="icon">🎨</span> Env Frontend</a>
+      <a class="nav-link" href="#migrasi" onclick="setActive(this)"><span class="icon">🗄️</span> Migrasi Database</a>
+      <a class="nav-link" href="#pm2" onclick="setActive(this)"><span class="icon">🚀</span> PM2 Commands</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Referensi</div>
+      <a class="nav-link" href="#login" onclick="setActive(this)"><span class="icon">🔑</span> Login Default</a>
+      <a class="nav-link" href="#troubleshoot" onclick="setActive(this)"><span class="icon">🛠️</span> Troubleshooting</a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">© 2026 CRMHUB Omnichannel</div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <span class="topbar-title">📖 Panduan Instalasi & Deployment</span>
+    <div class="topbar-actions">
+      <button class="btn-icon" onclick="toggleTheme()" title="Toggle Dark Mode" id="themeBtn">🌙</button>
+      <button class="btn-icon" onclick="window.print()" title="Print / Save PDF">🖨️</button>
+      <button class="btn-icon" id="menuBtn" onclick="toggleSidebar()" title="Menu" style="display:none">☰</button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Panduan Instalasi</h1>
+    <p>Panduan lengkap untuk menjalankan CRMHUB Omnichannel di lokal maupun server produksi.</p>
+    <div class="badge-row">
+      <span class="badge">Node.js 20 LTS</span>
+      <span class="badge">React 18 + Vite</span>
+      <span class="badge">PostgreSQL 16 + pgvector</span>
+      <span class="badge">Redis 7</span>
+      <span class="badge">Socket.IO 4</span>
+      <span class="badge">BullMQ 4</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== 1. ARSITEKTUR ===== -->
+    <div class="section" id="arsitektur">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <h2 class="section-title">Gambaran Arsitektur</h2>
+      </div>
+
+      <div class="arch">
+        <div class="arch-row">
+          <div class="arch-box client">🌐 Browser / Client</div>
+        </div>
+        <div class="arch-row"><span class="arch-arrow">↕ HTTPS / WSS</span></div>
+        <div class="arch-row">
+          <div class="arch-box nginx">⚡ Nginx Reverse Proxy<br><small style="font-weight:400;opacity:.8">hanya di produksi</small></div>
+        </div>
+        <div class="arch-row"><span class="arch-arrow">↕ HTTP / WebSocket</span></div>
+        <div class="arch-row">
+          <div class="arch-box backend">🟣 Backend Node.js :8998<br><small style="font-weight:400;opacity:.8">Express · Socket.IO · BullMQ Workers</small></div>
+        </div>
+        <div class="arch-row"><span class="arch-arrow">↕</span></div>
+        <div class="arch-row" style="gap:16px">
+          <div class="arch-box db">🟡 PostgreSQL<br><small style="font-weight:400;opacity:.8">+ pgvector</small></div>
+          <div class="arch-box redis">🔴 Redis 7<br><small style="font-weight:400;opacity:.8">:6379</small></div>
+          <div class="arch-box frontend">🟢 Frontend React<br><small style="font-weight:400;opacity:.8">build → dist/</small></div>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <div class="card-title">Backend</div>
+          <div class="card-desc">Node.js 20 LTS, Express 4, Socket.IO 4, BullMQ 4 workers</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎨</div>
+          <div class="card-title">Frontend</div>
+          <div class="card-desc">React 18, Vite 5, Tailwind CSS — di-build ke static files</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗄️</div>
+          <div class="card-title">Database</div>
+          <div class="card-desc">PostgreSQL 16+ dengan ekstensi pgvector & uuid-ossp</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">Cache & Queue</div>
+          <div class="card-desc">Redis 7 untuk session, cache, dan antrian background jobs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 2. PRASYARAT ===== -->
+    <div class="section" id="prasyarat">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <h2 class="section-title">Prasyarat</h2>
+      </div>
+
+      <div class="tab-group">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab(this,'req-docker')">🐳 Dengan Docker</button>
+          <button class="tab-btn" onclick="switchTab(this,'req-manual')">🔧 Manual / Lokal</button>
+          <button class="tab-btn" onclick="switchTab(this,'req-server')">🖥️ Server Produksi</button>
+        </div>
+        <div class="tab-panel active" id="req-docker">
+          <div class="callout tip"><span class="callout-icon">💡</span><div><strong>Paling mudah!</strong> Cukup install Docker Desktop — semua service (PostgreSQL, Redis, backend, frontend) berjalan otomatis dalam container.</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Software</th><th>Versi</th><th>Download</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Docker Desktop</strong></td><td>4.x+</td><td><code>docker.com/get-started</code></td></tr>
+                <tr><td>Docker Compose</td><td>v2 (bundled)</td><td>Sudah termasuk Docker Desktop</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="req-manual">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Software</th><th>Versi Minimum</th><th>Cek</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Node.js</strong></td><td>20 LTS</td><td><code>node -v</code></td></tr>
+                <tr><td><strong>npm</strong></td><td>9+</td><td><code>npm -v</code></td></tr>
+                <tr><td><strong>PostgreSQL</strong></td><td>16+</td><td><code>psql --version</code></td></tr>
+                <tr><td><strong>pgvector</strong></td><td>0.5+</td><td>Install di PostgreSQL</td></tr>
+                <tr><td><strong>Redis</strong></td><td>7+</td><td><code>redis-server --version</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tab-panel" id="req-server">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Komponen</th><th>Spesifikasi</th></tr></thead>
+              <tbody>
+                <tr><td><strong>OS</strong></td><td>Ubuntu 22.04 LTS (direkomendasikan)</td></tr>
+                <tr><td><strong>VPS</strong></td><td>Minimal 2 vCPU, 4 GB RAM</td></tr>
+                <tr><td><strong>Domain</strong></td><td>A Record sudah diarahkan ke IP VPS</td></tr>
+                <tr><td><strong>Akses</strong></td><td>Root atau user dengan <code>sudo</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 3. DOCKER ===== -->
+    <div class="section" id="docker">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <h2 class="section-title">Cara A — Lokal dengan Docker</h2>
+      </div>
+      <div class="callout tip">
+        <span class="callout-icon">🚀</span>
+        <div><strong>Tercepat untuk development.</strong> Satu perintah langsung jalan. Docker otomatis menyiapkan PostgreSQL, Redis, backend, dan frontend dengan hot-reload.</div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Siapkan file environment</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>cp .env.docker .env.local</pre>
+            </div>
+            <p>Nilai default sudah cukup untuk development. Edit jika perlu mengubah port atau kredensial.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Jalankan semua service</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>docker compose up -d</pre>
+            </div>
+            <p>Docker akan otomatis:</p>
+            <ul>
+              <li>▶ Menjalankan <strong>PostgreSQL 17 + pgvector</strong> di port <code>5432</code></li>
+              <li>▶ Menjalankan <strong>Redis 7</strong> di port <code>6379</code></li>
+              <li>▶ Inisialisasi schema DB dari <code>init_db_v2.sql</code></li>
+              <li>▶ Menjalankan <strong>backend</strong> di port <code>8998</code> (hot-reload)</li>
+              <li>▶ Menjalankan <strong>frontend</strong> di port <code>3000</code> (Vite dev server)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Jalankan migrasi fitur terbaru</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>docker compose exec backend psql \
+  -h localhost -U omni_user -d omni_db \
+  -f /app/migration_features_v2.sql</pre>
+            </div>
+            <div class="callout info"><span class="callout-icon">ℹ️</span><div>Menambahkan tabel: Auto-Assignment, Working Hours, Outbound Webhooks, Ticket & SLA.</div></div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Akses aplikasi</div>
+            <div class="card-grid" style="margin-top:8px">
+              <div class="card" style="border-left:3px solid var(--green)">
+                <div class="card-icon">🌐</div>
+                <div class="card-title">Frontend App</div>
+                <div class="card-desc"><code>http://localhost:3000</code></div>
+              </div>
+              <div class="card" style="border-left:3px solid var(--blue)">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">Backend API</div>
+                <div class="card-desc"><code>http://localhost:8998</code></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Perintah Docker yang berguna</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="cmd-title">📋 Log real-time backend</div>
+          <div class="cmd-code">docker compose logs -f backend</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-title">🔄 Restart backend saja</div>
+          <div class="cmd-code">docker compose restart backend</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-title">🐚 Masuk shell container</div>
+          <div class="cmd-code">docker compose exec backend sh</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-title">⏹️ Hentikan semua service</div>
+          <div class="cmd-code">docker compose down</div>
+        </div>
+        <div class="cmd-card" style="grid-column: 1 / -1">
+          <div class="cmd-title">🗑️ Reset total (hapus database)</div>
+          <div class="cmd-code">docker compose down -v</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 4. MANUAL ===== -->
+    <div class="section" id="manual">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <h2 class="section-title">Cara B — Lokal Manual</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Install Node.js 20 LTS</div>
+            <div class="tab-group" style="margin-top:10px">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab(this,'node-ubuntu')">Ubuntu / WSL</button>
+                <button class="tab-btn" onclick="switchTab(this,'node-mac')">macOS</button>
+              </div>
+              <div class="tab-panel active" id="node-ubuntu">
+                <div class="code-wrap">
+                  <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                  <pre>curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs</pre>
+                </div>
+              </div>
+              <div class="tab-panel" id="node-mac">
+                <div class="code-wrap">
+                  <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                  <pre>brew install node@20</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Setup PostgreSQL + pgvector</div>
+            <div class="tab-group" style="margin-top:10px">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab(this,'pg-ubuntu')">Ubuntu</button>
+                <button class="tab-btn" onclick="switchTab(this,'pg-mac')">macOS</button>
+              </div>
+              <div class="tab-panel active" id="pg-ubuntu">
+                <div class="code-wrap">
+                  <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                  <pre>sudo apt install postgresql-16 postgresql-16-pgvector -y
+sudo systemctl start postgresql</pre>
+                </div>
+              </div>
+              <div class="tab-panel" id="pg-mac">
+                <div class="code-wrap">
+                  <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                  <pre>brew install postgresql@16 pgvector
+brew services start postgresql@16</pre>
+                </div>
+              </div>
+            </div>
+            <p style="margin-top:12px">Buat database:</p>
+            <div class="code-wrap">
+              <div class="code-label"><span>psql (sebagai postgres user)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>sudo -u postgres psql</pre>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label"><span>sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>CREATE DATABASE omni_db;
+CREATE USER omni_user WITH PASSWORD 'DevPassword123!';
+ALTER DATABASE omni_db OWNER TO omni_user;
+GRANT ALL PRIVILEGES ON DATABASE omni_db TO omni_user;
+\c omni_db
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS vector;
+\q</pre>
+            </div>
+            <p>Import schema & migrasi:</p>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>psql -h localhost -U omni_user -d omni_db -f init_db_v2.sql
+psql -h localhost -U omni_user -d omni_db -f migration_ai_provider.sql
+psql -h localhost -U omni_user -d omni_db -f migration_features_v2.sql</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Jalankan Redis</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre><span class="cmt"># Ubuntu</span>
+sudo systemctl start redis-server
+
+<span class="cmt"># macOS</span>
+brew services start redis
+
+<span class="cmt"># Windows (via Docker)</span>
+docker run -d -p 6379:6379 redis:7-alpine</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Setup & jalankan Backend</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>cd backend
+npm install
+<span class="cmt"># Buat .env lalu isi minimal vars (lihat Bagian 6)</span>
+cp .env.example .env   <span class="cmt"># atau buat manual</span>
+npm run dev</pre>
+            </div>
+            <div class="callout info"><span class="callout-icon">ℹ️</span><div>Backend berjalan di <code>http://localhost:8998</code>. Gunakan <code>npm run dev</code> untuk hot-reload saat development.</div></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Setup & jalankan Frontend</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>cd ../frontend
+npm install
+echo "VITE_API_BASE_URL=http://localhost:8998" > .env
+npm run dev</pre>
+            </div>
+            <p>Frontend berjalan di <code>http://localhost:5173</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 5. SERVER ===== -->
+    <div class="section" id="server">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <h2 class="section-title">Instalasi Server Produksi (Ubuntu VPS)</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Persiapan server & dependencies</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>sudo apt update && sudo apt upgrade -y
+sudo apt install -y nginx curl git build-essential unzip redis-server ufw
+
+<span class="cmt"># Firewall</span>
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw --force enable
+
+<span class="cmt"># Node.js 20 LTS</span>
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+<span class="cmt"># PM2</span>
+sudo npm install -g pm2
+
+<span class="cmt"># Redis</span>
+sudo systemctl enable redis-server
+sudo systemctl start redis-server</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Install PostgreSQL 16 + pgvector</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt update
+sudo apt install postgresql-16 postgresql-16-pgvector -y
+sudo systemctl enable postgresql
+sudo systemctl start postgresql</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Setup database</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>sudo -u postgres psql</pre>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label"><span>sql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>CREATE DATABASE omni_db;
+CREATE USER omni_user WITH PASSWORD 'GantiPasswordAman!';
+ALTER DATABASE omni_db OWNER TO omni_user;
+GRANT ALL PRIVILEGES ON DATABASE omni_db TO omni_user;
+\c omni_db
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS vector;
+\q</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Upload project & buat folder</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>sudo mkdir -p /var/www/omnichannel
+sudo chown -R $USER:$USER /var/www/omnichannel
+
+<span class="cmt"># Upload via SCP dari komputer lokal:</span>
+scp -r ./backend  user@ip:/var/www/omnichannel/
+scp -r ./frontend user@ip:/var/www/omnichannel/
+scp *.sql         user@ip:/var/www/omnichannel/</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Import database schema</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>cd /var/www/omnichannel
+
+<span class="cmt"># Import schema awal</span>
+psql -h localhost -U omni_user -d omni_db -f init_db_v2.sql
+
+<span class="cmt"># Grant akses (wajib setelah import)</span>
+sudo -u postgres psql -d omni_db &lt;&lt;EOF
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO omni_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO omni_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO omni_user;
+EOF
+
+<span class="cmt"># Migrasi fitur terbaru</span>
+psql -h localhost -U omni_user -d omni_db -f migration_ai_provider.sql
+psql -h localhost -U omni_user -d omni_db -f migration_features_v2.sql</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Konfigurasi & install backend</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>cd /var/www/omnichannel/backend
+npm install
+nano .env   <span class="cmt"># isi environment variables (lihat Bagian 6)</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <div class="step-title">Build frontend</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>cd /var/www/omnichannel/frontend
+npm install
+nano .env</pre>
+            </div>
+            <p>Isi file <code>.env</code> frontend dengan semua variabel berikut (sesuaikan nilai dengan App ID milik Anda):</p>
+            <div class="code-wrap">
+              <div class="code-label"><span>frontend/.env</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>VITE_API_BASE_URL=https://domain-anda.com
+VITE_GOOGLE_CLIENT_ID=xxxxxxxx-xxxx.apps.googleusercontent.com
+VITE_WA_APP_ID=4745297409029245
+VITE_WA_CONFIG_ID_BYOK=1569724147541844
+VITE_WA_CONFIG_ID_COEX=1048302460794997
+VITE_FACEBOOK_APP_ID=2448679252246037
+VITE_MESSENGER_APP_ID=4745297409029245</pre>
+            </div>
+            <div class="callout warn"><span class="callout-icon">⚠️</span><div>Jika <code>VITE_API_BASE_URL</code> salah, semua request API akan gagal. Pastikan nilainya sama persis dengan <code>APP_URL</code> di backend <code>.env</code>.</div></div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash — jalankan build</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>npm run build</pre>
+            </div>
+            <p>Hasil build tersimpan di <code>frontend/dist/</code> — otomatis disajikan oleh backend (tidak perlu konfigurasi Nginx terpisah untuk frontend).</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">8</div>
+          <div class="step-body">
+            <div class="step-title">Jalankan dengan PM2</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>cd /var/www/omnichannel/backend
+pm2 start server.js --name "omni-backend"
+pm2 save
+pm2 startup   <span class="cmt"># ikuti instruksi yang muncul</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">9</div>
+          <div class="step-body">
+            <div class="step-title">Permission folder upload</div>
+            <div class="code-wrap">
+              <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>mkdir -p /var/www/omnichannel/backend/uploads/{system,cms,chat,webchat}
+sudo chown -R $USER:$USER /var/www/omnichannel/backend/uploads
+sudo chmod -R 755 /var/www/omnichannel/backend/uploads</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 6. NGINX & SSL ===== -->
+    <div class="section" id="nginx">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <h2 class="section-title">Nginx & SSL</h2>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div><strong>Header WebSocket wajib ada!</strong> Tanpa header <code>Upgrade</code> dan <code>Connection</code>, fitur real-time chat dan scan QR code tidak akan berfungsi.</div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-label"><span>nginx — /etc/nginx/sites-available/omnichannel</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>server {
+    server_name domain-anda.com;
+    client_max_body_size 50M;
+
+    location / {
+        proxy_pass http://localhost:8998;
+
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        <span class="cmt"># WebSocket — WAJIB untuk Socket.IO</span>
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_cache_bypass $http_upgrade;
+
+        proxy_read_timeout 300;
+        proxy_connect_timeout 300;
+    }
+
+    location ~ /\. { deny all; }
+}</pre>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-label"><span>bash — aktifkan konfigurasi</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>sudo ln -s /etc/nginx/sites-available/omnichannel /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t            <span class="cmt"># test konfigurasi</span>
+sudo systemctl restart nginx</pre>
+      </div>
+
+      <h3>Install SSL dengan Let's Encrypt</h3>
+      <div class="code-wrap">
+        <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d domain-anda.com</pre>
+      </div>
+      <p>Certbot akan otomatis memperbarui konfigurasi Nginx dan mengatur auto-renewal SSL.</p>
+    </div>
+
+    <!-- ===== 7. ENV VARS ===== -->
+    <div class="section" id="env">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <h2 class="section-title">Environment Variables</h2>
+      </div>
+      <p>Buat file <code>backend/.env</code> dan isi variabel berikut. Yang bertanda <span class="tag required">Wajib</span> harus diisi agar aplikasi bisa berjalan.</p>
+
+      <div class="env-table">
+        <div class="env-group-title">🖥️ Server</div>
+        <div class="env-row"><div class="env-key">PORT</div><div class="env-desc">Port backend berjalan <span class="tag required">Wajib</span></div><div class="env-sample">8998</div></div>
+        <div class="env-row"><div class="env-key">NODE_ENV</div><div class="env-desc">Mode environment</div><div class="env-sample">production</div></div>
+        <div class="env-row"><div class="env-key">APP_URL</div><div class="env-desc">URL publik aplikasi (tanpa trailing slash) <span class="tag required">Wajib</span></div><div class="env-sample">https://domain-anda.com</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">🗄️ Database</div>
+        <div class="env-row"><div class="env-key">DATABASE_URL</div><div class="env-desc">Connection string PostgreSQL <span class="tag required">Wajib</span></div><div class="env-sample">postgresql://omni_user:pass@localhost:5432/omni_db</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">⚡ Redis</div>
+        <div class="env-row"><div class="env-key">REDIS_URL</div><div class="env-desc">Connection string Redis <span class="tag required">Wajib</span></div><div class="env-sample">redis://localhost:6379</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">🔐 Keamanan</div>
+        <div class="env-row"><div class="env-key">JWT_SECRET</div><div class="env-desc">Secret key JWT, minimal 64 karakter acak <span class="tag required">Wajib</span></div><div class="env-sample">openssl rand -hex 32</div></div>
+        <div class="env-row"><div class="env-key">LICENSE_KEY</div><div class="env-desc">Kunci lisensi aplikasi — tanpa ini fitur akan terblokir <span class="tag required">Wajib</span></div><div class="env-sample">xxxxxxxxxxxxxxxxxxxxxxxx</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">📱 WhatsApp Gateway</div>
+        <div class="env-row"><div class="env-key">WA_GATEWAY_URL</div><div class="env-desc">URL WA Gateway (non-official/Baileys)</div><div class="env-sample">https://api-wa.service.com</div></div>
+        <div class="env-row"><div class="env-key">WA_GATEWAY_API_KEY</div><div class="env-desc">API Key WA Gateway</div><div class="env-sample">your_api_key_here</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">🔵 Facebook Login</div>
+        <div class="env-row"><div class="env-key">FACEBOOK_APP_ID</div><div class="env-desc">App ID dari Meta Developer Dashboard <span class="tag required">Wajib</span></div><div class="env-sample">4745297409029245</div></div>
+        <div class="env-row"><div class="env-key">FACEBOOK_APP_SECRET</div><div class="env-desc">App Secret dari Meta Developer Dashboard <span class="tag required">Wajib</span></div><div class="env-sample">b25de667e328611e...</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">💬 Messenger Channel</div>
+        <div class="env-row"><div class="env-key">MESSENGER_APP_ID</div><div class="env-desc">App ID untuk Messenger (biasanya sama dengan FB App ID)</div><div class="env-sample">4745297409029245</div></div>
+        <div class="env-row"><div class="env-key">MESSENGER_SECRET</div><div class="env-desc">App Secret untuk Messenger</div><div class="env-sample">b25de667e328611e...</div></div>
+        <div class="env-row"><div class="env-key">MESSENGER_API_VERSION</div><div class="env-desc">Versi Graph API Meta</div><div class="env-sample">v24.0</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">📸 Instagram Channel</div>
+        <div class="env-row"><div class="env-key">INSTAGRAM_APP_ID</div><div class="env-desc">App ID untuk Instagram Business</div><div class="env-sample">4745297409029245</div></div>
+        <div class="env-row"><div class="env-key">INSTAGRAM_SECRET</div><div class="env-desc">App Secret untuk Instagram</div><div class="env-sample">b25de667e328611e...</div></div>
+        <div class="env-row"><div class="env-key">INSTAGRAM_API_VERSION</div><div class="env-desc">Versi Graph API Meta</div><div class="env-sample">v24.0</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">📲 WhatsApp Official (Meta Cloud API)</div>
+        <div class="env-row"><div class="env-key">WA_APP_ID</div><div class="env-desc">App ID untuk WhatsApp Cloud API</div><div class="env-sample">4745297409029245</div></div>
+        <div class="env-row"><div class="env-key">WA_SECRET</div><div class="env-desc">App Secret untuk WhatsApp Cloud API</div><div class="env-sample">b25de667e328611e...</div></div>
+        <div class="env-row"><div class="env-key">WA_API_VERSION</div><div class="env-desc">Versi API WhatsApp Cloud</div><div class="env-sample">v24.0</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">🔑 Google OAuth</div>
+        <div class="env-row"><div class="env-key">GOOGLE_CLIENT_ID</div><div class="env-desc">Client ID dari Google Cloud Console — untuk Login Google</div><div class="env-sample">156336947530-xxx.apps.googleusercontent.com</div></div>
+        <div class="env-row"><div class="env-key">GOOGLE_CLIENT_SECRET</div><div class="env-desc">Client Secret dari Google Cloud Console</div><div class="env-sample">GOCSPX-xxx</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">🤖 AI Providers</div>
+        <div class="env-row"><div class="env-key">GEMINI_API_KEY</div><div class="env-desc">Google Gemini — untuk embedding & chat AI</div><div class="env-sample">AIzaSy...</div></div>
+        <div class="env-row"><div class="env-key">OPENAI_API_KEY</div><div class="env-desc">OpenAI — opsional, alternatif chat AI</div><div class="env-sample">sk-proj-...</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">🔔 Firebase Push Notification</div>
+        <div class="env-row"><div class="env-key">FIREBASE_SERVICE_ACCOUNT</div><div class="env-desc">JSON lengkap service account Firebase — download dari Firebase Console → Project Settings → Service Accounts → Generate new private key. Masukkan sebagai satu baris string JSON dalam tanda kutip tunggal</div><div class="env-sample">'{"type":"service_account","project_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n..."}'</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">💳 Payment Gateway (Opsional)</div>
+        <div class="env-row"><div class="env-key">DOKU_CLIENT_ID</div><div class="env-desc">DOKU payment client ID <span class="tag optional">Opsional</span></div><div class="env-sample">-</div></div>
+        <div class="env-row"><div class="env-key">TRIPAY_API_KEY</div><div class="env-desc">Tripay API key <span class="tag optional">Opsional</span></div><div class="env-sample">-</div></div>
+        <div class="env-row"><div class="env-key">XENDIT_SECRET_KEY</div><div class="env-desc">Xendit secret key <span class="tag optional">Opsional</span></div><div class="env-sample">-</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">📧 Email SMTP (Opsional)</div>
+        <div class="env-row"><div class="env-key">SMTP_HOST</div><div class="env-desc">SMTP host <span class="tag optional">Opsional</span></div><div class="env-sample">smtp.gmail.com</div></div>
+        <div class="env-row"><div class="env-key">SMTP_PORT</div><div class="env-desc">SMTP port</div><div class="env-sample">587</div></div>
+        <div class="env-row"><div class="env-key">SMTP_USER</div><div class="env-desc">Email pengirim</div><div class="env-sample">noreply@domain.com</div></div>
+        <div class="env-row"><div class="env-key">SMTP_PASS</div><div class="env-desc">Password / app password</div><div class="env-sample">app-password-16-char</div></div>
+      </div>
+
+      <h3 style="margin-top:32px" id="env-frontend">Frontend — <code>frontend/.env</code></h3>
+      <p>Buat file <code>frontend/.env</code> dengan variabel berikut sebelum menjalankan <code>npm run build</code>. Nilai <code>VITE_*</code> di-embed ke dalam JavaScript saat build — jika diubah, frontend harus di-build ulang.</p>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div><strong>Jangan gunakan <code>echo "..." > .env</code></strong> karena akan menimpa semua variabel. Buat file lengkap dengan <code>nano .env</code> atau SFTP.</div>
+      </div>
+
+      <div class="env-table">
+        <div class="env-group-title">🌐 API Connection</div>
+        <div class="env-row"><div class="env-key">VITE_API_BASE_URL</div><div class="env-desc">URL backend (sama dengan APP_URL) <span class="tag required">Wajib</span></div><div class="env-sample">https://domain-anda.com</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">🔑 Google OAuth</div>
+        <div class="env-row"><div class="env-key">VITE_GOOGLE_CLIENT_ID</div><div class="env-desc">Client ID Google — untuk tombol Login Google di halaman login</div><div class="env-sample">156336947530-xxx.apps.googleusercontent.com</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">📲 WhatsApp Official (Connect)</div>
+        <div class="env-row"><div class="env-key">VITE_WA_APP_ID</div><div class="env-desc">App ID Meta — digunakan saat koneksi WhatsApp Business</div><div class="env-sample">4745297409029245</div></div>
+        <div class="env-row"><div class="env-key">VITE_WA_CONFIG_ID_BYOK</div><div class="env-desc">Configuration ID untuk mode BYOK (Bring Your Own Number)</div><div class="env-sample">1569724147541844</div></div>
+        <div class="env-row"><div class="env-key">VITE_WA_CONFIG_ID_COEX</div><div class="env-desc">Configuration ID untuk mode Coexistence</div><div class="env-sample">1048302460794997</div></div>
+
+        <div class="env-group-title" style="margin-top:16px">🔵 Facebook & Messenger</div>
+        <div class="env-row"><div class="env-key">VITE_FACEBOOK_APP_ID</div><div class="env-desc">App ID Facebook — untuk Facebook Login OAuth flow</div><div class="env-sample">2448679252246037</div></div>
+        <div class="env-row"><div class="env-key">VITE_MESSENGER_APP_ID</div><div class="env-desc">App ID untuk koneksi Messenger channel</div><div class="env-sample">4745297409029245</div></div>
+      </div>
+
+      <div class="code-wrap" style="margin-top:16px">
+        <div class="code-label"><span>frontend/.env — contoh lengkap</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>VITE_API_BASE_URL=https://domain-anda.com
+VITE_GOOGLE_CLIENT_ID=xxxxxxxx-xxxx.apps.googleusercontent.com
+VITE_WA_APP_ID=4745297409029245
+VITE_WA_CONFIG_ID_BYOK=1569724147541844
+VITE_WA_CONFIG_ID_COEX=1048302460794997
+VITE_FACEBOOK_APP_ID=2448679252246037
+VITE_MESSENGER_APP_ID=4745297409029245</pre>
+      </div>
+    </div>
+
+    <!-- ===== 8. MIGRASI ===== -->
+    <div class="section" id="migrasi">
+      <div class="section-header">
+        <div class="section-num">8</div>
+        <h2 class="section-title">Migrasi Database</h2>
+      </div>
+
+      <h3>Urutan import yang benar</h3>
+      <div class="timeline">
+        <div class="tl-item">
+          <span class="tl-badge v1">Step 1</span>
+          <div class="tl-content">
+            <div class="tl-file">📄 init_db_v2.sql</div>
+            <div class="tl-desc">Schema awal — semua tabel dasar aplikasi. <strong>Wajib dijalankan pertama kali.</strong></div>
+            <div class="tl-tags"><span class="tl-tag">users</span><span class="tl-tag">organizations</span><span class="tl-tag">conversations</span><span class="tl-tag">messages</span><span class="tl-tag">contacts</span></div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-badge v2">Step 2</span>
+          <div class="tl-content">
+            <div class="tl-file">📄 migration_ai_provider.sql</div>
+            <div class="tl-desc">Menambahkan kolom untuk pemilihan AI provider secara dinamis (Gemini/OpenAI per chatbot).</div>
+            <div class="tl-tags"><span class="tl-tag">ai_provider</span><span class="tl-tag">ai_api_key</span></div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <span class="tl-badge v3">Step 3</span>
+          <div class="tl-content">
+            <div class="tl-file">📄 migration_features_v2.sql</div>
+            <div class="tl-desc">Paket fitur terbaru — Auto-Assignment, Working Hours, Outbound Webhooks, Ticket & SLA.</div>
+            <div class="tl-tags"><span class="tl-tag">working_hours</span><span class="tl-tag">org_webhooks</span><span class="tl-tag">sla_policies</span><span class="tl-tag">ticket_number</span><span class="tl-tag">priority</span><span class="tl-tag">sla_breached</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-label"><span>bash — jalankan semua migrasi</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>psql -h localhost -U omni_user -d omni_db -f init_db_v2.sql
+psql -h localhost -U omni_user -d omni_db -f migration_ai_provider.sql
+psql -h localhost -U omni_user -d omni_db -f migration_features_v2.sql</pre>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">✅</span>
+        <div>Semua file migrasi menggunakan <code>IF NOT EXISTS</code> dan <code>ON CONFLICT DO NOTHING</code> sehingga <strong>aman dijalankan ulang</strong> tanpa menghapus data yang sudah ada.</div>
+      </div>
+    </div>
+
+    <!-- ===== 9. PM2 ===== -->
+    <div class="section" id="pm2">
+      <div class="section-header">
+        <div class="section-num">9</div>
+        <h2 class="section-title">PM2 Commands</h2>
+      </div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-title">📊 Lihat status semua proses</div><div class="cmd-code">pm2 status</div></div>
+        <div class="cmd-card"><div class="cmd-title">📋 Log real-time</div><div class="cmd-code">pm2 logs omni-backend</div></div>
+        <div class="cmd-card"><div class="cmd-title">📋 Log N baris terakhir</div><div class="cmd-code">pm2 logs omni-backend --lines 100</div></div>
+        <div class="cmd-card"><div class="cmd-title">🔄 Restart</div><div class="cmd-code">pm2 restart omni-backend</div></div>
+        <div class="cmd-card"><div class="cmd-title">♻️ Reload (zero downtime)</div><div class="cmd-code">pm2 reload omni-backend</div></div>
+        <div class="cmd-card"><div class="cmd-title">⏹️ Stop</div><div class="cmd-code">pm2 stop omni-backend</div></div>
+        <div class="cmd-card"><div class="cmd-title">📈 Monitor CPU & RAM</div><div class="cmd-code">pm2 monit</div></div>
+        <div class="cmd-card"><div class="cmd-title">💾 Simpan config proses</div><div class="cmd-code">pm2 save</div></div>
+      </div>
+
+      <h3>Update kode di server tanpa downtime</h3>
+      <div class="code-wrap">
+        <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre>cd /var/www/omnichannel
+
+<span class="cmt"># Pull kode terbaru</span>
+git pull
+
+<span class="cmt"># Update dependency backend jika package.json berubah</span>
+cd backend && npm install
+
+<span class="cmt"># Rebuild frontend</span>
+cd ../frontend && npm run build
+
+<span class="cmt"># Reload backend tanpa downtime</span>
+pm2 reload omni-backend</pre>
+      </div>
+    </div>
+
+    <!-- ===== 10. LOGIN ===== -->
+    <div class="section" id="login">
+      <div class="section-header">
+        <div class="section-num">10</div>
+        <h2 class="section-title">Login Default</h2>
+      </div>
+
+      <div class="card-grid">
+        <div class="card" style="border-left:3px solid var(--primary)">
+          <div class="card-icon">🌐</div>
+          <div class="card-title">URL Produksi</div>
+          <div class="card-desc"><code>https://domain-anda.com</code></div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--primary)">
+          <div class="card-icon">🌐</div>
+          <div class="card-title">URL Lokal</div>
+          <div class="card-desc"><code>http://localhost:5173</code> (dev)<br><code>http://localhost:3000</code> (Docker)</div>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:16px">
+        <table>
+          <thead><tr><th>Field</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Email</strong></td><td><code>superadmin@example.com</code></td></tr>
+            <tr><td><strong>Password</strong></td><td><code>admin123</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout danger">
+        <span class="callout-icon">🚨</span>
+        <div><strong>Segera ganti password</strong> setelah login pertama! Buka <strong>Settings → Profile Settings</strong> untuk menggantinya.</div>
+      </div>
+    </div>
+
+    <!-- ===== 11. TROUBLESHOOT ===== -->
+    <div class="section" id="troubleshoot">
+      <div class="section-header">
+        <div class="section-num">11</div>
+        <h2 class="section-title">Troubleshooting</h2>
+      </div>
+
+      <div class="accordion">
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">⚙️</span> Backend tidak bisa start</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <p>Cek log PM2 untuk melihat pesan error:</p>
+            <div class="code-wrap"><div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>pm2 logs omni-backend --lines 50
+
+<span class="cmt"># Pastikan PORT tidak bentrok</span>
+sudo lsof -i :8998</pre></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">📦</span> Error bcrypt saat npm install</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <p>bcrypt perlu dikompilasi dari source di lingkungan Linux:</p>
+            <div class="code-wrap"><div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>cd /var/www/omnichannel/backend
+rm -rf node_modules package-lock.json
+npm install
+npm rebuild bcrypt --build-from-source</pre></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">🗄️</span> Database: error koneksi</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <div class="code-wrap"><div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cmt"># Test koneksi manual</span>
+psql -h localhost -U omni_user -d omni_db -c "SELECT 1;"
+
+<span class="cmt"># Pastikan PostgreSQL berjalan</span>
+sudo systemctl status postgresql
+
+<span class="cmt"># Cek DATABASE_URL di .env</span>
+grep DATABASE_URL /var/www/omnichannel/backend/.env</pre></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">🔄</span> Database: import schema gagal / "already exists"</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <div class="callout warn"><span class="callout-icon">⚠️</span><div><strong>Perhatian:</strong> Langkah ini menghapus semua data. Gunakan hanya untuk instalasi baru.</div></div>
+            <div class="code-wrap"><div class="code-label"><span>sql — reset database</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>sudo -u postgres psql &lt;&lt;EOF
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE datname = 'omni_db' AND pid &lt;&gt; pg_backend_pid();
+DROP DATABASE IF EXISTS omni_db;
+DROP USER IF EXISTS omni_user;
+CREATE USER omni_user WITH PASSWORD 'GantiPasswordAman!';
+CREATE DATABASE omni_db;
+ALTER USER omni_user WITH SUPERUSER;
+GRANT ALL PRIVILEGES ON DATABASE omni_db TO omni_user;
+\c omni_db
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+EOF
+
+<span class="cmt"># Import ulang</span>
+psql -h localhost -U omni_user -d omni_db -f init_db_v2.sql
+psql -h localhost -U omni_user -d omni_db -f migration_ai_provider.sql
+psql -h localhost -U omni_user -d omni_db -f migration_features_v2.sql</pre></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">⚡</span> Redis: koneksi ditolak</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <div class="code-wrap"><div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>sudo systemctl status redis-server
+sudo systemctl restart redis-server
+redis-cli ping   <span class="cmt"># harus jawab: PONG</span></pre></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">🎨</span> Frontend build gagal (ESLint error)</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <p>Project menggunakan <code>eslint --max-warnings 0</code> sehingga build akan gagal jika ada unused import:</p>
+            <div class="code-wrap"><div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cmt"># Lihat error ESLint secara detail</span>
+npm run lint
+
+<span class="cmt"># Bersihkan cache dan install ulang</span>
+rm -rf node_modules package-lock.json
+npm install
+npm run build</pre></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">🔌</span> Socket.IO tidak konek (real-time mati)</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <p>Pastikan konfigurasi Nginx menyertakan header WebSocket:</p>
+            <div class="code-wrap"><div class="code-label"><span>nginx</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre>proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+proxy_cache_bypass $http_upgrade;</pre></div>
+            <div class="callout info"><span class="callout-icon">ℹ️</span><div>Di production, Socket.IO membutuhkan <code>wss://</code> (HTTPS). Pastikan SSL sudah aktif via Certbot.</div></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">🔑</span> Fitur terblokir / error "License invalid"</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <p>Pastikan <code>LICENSE_KEY</code> sudah diisi di <code>backend/.env</code> dan backend sudah di-restart:</p>
+            <div class="code-wrap"><div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cmt"># Cek apakah LICENSE_KEY ada di .env</span>
+grep LICENSE_KEY /var/www/omnichannel/backend/.env
+
+<span class="cmt"># Restart backend setelah edit .env</span>
+pm2 restart omni-backend
+pm2 logs omni-backend --lines 20</pre></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">🔌</span> Tombol Login Google / Connect WA tidak muncul</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <p>Variabel <code>VITE_*</code> di frontend tidak ter-embed dengan benar. Pastikan semua variabel ada di <code>frontend/.env</code> dan frontend sudah di-<em>build ulang</em>:</p>
+            <div class="code-wrap"><div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cmt"># Cek isi frontend .env</span>
+cat /var/www/omnichannel/frontend/.env
+
+<span class="cmt"># Build ulang setelah perubahan .env</span>
+cd /var/www/omnichannel/frontend
+npm run build
+pm2 reload omni-backend</pre></div>
+            <div class="callout info"><span class="callout-icon">ℹ️</span><div>Variabel <code>VITE_*</code> di-embed ke dalam file JavaScript saat build. Mengubah <code>.env</code> tanpa build ulang <strong>tidak akan berpengaruh</strong>.</div></div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-btn" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-icon">📲</span> Webhook WhatsApp tidak masuk</div>
+            <span class="acc-chevron">▼</span>
+          </button>
+          <div class="acc-body">
+            <div class="code-wrap"><div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cmt"># Test URL webhook bisa diakses publik</span>
+curl -I https://domain-anda.com/webhook/wa-gateway
+
+<span class="cmt"># Monitor log incoming webhook</span>
+pm2 logs omni-backend | grep "Webhook"</pre></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Backup Database (Rutin)</h3>
+      <div class="code-wrap">
+        <div class="code-label"><span>bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre><span class="cmt"># Backup manual</span>
+pg_dump -h localhost -U omni_user omni_db > backup_$(date +%Y%m%d_%H%M).sql
+
+<span class="cmt"># Backup otomatis setiap hari jam 02.00 via crontab</span>
+<span class="cmt"># Tambahkan ke: crontab -e</span>
+0 2 * * * pg_dump -h localhost -U omni_user omni_db > /backup/omni_$(date +\%Y\%m\%d).sql</pre>
+      </div>
+    </div>
+
+    <hr>
+    <p style="text-align:center; color:var(--text3); font-size:13px; padding-bottom:40px">
+      © 2026 CRMHUB Omnichannel · Panduan Instalasi v2.0
+    </p>
+
+  </div><!-- /content -->
+</main>
+</div><!-- /layout -->
+
+<script>
+  // ===== THEME =====
+  function toggleTheme() {
+    const html = document.documentElement;
+    const btn = document.getElementById('themeBtn');
+    if (html.dataset.theme === 'dark') {
+      html.dataset.theme = 'light';
+      btn.textContent = '🌙';
+    } else {
+      html.dataset.theme = 'dark';
+      btn.textContent = '☀️';
+    }
+  }
+
+  // ===== SIDEBAR =====
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // ===== NAV ACTIVE =====
+  function setActive(el) {
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // Auto-highlight nav on scroll
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) cur = s.id;
+    });
+    navLinks.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + cur);
+    });
+  });
+
+  // ===== TABS =====
+  function switchTab(btn, panelId) {
+    const tabGroup = btn.closest('.tab-group');
+    tabGroup.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    tabGroup.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  // ===== ACCORDION =====
+  function toggleAcc(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    btn.classList.toggle('active', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  // ===== COPY CODE =====
+  function copyCode(btn) {
+    const pre = btn.closest('.code-wrap').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // ===== RESPONSIVE =====
+  function checkResponsive() {
+    const menuBtn = document.getElementById('menuBtn');
+    if (window.innerWidth <= 768) {
+      menuBtn.style.display = 'flex';
+    } else {
+      menuBtn.style.display = 'none';
+      document.getElementById('sidebar').classList.remove('open');
+    }
+  }
+  window.addEventListener('resize', checkResponsive);
+  checkResponsive();
+
+  // Close sidebar on link click (mobile)
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    });
+  });
+</script>
+
+<!-- SECTIONS: NEW v3.0 -->
+<section id="fitur-v3" style="background:#f0f9ff;padding:40px 40px;margin:0;border-top:3px solid #3b82f6;">
+<h2 style="font-size:1.3rem;margin:0 0 20px 0;border:none;">Fitur Baru v3.0</h2>
+<p style="margin:0 0 16px;color:#475569;">Berikut fitur-fitur yang baru ditambahkan:</p>
+<ul style="color:#64748b;margin:0 0 16px 0;">
+<li>Advanced Analytics Dashboard (<code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">/reports/advanced-analytics</li>
+<li>Customer Journey Tracking (<code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">/reports/customer-journey</li>
+<li>Team Gamification (<code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">/reports/gamification</li>
+<li>Multi-Language AI Chatbot (<code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">/settings/multi-language</li>
+<li>E-Commerce Integration (<code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">/settings/ecommerce</li>
+<li>Source Attribution (<code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">/reports/attribution</li>
+<li>AI Invoice Generator (<code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">Backend: /api/app/invoices/generate-from-chat</li>
+<li>Auto-Label Rules (<code style="background:#e2e8f0;padding:2px 6px;border-radius:4px;">/settings/auto-label</li>
+<li>Sales Pipeline Kanban CRM</li>
+</ul>
+
+<section id="license-v3" style="padding:24px 40px;background:#fef3c7;">
+<h2 style="font-size:1.1rem;font-weight:700;margin:0 0 12px;">License System Google Sheets</h2>
+<p style="margin:0 0 8px;color:#92400e;font-size:.9rem;">Setup baru: Buat Google Spreadsheet dengan tab <code style="background:#fff;padding:2px 6px;">licenses</code>, sharing "Anyone with link" → copy Spreadsheet ID → set <code style="background:#fff;padding:2px 6px;">LICENSE_SHEET_ID</code> di .env. Domain ada = aktif, dihapus = terblokir (setelah cache 6 jam). <a href="docs/license-documentation.html" style="color:#d97706;">docs/license-documentation.html</a></p>
+<p style="margin:12px 0 0;font-size:.85rem;color:#92400e;">Migrasi database baru (IF NOT EXISTS — aman dijalankan bertahap):
+<pre style="background:#1e293b;color:#86efac;padding:8px 12px;border-radius:8px;font-size:.8rem;margin-top:8px;">psql -h localhost -U omni_user -d omni_db -f migration_advanced_analytics.sql
+psql -h localhost -U omni_user -d omni_db -f migration_shopee_tracking.sql
+psql -h localhost -U omni_user -d omni_db -f migration_auto_label_rules.sql</pre>
+</section>
+
+<footer style="text-align:center;padding:24px 0 40px;color:#64748b;font-size:.85rem;">CRMHub Omnichannel v3.0 — Panduan Instalasi — © 2026</footer>
+</body>
+</html>

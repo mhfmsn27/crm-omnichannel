@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Role & Akses — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Manajemen<span>›</span>Role & Akses</div>
+      <h1>🔑 Role & Akses Kustom</h1>
+      <p class="page-subtitle">Buat peran tim yang sepenuhnya dapat dikustomisasi dengan kontrol izin yang granular dan level akses yang fleksibel.</p>
+
+      <div class="callout callout-success">
+        <span class="callout-icon">✨</span>
+        <div class="callout-content">
+          <strong>Fitur Baru di v2.0</strong>
+          <p>Sistem Custom Role memungkinkan Anda mendefinisikan struktur tim yang unik sesuai kebutuhan bisnis — bukan sekadar Admin, Supervisor, atau Agent biasa.</p>
+        </div>
+      </div>
+
+      <h2 id="konsep">Konsep Dasar</h2>
+      <p>Setiap custom role memiliki 3 komponen utama yang bekerja bersama:</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">🏷️</span>
+          <div>
+            <h4>Tipe Role</h4>
+            <p>Kategori dasar: <strong>Agent</strong> (akses terbatas) atau <strong>Admin</strong> (akses penuh)</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📊</span>
+          <div>
+            <h4>Level Akses</h4>
+            <p>Angka 1–99 yang menentukan hierarki. Level &lt;10 = Staff, ≥10 = Supervisor</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🔒</span>
+          <div>
+            <h4>Izin Granular</h4>
+            <p>16 izin spesifik yang dapat diaktifkan/nonaktifkan per role</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="tipe-role">Tipe Role</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tipe</th><th>Deskripsi</th><th>Contoh Jabatan</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-blue">agent</span></td>
+              <td>Akses ke inbox dan fitur operasional. Dibatasi oleh level dan permission yang dikonfigurasi.</td>
+              <td>CS Staff, CS Senior, Team Lead</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-red">admin_member</span></td>
+              <td>Akses penuh ke semua fitur termasuk Settings, Team, dan Billing. Tidak perlu mengatur permission.</td>
+              <td>Manager, Head of CS, Supervisor Utama</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="level">Level Akses (1–99)</h2>
+      <p>Level menentukan hierarki di dalam tipe <code>agent</code>. Level tidak berlaku untuk tipe <code>admin_member</code>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Rentang Level</th><th>Sebutan</th><th>Kemampuan Utama</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1 – 9</strong></td><td><span class="badge badge-green">Staff</span></td><td>Hanya melihat dan membalas chat yang di-assign ke mereka sendiri</td></tr>
+            <tr><td><strong>10 – 99</strong></td><td><span class="badge badge-blue">Supervisor</span></td><td>Dapat melihat semua chat, menggunakan permission tambahan sesuai konfigurasi</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Tips Penggunaan Level</strong>
+          <p>Gunakan level untuk membedakan senioritas. Contoh: CS Junior = Level 1, CS Senior = Level 5, Team Lead = Level 15, Manajer Area = Level 30. Level yang lebih tinggi tidak otomatis memberikan lebih banyak izin — itu diatur lewat permission.</p>
+        </div>
+      </div>
+
+      <h2 id="permissions">Daftar Izin Granular (16 Izin)</h2>
+      <p>Izin hanya berlaku untuk role bertipe <code>agent</code>. Role bertipe <code>admin_member</code> mendapat semua akses secara otomatis.</p>
+
+      <h3>Inbox</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>view_all_chats</code></td><td>Melihat semua percakapan di inbox, bukan hanya yang di-assign</td></tr>
+            <tr><td><code>assign_conversations</code></td><td>Mengalihkan/assign percakapan ke agent lain</td></tr>
+            <tr><td><code>delete_messages</code></td><td>Menghapus pesan di dalam percakapan</td></tr>
+            <tr><td><code>manage_labels</code></td><td>Membuat, mengubah, dan menghapus label percakapan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Kontak</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>manage_contacts</code></td><td>Membuat, mengubah, dan menghapus kontak</td></tr>
+            <tr><td><code>export_data</code></td><td>Export kontak dan data ke file CSV/Excel</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Broadcast</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>manage_broadcast</code></td><td>Membuat dan mengirim kampanye broadcast massal</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Chatbot</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>manage_chatbot</code></td><td>Mengatur bot, alur percakapan, dan knowledge base</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>CRM</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>manage_pipeline</code></td><td>Akses dan kelola pipeline penjualan</td></tr>
+            <tr><td><code>manage_invoice</code></td><td>Membuat dan mengelola invoice/tagihan pelanggan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Produk</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>manage_products</code></td><td>Akses dan kelola katalog produk</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Tools & Otomasi</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>use_tools</code></td><td>Akses Number Checker, Group Extractor, dan GMaps Scraper</td></tr>
+            <tr><td><code>manage_followup</code></td><td>Membuat dan mengelola urutan follow-up otomatis</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Tugas & Tiket</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>manage_tasks</code></td><td>Akses dan kelola daftar tugas tim</td></tr>
+            <tr><td><code>manage_tickets</code></td><td>Akses sistem tiket dan kebijakan SLA</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Laporan</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Izin</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>view_reports</code></td><td>Akses halaman laporan dan statistik performa</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="buat-role">Cara Membuat Custom Role</h2>
+      <ol class="steps">
+        <li><strong>Buka Role & Akses</strong> — Navigasi ke <strong>Settings → Role & Akses</strong>. Halaman ini hanya tersedia untuk Admin.</li>
+        <li><strong>Klik Buat Role Baru</strong> — Klik tombol <em>"+ Buat Role"</em> di pojok kanan atas.</li>
+        <li><strong>Isi Nama & Deskripsi</strong> — Masukkan nama role (contoh: "CS Senior") dan deskripsi singkat.</li>
+        <li><strong>Pilih Tipe Role</strong> — Pilih <code>agent</code> untuk akses terbatas, atau <code>admin_member</code> untuk akses penuh.</li>
+        <li><strong>Atur Level Akses</strong> — Masukkan angka 1–99. Level ≥10 otomatis menjadi Supervisor.</li>
+        <li><strong>Pilih Warna Badge</strong> — Pilih warna identitas role (biru, hijau, oranye, ungu, merah, dll).</li>
+        <li><strong>Centang Izin</strong> — Pilih izin granular yang berlaku. Tersedia tombol "Pilih Semua" per grup.</li>
+        <li><strong>Simpan</strong> — Klik <em>"Simpan Role"</em>. Role siap digunakan saat menambah anggota tim.</li>
+      </ol>
+
+      <h2 id="assign-role">Menetapkan Custom Role ke Anggota Tim</h2>
+      <p>Saat menambah atau mengedit anggota tim, akan muncul dropdown <em>"Gunakan Role Kustom"</em> di bagian Role & Access Level.</p>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Team & Anggota</strong>.</li>
+        <li>Klik tombol <strong>Add Member</strong> atau ikon Edit pada anggota yang ada.</li>
+        <li>Di bagian <em>"Role & Access Level"</em>, pilih custom role dari dropdown <em>"Gunakan Role Kustom"</em>.</li>
+        <li>Sistem akan otomatis mengisi tipe role, level, dan permission dari template role yang dipilih.</li>
+        <li>Klik <strong>Save</strong>.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Permission Diterapkan Otomatis</strong>
+          <p>Saat anggota tim login setelah diberi custom role, semua permission dari role tersebut langsung aktif di sesi mereka tanpa perlu logout-login ulang secara manual (berlaku pada login berikutnya).</p>
+        </div>
+      </div>
+
+      <h2 id="contoh">Contoh Konfigurasi Role</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nama Role</th><th>Tipe</th><th>Level</th><th>Permission Utama</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>CS Reguler</td>
+              <td><span class="badge badge-green">agent</span></td>
+              <td>1</td>
+              <td>Hanya akses inbox yang di-assign (tidak perlu permission tambahan)</td>
+            </tr>
+            <tr>
+              <td>CS Senior</td>
+              <td><span class="badge badge-green">agent</span></td>
+              <td>5</td>
+              <td><code>view_all_chats</code>, <code>manage_contacts</code></td>
+            </tr>
+            <tr>
+              <td>Team Lead</td>
+              <td><span class="badge badge-blue">agent</span></td>
+              <td>15</td>
+              <td><code>view_all_chats</code>, <code>assign_conversations</code>, <code>view_reports</code>, <code>manage_labels</code></td>
+            </tr>
+            <tr>
+              <td>Marketing</td>
+              <td><span class="badge badge-blue">agent</span></td>
+              <td>10</td>
+              <td><code>manage_broadcast</code>, <code>manage_contacts</code>, <code>export_data</code></td>
+            </tr>
+            <tr>
+              <td>Manajer Operasional</td>
+              <td><span class="badge badge-red">admin_member</span></td>
+              <td>50</td>
+              <td>Akses penuh ke semua fitur</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="page-nav">
+        <a href="team.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Manajemen Tim</div></a>
+        <a href="automation.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Automasi & Customer Service</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#konsep">Konsep Dasar</a>
+      <a href="#tipe-role">Tipe Role</a>
+      <a href="#level">Level Akses</a>
+      <a href="#permissions">Daftar Izin (16)</a>
+      <a href="#buat-role">Cara Membuat Role</a>
+      <a href="#assign-role">Assign ke Anggota</a>
+      <a href="#contoh">Contoh Konfigurasi</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('roles.html');</script>
+</body>
+</html>

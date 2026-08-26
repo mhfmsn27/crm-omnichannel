@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developer & API — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Referensi<span>›</span>Developer &amp; API</div>
+      <h1>🔌 Developer &amp; API</h1>
+      <p class="page-subtitle">Hubungkan CRMHUB dengan sistem eksternal menggunakan Public API — kirim pesan WhatsApp, kelola kontak, dan banyak lagi secara programatik.</p>
+
+      <!-- DEVELOPER APPS -->
+      <h2 id="developer-apps">Developer Apps (Kelola API Key)</h2>
+      <p>Sebelum menggunakan Public API, Anda perlu membuat <strong>Developer App</strong> untuk mendapatkan API Key. API Key digunakan sebagai autentikasi di semua request API.</p>
+
+      <h3>Cara Membuat Developer App</h3>
+      <ol class="steps">
+        <li>Buka menu <strong>Developer</strong> di sidebar (hanya muncul jika diaktifkan oleh Admin).</li>
+        <li>Klik <em>"+ Buat Aplikasi"</em>.</li>
+        <li>Beri nama aplikasi (contoh: "Integrasi Website", "Bot Order").</li>
+        <li>Isi deskripsi singkat kegunaan aplikasi.</li>
+        <li>Klik Buat. API Key akan dibuat otomatis.</li>
+        <li>Salin API Key yang ditampilkan — <strong>simpan di tempat aman</strong>, key hanya ditampilkan sekali.</li>
+      </ol>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Keamanan API Key</strong>
+          <p>Jangan pernah menyimpan API Key di kode yang bisa dilihat publik (repository GitHub, halaman web). Jika key bocor, segera buat key baru dari halaman Developer dengan klik <em>"Regenerate Key"</em>.</p>
+        </div>
+      </div>
+
+      <h3>Memantau Penggunaan API</h3>
+      <p>Di halaman <strong>Developer → Log API</strong>, Anda dapat melihat semua request yang masuk menggunakan API Key Anda — termasuk endpoint yang dipanggil, waktu, status code, dan payload. Berguna untuk debugging integrasi.</p>
+
+      <!-- PUBLIC API -->
+      <h2 id="public-api">Public API CRMHUB</h2>
+      <p>CRMHUB menyediakan REST API untuk integrasi dengan sistem eksternal. Semua endpoint menggunakan format JSON.</p>
+
+      <h3>Autentikasi</h3>
+      <p>Sertakan API Key di setiap request menggunakan header:</p>
+      <pre><code>x-api-key: YOUR_API_KEY_HERE</code></pre>
+
+      <h3>Base URL</h3>
+      <pre><code>https://domain-anda.com/api/public/v1/</code></pre>
+
+      <h3>Endpoint Utama</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Endpoint</th><th>Method</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>/send-message</code></td><td>POST</td><td>Kirim pesan WhatsApp ke nomor tertentu</td></tr>
+            <tr><td><code>/send-image</code></td><td>POST</td><td>Kirim pesan dengan lampiran gambar</td></tr>
+            <tr><td><code>/send-document</code></td><td>POST</td><td>Kirim pesan dengan lampiran dokumen/file</td></tr>
+            <tr><td><code>/contacts</code></td><td>GET</td><td>Ambil daftar kontak</td></tr>
+            <tr><td><code>/contacts</code></td><td>POST</td><td>Tambah kontak baru</td></tr>
+            <tr><td><code>/conversations</code></td><td>GET</td><td>Ambil daftar percakapan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Contoh: Mengirim Pesan WhatsApp</h3>
+      <pre><code>POST /api/public/v1/send-message
+Headers:
+  x-api-key: YOUR_API_KEY
+  Content-Type: application/json
+
+Body:
+{
+  "phone": "628123456789",
+  "message": "Halo! Pesanan Anda sudah dikonfirmasi.",
+  "device_id": "123"
+}</code></pre>
+
+      <h3>Contoh Response Sukses</h3>
+      <pre><code>{
+  "success": true,
+  "message_id": "WA_MSG_XYZ123",
+  "status": "queued"
+}</code></pre>
+
+      <h3>Kode Error Umum</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kode</th><th>Arti</th><th>Solusi</th></tr></thead>
+          <tbody>
+            <tr><td>401</td><td>API Key tidak valid atau tidak disertakan</td><td>Periksa API Key di header x-api-key</td></tr>
+            <tr><td>400</td><td>Request tidak valid (field kurang/salah format)</td><td>Periksa format JSON dan field yang dikirim</td></tr>
+            <tr><td>404</td><td>Resource tidak ditemukan (device_id salah, dll)</td><td>Verifikasi ID yang digunakan sudah benar</td></tr>
+            <tr><td>429</td><td>Rate limit — terlalu banyak request</td><td>Kurangi frekuensi request, tambah jeda</td></tr>
+            <tr><td>500</td><td>Error internal server</td><td>Coba ulang beberapa saat, hubungi support jika berlanjut</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- LEBIH BANYAK ENDPOINT -->
+      <h3>Endpoint Lengkap</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Endpoint</th><th>Method</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>/send-message</code></td><td>POST</td><td>Kirim pesan teks WhatsApp</td></tr>
+            <tr><td><code>/send-image</code></td><td>POST</td><td>Kirim pesan dengan gambar</td></tr>
+            <tr><td><code>/send-document</code></td><td>POST</td><td>Kirim pesan dengan dokumen/file</td></tr>
+            <tr><td><code>/send-video</code></td><td>POST</td><td>Kirim pesan dengan video</td></tr>
+            <tr><td><code>/contacts</code></td><td>GET</td><td>Ambil daftar kontak (mendukung pagination)</td></tr>
+            <tr><td><code>/contacts</code></td><td>POST</td><td>Tambah kontak baru</td></tr>
+            <tr><td><code>/contacts/:id</code></td><td>PUT</td><td>Update data kontak</td></tr>
+            <tr><td><code>/contacts/:id</code></td><td>DELETE</td><td>Hapus kontak</td></tr>
+            <tr><td><code>/conversations</code></td><td>GET</td><td>Ambil daftar percakapan</td></tr>
+            <tr><td><code>/conversations/:id/messages</code></td><td>GET</td><td>Ambil pesan dalam percakapan</td></tr>
+            <tr><td><code>/devices</code></td><td>GET</td><td>Ambil daftar perangkat yang terhubung</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Pagination</h3>
+      <p>Endpoint yang mengembalikan banyak data mendukung pagination dengan parameter query berikut:</p>
+      <pre><code>GET /api/public/v1/contacts?page=1&limit=50
+
+Response:
+{
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": 1200,
+    "total_pages": 24
+  }
+}</code></pre>
+
+      <h3>Filter Kontak</h3>
+      <pre><code>GET /api/public/v1/contacts?search=Budi&label=VIP&page=1&limit=20</code></pre>
+
+      <h2 id="rate-limiting">Rate Limiting</h2>
+      <p>API CRMHUB menerapkan rate limiting untuk menjaga stabilitas server:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Endpoint</th><th>Limit</th><th>Window</th></tr></thead>
+          <tbody>
+            <tr><td>Kirim Pesan (<code>/send-*</code>)</td><td>60 request</td><td>per menit</td></tr>
+            <tr><td>Operasi Kontak (<code>/contacts</code>)</td><td>120 request</td><td>per menit</td></tr>
+            <tr><td>Operasi Percakapan (<code>/conversations</code>)</td><td>60 request</td><td>per menit</td></tr>
+            <tr><td>Semua endpoint lainnya</td><td>300 request</td><td>per menit</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Jika melewati batas, server mengembalikan status <code>429 Too Many Requests</code>. Header <code>Retry-After</code> menunjukkan berapa detik lagi sebelum bisa request kembali.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Best Practice Rate Limiting</strong>
+          <p>Gunakan queue dan delay di aplikasi Anda saat mengirim banyak pesan. Jangan mengirim semua pesan sekaligus — kirim dengan jeda minimal 1 detik per pesan untuk menghindari rate limit dan menjaga nomor WA tetap aman.</p>
+        </div>
+      </div>
+
+      <!-- WEBHOOK OUTBOUND -->
+      <h2 id="webhook-inbound">Webhook Outbound (Menerima Event)</h2>
+      <p>Webhook Outbound memungkinkan CRMHUB mengirimkan notifikasi real-time ke URL endpoint sistem Anda setiap kali terjadi event tertentu.</p>
+
+      <h3>Event yang Tersedia</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Event</th><th>Kapan Dikirim</th></tr></thead>
+          <tbody>
+            <tr><td><code>message.received</code></td><td>Pesan baru masuk dari pelanggan</td></tr>
+            <tr><td><code>message.sent</code></td><td>Pesan berhasil dikirim ke pelanggan</td></tr>
+            <tr><td><code>conversation.created</code></td><td>Percakapan baru dibuat</td></tr>
+            <tr><td><code>conversation.resolved</code></td><td>Percakapan di-resolve</td></tr>
+            <tr><td><code>contact.created</code></td><td>Kontak baru ditambahkan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Contoh Payload Webhook</h3>
+      <pre><code>POST https://your-server.com/webhook
+
+Headers:
+  Content-Type: application/json
+  X-CRMHUB-Signature: sha256=abc123...
+
+Body:
+{
+  "event": "message.received",
+  "timestamp": "2026-06-02T08:30:00Z",
+  "data": {
+    "conversation_id": 456,
+    "contact": {
+      "name": "Budi Santoso",
+      "phone": "6281234567890"
+    },
+    "message": {
+      "type": "text",
+      "content": "Halo, saya mau tanya soal produk"
+    },
+    "channel": "whatsapp",
+    "device_id": 2
+  }
+}</code></pre>
+
+      <h3>Verifikasi Signature Webhook</h3>
+      <p>Setiap webhook request menyertakan header <code>X-CRMHUB-Signature</code> — berisi HMAC SHA-256 dari payload menggunakan Webhook Secret Anda. Selalu verifikasi signature ini untuk memastikan request benar-benar dari CRMHUB.</p>
+      <pre><code>// Contoh verifikasi di Node.js
+const crypto = require('crypto');
+
+function verifyWebhook(payload, signature, secret) {
+  const expected = 'sha256=' + crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  );
+}</code></pre>
+
+      <h3>Konfigurasi Webhook</h3>
+      <p>Konfigurasi webhook di <strong>Settings → Webhook Outbound</strong>. Masukkan URL endpoint Anda, pilih event yang ingin diterima, dan simpan Webhook Secret untuk verifikasi.</p>
+
+      <!-- DOCS REFERENSI -->
+      <h2 id="docs-lengkap">Dokumentasi API Lengkap</h2>
+      <p>Dokumentasi teknis lengkap dengan semua endpoint, parameter, dan contoh kode tersedia di halaman API Docs di dalam aplikasi:</p>
+      <ol class="steps">
+        <li>Buka menu <strong>Developer</strong> di sidebar.</li>
+        <li>Klik tab <em>"API Docs"</em>.</li>
+        <li>Dokumentasi interaktif akan tampil — Anda dapat mencoba endpoint langsung dari browser (Swagger UI).</li>
+      </ol>
+
+      <div class="page-nav">
+        <a href="roles.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Role &amp; Akses</div></a>
+        <a href="security.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Keamanan</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#developer-apps">Developer Apps</a>
+      <a href="#public-api">Public API</a>
+      <a href="#webhook-inbound">Webhook (Terima Event)</a>
+      <a href="#docs-lengkap">Docs Lengkap</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('api.html');</script>
+</body>
+</html>

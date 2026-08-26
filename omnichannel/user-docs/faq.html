@@ -1,0 +1,290 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Referensi<span>›</span>FAQ</div>
+      <h1>❓ Pertanyaan Umum (FAQ)</h1>
+      <p class="page-subtitle">Jawaban atas pertanyaan yang paling sering diajukan tentang CRMHUB.</p>
+
+      <!-- SECTION: UMUM -->
+      <h2 id="umum">Umum</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Berapa banyak nomor WhatsApp yang bisa dihubungkan?</div>
+        <div class="faq-a">
+          <p>Tidak ada batasan tetap — jumlah perangkat yang bisa dihubungkan bergantung pada paket langganan Anda. Setiap perangkat (nomor WA) dihitung sebagai satu "device slot". Upgrade paket untuk menambah lebih banyak slot perangkat.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apakah CRMHUB mendukung WhatsApp resmi (Official API)?</div>
+        <div class="faq-a">
+          <p>Ya. CRMHUB mendukung dua metode koneksi WhatsApp:</p>
+          <ul>
+            <li><strong>QR Scan</strong> — menggunakan nomor WhatsApp biasa, mudah dipasang, cocok untuk pemula</li>
+            <li><strong>WhatsApp Cloud API</strong> — integrasi resmi Meta, lebih stabil, mendukung template terverifikasi dan centang hijau</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apakah bisa digunakan sebagai platform SaaS / white label?</div>
+        <div class="faq-a">
+          <p>Ya. CRMHUB dirancang untuk dapat digunakan sebagai SaaS — Anda dapat menjualnya kembali ke klien dengan nama dan branding sendiri. Nama aplikasi, logo, dan domain dapat dikustomisasi.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Data chat disimpan sampai kapan?</div>
+        <div class="faq-a">
+          <p>Selama langganan aktif, semua data chat tersimpan. Jika langganan berakhir, data masih disimpan selama masa tenggang (grace period). Setelah masa tenggang habis, data bisa dihapus. Disarankan untuk melakukan export data secara berkala sebagai backup.</p>
+        </div>
+      </div>
+
+      <!-- SECTION: BROADCAST -->
+      <h2 id="broadcast">Broadcast</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Apakah broadcast bisa dijadwalkan?</div>
+        <div class="faq-a">
+          <p>Ya. Saat membuat campaign broadcast, Anda dapat memilih "Jadwalkan" dan menentukan tanggal serta jam pengiriman. Campaign akan otomatis dikirim pada waktu yang ditentukan.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Berapa batas ukuran file untuk lampiran broadcast?</div>
+        <div class="faq-a">
+          <ul>
+            <li>Gambar (JPG, PNG): maks. <strong>5 MB</strong></li>
+            <li>Video (MP4): maks. <strong>16 MB</strong></li>
+            <li>Dokumen/PDF: maks. <strong>100 MB</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa itu Rotator Perangkat dan kapan perlu digunakan?</div>
+        <div class="faq-a">
+          <p>Rotator Perangkat adalah grup dari beberapa nomor WhatsApp yang bekerja bergantian mengirim pesan broadcast. Gunakan rotator saat:</p>
+          <ul>
+            <li>Volume broadcast sangat besar (ribuan pesan per hari)</li>
+            <li>Ingin mengurangi risiko satu nomor terblokir</li>
+            <li>Ingin mempercepat proses pengiriman</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Format nomor telepon yang benar untuk import kontak?</div>
+        <div class="faq-a">
+          <p>Gunakan format internasional <strong>tanpa tanda +</strong> dan tanpa spasi atau tanda hubung.</p>
+          <ul>
+            <li>✅ Benar: <code>628123456789</code></li>
+            <li>❌ Salah: <code>08123456789</code></li>
+            <li>❌ Salah: <code>+628123456789</code></li>
+            <li>❌ Salah: <code>62 812-3456-789</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SECTION: CHATBOT -->
+      <h2 id="chatbot">Chatbot &amp; Otomasi</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa perbedaan Knowledge Base dan Flow Builder?</div>
+        <div class="faq-a">
+          <p><strong>Knowledge Base</strong>: Bot menjawab pertanyaan secara bebas berdasarkan kumpulan Q&amp;A dan dokumen yang Anda unggah. Cocok untuk FAQ dan pertanyaan tidak berstruktur.</p>
+          <p><strong>Flow Builder</strong>: Bot mengikuti alur percakapan yang sudah Anda rancang — ada pilihan tombol, percabangan kondisi, dan langkah-langkah yang terstruktur. Cocok untuk proses seperti pemesanan, registrasi, atau survey.</p>
+          <p>Keduanya bisa digunakan bersamaan dalam satu bot.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apakah bot bisa meneruskan chat ke agent manusia?</div>
+        <div class="faq-a">
+          <p>Ya. Anda bisa menambahkan node "Assign ke Agent" di Flow Builder untuk mengalihkan percakapan ke agent manusia kapan pun diperlukan — misalnya saat pelanggan meminta berbicara dengan CS, atau saat bot tidak bisa menjawab pertanyaan.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apakah bot bisa aktif hanya di luar jam kerja?</div>
+        <div class="faq-a">
+          <p>Ya. Di pengaturan Bot, Anda dapat memilih kondisi aktif: "Selalu aktif", "Hanya di luar jam operasional", atau jadwal hari/jam tertentu. Kombinasikan dengan pengaturan Jam Operasional di Settings untuk hasil terbaik.</p>
+        </div>
+      </div>
+
+      <!-- SECTION: TIM & AKSES -->
+      <h2 id="tim">Tim &amp; Akses</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa perbedaan Staff, Supervisor, dan Admin?</div>
+        <div class="faq-a">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Peran</th><th>Akses Utama</th></tr></thead>
+              <tbody>
+                <tr><td>Staff (Level 1–9)</td><td>Hanya melihat dan membalas chat yang di-assign ke mereka</td></tr>
+                <tr><td>Supervisor (Level ≥10)</td><td>Bisa lihat semua chat + fitur tambahan sesuai permission yang diberikan Admin</td></tr>
+                <tr><td>Admin</td><td>Akses penuh ke semua fitur termasuk Settings, Billing, dan Team</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa itu Custom Role?</div>
+        <div class="faq-a">
+          <p>Custom Role memungkinkan Admin membuat peran tim dengan nama dan izin yang dikustomisasi sendiri — tidak terbatas pada Staff/Supervisor/Admin bawaan. Misalnya: "CS Marketing" dengan akses ke Broadcast dan Kontak, atau "Team Lead" dengan akses ke Laporan dan Assignment.</p>
+          <p>Pelajari lebih lanjut di <a href="roles.html">halaman Role &amp; Akses</a>.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Berapa banyak agent yang bisa ditambahkan?</div>
+        <div class="faq-a">
+          <p>Jumlah agent bergantung pada paket langganan. Informasi penggunaan seat saat ini terlihat di halaman <strong>Settings → Team &amp; Anggota</strong> (contoh: "3/10 Seats Terpakai").</p>
+        </div>
+      </div>
+
+      <!-- SECTION: INTEGRASI -->
+      <h2 id="integrasi">Integrasi</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Platform e-commerce apa yang didukung?</div>
+        <div class="faq-a">
+          <p>CRMHUB mendukung: Shopify, WooCommerce, Tokopedia, dan Lazada. Anda dapat melihat status order dan produk langsung dari inbox. Pelajari di <a href="settings.html#ecommerce">Pengaturan E-Commerce</a>.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Bisakah CRMHUB terhubung ke aplikasi lain seperti Google Sheets atau CRM eksternal?</div>
+        <div class="faq-a">
+          <p>Ya, ada dua cara:</p>
+          <ul>
+            <li><strong>Zapier</strong>: Hubungkan CRMHUB ke 5.000+ aplikasi tanpa coding. Pelajari di <a href="integrations.html#zapier">Integrasi Zapier</a>.</li>
+            <li><strong>Webhook Outbound</strong>: Kirim event CRMHUB ke URL endpoint sistem Anda. Pelajari di <a href="settings.html#webhook">Webhook Outbound</a>.</li>
+            <li><strong>Public API</strong>: Buat integrasi custom menggunakan REST API. Pelajari di <a href="api.html">halaman Developer &amp; API</a>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa itu Telegram Bot dan bagaimana cara menghubungkannya?</div>
+        <div class="faq-a">
+          <p>Telegram Bot adalah akun bot di Telegram yang dapat menerima dan membalas pesan. Untuk menghubungkannya ke CRMHUB, Anda perlu membuat bot di <strong>@BotFather</strong> di Telegram, lalu salin Bot Token-nya ke CRMHUB di menu <strong>Integrations → Telegram</strong>. Lihat panduan lengkap di <a href="integrations.html#telegram">Integrasi Telegram</a>.</p>
+        </div>
+      </div>
+
+      <!-- SECTION: INBOX & CHAT -->
+      <h2 id="inbox">Inbox &amp; Chat</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa itu tab "Saya" di Inbox?</div>
+        <div class="faq-a">
+          <p>Tab "Saya" menampilkan percakapan yang secara khusus di-assign ke akun Anda. Ini adalah tampilan yang disarankan agar setiap agent fokus pada percakapan yang menjadi tanggung jawabnya tanpa terganggu oleh chat orang lain.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Bagaimana cara me-resolve percakapan?</div>
+        <div class="faq-a">
+          <p>Buka percakapan yang sudah selesai, lalu klik tombol <strong>✓ Selesaikan</strong> di bagian atas area chat. Percakapan akan dipindahkan ke tab "Diselesaikan". Untuk membuka kembali, klik tab Diselesaikan, pilih percakapan, lalu klik "Buka Kembali".</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa bedanya "Resolve" dan "Arsip"?</div>
+        <div class="faq-a">
+          <ul>
+            <li><strong>Resolve</strong> — menandai percakapan sebagai selesai. Masuk ke tab "Diselesaikan". Cocok untuk percakapan yang sudah tuntas ditangani.</li>
+            <li><strong>Arsip</strong> — menyembunyikan percakapan dari inbox aktif tanpa menandainya selesai. Masuk ke tab "Terarsip". Cocok untuk percakapan yang tidak perlu ditindaklanjuti tapi belum tentu selesai.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Bisakah satu percakapan ditangani oleh beberapa agent sekaligus?</div>
+        <div class="faq-a">
+          <p>Dalam satu percakapan hanya bisa ada satu agent yang di-assign sebagai penanggung jawab. Namun supervisor atau admin bisa melihat dan ikut membalas percakapan mana pun. Untuk kolaborasi, gunakan fitur <strong>Catatan Agent</strong> (internal note) untuk berbagi konteks tanpa pelanggan melihatnya.</p>
+        </div>
+      </div>
+
+      <!-- SECTION: TASKS & TICKETS -->
+      <h2 id="tasks-tickets">Tasks &amp; Tiket</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa perbedaan Tugas (Tasks) dan Tiket (Tickets)?</div>
+        <div class="faq-a">
+          <ul>
+            <li><strong>Tugas (Tasks)</strong> — pekerjaan internal tim yang perlu diselesaikan, bisa tidak berkaitan langsung dengan percakapan pelanggan. Contoh: "Buat laporan mingguan", "Update database kontak".</li>
+            <li><strong>Tiket (Tickets)</strong> — kasus layanan pelanggan yang perlu dilacak dari awal sampai selesai, dilengkapi SLA tracking dan eskalasi. Contoh: keluhan, laporan bug, permintaan khusus dari pelanggan.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apakah tiket bisa dibuat otomatis dari percakapan masuk?</div>
+        <div class="faq-a">
+          <p>Ya. Fitur ini bisa diaktifkan di <strong>Settings → Inbox Settings</strong>. Saat ada percakapan masuk dari channel atau dengan kata kunci tertentu, sistem akan otomatis membuat tiket dan memantau SLA-nya.</p>
+        </div>
+      </div>
+
+      <!-- SECTION: INVOICE & TOOLS -->
+      <h2 id="fitur-lain">Invoice &amp; Tools</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">Apakah bisa mengirim invoice langsung via WhatsApp?</div>
+        <div class="faq-a">
+          <p>Ya. Setelah membuat invoice di menu <strong>Invoicing</strong>, klik tombol "Kirim via WhatsApp" — sistem akan membuka percakapan dengan pelanggan dan mengirimkan link invoice beserta ringkasan tagihan secara otomatis.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Untuk apa Number Checker digunakan?</div>
+        <div class="faq-a">
+          <p>Number Checker digunakan untuk memvalidasi apakah nomor telepon dalam daftar Anda terdaftar di WhatsApp. Sangat berguna sebelum mengirim broadcast — sehingga Anda tidak membuang kuota mengirim ke nomor yang tidak aktif di WhatsApp.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Apa itu WA Warmer?</div>
+        <div class="faq-a">
+          <p>WA Warmer adalah alat untuk "memanaskan" nomor WhatsApp baru agar terlihat aktif dan natural sebelum digunakan untuk broadcast massal. Warmer mensimulasikan aktivitas percakapan normal secara otomatis selama 7–14 hari pada nomor baru, sehingga mengurangi risiko pemblokiran oleh WhatsApp.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="troubleshooting.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Pemecahan Masalah</div></a>
+        <a href="changelog.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Catatan Perubahan</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#umum">Umum</a>
+      <a href="#broadcast">Broadcast</a>
+      <a href="#chatbot">Chatbot &amp; Otomasi</a>
+      <a href="#tim">Tim &amp; Akses</a>
+      <a href="#integrasi">Integrasi</a>
+      <a href="#fitur-lain">Invoice &amp; Tools</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('faq.html');</script>
+</body>
+</html>

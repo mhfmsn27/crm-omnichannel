@@ -1,0 +1,48 @@
+{
+  "name": "reply-saas-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
+    "axios": "^1.6.2",
+    "date-fns": "^2.30.0",
+    "emoji-picker-react": "^4.16.1",
+    "framer-motion": "^10.16.4",
+    "linkify-react": "^4.3.2",
+    "linkifyjs": "^4.3.2",
+    "lucide-react": "^0.294.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "react-qr-code": "^2.0.12",
+    "react-quill": "^2.0.0",
+    "react-router-dom": "^6.20.0",
+    "react-virtualized-auto-sizer": "^2.0.3",
+    "react-virtuoso": "^4.18.10",
+    "react-window": "^2.2.7",
+    "reactflow": "^11.11.4",
+    "recharts": "^2.10.3",
+    "socket.io-client": "^4.7.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.53.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.4",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "vite": "^5.0.0"
+  }
+}

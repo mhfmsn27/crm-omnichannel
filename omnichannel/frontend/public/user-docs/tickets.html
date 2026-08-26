@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Tiket — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Manajemen<span>›</span>Sistem Tiket</div>
+      <h1>🎫 Sistem Tiket</h1>
+      <p class="page-subtitle">Kelola laporan, keluhan, dan permintaan pelanggan secara terstruktur dengan sistem tiket terintegrasi — lengkap dengan SLA, prioritas, dan pelacakan status.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Beda Tiket vs Percakapan</strong>
+          <p>Percakapan (Inbox) adalah komunikasi real-time dengan pelanggan. Tiket adalah <strong>kasus layanan</strong> yang perlu ditangani dan dilacak hingga tuntas, biasanya mencakup keluhan, bug, atau permintaan khusus yang butuh eskalasi.</p>
+        </div>
+      </div>
+
+      <h2 id="gambaran">Gambaran Fitur</h2>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">🎫</span><div><h4>Manajemen Tiket</h4><p>Buat dan kelola tiket dari berbagai channel dalam satu dashboard.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">⏱️</span><div><h4>SLA Tracking</h4><p>Pantau batas waktu penanganan tiket agar tidak breach SLA.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🚨</span><div><h4>Prioritas & Eskalasi</h4><p>4 level prioritas dengan indikator visual yang jelas.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">📊</span><div><h4>Statistik Tiket</h4><p>Ringkasan open, resolved, breached, dan overdue tiket.</p></div></div>
+      </div>
+
+      <h2 id="status-prioritas">Status & Prioritas Tiket</h2>
+
+      <h3>Status Tiket</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-blue">Open</span></td><td>Tiket baru, belum ditangani</td></tr>
+            <tr><td><span class="badge badge-green">Resolved</span></td><td>Masalah sudah diselesaikan</td></tr>
+            <tr><td><span class="badge">Closed</span></td><td>Tiket ditutup (bisa resolved atau tidak dilanjutkan)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Level Prioritas</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Prioritas</th><th>Arti & Penggunaan</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-red">Urgent</span></td><td>Masalah kritis yang mempengaruhi banyak pelanggan atau sistem utama down</td></tr>
+            <tr><td><span class="badge badge-yellow">High</span></td><td>Masalah penting yang perlu diselesaikan segera (dalam hari ini)</td></tr>
+            <tr><td><span class="badge badge-yellow">Medium</span></td><td>Masalah normal yang perlu diselesaikan dalam beberapa hari</td></tr>
+            <tr><td><span class="badge">Low</span></td><td>Pertanyaan atau permintaan non-mendesak</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="sla">SLA (Service Level Agreement)</h2>
+      <p>SLA adalah batas waktu penanganan tiket yang sudah disepakati. CRMHUB memantau SLA setiap tiket secara otomatis.</p>
+
+      <h3>Indikator SLA</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Indikator</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-green">✓ Dalam SLA</span></td><td>Tiket masih dalam batas waktu, tampil waktu tersisa (contoh: 4h 30m)</td></tr>
+            <tr><td><span class="badge badge-yellow">⚠ Hampir Habis</span></td><td>Sisa waktu kurang dari 30 menit — segera tangani!</td></tr>
+            <tr><td><span class="badge badge-red">✗ Breached</span></td><td>Tiket melewati batas waktu SLA</td></tr>
+            <tr><td>No SLA</td><td>Tidak ada SLA yang dikonfigurasi untuk tiket ini</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Konfigurasi SLA</strong>
+          <p>Atur batas waktu SLA berdasarkan prioritas di <strong>Settings → SLA Policies</strong>. Contoh: Urgent = 1 jam, High = 4 jam, Medium = 24 jam, Low = 72 jam.</p>
+        </div>
+      </div>
+
+      <h2 id="membuat-tiket">Membuat Tiket</h2>
+
+      <h3>Cara 1: Dari Halaman Tiket</h3>
+      <ol class="steps">
+        <li>Buka menu <strong>Tickets</strong> di sidebar navigasi.</li>
+        <li>Klik tombol <strong>+ Buat Tiket</strong> di pojok kanan atas.</li>
+        <li>Isi judul tiket, deskripsi masalah, dan pilih channel asal.</li>
+        <li>Pilih prioritas (Urgent/High/Medium/Low).</li>
+        <li>Tugaskan ke agent yang bertanggung jawab.</li>
+        <li>Klik <strong>Simpan</strong>.</li>
+      </ol>
+
+      <h3>Cara 2: Dari Percakapan Inbox (Otomatis)</h3>
+      <p>Tiket dapat dibuat otomatis dari percakapan di Inbox. Fitur ini diaktifkan melalui <strong>Settings → Inbox Settings</strong>. Saat percakapan masuk dengan kata kunci tertentu atau dari channel tertentu, sistem akan otomatis membuat tiket.</p>
+
+      <h2 id="statistik">Statistik Tiket</h2>
+      <p>Di bagian atas halaman Tickets terdapat 4 kartu statistik:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kartu</th><th>Informasi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Open</strong></td><td>Total tiket yang belum diselesaikan</td></tr>
+            <tr><td><strong>Resolved</strong></td><td>Total tiket yang sudah diselesaikan</td></tr>
+            <tr><td><strong>Breached</strong></td><td>Tiket yang melewati batas SLA</td></tr>
+            <tr><td><strong>Overdue</strong></td><td>Tiket terlambat penanganan</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Klik salah satu kartu untuk langsung memfilter daftar tiket sesuai kategorinya.</p>
+
+      <h2 id="filter-pencarian">Filter & Pencarian Tiket</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Filter</th><th>Cara Penggunaan</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Pencarian</strong></td><td>Ketik kata kunci di kolom search (ID tiket, nama kontak, dll)</td></tr>
+            <tr><td><strong>Status</strong></td><td>Pilih All / Open / Resolved / Closed dari dropdown</td></tr>
+            <tr><td><strong>Prioritas</strong></td><td>Filter berdasarkan Urgent / High / Medium / Low</td></tr>
+            <tr><td><strong>Channel</strong></td><td>Filter berdasarkan WhatsApp / Instagram / Messenger / dll</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="resolve-tiket">Menyelesaikan Tiket</h2>
+      <ol class="steps">
+        <li>Buka tiket yang sudah ditangani dari daftar.</li>
+        <li>Klik tombol <strong>Tandai Resolved</strong> atau ubah status ke <strong>Resolved</strong> dari dropdown.</li>
+        <li>Tambahkan catatan penyelesaian jika diperlukan (opsional).</li>
+        <li>Tiket akan berpindah ke tab Resolved dan SLA tracking berhenti.</li>
+      </ol>
+
+      <div class="callout callout-success">
+        <span class="callout-icon">✨</span>
+        <div class="callout-content">
+          <strong>Integrasi dengan Laporan</strong>
+          <p>Data tiket tersedia di menu <strong>Laporan & Analitik</strong> untuk menganalisis tren masalah, performa agent dalam menangani tiket, dan tingkat kepatuhan SLA tim Anda.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="tasks.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Manajemen Tugas</div></a>
+        <a href="pipeline.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Pipeline CRM</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#gambaran">Gambaran Fitur</a>
+      <a href="#status-prioritas">Status & Prioritas</a>
+      <a href="#sla">SLA Tracking</a>
+      <a href="#membuat-tiket">Membuat Tiket</a>
+      <a href="#statistik">Statistik</a>
+      <a href="#filter-pencarian">Filter & Pencarian</a>
+      <a href="#resolve-tiket">Menyelesaikan Tiket</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('tickets.html');</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+# ==========================================
+# WA-SERVER REPOSITORY .GITIGNORE
+# ==========================================
+
+# 1. Dependencies
+node_modules/
+wa-gateway/wa-gateway-backend/node_modules/
+wa-gateway/wa-admin-frontend/node_modules/
+
+# 2. Build Outputs
+dist/
+wa-gateway/wa-gateway-backend/dist/
+wa-gateway/wa-admin-frontend/dist/
+
+# 3. Environment Secrets (CRITICAL)
+.env
+.env.*
+!.env.example
+*.local
+*.key
+*.pem
+
+# 4. WhatsApp Sessions & Logs
+sessions/
+wa-gateway/wa-gateway-backend/sessions/
+auth_info_baileys/
+.wwebjs_auth/
+logs/
+*.log
+
+# 5. OS & IDE Metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

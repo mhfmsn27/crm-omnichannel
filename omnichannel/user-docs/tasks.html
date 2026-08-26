@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manajemen Tugas — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Manajemen<span>›</span>Manajemen Tugas</div>
+      <h1>✅ Manajemen Tugas</h1>
+      <p class="page-subtitle">Buat, delegasikan, dan pantau tugas-tugas tim Anda langsung dari CRMHUB — tanpa perlu aplikasi task manager terpisah.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Integrasi dengan Inbox</strong>
+          <p>Tugas bisa dibuat langsung dari percakapan di Inbox, sehingga tidak ada tindak lanjut yang terlewat dari chat pelanggan.</p>
+        </div>
+      </div>
+
+      <h2 id="gambaran">Gambaran Fitur</h2>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">📋</span><div><h4>Daftar Tugas</h4><p>Semua tugas tim dalam satu tampilan dengan filter status dan prioritas.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">👤</span><div><h4>Delegasi ke Anggota</h4><p>Tugaskan ke anggota tim tertentu dengan notifikasi otomatis.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">⏰</span><div><h4>Tenggat Waktu</h4><p>Tetapkan due date dan pantau tugas yang sudah jatuh tempo.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🚨</span><div><h4>Prioritas</h4><p>4 level prioritas: Rendah, Normal, Tinggi, dan Urgent.</p></div></div>
+      </div>
+
+      <h2 id="status-prioritas">Status & Prioritas</h2>
+
+      <h3>Status Tugas</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-blue">Open</span></td><td>Tugas baru dibuat, belum dikerjakan</td></tr>
+            <tr><td><span class="badge badge-yellow">Dalam Proses</span></td><td>Sedang dikerjakan oleh anggota tim</td></tr>
+            <tr><td><span class="badge badge-green">Selesai</span></td><td>Tugas telah diselesaikan</td></tr>
+            <tr><td><span class="badge">Dibatalkan</span></td><td>Tugas dibatalkan dan tidak dikerjakan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Level Prioritas</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Prioritas</th><th>Kapan Digunakan</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge">Rendah</span></td><td>Tugas tidak mendesak, bisa dikerjakan kapan saja</td></tr>
+            <tr><td><span class="badge badge-blue">Normal</span></td><td>Tugas rutin dengan tenggat normal</td></tr>
+            <tr><td><span class="badge badge-yellow">Tinggi</span></td><td>Tugas penting yang perlu dikerjakan segera</td></tr>
+            <tr><td><span class="badge badge-red">Urgent</span></td><td>Tugas kritis yang harus dikerjakan hari ini</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="membuat-tugas">Membuat Tugas Baru</h2>
+      <ol class="steps">
+        <li><strong>Buka menu Tasks</strong> — Klik <strong>Tasks</strong> di sidebar navigasi kiri.</li>
+        <li><strong>Klik + Buat Tugas</strong> — Tombol di pojok kanan atas halaman.</li>
+        <li><strong>Isi Judul Tugas</strong> — Judul singkat yang mendeskripsikan apa yang harus dilakukan.</li>
+        <li><strong>Tambah Deskripsi</strong> — Detail tugas, instruksi, atau konteks yang diperlukan.</li>
+        <li><strong>Pilih Prioritas</strong> — Rendah / Normal / Tinggi / Urgent.</li>
+        <li><strong>Tetapkan Tenggat Waktu</strong> — Pilih tanggal due date dari kalender.</li>
+        <li><strong>Tugaskan ke Anggota</strong> — Pilih anggota tim yang bertanggung jawab. Bisa lebih dari satu.</li>
+        <li><strong>Klik Simpan</strong> — Tugas dibuat dan anggota yang ditugaskan mendapat notifikasi.</li>
+      </ol>
+
+      <h2 id="kelola-tugas">Mengelola Tugas</h2>
+
+      <h3>Mengubah Status Tugas</h3>
+      <p>Klik ikon status (lingkaran) di sebelah kiri judul tugas untuk mengubah statusnya langsung dari daftar. Atau buka detail tugas dan pilih status baru dari dropdown.</p>
+
+      <h3>Mengedit Tugas</h3>
+      <p>Klik ikon pensil (✏️) pada baris tugas untuk mengedit judul, deskripsi, prioritas, tenggat, atau penugasan.</p>
+
+      <h3>Menghapus Tugas</h3>
+      <p>Klik ikon tempat sampah (🗑️) pada baris tugas. Konfirmasi di dialog yang muncul. Penghapusan bersifat permanen.</p>
+
+      <h2 id="filter-pencarian">Filter & Pencarian</h2>
+      <p>Di halaman Tasks tersedia beberapa cara untuk menemukan tugas:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Filter</th><th>Cara Penggunaan</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Pencarian</strong></td><td>Ketik kata kunci di kolom search untuk mencari berdasarkan judul</td></tr>
+            <tr><td><strong>Filter Status</strong></td><td>Klik tab All / Open / Dalam Proses / Selesai / Dibatalkan</td></tr>
+            <tr><td><strong>Filter Prioritas</strong></td><td>Gunakan dropdown prioritas untuk tampilkan tugas prioritas tertentu</td></tr>
+            <tr><td><strong>Tugas Saya</strong></td><td>Tampilkan hanya tugas yang di-assign ke akun Anda</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="tugas-terlambat">Tugas Terlambat (Overdue)</h2>
+      <p>Tugas yang melewati tenggat waktu akan otomatis ditandai dengan label merah <span class="badge badge-red">Terlambat</span>. Anda bisa melihat semua tugas terlambat dengan mengaktifkan filter overdue di bagian atas daftar.</p>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Pantau Tugas Overdue</strong>
+          <p>Supervisor disarankan memeriksa tugas terlambat setiap hari dan segera memprioritaskan ulang atau mendelegasikan ke anggota lain.</p>
+        </div>
+      </div>
+
+      <h2 id="tips">Tips Manajemen Tugas yang Efektif</h2>
+      <div class="callout callout-success">
+        <span class="callout-icon">🚀</span>
+        <div class="callout-content">
+          <strong>Praktik Terbaik</strong>
+          <ul style="margin-top: 8px; padding-left: 20px; line-height: 2;">
+            <li>Buat tugas langsung dari Inbox saat ada janji tindak lanjut ke pelanggan agar tidak terlupa.</li>
+            <li>Gunakan prioritas Urgent hanya untuk tugas yang benar-benar mendesak — jangan semua di-set urgent.</li>
+            <li>Update status tugas secara rutin agar tim dan supervisor tahu perkembangan pekerjaan.</li>
+            <li>Tambahkan deskripsi yang jelas agar anggota yang ditugaskan mengerti tanpa perlu bertanya.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="pipeline.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Pipeline CRM</div></a>
+        <a href="tickets.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Sistem Tiket</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#gambaran">Gambaran Fitur</a>
+      <a href="#status-prioritas">Status & Prioritas</a>
+      <a href="#membuat-tugas">Membuat Tugas Baru</a>
+      <a href="#kelola-tugas">Mengelola Tugas</a>
+      <a href="#filter-pencarian">Filter & Pencarian</a>
+      <a href="#tugas-terlambat">Tugas Terlambat</a>
+      <a href="#tips">Tips</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('tasks.html');</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catatan Perubahan — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.version-block { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; overflow: hidden; }
+.version-header { background: var(--bg-sidebar); padding: 16px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+.version-number { font-size: 18px; font-weight: 800; }
+.version-date { color: var(--text-muted); font-size: 13px; }
+.version-body { padding: 16px 20px; }
+.change-list { list-style: none; }
+.change-list li { padding: 6px 0; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+.change-type { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; margin-top: 1px; }
+.new { background: #dcfce7; color: #166534; }
+.fix { background: #fef3c7; color: #92400e; }
+.improve { background: #dbeafe; color: #1e40af; }
+.change-group { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding: 12px 0 4px; }
+</style>
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Referensi<span>›</span>Catatan Perubahan</div>
+      <h1>📋 Catatan Perubahan</h1>
+      <p class="page-subtitle">Riwayat semua pembaruan, perbaikan, dan fitur baru CRMHUB.</p>
+
+      <!-- v2.0 -->
+      <div class="version-block">
+        <div class="version-header">
+          <span class="version-number">v2.0</span>
+          <span class="badge badge-green">Rilis Terbaru</span>
+          <span class="version-date" style="margin-left:auto">Update Major — 2025</span>
+        </div>
+        <div class="version-body">
+
+          <p class="change-group">Manajemen Tim &amp; Akses</p>
+          <ul class="change-list">
+            <li><span class="change-type new">BARU</span>Sistem Custom Role — buat peran tim dengan nama, tipe, level, dan izin yang sepenuhnya dapat dikustomisasi</li>
+            <li><span class="change-type new">BARU</span>16 Izin Granular — kontrol akses per fitur: inbox, kontak, broadcast, chatbot, pipeline, invoice, produk, tools, follow-up, tasks, tiket, dan laporan</li>
+            <li><span class="change-type new">BARU</span>Level Akses 1–99 — hierarki jabatan yang fleksibel di dalam tipe agent (Staff level 1–9, Supervisor level ≥10)</li>
+            <li><span class="change-type new">BARU</span>Divisi Tim — Supervisor membuat divisi, Staff bergabung ke divisi, membangun struktur organisasi yang jelas</li>
+            <li><span class="change-type new">BARU</span>Akses Perangkat per Agent — Supervisor dapat dibatasi hanya mengakses channel/perangkat tertentu</li>
+            <li><span class="change-type improve">IMPROVED</span>Sidebar navigasi agent — menu muncul/sembuny sesuai izin granular yang dimiliki (Pipeline, Tools, Produk, dll)</li>
+          </ul>
+
+          <p class="change-group">Automasi</p>
+          <ul class="change-list">
+            <li><span class="change-type new">BARU</span>Auto Reply — balas pesan otomatis berdasarkan kata kunci, kondisi, atau jam di luar operasional</li>
+            <li><span class="change-type new">BARU</span>Auto Label — labeli percakapan masuk secara otomatis berdasarkan aturan konten atau sumber channel</li>
+            <li><span class="change-type new">BARU</span>Auto Archive — arsipkan percakapan tidak aktif secara otomatis setelah periode yang ditentukan</li>
+          </ul>
+
+          <p class="change-group">Customer Service</p>
+          <ul class="change-list">
+            <li><span class="change-type new">BARU</span>Auto Assignment — distribusi percakapan otomatis ke agent via Round Robin atau Load Balancing</li>
+            <li><span class="change-type new">BARU</span>Jam Operasional — atur jadwal hari/jam bisnis beroperasi per zona waktu</li>
+            <li><span class="change-type new">BARU</span>Kebijakan SLA — standar First Response Time dan Resolution Time dengan notifikasi peringatan</li>
+          </ul>
+
+          <p class="change-group">AI &amp; Bahasa</p>
+          <ul class="change-list">
+            <li><span class="change-type new">BARU</span>Multi-Language AI — deteksi bahasa otomatis dan respons chatbot dalam berbagai bahasa (Indonesia, Inggris, Mandarin, Arab, dll)</li>
+          </ul>
+
+          <p class="change-group">Integrasi</p>
+          <ul class="change-list">
+            <li><span class="change-type new">BARU</span>E-Commerce Integration — hubungkan Shopify, WooCommerce, Tokopedia, Lazada untuk akses produk dan pesanan dari inbox</li>
+            <li><span class="change-type new">BARU</span>Ongkir &amp; Shipping — cek ongkos kirim langsung dari chat via integrasi RajaOngkir</li>
+            <li><span class="change-type new">BARU</span>Webhook Outbound — kirim event CRMHUB ke sistem eksternal (CRM, ERP, Zapier) secara real-time</li>
+            <li><span class="change-type new">BARU</span>Email Channel — sambungkan Gmail/Outlook/SMTP sebagai channel baru di inbox</li>
+          </ul>
+
+          <p class="change-group">Workspace &amp; Admin</p>
+          <ul class="change-list">
+            <li><span class="change-type new">BARU</span>Lisensi Domain — halaman manajemen validasi lisensi domain per instalasi</li>
+            <li><span class="change-type improve">IMPROVED</span>Halaman Settings — sub-menu terstruktur: Workspace, Automasi, Customer Service, AI &amp; Bahasa, Integrasi</li>
+            <li><span class="change-type improve">IMPROVED</span>Account &amp; Profil — pindah ke URL <code>/account/profile</code>, terpisah dari Settings workspace</li>
+            <li><span class="change-type improve">IMPROVED</span>Settings default — mengarah ke Team &amp; Anggota sebagai halaman utama</li>
+          </ul>
+
+          <p class="change-group">Tampilan &amp; UI</p>
+          <ul class="change-list">
+            <li><span class="change-type improve">IMPROVED</span>Seluruh gradasi warna dihilangkan — UI kini menggunakan warna solid flat untuk tampilan yang lebih bersih dan modern</li>
+            <li><span class="change-type improve">IMPROVED</span>Warna hijau distandarisasi ke WhatsApp Green (<code>#25D366</code>) di seluruh komponen</li>
+            <li><span class="change-type fix">FIX</span>Berbagai perbaikan bug pada sistem autentikasi, JWT payload, dan sinkronisasi data akun</li>
+          </ul>
+
+        </div>
+      </div>
+
+      <!-- v1.0 -->
+      <div class="version-block">
+        <div class="version-header">
+          <span class="version-number">v1.0</span>
+          <span class="version-date" style="margin-left:auto">Rilis Perdana</span>
+        </div>
+        <div class="version-body">
+          <ul class="change-list">
+            <li><span class="change-type new">BARU</span>Peluncuran platform CRMHUB versi perdana</li>
+            <li><span class="change-type new">BARU</span>Sistem broadcast massal dengan dukungan rotator perangkat</li>
+            <li><span class="change-type new">BARU</span>Chatbot otomasi berbasis Global Knowledge Base dan AI</li>
+            <li><span class="change-type new">BARU</span>Integrasi WhatsApp via QR Scan dan WhatsApp Cloud API</li>
+            <li><span class="change-type new">BARU</span>Integrasi multi-platform: Messenger, Instagram, Telegram, Webchat</li>
+            <li><span class="change-type new">BARU</span>Dashboard analitik real-time dengan export data</li>
+            <li><span class="change-type new">BARU</span>Sistem billing dan langganan terintegrasi</li>
+            <li><span class="change-type new">BARU</span>Manajemen tim dengan kontrol peran granular</li>
+            <li><span class="change-type new">BARU</span>Pipeline visual untuk manajemen alur penjualan</li>
+            <li><span class="change-type new">BARU</span>Manajemen kontak dengan import CSV dan label</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">📬</span>
+        <div class="callout-content">
+          <strong>Pembaruan Mendatang</strong>
+          <p>Tim CRMHUB secara aktif mengembangkan fitur-fitur baru. Pantau halaman ini untuk informasi pembaruan terkini. Anda juga dapat memberikan masukan dan permintaan fitur melalui tim support kami.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="faq.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">FAQ</div></a>
+        <span></span>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Versi</div>
+      <a href="#">v2.0 — Update Major</a>
+      <a href="#">v1.0 — Rilis Perdana</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('changelog.html');</script>
+</body>
+</html>

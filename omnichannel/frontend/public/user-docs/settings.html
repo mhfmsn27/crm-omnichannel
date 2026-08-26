@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengaturan — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Laporan &amp; Pengaturan<span>›</span>Pengaturan</div>
+      <h1>⚙️ Pengaturan</h1>
+      <p class="page-subtitle">Kelola seluruh konfigurasi workspace, automasi, customer service, integrasi, dan akun CRMHUB Anda.</p>
+
+      <p>Halaman Settings dapat diakses melalui menu sidebar atau dropdown di header aplikasi. Sebagian besar pengaturan hanya dapat diakses oleh <strong>Admin</strong> atau pengguna dengan izin yang sesuai.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Navigasi Sub-Menu Settings</strong>
+          <p>Halaman Settings memiliki sub-menu di sebelah kiri yang dikelompokkan per kategori: <strong>Workspace</strong>, <strong>Automasi</strong>, <strong>Customer Service</strong>, <strong>AI &amp; Bahasa</strong>, dan <strong>Integrasi</strong>. Klik kategori yang diinginkan untuk langsung berpindah.</p>
+        </div>
+      </div>
+
+      <!-- ===================== WORKSPACE ===================== -->
+      <h2 id="workspace">Workspace</h2>
+
+      <h3 id="pengaturan-umum">Pengaturan Umum Workspace</h3>
+      <p>Konfigurasi identitas dan preferensi dasar bisnis Anda. Pengaturan ini berlaku untuk seluruh workspace dan terlihat oleh semua anggota tim.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pengaturan</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td>Nama Workspace / Bisnis</td><td>Nama bisnis Anda yang ditampilkan di header aplikasi dan laporan</td></tr>
+            <tr><td>Logo Bisnis</td><td>Upload logo perusahaan (format PNG/JPG, rekomendasi 200×200px). Muncul di header dan dokumen invoice</td></tr>
+            <tr><td>Zona Waktu (Timezone)</td><td>Tentukan zona waktu default workspace — memengaruhi jadwal broadcast, jam operasional, dan timestamp laporan</td></tr>
+            <tr><td>Bahasa Antarmuka</td><td>Bahasa default tampilan aplikasi untuk semua pengguna (Indonesia / English)</td></tr>
+            <tr><td>Deskripsi Bisnis</td><td>Keterangan singkat tentang bisnis Anda (opsional, digunakan oleh AI Copilot sebagai konteks)</td></tr>
+            <tr><td>Alamat Bisnis</td><td>Alamat fisik yang muncul di footer invoice dan dokumen formal</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Workspace → Pengaturan Umum</strong>.</li>
+        <li>Isi atau perbarui field yang diinginkan.</li>
+        <li>Upload logo baru dengan klik area gambar atau tombol <em>"Ganti Logo"</em>.</li>
+        <li>Pilih Zona Waktu dari dropdown — ketik nama kota untuk pencarian cepat.</li>
+        <li>Klik <strong>Simpan</strong>. Perubahan berlaku langsung untuk seluruh workspace.</li>
+      </ol>
+
+      <h3 id="notifikasi">Notifikasi</h3>
+      <p>Atur preferensi notifikasi agar Anda dan tim tidak melewatkan pesan atau event penting. Pengaturan notifikasi dapat dikustomisasi per agent melalui halaman profil masing-masing, namun Admin dapat mengatur default notifikasi workspace.</p>
+
+      <h4>Jenis Notifikasi</h4>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Event</th><th>Notifikasi</th></tr></thead>
+          <tbody>
+            <tr><td>Pesan Masuk Baru</td><td>Notifikasi browser + suara saat ada pesan masuk ke inbox Anda</td></tr>
+            <tr><td>Assign ke Saya</td><td>Notifikasi saat percakapan di-assign ke akun Anda</td></tr>
+            <tr><td>Mention (@nama)</td><td>Notifikasi saat Anda di-mention di internal note percakapan</td></tr>
+            <tr><td>SLA Hampir Terlewat</td><td>Peringatan saat percakapan mendekati batas SLA</td></tr>
+            <tr><td>Broadcast Selesai</td><td>Notifikasi saat kampanye broadcast selesai dikirim</td></tr>
+            <tr><td>Pembayaran Diterima</td><td>Notifikasi saat payment link dilunasi pelanggan</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Workspace → Notifikasi</strong>.</li>
+        <li>Aktifkan atau nonaktifkan toggle untuk setiap jenis notifikasi.</li>
+        <li>Pilih saluran notifikasi: Browser (push notification), Email, atau keduanya.</li>
+        <li>Klik <strong>Simpan</strong>.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Izin Notifikasi Browser</strong>
+          <p>Untuk menerima notifikasi browser, pastikan Anda sudah mengizinkan notifikasi dari domain CRMHUB di browser. Klik ikon gembok (🔒) di address bar browser → <em>"Notifikasi"</em> → <em>"Izinkan"</em>.</p>
+        </div>
+      </div>
+
+      <h3 id="inbox-settings">Pengaturan Inbox</h3>
+      <p>Konfigurasi perilaku default inbox untuk seluruh workspace: pembuatan tiket otomatis, antrian percakapan, dan tampilan inbox.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pengaturan</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td>Auto-Create Tiket</td><td>Buat tiket otomatis untuk setiap percakapan masuk baru (berguna untuk tracking CS)</td></tr>
+            <tr><td>Queue Management</td><td>Aktifkan mode antrian: percakapan masuk masuk ke antrian sebelum di-assign ke agent</td></tr>
+            <tr><td>Max Percakapan per Agent</td><td>Batas maksimal percakapan aktif yang bisa ditangani satu agent secara bersamaan</td></tr>
+            <tr><td>Auto-Resolve Idle</td><td>Otomatis resolve percakapan yang tidak ada aktivitas selama X hari</td></tr>
+            <tr><td>Pesan Selamat Datang</td><td>Pesan otomatis yang dikirim ke pelanggan pertama kali menghubungi</td></tr>
+            <tr><td>Pesan Di Luar Jam Kerja</td><td>Balas otomatis saat percakapan masuk di luar jam operasional</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Workspace → Pengaturan Inbox</strong>.</li>
+        <li>Aktifkan <em>Auto-Create Tiket</em> jika ingin setiap percakapan masuk otomatis membuat tiket terlacak.</li>
+        <li>Atur <em>Max Percakapan per Agent</em> sesuai kapasitas tim Anda (rekomendasi: 10–20).</li>
+        <li>Set batas idle untuk <em>Auto-Resolve</em> (contoh: 3 hari tanpa respons).</li>
+        <li>Tulis teks pesan selamat datang dan pesan di luar jam kerja jika diperlukan.</li>
+        <li>Klik <strong>Simpan</strong>.</li>
+      </ol>
+
+      <h3 id="team">Team &amp; Anggota</h3>
+      <p>Kelola seluruh anggota tim: tambah agent baru, ubah role/level akses, dan hapus anggota yang tidak aktif. Lihat panduan lengkap di <a href="team.html">halaman Manajemen Tim</a>.</p>
+
+      <h3 id="roles">Role &amp; Akses</h3>
+      <p>Buat dan kelola <strong>Custom Role</strong> dengan nama, tipe, level akses, dan izin granular yang bisa dikustomisasi sepenuhnya. Lihat panduan lengkap di <a href="roles.html">halaman Role &amp; Akses</a>.</p>
+
+      <h3 id="quick-reply-global">Quick Reply Global</h3>
+      <p>Kelola template quick reply yang dapat digunakan oleh seluruh agent (bukan hanya pribadi). Quick reply global membantu standarisasi respons tim. Lihat panduan lengkap di <a href="templates.html#quick-reply-global">halaman Templates &amp; Quick Reply</a>.</p>
+
+      <h3 id="license">Lisensi Domain</h3>
+      <p>Tampilkan status lisensi domain aktif untuk instalasi CRMHUB Anda. Halaman ini menampilkan:</p>
+      <ul>
+        <li>Domain yang terdaftar dan status validitasnya</li>
+        <li>Tanggal aktivasi dan masa berlaku lisensi</li>
+        <li>Tombol untuk memperbarui / refresh validasi lisensi</li>
+      </ul>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Lisensi Tidak Valid</strong>
+          <p>Jika lisensi domain tidak valid, akses ke aplikasi akan dibatasi. Hubungi tim CRMHUB untuk aktivasi atau perpanjangan lisensi.</p>
+        </div>
+      </div>
+
+      <!-- ===================== AUTOMASI ===================== -->
+      <h2 id="automasi">Automasi</h2>
+      <p>Semua pengaturan automasi tersedia di sub-menu ini. Lihat panduan lengkap di <a href="automation.html">halaman Automasi &amp; Customer Service</a>.</p>
+
+      <h3 id="auto-reply">Auto Reply</h3>
+      <p>Atur balasan otomatis berdasarkan kata kunci, kondisi pesan masuk, atau jam di luar operasional. Setiap aturan dapat diterapkan ke channel tertentu.</p>
+
+      <h3 id="auto-label">Auto Label</h3>
+      <p>Tambahkan label secara otomatis ke percakapan masuk berdasarkan kondisi yang ditentukan — misalnya, label "Komplain" untuk pesan yang mengandung kata "kecewa" atau "refund".</p>
+
+      <h3 id="auto-archive">Auto Archive</h3>
+      <p>Arsipkan percakapan yang sudah tidak aktif secara otomatis setelah periode waktu tertentu, menjaga inbox tetap bersih.</p>
+
+      <!-- ===================== CUSTOMER SERVICE ===================== -->
+      <h2 id="customer-service">Customer Service</h2>
+
+      <h3 id="assignment">Auto Assignment</h3>
+      <p>Distribusikan percakapan masuk ke agent secara otomatis menggunakan mode Round Robin atau Load Balancing. Lihat <a href="automation.html#auto-assignment">panduan Auto Assignment</a>.</p>
+
+      <h3 id="working-hours">Jam Operasional</h3>
+      <p>Atur jadwal hari dan jam operasional bisnis beserta zona waktu. Digunakan oleh Auto Reply, Auto Assignment, dan perhitungan SLA. Lihat <a href="automation.html#working-hours">panduan Jam Operasional</a>.</p>
+
+      <h3 id="sla">Kebijakan SLA</h3>
+      <p>Buat standar waktu respons (First Response Time, Resolution Time) dan aktifkan notifikasi peringatan saat SLA hampir terlewat. Lihat <a href="automation.html#sla">panduan SLA</a>.</p>
+
+      <!-- ===================== AI & BAHASA ===================== -->
+      <h2 id="ai">AI &amp; Bahasa</h2>
+
+      <h3 id="multi-language">Multi-Language AI</h3>
+      <p>Aktifkan deteksi bahasa otomatis agar chatbot dan sistem dapat memahami serta membalas pesan dalam berbagai bahasa secara cerdas. Mendukung Indonesia, Inggris, Mandarin, Arab, dan banyak lagi. Lihat <a href="automation.html#multi-language">panduan Multi-Language AI</a>.</p>
+
+      <!-- ===================== INTEGRASI ===================== -->
+      <h2 id="integrasi">Integrasi</h2>
+
+      <h3 id="payment-gateway">Payment Gateway</h3>
+      <p>Hubungkan akun payment gateway untuk mengaktifkan fitur Payment Link di Inbox. CRMHUB mendukung Xendit sebagai gateway utama.</p>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Integrasi → Payment Gateway</strong>.</li>
+        <li>Pilih provider: <strong>Xendit</strong>.</li>
+        <li>Masukkan <strong>Secret Key</strong> dari dashboard Xendit Anda.</li>
+        <li>Klik <em>"Test Koneksi"</em> untuk verifikasi, lalu Simpan.</li>
+        <li>Fitur Payment Link di inbox kini aktif dan siap digunakan.</li>
+      </ol>
+
+      <h3 id="ecommerce">E-Commerce</h3>
+      <p>Hubungkan toko online Anda ke CRMHUB untuk mengakses data pesanan dan produk langsung dari inbox.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform</th><th>Fitur yang Tersedia</th></tr></thead>
+          <tbody>
+            <tr><td>Shopify</td><td>Sinkronisasi produk, lihat status order, link order ke percakapan</td></tr>
+            <tr><td>WooCommerce</td><td>Sinkronisasi produk, lihat status order</td></tr>
+            <tr><td>Tokopedia</td><td>Lihat pesanan masuk</td></tr>
+            <tr><td>Lazada</td><td>Lihat pesanan masuk</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ol class="steps">
+        <li>Buka <strong>Settings → E-Commerce</strong>.</li>
+        <li>Klik <em>"Tambah Koneksi"</em> dan pilih platform toko Anda.</li>
+        <li>Masukkan API Key / Store URL sesuai platform yang dipilih.</li>
+        <li>Klik <em>"Test Koneksi"</em> untuk verifikasi, lalu Simpan.</li>
+        <li>Produk dan pesanan akan tersinkronisasi secara otomatis.</li>
+      </ol>
+
+      <h3 id="ongkir">Ongkir &amp; Shipping</h3>
+      <p>Integrasikan layanan pengiriman untuk mengecek ongkos kirim langsung dari chat, membantu agent memberikan informasi pengiriman tanpa berpindah aplikasi.</p>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Ongkir &amp; Shipping</strong>.</li>
+        <li>Masukkan API Key dari penyedia layanan pengiriman (contoh: RajaOngkir).</li>
+        <li>Simpan. Agent dapat mengecek ongkir menggunakan fitur cek ongkir di inbox.</li>
+      </ol>
+
+      <h3 id="webhook">Webhook Outbound</h3>
+      <p>Kirim notifikasi event ke sistem eksternal Anda (CRM, ERP, atau aplikasi lain) setiap kali terjadi event tertentu di CRMHUB.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Event</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td><code>message.received</code></td><td>Pesan masuk baru dari pelanggan</td></tr>
+            <tr><td><code>conversation.resolved</code></td><td>Percakapan ditandai selesai</td></tr>
+            <tr><td><code>conversation.assigned</code></td><td>Percakapan di-assign ke agent</td></tr>
+            <tr><td><code>contact.created</code></td><td>Kontak baru dibuat</td></tr>
+            <tr><td><code>payment.paid</code></td><td>Payment link berhasil dibayar</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Webhook Outbound</strong>.</li>
+        <li>Klik <em>"Tambah Webhook"</em>.</li>
+        <li>Masukkan URL endpoint tujuan dan pilih event yang ingin dikirimkan.</li>
+        <li>Simpan. Sistem mengirimkan payload JSON ke URL tersebut setiap kali event terjadi.</li>
+      </ol>
+      <p>Lihat dokumentasi webhook lengkap beserta format payload di <a href="api.html#webhook">halaman Developer &amp; API</a>.</p>
+
+      <h3 id="email-channel">Email Channel</h3>
+      <p>Sambungkan akun email (Gmail, Outlook, atau SMTP custom) sebagai channel tambahan di CRMHUB, sehingga email dari pelanggan masuk ke inbox bersamaan dengan chat WhatsApp dan platform lainnya.</p>
+      <ol class="steps">
+        <li>Buka <strong>Settings → Email Channel</strong>.</li>
+        <li>Pilih provider email (Gmail, Outlook, atau SMTP Custom).</li>
+        <li>Ikuti langkah autentikasi OAuth (untuk Gmail/Outlook) atau masukkan konfigurasi SMTP manual.</li>
+        <li>Verifikasi koneksi dan Simpan.</li>
+        <li>Email masuk akan muncul di inbox CRMHUB sebagai percakapan baru.</li>
+      </ol>
+
+      <!-- ===================== AKUN ===================== -->
+      <h2 id="akun">Akun &amp; Profil</h2>
+      <p>Pengaturan profil pribadi tersedia di menu <strong>Account</strong> yang terpisah dari Settings workspace. Akses melalui klik nama/avatar di header → <em>"Akun &amp; Profil"</em>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pengaturan</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td>Foto Profil</td><td>Upload foto avatar untuk identitas di inbox dan laporan</td></tr>
+            <tr><td>Nama &amp; Email</td><td>Perbarui informasi identitas akun</td></tr>
+            <tr><td>Password</td><td>Ubah password login (minimal 8 karakter)</td></tr>
+            <tr><td>Closing Message</td><td>Pesan otomatis yang dikirim saat agent menutup percakapan</td></tr>
+            <tr><td>Template Balasan Pribadi</td><td>Kelola quick reply personal untuk respons cepat di inbox (hanya terlihat oleh Anda)</td></tr>
+            <tr><td>Notifikasi Pribadi</td><td>Override pengaturan notifikasi default workspace khusus untuk akun Anda</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="page-nav">
+        <a href="analytics.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Laporan &amp; Analitik</div></a>
+        <a href="billing.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Langganan &amp; Billing</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#workspace">Workspace</a>
+      <a href="#pengaturan-umum">— Pengaturan Umum</a>
+      <a href="#notifikasi">— Notifikasi</a>
+      <a href="#inbox-settings">— Pengaturan Inbox</a>
+      <a href="#team">— Team &amp; Anggota</a>
+      <a href="#roles">— Role &amp; Akses</a>
+      <a href="#quick-reply-global">— Quick Reply Global</a>
+      <a href="#license">— Lisensi Domain</a>
+      <a href="#automasi">Automasi</a>
+      <a href="#auto-reply">— Auto Reply</a>
+      <a href="#auto-label">— Auto Label</a>
+      <a href="#auto-archive">— Auto Archive</a>
+      <a href="#customer-service">Customer Service</a>
+      <a href="#assignment">— Auto Assignment</a>
+      <a href="#working-hours">— Jam Operasional</a>
+      <a href="#sla">— Kebijakan SLA</a>
+      <a href="#ai">AI &amp; Bahasa</a>
+      <a href="#multi-language">— Multi-Language AI</a>
+      <a href="#integrasi">Integrasi</a>
+      <a href="#payment-gateway">— Payment Gateway</a>
+      <a href="#ecommerce">— E-Commerce</a>
+      <a href="#ongkir">— Ongkir &amp; Shipping</a>
+      <a href="#webhook">— Webhook Outbound</a>
+      <a href="#email-channel">— Email Channel</a>
+      <a href="#akun">Akun &amp; Profil</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('settings.html');</script>
+</body>
+</html>

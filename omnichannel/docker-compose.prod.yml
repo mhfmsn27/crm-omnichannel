@@ -1,0 +1,66 @@
+services:
+  # 1. PostgreSQL with pgvector
+  db:
+    image: ankane/pgvector:v0.5.1
+    container_name: crmhub-db-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-omni_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-DefaultPassword123!}
+      POSTGRES_DB: ${DB_NAME:-omni_db}
+    volumes:
+      - ./init_db_v2.sql:/docker-entrypoint-initdb.d/init_db_v2.sql
+      - pgdata_crmhub_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-omni_user} -d ${DB_NAME:-omni_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis Cache & Job Queues
+  redis:
+    image: redis:7-alpine
+    container_name: crmhub-redis-prod
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata_crmhub_prod:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Backend (API & Realtime Socket Server)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: crmhub-backend-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 8998
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-omni_user}
+      DB_PASSWORD: ${DB_PASSWORD:-DefaultPassword123!}
+      DB_NAME: ${DB_NAME:-omni_db}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/public/sounds:/app/public/sounds
+    ports:
+      - "8998:8998"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "npm run db:setup && node server.js"
+
+volumes:
+  pgdata_crmhub_prod:
+  redisdata_crmhub_prod:

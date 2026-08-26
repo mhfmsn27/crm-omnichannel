@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Tools</div>
+      <h1>🔧 Tools</h1>
+      <p class="page-subtitle">Kumpulan alat produktivitas untuk memperluas kemampuan tim Anda — dari validasi nomor hingga pencarian prospek bisnis.</p>
+
+      <p>Menu <strong>Tools</strong> berisi berbagai alat bantu yang mempercepat pekerjaan tim marketing dan sales. Akses melalui menu Tools di sidebar. Beberapa tools memerlukan izin <code>use_tools</code>.</p>
+
+      <!-- NUMBER CHECKER -->
+      <h2 id="number-checker">Number Checker</h2>
+      <p>Validasi apakah nomor telepon terdaftar di WhatsApp secara massal — sebelum mengirim broadcast, pastikan daftar kontak Anda valid.</p>
+
+      <h3>Cara Menggunakan</h3>
+      <ol class="steps">
+        <li><strong>Buka Tools → Number Checker</strong>.</li>
+        <li><strong>Upload File</strong> — Upload file CSV/TXT berisi daftar nomor telepon (format internasional, contoh: 6281234567890).</li>
+        <li><strong>Pilih Perangkat</strong> — Pilih perangkat WhatsApp yang digunakan untuk pengecekan.</li>
+        <li><strong>Mulai Pengecekan</strong> — Klik <em>"Mulai Cek"</em>. Sistem akan memproses nomor secara bertahap.</li>
+        <li><strong>Lihat Hasil</strong> — Setelah selesai, unduh hasil berisi kolom: nomor, status (valid/tidak valid), nama WA.</li>
+        <li><strong>Simpan ke Kontak</strong> — Nomor yang valid dapat langsung disimpan ke daftar kontak CRMHUB.</li>
+      </ol>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Batas Kecepatan</strong>
+          <p>Pengecekan dilakukan dengan jeda antar nomor untuk menghindari pemblokiran oleh WhatsApp. Semakin banyak nomor, semakin lama prosesnya. Disarankan tidak melebihi 10.000 nomor per sesi.</p>
+        </div>
+      </div>
+
+      <!-- GROUP EXTRACTOR -->
+      <h2 id="group-extractor">Group Extractor</h2>
+      <p>Ekstrak daftar nomor anggota dari grup WhatsApp untuk dijadikan daftar kontak atau target broadcast.</p>
+
+      <h3>Cara Menggunakan</h3>
+      <ol class="steps">
+        <li><strong>Buka Tools → Group Extractor</strong>.</li>
+        <li><strong>Pilih Perangkat &amp; Grup</strong> — Pilih perangkat WhatsApp yang terhubung, lalu pilih grup yang ingin diekstrak.</li>
+        <li><strong>Klik Ekstrak</strong> — Sistem mengambil daftar anggota grup beserta nomor telepon mereka.</li>
+        <li><strong>Review Hasil</strong> — Lihat daftar anggota yang berhasil diekstrak.</li>
+        <li><strong>Simpan ke Kontak</strong> — Klik <em>"Simpan ke Kontak"</em> untuk langsung menambahkan ke database kontak CRMHUB.</li>
+      </ol>
+
+      <!-- GMAPS SCRAPER -->
+      <h2 id="gmaps-scraper">GMaps Scraper (Pencarian Prospek)</h2>
+      <p>Cari data bisnis dari Google Maps berdasarkan kata kunci dan lokasi — dapatkan nama, nomor telepon, alamat, dan rating bisnis untuk dijadikan prospek.</p>
+
+      <h3>Cara Menggunakan</h3>
+      <ol class="steps">
+        <li><strong>Buka Tools → GMaps Scraper</strong>.</li>
+        <li><strong>Masukkan Kata Kunci</strong> — Contoh: "Toko Baju Jakarta Selatan", "Restoran Semarang".</li>
+        <li><strong>Pilih Lokasi</strong> — Gunakan autocomplete untuk memilih area yang spesifik.</li>
+        <li><strong>Mulai Pencarian</strong> — Klik <em>"Cari"</em>. Sistem mengambil hasil dari Google Maps.</li>
+        <li><strong>Review Hasil</strong> — Lihat daftar bisnis dengan nama, nomor telepon, alamat, rating, dan kategori.</li>
+        <li><strong>Simpan Prospek</strong> — Pilih bisnis yang relevan dan klik <em>"Simpan ke Kontak"</em> untuk menambahkan ke database.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Tips Pencarian Efektif</strong>
+          <p>Gunakan kata kunci yang spesifik dan lokal untuk hasil terbaik. Kombinasikan dengan Number Checker untuk memvalidasi nomor telepon bisnis sebelum menghubungi.</p>
+        </div>
+      </div>
+
+      <!-- WARMER -->
+      <h2 id="warmer">WA Number Warmer</h2>
+      <p>Warmer digunakan untuk "memanaskan" nomor WhatsApp baru agar terlihat aktif dan tidak mudah diblokir saat digunakan untuk broadcast.</p>
+
+      <h3>Cara Kerja</h3>
+      <p>Warmer secara otomatis mengirim dan menerima pesan antar nomor WhatsApp yang terhubung, mensimulasikan aktivitas percakapan normal sehingga nomor terlihat natural di mata sistem WhatsApp.</p>
+
+      <h3>Cara Menggunakan</h3>
+      <ol class="steps">
+        <li><strong>Buka Tools → Number Warmer</strong>.</li>
+        <li><strong>Klik Tambah Warmer</strong> — Buat konfigurasi warmer baru.</li>
+        <li><strong>Pilih Perangkat</strong> — Pilih nomor WhatsApp yang ingin dipanaskan.</li>
+        <li><strong>Atur Intensitas</strong> — Pilih jumlah pesan per hari dan interval pengiriman.</li>
+        <li><strong>Aktifkan</strong> — Toggle aktif. Warmer akan berjalan otomatis di background.</li>
+        <li><strong>Pantau Progress</strong> — Lihat laporan aktivitas warmer di tab Report.</li>
+      </ol>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Gunakan dengan Bijak</strong>
+          <p>Warmer sebaiknya digunakan pada nomor baru selama 7–14 hari sebelum mulai broadcast. Jangan aktifkan intensitas terlalu tinggi pada hari pertama — mulai dari rendah dan tingkatkan secara bertahap.</p>
+        </div>
+      </div>
+
+      <!-- FOLLOW-UP -->
+      <h2 id="follow-up">Follow-up Sequences</h2>
+      <p>Buat urutan pesan follow-up otomatis yang dikirim secara bertahap ke kontak — berguna untuk onboarding pelanggan baru, nurturing prospek, atau pengingat pembayaran.</p>
+
+      <h3>Cara Membuat Follow-up Sequence</h3>
+      <ol class="steps">
+        <li><strong>Buka Tools → Follow-up</strong>.</li>
+        <li><strong>Klik Buat Sequence</strong> — Beri nama urutan follow-up Anda.</li>
+        <li><strong>Tambah Langkah</strong> — Setiap langkah adalah satu pesan. Tentukan:
+          <ul>
+            <li>Isi pesan (teks, gambar, atau dokumen)</li>
+            <li>Jeda waktu sebelum dikirim (contoh: kirim setelah 1 hari)</li>
+          </ul>
+        </li>
+        <li><strong>Tambah Langkah Berikutnya</strong> — Ulangi hingga semua pesan dalam urutan terdefinisi.</li>
+        <li><strong>Simpan Sequence</strong> — Sequence siap digunakan.</li>
+        <li><strong>Daftarkan Kontak</strong> — Pilih kontak yang akan menerima sequence ini dan klik <em>"Mulai Follow-up"</em>.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Contoh Penggunaan</strong>
+          <p>Sequence "Onboarding Pelanggan Baru": Hari 0 — pesan sambutan, Hari 1 — panduan penggunaan produk, Hari 3 — tawaran promo eksklusif, Hari 7 — minta ulasan/testimoni.</p>
+        </div>
+      </div>
+
+      <!-- CHAT FORM -->
+      <h2 id="chat-form">Chat Form</h2>
+      <p>Buat formulir interaktif yang bisa disebarkan via link atau QR code. Jawaban dari pelanggan masuk langsung ke inbox CRMHUB sebagai percakapan baru.</p>
+
+      <h3>Cara Membuat Chat Form</h3>
+      <ol class="steps">
+        <li><strong>Buka Tools → Chat Form</strong>.</li>
+        <li><strong>Klik Buat Form Baru</strong> — Beri nama form.</li>
+        <li><strong>Tambah Pertanyaan</strong> — Tambah field seperti: nama, email, nomor WhatsApp, pilihan ganda, atau teks bebas.</li>
+        <li><strong>Atur Tujuan</strong> — Pilih perangkat WhatsApp mana yang menerima notifikasi saat ada pengisian form.</li>
+        <li><strong>Publikasikan</strong> — Klik Publikasikan. Dapatkan link dan QR code form.</li>
+        <li><strong>Sebarkan</strong> — Bagikan link/QR code di website, media sosial, atau poster fisik.</li>
+      </ol>
+      <p>Setiap kali seseorang mengisi form, percakapan baru otomatis terbuat di inbox CRMHUB dengan data yang diisi.</p>
+
+      <!-- SHORT LINK -->
+      <h2 id="short-link">Short Link & UTM Tracker</h2>
+      <p>Buat tautan pendek yang bisa dilacak klik-nya — lengkap dengan parameter UTM untuk analisis sumber traffic dan efektivitas campaign marketing Anda.</p>
+
+      <h3>Apa itu Short Link?</h3>
+      <p>Short Link mengubah URL panjang menjadi link pendek yang mudah dibagikan. Lebih dari itu, setiap Short Link di CRMHUB dilengkapi dengan <strong>UTM tracking</strong> — sehingga Anda bisa tahu dari mana pengunjung datang, campaign apa yang paling efektif, dan channel mana yang paling banyak menghasilkan prospek.</p>
+
+      <h3>Cara Membuat Short Link</h3>
+      <ol class="steps">
+        <li><strong>Buka Tools → Short Link</strong>.</li>
+        <li><strong>Klik + Buat Short Link</strong>.</li>
+        <li><strong>Masukkan URL Tujuan</strong> — URL panjang yang ingin diperpendek (contoh: halaman produk, form pendaftaran, artikel).</li>
+        <li><strong>Atur Slug (opsional)</strong> — Bagian akhir URL pendek Anda. Contoh: <code>domain.com/s/promo-juni</code>. Jika dikosongkan, sistem membuat slug acak.</li>
+        <li><strong>Isi Parameter UTM</strong> — Untuk tracking yang akurat:
+          <div class="table-wrap" style="margin-top: 10px;">
+            <table>
+              <thead><tr><th>Parameter</th><th>Contoh Nilai</th><th>Fungsi</th></tr></thead>
+              <tbody>
+                <tr><td><code>utm_source</code></td><td>whatsapp, instagram</td><td>Sumber traffic (dari mana link disebarkan)</td></tr>
+                <tr><td><code>utm_medium</code></td><td>broadcast, story, bio</td><td>Media/channel yang digunakan</td></tr>
+                <tr><td><code>utm_campaign</code></td><td>promo-juni, harbolnas</td><td>Nama campaign marketing</td></tr>
+                <tr><td><code>utm_content</code></td><td>banner-atas, tombol-cta</td><td>Versi konten (untuk A/B testing)</td></tr>
+                <tr><td><code>utm_term</code></td><td>sepatu-pria</td><td>Kata kunci (untuk iklan berbayar)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </li>
+        <li><strong>Atur Tanggal Kedaluwarsa (opsional)</strong> — Link otomatis mati setelah tanggal yang ditentukan.</li>
+        <li><strong>Hubungkan ke Rotator (opsional)</strong> — Arahkan klik ke Device Rotator untuk distribusi WhatsApp otomatis.</li>
+        <li><strong>Klik Simpan</strong> — Link pendek siap digunakan.</li>
+      </ol>
+
+      <h3>Memantau Statistik Klik</h3>
+      <p>Klik ikon 📊 pada short link untuk melihat statistik detailnya:</p>
+      <ul style="margin: 12px 0 16px 20px; line-height: 2;">
+        <li>Total klik sepanjang waktu</li>
+        <li>Klik per hari (grafik tren)</li>
+        <li>Breakdown per UTM source dan medium</li>
+        <li>Klik dari device (mobile vs desktop)</li>
+      </ul>
+
+      <div class="callout callout-success">
+        <span class="callout-icon">🚀</span>
+        <div class="callout-content">
+          <strong>Kombinasi Powerful: Short Link + Broadcast + Rotator</strong>
+          <p>Buat Short Link dengan UTM tracking → gunakan di pesan Broadcast → arahkan ke WhatsApp Rotator → pantau berapa banyak klik yang menghasilkan percakapan. Ini adalah cara terbaik mengukur ROI campaign WhatsApp Anda.</p>
+        </div>
+      </div>
+
+      <h3>Menonaktifkan atau Menghapus Short Link</h3>
+      <p>Klik toggle <strong>Aktif/Nonaktif</strong> untuk menonaktifkan sementara tanpa menghapus data klik historis. Klik ikon 🗑️ untuk menghapus permanen (data klik ikut terhapus).</p>
+
+      <div class="page-nav">
+        <a href="invoicing.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Invoice &amp; Tagihan</div></a>
+        <a href="analytics.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Laporan &amp; Analitik</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#number-checker">Number Checker</a>
+      <a href="#group-extractor">Group Extractor</a>
+      <a href="#gmaps-scraper">GMaps Scraper</a>
+      <a href="#warmer">WA Number Warmer</a>
+      <a href="#follow-up">Follow-up Sequences</a>
+      <a href="#chat-form">Chat Form</a>
+      <a href="#short-link">Short Link & UTM Tracker</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('tools.html');</script>
+</body>
+</html>

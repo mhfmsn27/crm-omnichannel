@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setup WA Gateway — Integrasi Self-Hosted CRMHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f8f9fb;--surface:#ffffff;--surface2:#f1f3f8;--surface3:#e8ebf3;
+  --border:#dde1ed;--border-md:#c8cede;--text:#0f1523;--text2:#2d3550;
+  --muted:#64718f;--dim:#98a3be;--accent:#1a56db;--accent-h:#1447c0;
+  --accent-bg:#eef3ff;--accent-br:#c3d2f9;
+  --green:#0d7f4e;--green-bg:#edfaf4;--green-br:#b3e8d0;
+  --orange:#b95f00;--orange-bg:#fff7ed;--orange-br:#f9cfa0;
+  --red:#c41c1c;--red-bg:#fff0f0;--red-br:#f5c0c0;
+  --yellow:#926800;--yellow-bg:#fffaea;--yellow-br:#f0d870;
+  --sidebar:280px;--topbar:52px;--r:6px;
+  --mono:'IBM Plex Mono','Fira Code',monospace;
+  --sans:'Sora',system-ui,sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.7;font-size:15px;-webkit-font-smoothing:antialiased;}
+
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;overflow:hidden;transition:transform .25s ease;}
+.sb-logo{padding:18px 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sb-logo a{text-decoration:none;display:flex;align-items:center;gap:10px;}
+.logo-mark{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,#25d366 0%,#0d8a40 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;box-shadow:0 2px 8px rgba(37,211,102,.3);}
+.logo-text{line-height:1.2;}
+.logo-name{font-weight:700;font-size:14px;color:var(--text);letter-spacing:-.2px;}
+.logo-sub{font-size:10.5px;color:var(--muted);font-weight:400;}
+.sb-search{padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sb-search input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px 7px 32px;font-size:12.5px;font-family:var(--sans);outline:none;color:var(--text);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%2398a3be' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center;transition:all .15s;}
+.sb-search input:focus{border-color:var(--accent);background-color:var(--surface);}
+.sb-search input::placeholder{color:var(--dim);}
+.sb-inner{flex:1;overflow-y:auto;padding:8px 0 20px;}
+.sb-inner::-webkit-scrollbar{width:4px;}
+.sb-inner::-webkit-scrollbar-thumb{background:var(--border-md);border-radius:4px;}
+.nav-section{margin-bottom:4px;}
+.nav-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);padding:14px 20px 5px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 20px;color:var(--muted);text-decoration:none;font-size:13px;font-weight:400;border-left:2px solid transparent;transition:all .12s;cursor:pointer;}
+.nav-item:hover{color:var(--text);background:var(--surface2);}
+.nav-item.active{color:var(--accent);background:var(--accent-bg);border-left-color:var(--accent);font-weight:500;}
+.nav-item .ni{font-size:13px;width:16px;text-align:center;flex-shrink:0;}
+.nav-item .step-badge{margin-left:auto;flex-shrink:0;font-size:10px;font-weight:600;background:var(--surface3);color:var(--muted);padding:1px 7px;border-radius:10px;font-family:var(--mono);}
+.nav-item.active .step-badge{background:var(--accent-br);color:var(--accent-h);}
+
+.topbar{position:fixed;top:0;left:var(--sidebar);right:0;height:var(--topbar);background:rgba(248,249,251,.95);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:12px;z-index:200;backdrop-filter:blur(10px);}
+.mob-btn{display:none;background:none;border:none;cursor:pointer;color:var(--text);font-size:18px;width:32px;height:32px;align-items:center;justify-content:center;border-radius:6px;transition:background .15s;}
+.mob-btn:hover{background:var(--surface2);}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);}
+.breadcrumb a{color:var(--muted);text-decoration:none;}
+.breadcrumb .sep{color:var(--border-md);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.tb-chip{font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;font-family:var(--mono);border:1px solid;}
+.tb-ver{background:var(--surface2);border-color:var(--border);color:var(--muted);}
+.tb-wa{background:var(--green-bg);border-color:var(--green-br);color:var(--green);}
+
+.progress-bar{position:fixed;top:var(--topbar);left:var(--sidebar);right:0;height:3px;background:var(--surface3);z-index:150;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#25d366,#0d7f4e);transition:width .3s ease;box-shadow:0 0 8px rgba(37,211,102,.4);}
+
+.main{margin-left:var(--sidebar);padding-top:var(--topbar);}
+.content{max-width:820px;margin:0 auto;padding:44px 44px 100px;}
+
+.page-hero{padding:40px 0 32px;border-bottom:1px solid var(--border);margin-bottom:40px;}
+.hero-tags{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:100px;font-size:11.5px;font-weight:600;border:1px solid;}
+.chip-blue{background:var(--accent-bg);border-color:var(--accent-br);color:var(--accent);}
+.chip-green{background:var(--green-bg);border-color:var(--green-br);color:var(--green);}
+.chip-orange{background:var(--orange-bg);border-color:var(--orange-br);color:var(--orange);}
+.chip-yellow{background:var(--yellow-bg);border-color:var(--yellow-br);color:var(--yellow);}
+.chip-mono{font-family:var(--mono);}
+.page-hero h1{font-size:30px;font-weight:700;color:var(--text);line-height:1.2;letter-spacing:-.5px;margin-bottom:14px;}
+.page-hero h1 .hl{color:#0d7f4e;}
+.page-hero .lead{font-size:15px;color:var(--muted);line-height:1.8;max-width:620px;font-weight:300;}
+
+.h2{font-size:18px;font-weight:700;color:var(--text);margin:40px 0 12px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;scroll-margin-top:80px;}
+.h2 .step-num{width:26px;height:26px;border-radius:50%;background:#0d7f4e;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);}
+.h3{font-size:14.5px;font-weight:600;color:var(--text2);margin:24px 0 10px;}
+
+p{font-size:14.5px;color:var(--text2);line-height:1.85;margin-bottom:14px;}
+ul.doc,ol.doc{padding-left:0;list-style:none;margin:12px 0;}
+ul.doc li,ol.doc li{font-size:14.5px;color:var(--text2);line-height:1.8;margin-bottom:6px;padding-left:20px;position:relative;}
+ul.doc li::before{content:'•';position:absolute;left:4px;color:#0d7f4e;font-weight:700;}
+ol.doc{counter-reset:step;}
+ol.doc li{counter-increment:step;}
+ol.doc li::before{content:counter(step) '.';position:absolute;left:0;color:#0d7f4e;font-weight:600;font-size:13px;font-family:var(--mono);}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface3);border:1px solid var(--border);padding:1px 6px;border-radius:4px;color:var(--accent-h);}
+
+.code-block{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;margin:16px 0;overflow:hidden;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#161b22;border-bottom:1px solid #21262d;}
+.code-lang{font-family:var(--mono);font-size:11px;font-weight:600;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:7px;}
+.lang-dot{width:8px;height:8px;border-radius:50%;}
+.lang-bash .lang-dot{background:#4ec9b0;}
+.lang-sql .lang-dot{background:#f0a500;}
+.lang-env .lang-dot{background:#9cdcfe;}
+.lang-nginx .lang-dot{background:#c3e88d;}
+.copy-btn{font-family:var(--mono);font-size:11px;color:#8b949e;background:rgba(255,255,255,.05);border:1px solid #30363d;border-radius:5px;padding:3px 10px;cursor:pointer;transition:all .15s;}
+.copy-btn:hover{color:#e6edf3;background:rgba(255,255,255,.1);}
+.copy-btn.copied{color:#4ec9b0;border-color:#4ec9b0;}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.7;}
+pre::-webkit-scrollbar{height:6px;}
+pre::-webkit-scrollbar-thumb{background:#30363d;border-radius:4px;}
+.c-green{color:#4ec9b0;}.c-blue{color:#79c0ff;}.c-yellow{color:#e3b341;}.c-purple{color:#d2a8ff;}.c-red{color:#ff7b72;}.c-gray{color:#8b949e;font-style:italic;}.c-white{color:#e6edf3;}.c-orange{color:#ffa657;}.c-lime{color:#a5d6ff;}
+
+.callout{display:flex;gap:14px;padding:14px 18px;border-radius:8px;margin:18px 0;border:1px solid;}
+.callout-icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+.callout-body{font-size:14px;color:var(--text2);line-height:1.75;}
+.callout-body strong{font-weight:600;}
+.callout-title{font-weight:700;font-size:13px;margin-bottom:4px;}
+.c-warn{background:var(--orange-bg);border-color:var(--orange-br);}
+.c-warn .callout-title{color:var(--orange);}
+.c-danger{background:var(--red-bg);border-color:var(--red-br);}
+.c-danger .callout-title{color:var(--red);}
+.c-info{background:var(--accent-bg);border-color:var(--accent-br);}
+.c-info .callout-title{color:var(--accent);}
+.c-success{background:var(--green-bg);border-color:var(--green-br);}
+.c-success .callout-title{color:var(--green);}
+.c-tip{background:var(--yellow-bg);border-color:var(--yellow-br);}
+.c-tip .callout-title{color:var(--yellow);}
+
+.spec-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;}
+.spec-table th{background:var(--surface2);font-weight:600;color:var(--text);padding:10px 16px;text-align:left;border:1px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:.5px;}
+.spec-table td{padding:10px 16px;border:1px solid var(--border);color:var(--text2);vertical-align:top;}
+.spec-table tr:nth-child(even) td{background:var(--surface2);}
+.spec-table td code{font-size:12px;}
+
+.env-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+.env-table th{background:#161b22;color:#8b949e;padding:9px 14px;text-align:left;border:1px solid #21262d;font-size:11px;text-transform:uppercase;letter-spacing:.7px;font-family:var(--mono);}
+.env-table td{padding:9px 14px;border:1px solid #21262d;vertical-align:top;background:#0d1117;}
+.env-table td:first-child{font-family:var(--mono);font-size:12px;color:#9cdcfe;}
+.env-table td:last-child{font-size:12.5px;color:#8b949e;}
+.env-table td code{background:#21262d;border:none;color:#e3b341;}
+
+.steps{margin:16px 0;}
+.step-item{display:flex;gap:16px;position:relative;}
+.step-item:not(:last-child)::before{content:'';position:absolute;left:13px;top:30px;bottom:0;width:2px;background:var(--border);}
+.step-dot{width:28px;height:28px;border-radius:50%;background:#0d7f4e;color:#fff;font-size:12px;font-weight:700;font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;margin-top:2px;box-shadow:0 0 0 4px var(--green-bg);}
+.step-body{flex:1;padding-bottom:28px;}
+.step-body h4{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;padding-top:4px;}
+.step-body p{font-size:13.5px;color:var(--muted);margin-bottom:8px;}
+
+.file-tree{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px 20px;margin:16px 0;font-family:var(--mono);font-size:13px;line-height:2;}
+.ft-dir{color:#79c0ff;}.ft-file{color:#e6edf3;}.ft-comment{color:#8b949e;}
+
+.cred-box{background:linear-gradient(135deg,#0d1a36 0%,#0f2350 100%);border:1px solid #1e3a6e;border-radius:10px;padding:24px 28px;margin:20px 0;}
+.cred-box .cred-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#5b8adb;margin-bottom:14px;font-family:var(--mono);}
+.cred-row{display:flex;align-items:baseline;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.cred-key{font-family:var(--mono);font-size:12px;color:#8b949e;min-width:160px;flex-shrink:0;}
+.cred-val{font-family:var(--mono);font-size:13px;font-weight:500;color:#e6edf3;background:rgba(255,255,255,.06);padding:3px 10px;border-radius:5px;border:1px solid #2a4a7f;}
+
+.port-map{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:16px 0;}
+.port-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 18px;}
+.port-card .pc-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.port-card .pc-port{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--text);}
+.port-card .pc-desc{font-size:12px;color:var(--dim);margin-top:4px;}
+.port-ok{border-left:3px solid var(--green);}
+.port-wa{border-left:3px solid #25d366;}
+
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin:0 0 36px;}
+.toc-title{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
+.toc a{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);text-decoration:none;padding:4px 0;transition:color .15s;}
+.toc a:hover{color:#0d7f4e;}
+.toc-num{font-family:var(--mono);font-size:11px;color:#0d7f4e;min-width:24px;}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:250;}
+.overlay.show{display:block;}
+
+@media(max-width:900px){
+  :root{--sidebar:0px;}
+  .sidebar{width:280px;transform:translateX(-100%);z-index:400;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .topbar{left:0;}
+  .progress-bar{left:0;}
+  .content{padding:28px 20px 80px;}
+  .mob-btn{display:flex;}
+  .page-hero h1{font-size:22px;}
+  .port-map{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <a href="#">
+      <div class="logo-mark">📱</div>
+      <div class="logo-text">
+        <div class="logo-name">WA Gateway</div>
+        <div class="logo-sub">Setup &amp; Integrasi CRMHUB</div>
+      </div>
+    </a>
+  </div>
+  <div class="sb-search">
+    <input type="text" id="navSearch" placeholder="Cari bagian...">
+  </div>
+  <nav class="sb-inner" id="sbInner">
+    <div class="nav-section">
+      <div class="nav-label">Ikhtisar</div>
+      <a href="#intro" class="nav-item active" data-section="intro">
+        <span class="ni">📋</span> Pengantar &amp; Arsitektur
+      </a>
+      <a href="#port-check" class="nav-item" data-section="port-check">
+        <span class="ni">🔌</span> Port &amp; Konflik VPS
+        <span class="step-badge">pra</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Instalasi Gateway</div>
+      <a href="#upload" class="nav-item" data-section="upload">
+        <span class="ni">📤</span> Upload Kode ke VPS
+        <span class="step-badge">01</span>
+      </a>
+      <a href="#database" class="nav-item" data-section="database">
+        <span class="ni">🐘</span> Setup Database
+        <span class="step-badge">02</span>
+      </a>
+      <a href="#env" class="nav-item" data-section="env">
+        <span class="ni">⚙️</span> Konfigurasi .env
+        <span class="step-badge">03</span>
+      </a>
+      <a href="#build" class="nav-item" data-section="build">
+        <span class="ni">🔨</span> Build &amp; Jalankan PM2
+        <span class="step-badge">04</span>
+      </a>
+      <a href="#nginx" class="nav-item" data-section="nginx">
+        <span class="ni">🌐</span> Nginx &amp; SSL Gateway
+        <span class="step-badge">05</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Integrasi CRMHUB</div>
+      <a href="#crmhub-config" class="nav-item" data-section="crmhub-config">
+        <span class="ni">🔗</span> Update Konfigurasi CRMHUB
+        <span class="step-badge">06</span>
+      </a>
+      <a href="#verify" class="nav-item" data-section="verify">
+        <span class="ni">✅</span> Verifikasi &amp; Test
+        <span class="step-badge">07</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Referensi</div>
+      <a href="#trouble" class="nav-item" data-section="trouble">
+        <span class="ni">🛠️</span> Troubleshooting
+      </a>
+      <a href="#flow" class="nav-item" data-section="flow">
+        <span class="ni">🔄</span> Alur Kerja Integrasi
+      </a>
+    </div>
+  </nav>
+</aside>
+
+<div class="topbar">
+  <button class="mob-btn" onclick="openSidebar()">☰</button>
+  <div class="breadcrumb">
+    <a href="#">CRMHUB</a>
+    <span class="sep">/</span>
+    <span>WA Gateway</span>
+    <span class="sep">/</span>
+    <span>Setup Self-Hosted</span>
+  </div>
+  <div class="topbar-right">
+    <span class="tb-chip tb-ver">Baileys 6.x</span>
+    <span class="tb-chip tb-wa">✓ Self-Hosted</span>
+  </div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+<main class="main">
+<div class="content">
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-tags">
+    <span class="chip chip-green">✓ Same VPS</span>
+    <span class="chip chip-blue chip-mono">TypeScript + Fastify</span>
+    <span class="chip chip-green chip-mono">Baileys 6.x</span>
+    <span class="chip chip-yellow">Port 8080</span>
+  </div>
+  <h1>Setup <span class="hl">WA Gateway</span> Self-Hosted<br>di VPS yang Sama dengan CRMHUB</h1>
+  <p class="lead">
+    Panduan lengkap menginstal dan mengintegrasikan WA Gateway (non-official WhatsApp via Baileys)
+    ke CRMHUB yang sudah berjalan di VPS yang sama — tanpa konflik port, database, atau Nginx.
+  </p>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">Daftar Isi</div>
+  <a href="#intro"><span class="toc-num">—</span> Pengantar &amp; Arsitektur</a>
+  <a href="#port-check"><span class="toc-num">—</span> Pra-Instalasi: Cek Port &amp; Konflik</a>
+  <a href="#upload"><span class="toc-num">01</span> Upload Kode Gateway ke VPS</a>
+  <a href="#database"><span class="toc-num">02</span> Setup Database PostgreSQL (Terpisah)</a>
+  <a href="#env"><span class="toc-num">03</span> Konfigurasi File .env Gateway</a>
+  <a href="#build"><span class="toc-num">04</span> Build TypeScript &amp; Jalankan via PM2</a>
+  <a href="#nginx"><span class="toc-num">05</span> Konfigurasi Nginx &amp; SSL untuk Gateway</a>
+  <a href="#crmhub-config"><span class="toc-num">06</span> Update Konfigurasi Backend CRMHUB</a>
+  <a href="#verify"><span class="toc-num">07</span> Verifikasi Integrasi &amp; Test Koneksi WA</a>
+  <a href="#trouble"><span class="toc-num">—</span> Troubleshooting</a>
+  <a href="#flow"><span class="toc-num">—</span> Diagram Alur Kerja</a>
+</div>
+
+<!-- INTRO -->
+<h2 class="h2" id="intro"><span class="step-num">○</span> Pengantar &amp; Arsitektur</h2>
+
+<p>WA Gateway adalah server Node.js terpisah yang menangani koneksi WhatsApp non-official menggunakan library <strong>Baileys</strong>. CRMHUB berkomunikasi dengannya via REST API — mengirim pesan, menerima pesan via webhook, dan mengelola sesi QR scan.</p>
+
+<div class="callout c-info">
+  <div class="callout-icon">ℹ️</div>
+  <div class="callout-body">
+    <div class="callout-title">Komponen yang Diinstal</div>
+    Hanya <strong>satu komponen</strong> yang perlu diinstal: <code>wa-gateway-backend</code> (server REST API).
+    Tidak perlu menginstal wa-admin-frontend untuk integrasi CRMHUB — frontend admin gateway hanya untuk manajemen SaaS multi-tenant yang tidak diperlukan di sini.
+  </div>
+</div>
+
+<div class="callout c-warn">
+  <div class="callout-icon">⚠️</div>
+  <div class="callout-body">
+    <div class="callout-title">WhatsApp Non-Official — Risiko Yang Perlu Dipahami</div>
+    Koneksi via Baileys bukan API resmi Meta. WhatsApp dapat men-ban nomor yang dianggap melanggar ToS.
+    Gunakan nomor dedikasi untuk bisnis, bukan nomor personal. Jangan kirim spam/broadcast massal dalam jumlah besar sekaligus.
+  </div>
+</div>
+
+<!-- PORT CHECK -->
+<h2 class="h2" id="port-check"><span class="step-num">○</span> Pra-Instalasi: Cek Port &amp; Konflik VPS</h2>
+
+<p>Karena menggunakan satu VPS, pastikan tidak ada konflik. Berikut pemetaan port antara CRMHUB dan gateway:</p>
+
+<div class="port-map">
+  <div class="port-card port-ok">
+    <div class="pc-label">CRMHUB Backend</div>
+    <div class="pc-port">8998</div>
+    <div class="pc-desc">Node.js / Express</div>
+  </div>
+  <div class="port-card port-wa">
+    <div class="pc-label">WA Gateway Backend</div>
+    <div class="pc-port">8080</div>
+    <div class="pc-desc">Fastify (baru)</div>
+  </div>
+  <div class="port-card port-ok">
+    <div class="pc-label">PostgreSQL</div>
+    <div class="pc-port">5432</div>
+    <div class="pc-desc">Shared, DB berbeda</div>
+  </div>
+</div>
+
+<table class="spec-table">
+  <thead><tr><th>Komponen</th><th>CRMHUB</th><th>WA Gateway</th><th>Konflik?</th></tr></thead>
+  <tbody>
+    <tr><td>Port Aplikasi</td><td><code>8998</code></td><td><code>8080</code></td><td>✅ Aman</td></tr>
+    <tr><td>Database PostgreSQL</td><td><code>omni_db</code></td><td><code>wa_gateway_db</code></td><td>✅ Aman</td></tr>
+    <tr><td>User PostgreSQL</td><td><code>omni_user</code></td><td><code>wa_user</code></td><td>✅ Aman</td></tr>
+    <tr><td>Nginx Server Block</td><td>Domain CRMHUB</td><td>Subdomain gateway</td><td>✅ Aman</td></tr>
+    <tr><td>PM2 Process</td><td><code>omnichannel-backend</code></td><td><code>wa-gateway</code></td><td>✅ Aman</td></tr>
+    <tr><td>Redis</td><td>Digunakan CRMHUB</td><td>Tidak digunakan</td><td>✅ Aman</td></tr>
+    <tr><td>Direktori</td><td><code>/var/www/omnichannel</code></td><td><code>/var/www/wa-gateway</code></td><td>✅ Aman</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Yang perlu disiapkan sebelum mulai:</strong></p>
+<ul class="doc">
+  <li>Domain/subdomain untuk gateway, contoh: <code>gateway.yourdomain.com</code> — arahkan DNS A record-nya ke IP VPS yang sama dengan CRMHUB</li>
+  <li>Akses SSH ke VPS</li>
+  <li>File proyek <code>wa-server/wa-gateway/wa-gateway-backend/</code> ada di komputer lokal Anda</li>
+</ul>
+
+<div class="callout c-success">
+  <div class="callout-icon">✅</div>
+  <div class="callout-body">
+    <div class="callout-title">Node.js, PM2, PostgreSQL, Nginx, Certbot sudah terinstal</div>
+    Karena CRMHUB sudah diinstal di VPS ini, semua dependensi sistem sudah tersedia.
+    Panduan ini <strong>tidak akan menginstal ulang</strong> Node.js, PM2, atau PostgreSQL — hanya menambahkan komponen baru.
+  </div>
+</div>
+
+<p>Verifikasi tools yang sudah ada di VPS:</p>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — Cek via SSH ke VPS</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Semua perintah ini harus mengembalikan versi, bukan error</span>
+<span class="c-green">node</span> <span class="c-yellow">--version</span>        <span class="c-gray"># harus v20.x</span>
+<span class="c-green">npm</span> <span class="c-yellow">--version</span>         <span class="c-gray"># harus 9.x atau lebih</span>
+<span class="c-green">pm2</span> <span class="c-yellow">--version</span>         <span class="c-gray"># harus terinstal</span>
+<span class="c-green">psql</span> <span class="c-yellow">--version</span>        <span class="c-gray"># harus PostgreSQL 14+</span>
+<span class="c-green">nginx</span> <span class="c-yellow">-v</span>              <span class="c-gray"># harus terinstal</span>
+<span class="c-green">certbot</span> <span class="c-yellow">--version</span>     <span class="c-gray"># harus terinstal</span></pre>
+</div>
+
+<!-- STEP 1: UPLOAD -->
+<h2 class="h2" id="upload"><span class="step-num">01</span> Upload Kode Gateway ke VPS</h2>
+
+<p>Folder yang perlu diupload dari komputer lokal Anda adalah <code>wa-server/wa-gateway/wa-gateway-backend/</code>. Tujuan di VPS: <code>/var/www/wa-gateway/</code>.</p>
+
+<h3 class="h3">Opsi A — Upload via SCP (dari Windows PowerShell)</h3>
+
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>PowerShell — jalankan di komputer Windows Anda</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Ganti YOUR_VPS_IP dan YOUR_USER sesuai VPS Anda</span>
+<span class="c-green">scp</span> <span class="c-yellow">-r</span> <span class="c-white">"D:\Web Dev Project Apps\CRMHUB OMNICHANNEL\wa-server\wa-gateway\wa-gateway-backend"</span> <span class="c-orange">YOUR_USER@YOUR_VPS_IP</span><span class="c-white">:/var/www/wa-gateway/</span>
+
+<span class="c-gray"># Contoh dengan root:</span>
+<span class="c-green">scp</span> <span class="c-yellow">-r</span> <span class="c-white">"D:\Web Dev Project Apps\CRMHUB OMNICHANNEL\wa-server\wa-gateway\wa-gateway-backend"</span> <span class="c-orange">root@123.456.789.10</span><span class="c-white">:/var/www/wa-gateway/</span></pre>
+</div>
+
+<h3 class="h3">Opsi B — Upload via FileZilla / WinSCP (GUI)</h3>
+<ol class="doc">
+  <li>Buka FileZilla atau WinSCP, hubungkan ke VPS dengan kredensial SSH Anda</li>
+  <li>Di sisi kiri (lokal), navigasi ke <code>D:\Web Dev Project Apps\CRMHUB OMNICHANNEL\wa-server\wa-gateway\</code></li>
+  <li>Di sisi kanan (VPS), navigasi ke <code>/var/www/</code></li>
+  <li>Buat folder baru <code>wa-gateway</code> di VPS</li>
+  <li>Drag-and-drop folder <code>wa-gateway-backend</code> dari lokal ke <code>/var/www/wa-gateway/</code></li>
+</ol>
+
+<h3 class="h3">Setelah upload — verifikasi di VPS</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — SSH ke VPS</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Pastikan struktur folder benar</span>
+<span class="c-green">ls</span> <span class="c-white">/var/www/wa-gateway/wa-gateway-backend/</span>
+
+<span class="c-gray"># Output yang diharapkan:</span>
+<span class="c-green">package.json</span>  <span class="c-green">package-lock.json</span>  <span class="c-green">src/</span>  <span class="c-green">tsconfig.json</span>  <span class="c-green">pm2.config.js</span></pre>
+</div>
+
+<div class="callout c-info">
+  <div class="callout-icon">📁</div>
+  <div class="callout-body">
+    <div class="callout-title">Struktur Direktori di VPS</div>
+    Setelah upload, struktur di VPS akan seperti ini:
+  </div>
+</div>
+<div class="file-tree">
+<span class="ft-dir">/var/www/</span>
+├── <span class="ft-dir">omnichannel/</span>          <span class="ft-comment"># ← CRMHUB yang sudah ada (jangan diubah)</span>
+│   ├── <span class="ft-dir">backend/</span>
+│   └── <span class="ft-dir">frontend/</span>
+└── <span class="ft-dir">wa-gateway/</span>            <span class="ft-comment"># ← WA Gateway baru (folder ini)</span>
+    └── <span class="ft-dir">wa-gateway-backend/</span>
+        ├── <span class="ft-dir">src/</span>
+        │   ├── <span class="ft-dir">config/</span>
+        │   ├── <span class="ft-dir">plugins/</span>
+        │   ├── <span class="ft-dir">routes/</span>
+        │   ├── <span class="ft-dir">services/</span>
+        │   ├── <span class="ft-dir">utils/</span>
+        │   ├── <span class="ft-file">app.ts</span>
+        │   └── <span class="ft-file">server.ts</span>
+        ├── <span class="ft-file">package.json</span>
+        ├── <span class="ft-file">tsconfig.json</span>
+        └── <span class="ft-file">pm2.config.js</span>
+</div>
+
+<!-- STEP 2: DATABASE -->
+<h2 class="h2" id="database"><span class="step-num">02</span> Setup Database PostgreSQL (Terpisah dari CRMHUB)</h2>
+
+<div class="callout c-success">
+  <div class="callout-icon">✅</div>
+  <div class="callout-body">
+    <div class="callout-title">Database CRMHUB tidak diubah sama sekali</div>
+    Gateway menggunakan database <strong>terpisah</strong> (<code>wa_gateway_db</code>) dengan user berbeda (<code>wa_user</code>).
+    Database <code>omni_db</code> milik CRMHUB tidak disentuh.
+  </div>
+</div>
+
+<h3 class="h3">2.1 — Buat database dan user baru</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — SSH ke VPS, jalankan sebagai root</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">sudo</span> <span class="c-yellow">-u postgres psql</span></pre>
+</div>
+
+<p>Setelah masuk ke prompt psql, jalankan SQL berikut. <strong>Ganti <code>PASSWORD_BARU_ANDA</code></strong> dengan password yang kuat:</p>
+
+<div class="code-block lang-sql">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>sql — di dalam psql prompt</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray">-- Buat user baru untuk gateway (JANGAN gunakan omni_user)</span>
+<span class="c-purple">CREATE USER</span> wa_user <span class="c-purple">WITH ENCRYPTED PASSWORD</span> <span class="c-yellow">'PASSWORD_BARU_ANDA'</span><span class="c-white">;</span>
+
+<span class="c-gray">-- Buat database baru</span>
+<span class="c-purple">CREATE DATABASE</span> wa_gateway_db<span class="c-white">;</span>
+
+<span class="c-gray">-- Berikan akses penuh</span>
+<span class="c-purple">GRANT ALL PRIVILEGES ON DATABASE</span> wa_gateway_db <span class="c-purple">TO</span> wa_user<span class="c-white">;</span>
+<span class="c-purple">ALTER USER</span> wa_user <span class="c-purple">WITH SUPERUSER</span><span class="c-white">;</span>
+
+<span class="c-gray">-- Hubungkan ke database baru</span>
+<span class="c-blue">\c wa_gateway_db</span>
+
+<span class="c-gray">-- Aktifkan extension UUID</span>
+<span class="c-purple">CREATE EXTENSION IF NOT EXISTS</span> <span class="c-yellow">"uuid-ossp"</span><span class="c-white">;</span>
+
+<span class="c-gray">-- Tabel untuk admin sistem gateway</span>
+<span class="c-purple">CREATE TABLE</span> admins <span class="c-white">(</span>
+    id <span class="c-blue">UUID</span> <span class="c-purple">PRIMARY KEY DEFAULT</span> uuid_generate_v4()<span class="c-white">,</span>
+    username <span class="c-blue">VARCHAR</span><span class="c-white">(255)</span> <span class="c-purple">UNIQUE NOT NULL</span><span class="c-white">,</span>
+    password_hash <span class="c-blue">VARCHAR</span><span class="c-white">(255)</span> <span class="c-purple">NOT NULL</span><span class="c-white">,</span>
+    created_at <span class="c-blue">TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP</span>
+<span class="c-white">);</span>
+
+<span class="c-gray">-- Tabel untuk API client (CRMHUB terdaftar di sini)</span>
+<span class="c-purple">CREATE TABLE</span> clients <span class="c-white">(</span>
+    id <span class="c-blue">UUID</span> <span class="c-purple">PRIMARY KEY DEFAULT</span> uuid_generate_v4()<span class="c-white">,</span>
+    name <span class="c-blue">VARCHAR</span><span class="c-white">(255)</span> <span class="c-purple">NOT NULL</span><span class="c-white">,</span>
+    webhook_url <span class="c-blue">TEXT</span><span class="c-white">,</span>
+    api_key <span class="c-blue">VARCHAR</span><span class="c-white">(255)</span> <span class="c-purple">UNIQUE NOT NULL</span><span class="c-white">,</span>
+    created_at <span class="c-blue">TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP</span>
+<span class="c-white">);</span>
+
+<span class="c-gray">-- Tabel untuk sesi WhatsApp</span>
+<span class="c-purple">CREATE TABLE</span> sessions <span class="c-white">(</span>
+    id <span class="c-blue">UUID</span> <span class="c-purple">PRIMARY KEY DEFAULT</span> uuid_generate_v4()<span class="c-white">,</span>
+    client_id <span class="c-blue">UUID</span> <span class="c-purple">REFERENCES</span> clients<span class="c-white">(</span>id<span class="c-white">)</span> <span class="c-purple">ON DELETE CASCADE</span><span class="c-white">,</span>
+    name <span class="c-blue">VARCHAR</span><span class="c-white">(255)</span> <span class="c-purple">NOT NULL</span><span class="c-white">,</span>
+    created_at <span class="c-blue">TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP</span>
+<span class="c-white">);</span>
+
+<span class="c-gray">-- Tabel untuk menyimpan auth state Baileys (session persistence)</span>
+<span class="c-purple">CREATE TABLE</span> baileys_sessions <span class="c-white">(</span>
+    client_id <span class="c-blue">VARCHAR</span><span class="c-white">(255)</span> <span class="c-purple">NOT NULL</span><span class="c-white">,</span>
+    session_key <span class="c-blue">VARCHAR</span><span class="c-white">(255)</span> <span class="c-purple">NOT NULL</span><span class="c-white">,</span>
+    session_data <span class="c-blue">JSONB</span><span class="c-white">,</span>
+    updated_at <span class="c-blue">TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP</span><span class="c-white">,</span>
+    <span class="c-purple">PRIMARY KEY</span> <span class="c-white">(</span>client_id<span class="c-white">,</span> session_key<span class="c-white">)</span>
+<span class="c-white">);</span>
+
+<span class="c-gray">-- Keluar dari psql</span>
+<span class="c-blue">\q</span></pre>
+</div>
+
+<h3 class="h3">2.2 — Generate API key dan daftarkan CRMHUB sebagai client</h3>
+
+<p>API key ini akan digunakan di dua tempat: <code>wa_gateway_db</code> (tabel clients) dan <code>CRMHUB backend/.env</code>. Generate dulu:</p>
+
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — generate random API key</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Generate API key 64 karakter (simpan outputnya!)</span>
+<span class="c-green">openssl rand</span> <span class="c-yellow">-hex 32</span>
+
+<span class="c-gray"># Contoh output: a3f8c9d2e1b7654321fedcba9876543210abcdef1234567890abcdef12345678</span>
+<span class="c-gray"># Salin dan simpan string ini — akan dipakai di langkah berikutnya</span></pre>
+</div>
+
+<p>Sekarang daftarkan CRMHUB sebagai client di database gateway. <strong>Ganti nilai-nilai berikut:</strong></p>
+<ul class="doc">
+  <li><code>YOUR_API_KEY</code> — hasil generate dari perintah di atas</li>
+  <li><code>https://app.yourdomain.com</code> — domain CRMHUB Anda (bukan subdomain gateway)</li>
+</ul>
+
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — daftarkan CRMHUB sebagai client gateway</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">sudo</span> <span class="c-yellow">-u postgres psql -d wa_gateway_db</span> <span class="c-yellow">-c</span> <span class="c-white">"</span>
+<span class="c-purple">INSERT INTO</span> clients <span class="c-white">(</span>name<span class="c-white">,</span> webhook_url<span class="c-white">,</span> api_key<span class="c-white">)</span>
+<span class="c-purple">VALUES</span> <span class="c-white">(</span>
+  <span class="c-yellow">'CRMHUB'</span><span class="c-white">,</span>
+  <span class="c-yellow">'https://app.yourdomain.com/webhook/wa-gateway'</span><span class="c-white">,</span>
+  <span class="c-yellow">'YOUR_API_KEY'</span>
+<span class="c-white">);</span>
+<span class="c-white">"</span>
+
+<span class="c-gray"># Verifikasi berhasil dibuat:</span>
+<span class="c-green">sudo</span> <span class="c-yellow">-u postgres psql -d wa_gateway_db</span> <span class="c-yellow">-c</span> <span class="c-white">"SELECT id, name, webhook_url, LEFT(api_key,16)||'...' AS api_key FROM clients;"</span></pre>
+</div>
+
+<div class="callout c-warn">
+  <div class="callout-icon">⚠️</div>
+  <div class="callout-body">
+    <div class="callout-title">Catat CLIENT ID yang muncul</div>
+    Setelah INSERT berhasil, jalankan perintah SELECT di atas. Catat nilai <code>id</code> (UUID) dari baris client CRMHUB —
+    nilai ini dibutuhkan di langkah berikutnya untuk konfigurasi <code>CRMHUB_WEBHOOK_URL</code>
+    (sebenarnya tidak perlu manual karena sudah otomatis, tapi berguna untuk debugging).
+  </div>
+</div>
+
+<!-- STEP 3: ENV -->
+<h2 class="h2" id="env"><span class="step-num">03</span> Konfigurasi File .env Gateway</h2>
+
+<p>Buat file <code>.env</code> di dalam folder <code>wa-gateway-backend</code>:</p>
+
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">nano</span> <span class="c-white">/var/www/wa-gateway/wa-gateway-backend/.env</span></pre>
+</div>
+
+<p>Isi dengan konfigurasi berikut. <strong>Sesuaikan semua nilai yang disorot:</strong></p>
+
+<div class="code-block lang-env">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>.env — /var/www/wa-gateway/wa-gateway-backend/.env</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># ─────────────────────────────────────────────</span>
+<span class="c-gray"># WA GATEWAY BACKEND — Environment Configuration</span>
+<span class="c-gray"># ─────────────────────────────────────────────</span>
+
+<span class="c-green">NODE_ENV</span>=<span class="c-yellow">production</span>
+
+<span class="c-gray"># Port gateway — WAJIB berbeda dari CRMHUB (8998)</span>
+<span class="c-green">SERVER_PORT</span>=<span class="c-yellow">8080</span>
+
+<span class="c-gray"># Koneksi ke database gateway (BUKAN database CRMHUB)</span>
+<span class="c-gray"># Ganti PASSWORD_BARU_ANDA dengan password wa_user yang dibuat di Langkah 2</span>
+<span class="c-green">DATABASE_URL</span>=<span class="c-yellow">postgres://wa_user:PASSWORD_BARU_ANDA@localhost:5432/wa_gateway_db</span>
+
+<span class="c-gray"># JWT Secret — minimal 32 karakter, generate dengan: openssl rand -hex 32</span>
+<span class="c-green">JWT_SECRET</span>=<span class="c-yellow">GANTI_DENGAN_STRING_ACAK_MIN_32_KARAKTER</span>
+
+<span class="c-gray"># ─────────────────────────────────────────────</span>
+<span class="c-gray"># INTEGRASI CRMHUB — konfigurasi webhook</span>
+<span class="c-gray"># ─────────────────────────────────────────────</span>
+<span class="c-gray"># URL webhook CRMHUB: format https://DOMAIN_CRMHUB_ANDA/webhook/wa-gateway</span>
+<span class="c-gray"># Ganti dengan domain CRMHUB Anda yang sudah live</span>
+<span class="c-green">CRMHUB_WEBHOOK_URL</span>=<span class="c-yellow">https://app.yourdomain.com/webhook/wa-gateway</span>
+
+<span class="c-gray"># ─────────────────────────────────────────────</span>
+<span class="c-gray"># PROXY (Opsional — kosongkan jika tidak pakai)</span>
+<span class="c-gray"># ─────────────────────────────────────────────</span>
+<span class="c-green">PROXY_ENABLED</span>=<span class="c-yellow">false</span>
+<span class="c-gray"># PROXY_HOST=</span>
+<span class="c-gray"># PROXY_PORT=</span>
+<span class="c-gray"># PROXY_USERNAME=</span>
+<span class="c-gray"># PROXY_PASSWORD=</span></pre>
+</div>
+
+<table class="env-table">
+  <thead><tr><th>Variable</th><th>Keterangan</th></tr></thead>
+  <tbody>
+    <tr><td>SERVER_PORT</td><td>Port gateway. <strong>Harus 8080</strong>, berbeda dari CRMHUB port 8998</td></tr>
+    <tr><td>DATABASE_URL</td><td>Koneksi ke <code>wa_gateway_db</code>. Ganti <code>PASSWORD_BARU_ANDA</code> dengan password wa_user dari Langkah 2</td></tr>
+    <tr><td>JWT_SECRET</td><td>Secret untuk admin panel gateway. Generate: <code>openssl rand -hex 32</code></td></tr>
+    <tr><td>CRMHUB_WEBHOOK_URL</td><td>Alamat webhook CRMHUB. Format: <code>https://&lt;domain-crmhub&gt;/webhook/wa-gateway</code></td></tr>
+    <tr><td>PROXY_ENABLED</td><td>Isi <code>false</code> kecuali VPS Anda butuh proxy untuk akses WhatsApp</td></tr>
+  </tbody>
+</table>
+
+<div class="callout c-warn">
+  <div class="callout-icon">⚠️</div>
+  <div class="callout-body">
+    <div class="callout-title">Setelah selesai edit, simpan dan tutup nano</div>
+    Tekan <code>Ctrl+X</code> → <code>Y</code> → <code>Enter</code> untuk menyimpan file di nano.
+  </div>
+</div>
+
+<!-- STEP 4: BUILD -->
+<h2 class="h2" id="build"><span class="step-num">04</span> Build TypeScript &amp; Jalankan via PM2</h2>
+
+<h3 class="h3">4.1 — Install dependencies</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">cd</span> <span class="c-white">/var/www/wa-gateway/wa-gateway-backend</span>
+<span class="c-green">npm install</span>
+
+<span class="c-gray"># Proses ini membutuhkan waktu 1-3 menit</span>
+<span class="c-gray"># Baileys dan dependensinya cukup besar (~50MB)</span></pre>
+</div>
+
+<h3 class="h3">4.2 — Compile TypeScript ke JavaScript</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">npm run build</span>
+
+<span class="c-gray"># Output yang diharapkan: tanpa error, muncul folder dist/</span>
+<span class="c-green">ls</span> dist/
+<span class="c-gray"># Harus ada: server.js, app.js, dan subfolder config/, plugins/, routes/, services/, utils/</span></pre>
+</div>
+
+<div class="callout c-danger">
+  <div class="callout-icon">🚨</div>
+  <div class="callout-body">
+    <div class="callout-title">Jika ada TypeScript error saat build</div>
+    Pastikan file <code>.env</code> sudah dibuat dan <code>DATABASE_URL</code> sudah diisi.
+    Config validation berjalan saat startup, bukan saat build — tapi jika ada error TS, jalankan
+    <code>npx tsc --noEmit</code> untuk melihat detailnya.
+  </div>
+</div>
+
+<h3 class="h3">4.3 — Test jalankan sekali (opsional, untuk cek error)</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">node</span> dist/server.js
+
+<span class="c-gray"># Output sukses yang diharapkan:</span>
+<span class="c-green">[SERVER SUCCESS] Server is now listening on port 8080</span>
+
+<span class="c-gray"># Tekan Ctrl+C setelah konfirmasi berhasil</span></pre>
+</div>
+
+<h3 class="h3">4.4 — Jalankan dengan PM2 (proses permanen)</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Pastikan ada di direktori yang benar</span>
+<span class="c-green">cd</span> <span class="c-white">/var/www/wa-gateway/wa-gateway-backend</span>
+
+<span class="c-gray"># Jalankan dengan PM2 — nama "wa-gateway" (BERBEDA dari CRMHUB "omnichannel-backend")</span>
+<span class="c-green">pm2 start</span> dist/server.js <span class="c-yellow">--name</span> <span class="c-white">"wa-gateway"</span> <span class="c-yellow">--cwd</span> <span class="c-white">/var/www/wa-gateway/wa-gateway-backend</span>
+
+<span class="c-gray"># Simpan daftar PM2 agar auto-start setelah VPS reboot</span>
+<span class="c-green">pm2 save</span>
+
+<span class="c-gray"># Verifikasi kedua proses berjalan (CRMHUB + gateway)</span>
+<span class="c-green">pm2 list</span></pre>
+</div>
+
+<p>Output <code>pm2 list</code> yang diharapkan — <strong>dua proses berjalan</strong>:</p>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>expected output</div>
+  </div>
+  <pre><span class="c-green">┌─────────────────────────┬────────┬────────┬──────┐</span>
+<span class="c-green">│ name                    │ status │ cpu    │ mem  │</span>
+<span class="c-green">├─────────────────────────┼────────┼────────┼──────┤</span>
+<span class="c-white">│ omnichannel-backend     │ online │ 0%     │ ...  │</span>   <span class="c-gray">← CRMHUB (jangan diubah)</span>
+<span class="c-white">│ wa-gateway              │ online │ 0%     │ ...  │</span>   <span class="c-gray">← Gateway (baru)</span>
+<span class="c-green">└─────────────────────────┴────────┴────────┴──────┘</span></pre>
+</div>
+
+<div class="callout c-info">
+  <div class="callout-icon">💡</div>
+  <div class="callout-body">
+    <div class="callout-title">Cek log gateway jika ada masalah</div>
+    <code>pm2 logs wa-gateway --lines 50</code> — tampilkan log terakhir.<br>
+    <code>pm2 logs wa-gateway --err</code> — tampilkan hanya error.
+  </div>
+</div>
+
+<!-- STEP 5: NGINX -->
+<h2 class="h2" id="nginx"><span class="step-num">05</span> Konfigurasi Nginx &amp; SSL untuk Gateway</h2>
+
+<div class="callout c-success">
+  <div class="callout-icon">✅</div>
+  <div class="callout-body">
+    <div class="callout-title">Nginx CRMHUB tidak diubah</div>
+    Kita hanya <strong>menambahkan</strong> server block baru untuk subdomain gateway.
+    Konfigurasi CRMHUB yang sudah ada di <code>/etc/nginx/sites-enabled/</code> tidak disentuh sama sekali.
+  </div>
+</div>
+
+<h3 class="h3">5.1 — Buat server block untuk subdomain gateway</h3>
+
+<p>Ganti <code>gateway.yourdomain.com</code> dengan subdomain yang sudah Anda arahkan ke VPS ini:</p>
+
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — buat file config baru</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">nano</span> <span class="c-white">/etc/nginx/sites-available/wa-gateway</span></pre>
+</div>
+
+<div class="code-block lang-nginx">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>nginx — /etc/nginx/sites-available/wa-gateway</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># WA Gateway — server block terpisah dari CRMHUB</span>
+<span class="c-blue">server</span> {
+    <span class="c-green">listen</span> <span class="c-yellow">80</span>;
+    <span class="c-green">server_name</span> <span class="c-orange">gateway.yourdomain.com</span>;  <span class="c-gray"># ← ganti dengan subdomain Anda</span>
+
+    <span class="c-green">client_max_body_size</span> <span class="c-yellow">50M</span>;
+
+    <span class="c-blue">location</span> / {
+        <span class="c-green">proxy_pass</span>         <span class="c-yellow">http://localhost:8080</span>;
+        <span class="c-green">proxy_http_version</span> <span class="c-yellow">1.1</span>;
+        <span class="c-green">proxy_set_header</span>   Upgrade <span class="c-purple">$http_upgrade</span>;
+        <span class="c-green">proxy_set_header</span>   Connection <span class="c-yellow">'upgrade'</span>;
+        <span class="c-green">proxy_set_header</span>   Host <span class="c-purple">$host</span>;
+        <span class="c-green">proxy_set_header</span>   X-Real-IP <span class="c-purple">$remote_addr</span>;
+        <span class="c-green">proxy_set_header</span>   X-Forwarded-For <span class="c-purple">$proxy_add_x_forwarded_for</span>;
+        <span class="c-green">proxy_read_timeout</span> <span class="c-yellow">120s</span>;
+
+        <span class="c-green">add_header</span> <span class="c-yellow">'Access-Control-Allow-Origin'</span>  <span class="c-purple">$http_origin</span> always;
+        <span class="c-green">add_header</span> <span class="c-yellow">'Access-Control-Allow-Methods'</span> <span class="c-yellow">'GET, POST, PUT, DELETE, OPTIONS'</span> always;
+        <span class="c-green">add_header</span> <span class="c-yellow">'Access-Control-Allow-Headers'</span> <span class="c-yellow">'Content-Type, Authorization'</span> always;
+        <span class="c-green">add_header</span> <span class="c-yellow">'Access-Control-Allow-Credentials'</span> <span class="c-yellow">'true'</span> always;
+
+        <span class="c-blue">if</span> (<span class="c-purple">$request_method</span> = <span class="c-yellow">'OPTIONS'</span>) {
+            <span class="c-green">add_header</span> <span class="c-yellow">'Access-Control-Allow-Origin'</span>  <span class="c-purple">$http_origin</span> always;
+            <span class="c-green">add_header</span> <span class="c-yellow">'Access-Control-Allow-Methods'</span> <span class="c-yellow">'GET, POST, PUT, DELETE, OPTIONS'</span> always;
+            <span class="c-green">add_header</span> <span class="c-yellow">'Access-Control-Allow-Headers'</span> <span class="c-yellow">'Content-Type, Authorization'</span> always;
+            <span class="c-green">add_header</span> <span class="c-yellow">'Content-Type'</span> <span class="c-yellow">'text/plain; charset=utf-8'</span>;
+            <span class="c-green">add_header</span> <span class="c-yellow">'Content-Length'</span> <span class="c-yellow">0</span>;
+            <span class="c-green">return</span> <span class="c-yellow">204</span>;
+        }
+    }
+}</pre>
+</div>
+
+<h3 class="h3">5.2 — Aktifkan dan test konfigurasi</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Aktifkan server block gateway</span>
+<span class="c-green">ln</span> <span class="c-yellow">-sf</span> /etc/nginx/sites-available/wa-gateway /etc/nginx/sites-enabled/
+
+<span class="c-gray"># Test konfigurasi nginx (pastikan tidak ada error)</span>
+<span class="c-green">nginx</span> <span class="c-yellow">-t</span>
+
+<span class="c-gray"># Output yang diharapkan:</span>
+<span class="c-green">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span>
+<span class="c-green">nginx: configuration file /etc/nginx/nginx.conf test is successful</span>
+
+<span class="c-gray"># Reload nginx (BUKAN restart — agar koneksi CRMHUB tidak terputus)</span>
+<span class="c-green">systemctl reload nginx</span></pre>
+</div>
+
+<h3 class="h3">5.3 — Pasang SSL untuk subdomain gateway</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — pasang SSL hanya untuk subdomain gateway</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Ganti gateway.yourdomain.com dengan subdomain Anda</span>
+<span class="c-green">certbot</span> <span class="c-yellow">--nginx</span> <span class="c-yellow">-d</span> gateway.yourdomain.com <span class="c-yellow">--non-interactive</span> <span class="c-yellow">--agree-tos</span> <span class="c-yellow">--register-unsafely-without-email</span>
+
+<span class="c-gray"># Atau jika sudah punya email terdaftar di certbot sebelumnya:</span>
+<span class="c-green">certbot</span> <span class="c-yellow">--nginx</span> <span class="c-yellow">-d</span> gateway.yourdomain.com</pre>
+</div>
+
+<h3 class="h3">5.4 — Verifikasi gateway bisa diakses</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — test dari VPS atau browser</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Dari VPS (curl ke localhost)</span>
+<span class="c-green">curl</span> http://localhost:8080/health
+<span class="c-gray"># Expected: {"status":"ok","uptime":...}</span>
+
+<span class="c-gray"># Dari luar VPS (setelah Nginx + SSL)</span>
+<span class="c-green">curl</span> https://gateway.yourdomain.com/health
+<span class="c-gray"># Expected: {"status":"ok","uptime":...}</span></pre>
+</div>
+
+<!-- STEP 6: CRMHUB CONFIG -->
+<h2 class="h2" id="crmhub-config"><span class="step-num">06</span> Update Konfigurasi Backend CRMHUB</h2>
+
+<p>Sekarang perbarui CRMHUB untuk menggunakan gateway yang baru saja Anda deploy. Edit file <code>.env</code> backend CRMHUB:</p>
+
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — edit .env CRMHUB</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Path .env CRMHUB (sesuaikan jika berbeda)</span>
+<span class="c-green">nano</span> <span class="c-white">/var/www/omnichannel/backend/.env</span></pre>
+</div>
+
+<p>Temukan dan ubah dua baris ini:</p>
+
+<div class="code-block lang-env">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>env — perubahan di backend/.env CRMHUB</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># ─── SEBELUM (vendor eksternal) ────────────────────</span>
+<span class="c-red">WA_GATEWAY_URL=https://srv.cloudchat.id</span>
+<span class="c-red">WA_GATEWAY_API_KEY=555276cde1d9e06a2e5a3856b3c79c47281c5fb73988f17b75dc56cf478ebbee</span>
+
+<span class="c-gray"># ─── SESUDAH (gateway self-hosted Anda) ────────────</span>
+<span class="c-green">WA_GATEWAY_URL</span>=<span class="c-yellow">https://gateway.yourdomain.com</span>
+<span class="c-green">WA_GATEWAY_API_KEY</span>=<span class="c-yellow">API_KEY_YANG_DIBUAT_DI_LANGKAH_2</span></pre>
+</div>
+
+<div class="callout c-warn">
+  <div class="callout-icon">⚠️</div>
+  <div class="callout-body">
+    <div class="callout-title">APP_URL di .env CRMHUB harus sudah benar</div>
+    Pastikan <code>APP_URL</code> di <code>backend/.env</code> CRMHUB sudah diset ke domain publik CRMHUB (bukan <code>localhost</code>).
+    Gateway menggunakan nilai ini sebagai tujuan webhook. Contoh: <code>APP_URL=https://app.yourdomain.com</code>
+  </div>
+</div>
+
+<h3 class="h3">Restart CRMHUB backend</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Restart hanya backend CRMHUB, bukan gateway</span>
+<span class="c-green">pm2 restart</span> omnichannel-backend
+
+<span class="c-gray"># Verifikasi berjalan normal</span>
+<span class="c-green">pm2 logs</span> omnichannel-backend <span class="c-yellow">--lines 20</span>
+<span class="c-gray"># Tidak boleh ada error "WA_GATEWAY" atau "ECONNREFUSED"</span></pre>
+</div>
+
+<!-- STEP 7: VERIFY -->
+<h2 class="h2" id="verify"><span class="step-num">07</span> Verifikasi Integrasi &amp; Test Koneksi WhatsApp</h2>
+
+<h3 class="h3">7.1 — Cek status kedua proses</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">pm2 list</span>
+<span class="c-gray"># Harus ada: omnichannel-backend (online) dan wa-gateway (online)</span>
+
+<span class="c-green">pm2 logs</span> wa-gateway <span class="c-yellow">--lines 30</span>
+<span class="c-gray"># Tidak boleh ada error database atau port conflict</span></pre>
+</div>
+
+<h3 class="h3">7.2 — Test endpoint health gateway dari luar</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">curl</span> <span class="c-yellow">-s</span> https://gateway.yourdomain.com/health | python3 <span class="c-yellow">-m json.tool</span>
+
+<span class="c-gray"># Expected response:</span>
+<span class="c-white">{
+    "status": "ok",
+    "uptime": 42.5
+}</span></pre>
+</div>
+
+<h3 class="h3">7.3 — Test koneksi API gateway dari CRMHUB</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — ganti API_KEY_ANDA dengan nilai yang sebenarnya</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">curl</span> <span class="c-yellow">-s</span> <span class="c-yellow">-H</span> <span class="c-white">"Authorization: Bearer API_KEY_ANDA"</span> \
+  https://gateway.yourdomain.com/api/v1/sessions
+
+<span class="c-gray"># Expected: [] (array kosong — belum ada sesi)</span>
+<span class="c-gray"># Jika 401: API key salah atau client belum terdaftar di DB</span>
+<span class="c-gray"># Jika 502: gateway tidak berjalan (cek pm2 logs wa-gateway)</span></pre>
+</div>
+
+<h3 class="h3">7.4 — Hubungkan WhatsApp pertama via CRMHUB</h3>
+
+<div class="steps">
+  <div class="step-item">
+    <div class="step-dot">1</div>
+    <div class="step-body">
+      <h4>Login ke dashboard CRMHUB</h4>
+      <p>Buka browser → <code>https://app.yourdomain.com</code></p>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-dot">2</div>
+    <div class="step-body">
+      <h4>Navigasi ke WhatsApp Channels</h4>
+      <p>Settings → Channels → WhatsApp → Tambah Device Baru → pilih tipe <strong>Unofficial (Baileys)</strong></p>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-dot">3</div>
+    <div class="step-body">
+      <h4>QR Code muncul di layar</h4>
+      <p>Jika QR muncul, integrasi berhasil. Gateway berhasil membuat sesi Baileys dan mengirim QR via webhook ke CRMHUB.</p>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-dot">4</div>
+    <div class="step-body">
+      <h4>Scan QR dengan WhatsApp di HP</h4>
+      <p>Buka WhatsApp → menu ⋮ → Perangkat Tertaut → Tautkan Perangkat → scan QR di layar CRMHUB</p>
+    </div>
+  </div>
+  <div class="step-item">
+    <div class="step-dot">5</div>
+    <div class="step-body">
+      <h4>Status berubah jadi "Connected"</h4>
+      <p>Setelah scan berhasil, status di CRMHUB berubah menjadi <strong>connected</strong>. Kirim pesan test dari CRMHUB untuk memverifikasi.</p>
+    </div>
+  </div>
+</div>
+
+<div class="callout c-success">
+  <div class="callout-icon">🎉</div>
+  <div class="callout-body">
+    <div class="callout-title">Integrasi Berhasil</div>
+    Jika QR muncul dan WhatsApp bisa tersambung, semua komponen bekerja dengan benar:
+    CRMHUB → WA Gateway → Baileys → WhatsApp. Pesan masuk akan dikirim via webhook
+    ke CRMHUB dan muncul di inbox percakapan.
+  </div>
+</div>
+
+<!-- TROUBLESHOOTING -->
+<h2 class="h2" id="trouble"><span class="step-num">○</span> Troubleshooting</h2>
+
+<h3 class="h3">Gateway tidak mau start (port 8080 sudah dipakai)</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — cek proses yang menggunakan port 8080</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">lsof</span> <span class="c-yellow">-i :8080</span>
+<span class="c-gray"># Jika ada proses lain, ganti SERVER_PORT di .env gateway (misal: 8081)</span>
+<span class="c-gray"># Dan update juga proxy_pass di nginx dari 8080 ke 8081</span></pre>
+</div>
+
+<h3 class="h3">Error: FATAL: Invalid environment variables</h3>
+<div class="callout c-danger">
+  <div class="callout-icon">🚨</div>
+  <div class="callout-body">
+    <div class="callout-title">Penyebab: .env tidak ada atau ada variabel yang hilang</div>
+    Cek: <code>cat /var/www/wa-gateway/wa-gateway-backend/.env</code><br>
+    Pastikan <code>DATABASE_URL</code>, <code>JWT_SECRET</code>, dan <code>SERVER_PORT</code> terisi semua.
+    Nilai <code>JWT_SECRET</code> minimal 32 karakter.
+  </div>
+</div>
+
+<h3 class="h3">Error koneksi database: password authentication failed</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — test koneksi database manual</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Test koneksi dengan user wa_user</span>
+<span class="c-green">psql</span> <span class="c-yellow">-U</span> wa_user <span class="c-yellow">-d</span> wa_gateway_db <span class="c-yellow">-h</span> localhost <span class="c-yellow">-c</span> <span class="c-white">"SELECT 1;"</span>
+<span class="c-gray"># Masukkan password wa_user yang dibuat di Langkah 2</span>
+<span class="c-gray"># Jika gagal: password di .env salah atau user belum dibuat</span></pre>
+</div>
+
+<h3 class="h3">401 Unauthorized saat CRMHUB memanggil gateway</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — verifikasi api_key di database</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">sudo</span> <span class="c-yellow">-u postgres psql -d wa_gateway_db</span> <span class="c-yellow">-c</span> <span class="c-white">"SELECT name, LEFT(api_key,20)||'...' AS api_key, webhook_url FROM clients;"</span>
+
+<span class="c-gray"># Pastikan api_key di tabel clients SAMA PERSIS dengan WA_GATEWAY_API_KEY di .env CRMHUB</span></pre>
+</div>
+
+<h3 class="h3">QR code tidak muncul di CRMHUB (status terus "creating")</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — cek webhook delivery</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-green">pm2 logs</span> wa-gateway <span class="c-yellow">--lines 50</span>
+<span class="c-gray"># Cari baris: "[Webhook]" — apakah ada error saat kirim ke CRMHUB?</span>
+
+<span class="c-gray"># Kemungkinan penyebab:</span>
+<span class="c-gray"># 1. CRMHUB_WEBHOOK_URL di .env gateway salah</span>
+<span class="c-gray"># 2. APP_URL di .env CRMHUB masih "http://localhost:3000"</span>
+<span class="c-gray"># 3. Firewall VPS memblokir loopback ke port CRMHUB (8998)</span>
+
+<span class="c-gray"># Test webhook delivery manual (dari VPS):</span>
+<span class="c-green">curl</span> <span class="c-yellow">-X POST</span> <span class="c-yellow">-H</span> <span class="c-white">"Content-Type: application/json"</span> \
+  <span class="c-yellow">-d</span> <span class="c-white">'{"test":true}'</span> \
+  http://localhost:8998/webhook/wa-gateway
+<span class="c-gray"># Expected: 200 OK (endpoint aktif)</span></pre>
+</div>
+
+<h3 class="h3">Error saat npm install (gyp error / build tools)</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Baileys membutuhkan build tools untuk beberapa dependensi native</span>
+<span class="c-green">apt install</span> <span class="c-yellow">-y</span> build-essential python3
+
+<span class="c-gray"># Coba install ulang</span>
+<span class="c-green">cd</span> /var/www/wa-gateway/wa-gateway-backend
+<span class="c-green">rm</span> <span class="c-yellow">-rf</span> node_modules package-lock.json
+<span class="c-green">npm install</span></pre>
+</div>
+
+<h3 class="h3">Perintah PM2 berguna lainnya</h3>
+<div class="code-block lang-bash">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot"></span>bash — cheat sheet PM2</div>
+    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+  </div>
+  <pre><span class="c-gray"># Restart gateway setelah perubahan .env</span>
+<span class="c-green">pm2 restart</span> wa-gateway
+
+<span class="c-gray"># Rebuild dan restart setelah update kode</span>
+<span class="c-green">cd</span> /var/www/wa-gateway/wa-gateway-backend
+<span class="c-green">npm run build</span> &amp;&amp; <span class="c-green">pm2 restart</span> wa-gateway
+
+<span class="c-gray"># Monitor real-time</span>
+<span class="c-green">pm2 monit</span>
+
+<span class="c-gray"># Lihat semua proses (CRMHUB + gateway)</span>
+<span class="c-green">pm2 list</span>
+
+<span class="c-gray"># Auto-start saat reboot (jalankan sekali)</span>
+<span class="c-green">pm2 startup</span> &amp;&amp; <span class="c-green">pm2 save</span></pre>
+</div>
+
+<!-- FLOW DIAGRAM -->
+<h2 class="h2" id="flow"><span class="step-num">○</span> Diagram Alur Kerja Integrasi</h2>
+
+<div class="code-block">
+  <div class="code-header">
+    <div class="code-lang"><span class="lang-dot" style="background:#fff"></span>Alur: Pesan Masuk (Incoming Message)</div>
+  </div>
+  <pre style="font-size:12px;line-height:1.8">
+<span class="c-white">  HP Pelanggan</span>
+       │ kirim pesan WhatsApp
+       ▼
+<span class="c-green">  Baileys (wa-gateway:8080)</span>
+       │ menangkap pesan via WebSocket WA
+       │ POST webhook ke CRMHUB_WEBHOOK_URL
+       ▼
+<span class="c-blue">  CRMHUB Backend (omnichannel:8998)</span>
+       │ /webhook/wa-gateway
+       │ proses pesan → simpan ke DB
+       │ emit Socket.IO ke browser agent
+       ▼
+<span class="c-yellow">  Dashboard CRMHUB (browser agent)</span>
+       │ notifikasi pesan baru muncul di inbox
+
+<span class="c-white">  ─────────────────────────────────────────</span>
+
+<span class="c-white">  Alur: Pesan Keluar (Outgoing Message)</span>
+
+<span class="c-yellow">  Agent di CRMHUB</span>
+       │ klik kirim pesan
+       ▼
+<span class="c-blue">  CRMHUB Backend (omnichannel:8998)</span>
+       │ POST /api/v1/message/send-text
+       │ Authorization: Bearer API_KEY
+       ▼
+<span class="c-green">  WA Gateway (wa-gateway:8080)</span>
+       │ sock.sendMessage() via Baileys
+       ▼
+<span class="c-white">  HP Pelanggan</span>
+       │ menerima pesan WhatsApp
+
+<span class="c-white">  ─────────────────────────────────────────</span>
+
+<span class="c-white">  Alur: Scan QR (Tambah Device Baru)</span>
+
+<span class="c-yellow">  Admin CRMHUB</span>
+       │ klik "Hubungkan Device" di settings
+       ▼
+<span class="c-blue">  CRMHUB Backend</span>
+       │ POST /api/v1/sessions  { name: uuid, webhookUrl }
+       │ POST /api/v1/sessions/:uuid/start
+       ▼
+<span class="c-green">  WA Gateway</span>
+       │ inisialisasi Baileys → generate QR
+       │ POST webhook { event: "session.status.update", status: "NEED_QR" }
+       ▼
+<span class="c-blue">  CRMHUB Backend</span>
+       │ GET /api/v1/sessions/:uuid/status → { qr: "..." }
+       │ emit Socket.IO "qr_received" ke browser
+       ▼
+<span class="c-yellow">  Admin CRMHUB (browser)</span>
+       │ QR code tampil di layar
+       │ scan dengan HP → WhatsApp terhubung</pre>
+</div>
+
+<div class="cred-box">
+  <div class="cred-title">Ringkasan Konfigurasi Akhir</div>
+  <div class="cred-row">
+    <span class="cred-key">Gateway URL</span>
+    <span class="cred-val">https://gateway.yourdomain.com</span>
+  </div>
+  <div class="cred-row">
+    <span class="cred-key">Gateway Port (internal)</span>
+    <span class="cred-val">8080</span>
+  </div>
+  <div class="cred-row">
+    <span class="cred-key">WA_GATEWAY_URL (di CRMHUB .env)</span>
+    <span class="cred-val">https://gateway.yourdomain.com</span>
+  </div>
+  <div class="cred-row">
+    <span class="cred-key">WA_GATEWAY_API_KEY (di CRMHUB .env)</span>
+    <span class="cred-val">[API key yang dibuat di Langkah 2]</span>
+  </div>
+  <div class="cred-row">
+    <span class="cred-key">CRMHUB_WEBHOOK_URL (di gateway .env)</span>
+    <span class="cred-val">https://app.yourdomain.com/webhook/wa-gateway</span>
+  </div>
+  <div class="cred-row">
+    <span class="cred-key">PM2 Process CRMHUB</span>
+    <span class="cred-val">omnichannel-backend (tidak berubah)</span>
+  </div>
+  <div class="cred-row">
+    <span class="cred-key">PM2 Process Gateway</span>
+    <span class="cred-val">wa-gateway (baru)</span>
+  </div>
+</div>
+
+</div><!-- end content -->
+</main>
+
+<script>
+// ── COPY BUTTON
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Tersalin!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Salin'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── MOBILE SIDEBAR
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── SEARCH
+document.getElementById('navSearch').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+// ── SCROLL SPY + PROGRESS
+const sections = ['intro','port-check','upload','database','env','build','nginx','crmhub-config','verify','trouble','flow'];
+const navItems = {};
+sections.forEach(id => {
+  navItems[id] = document.querySelector(`[data-section="${id}"]`);
+});
+
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  document.getElementById('progressFill').style.width = progress + '%';
+
+  let active = sections[0];
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 90) active = id;
+  });
+  Object.values(navItems).forEach(n => n && n.classList.remove('active'));
+  if (navItems[active]) navItems[active].classList.add('active');
+});
+</script>
+</body>
+</html>

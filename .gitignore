@@ -1,0 +1,95 @@
+# ==========================================
+# CRMHUB OMNICHANNEL - MASTER .GITIGNORE
+# ==========================================
+
+# 1. Dependencies
+node_modules/
+*/node_modules/
+*/*/node_modules/
+*/*/*/node_modules/
+
+# 2. Production Builds & Bundles
+dist/
+*/dist/
+*/*/dist/
+*/*/*/dist/
+dist-ssr/
+build/
+.next/
+out/
+
+# 3. Environment Variables & Secrets (CRITICAL)
+.env
+.env.*
+!.env.example
+*.local
+*.env
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa*
+*service-account*.json
+*firebase*.json
+
+# 4. User Uploads, Media & Database Backups (PII & Bloat Protection)
+uploads/*
+!uploads/.gitkeep
+*/uploads/*
+!*/uploads/.gitkeep
+*/*/uploads/*
+!*/*/uploads/.gitkeep
+media/
+*/media/*
+temp/
+tmp/
+*.sql.gz
+*.sql.tar
+*.dump
+backup/
+backups/
+crmhub_backup*.sql
+# Allow essential repository migration SQL scripts
+!**/migrations/*.sql
+!**/db sql/*.sql
+!**/init_db_v2.sql
+
+# 5. WhatsApp Session Credentials & Auth Data
+sessions/
+*/sessions/*
+*/*/sessions/*
+auth_info_baileys/
+*/auth_info_baileys/*
+*/*/auth_info_baileys/*
+.wwebjs_auth/
+*/.wwebjs_auth/*
+*/*/.wwebjs_auth/*
+.wwebjs_cache/
+*/.wwebjs_cache/*
+
+# 6. Logs & Runtime Files
+logs/
+*/logs/*
+*/*/logs/*
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 7. OS & IDE Metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.bak
+.agents/
+.gemini/

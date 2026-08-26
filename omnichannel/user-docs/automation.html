@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automasi & Customer Service — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Automasi & Customer Service</div>
+      <h1>⚡ Automasi & Customer Service</h1>
+      <p class="page-subtitle">Otomasi alur kerja inbox, distribusi chat, jam operasional, dan kebijakan SLA untuk tim customer service Anda.</p>
+
+      <div class="callout callout-success">
+        <span class="callout-icon">✨</span>
+        <div class="callout-content">
+          <strong>Fitur Baru di v2.0</strong>
+          <p>Semua pengaturan automasi dan customer service tersedia di <strong>Settings</strong> pada menu kiri aplikasi, hanya dapat diakses oleh Admin.</p>
+        </div>
+      </div>
+
+      <!-- AUTO REPLY -->
+      <h2 id="auto-reply">Auto Reply</h2>
+      <p>Auto Reply memungkinkan sistem membalas pesan masuk secara otomatis berdasarkan kata kunci atau kondisi tertentu, tanpa perlu agent yang aktif.</p>
+
+      <h3>Cara Mengatur Auto Reply</h3>
+      <ol class="steps">
+        <li><strong>Buka Auto Reply</strong> — Navigasi ke <strong>Settings → Auto Reply</strong>.</li>
+        <li><strong>Klik Buat Aturan Baru</strong> — Klik tombol tambah di pojok kanan atas.</li>
+        <li><strong>Atur Trigger</strong> — Pilih kondisi pemicu: kata kunci tertentu, pesan pertama dari kontak baru, atau di luar jam kerja.</li>
+        <li><strong>Tulis Pesan Balasan</strong> — Isi teks balasan otomatis. Mendukung variabel seperti <code>{{nama}}</code> untuk personalisasi.</li>
+        <li><strong>Pilih Channel</strong> — Tentukan perangkat/channel mana yang menggunakan aturan ini (WhatsApp, Telegram, dll).</li>
+        <li><strong>Aktifkan Aturan</strong> — Toggle aktif dan klik Simpan.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Kombinasi dengan Jam Operasional</strong>
+          <p>Auto Reply paling efektif dikombinasikan dengan Jam Operasional — misalnya, kirim pesan "Kami sedang offline" di luar jam kerja secara otomatis.</p>
+        </div>
+      </div>
+
+      <!-- AUTO LABEL -->
+      <h2 id="auto-label">Auto Label</h2>
+      <p>Auto Label secara otomatis menambahkan label pada percakapan masuk berdasarkan aturan yang Anda tentukan — misalnya, label "Order" untuk pesan yang mengandung kata "pesan" atau "beli".</p>
+
+      <h3>Cara Mengatur Auto Label</h3>
+      <ol class="steps">
+        <li><strong>Buka Auto Label</strong> — Navigasi ke <strong>Settings → Auto Label</strong>.</li>
+        <li><strong>Klik Tambah Aturan</strong> — Buat aturan baru.</li>
+        <li><strong>Tentukan Kondisi</strong> — Pilih kondisi trigger: konten pesan mengandung kata kunci, channel sumber, atau status kontak.</li>
+        <li><strong>Pilih Label</strong> — Pilih label yang sudah dibuat, atau buat label baru langsung dari sini.</li>
+        <li><strong>Simpan & Aktifkan</strong> — Aturan akan langsung berlaku untuk percakapan masuk berikutnya.</li>
+      </ol>
+
+      <!-- AUTO ARCHIVE -->
+      <h2 id="auto-archive">Auto Archive</h2>
+      <p>Auto Archive mengarsipkan percakapan yang sudah selesai secara otomatis setelah periode tidak aktif tertentu, menjaga inbox tetap bersih dan terorganisir.</p>
+
+      <h3>Cara Mengatur Auto Archive</h3>
+      <ol class="steps">
+        <li><strong>Buka Auto Archive</strong> — Navigasi ke <strong>Settings → Auto Archive</strong>.</li>
+        <li><strong>Atur Durasi Tidak Aktif</strong> — Tentukan berapa hari/jam setelah percakapan terakhir baru diarsipkan (misalnya: 7 hari).</li>
+        <li><strong>Pilih Status Percakapan</strong> — Tentukan apakah yang diarsipkan hanya yang berstatus "resolved" atau semua percakapan tidak aktif.</li>
+        <li><strong>Aktifkan</strong> — Toggle aktif dan simpan. Proses pengarsipan berjalan otomatis di background.</li>
+      </ol>
+
+      <!-- AUTO ASSIGNMENT -->
+      <h2 id="auto-assignment">Auto Assignment</h2>
+      <p>Auto Assignment mendistribusikan percakapan masuk ke agent yang tersedia secara otomatis, mengurangi beban supervisor dalam mendistribusikan chat manual.</p>
+
+      <h3>Mode Distribusi</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mode</th><th>Cara Kerja</th><th>Cocok Untuk</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Round Robin</strong></td><td>Percakapan dibagi merata bergiliran ke semua agent aktif</td><td>Tim dengan beban kerja seimbang</td></tr>
+            <tr><td><strong>Load Balancing</strong></td><td>Chat diarahkan ke agent dengan jumlah percakapan aktif paling sedikit</td><td>Tim dengan kecepatan kerja berbeda</td></tr>
+            <tr><td><strong>Manual</strong></td><td>Auto assignment dinonaktifkan, supervisor assign manual</td><td>Tim kecil atau chat VIP</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Cara Mengatur Auto Assignment</h3>
+      <ol class="steps">
+        <li><strong>Buka Auto Assignment</strong> — Navigasi ke <strong>Settings → Auto Assignment</strong>.</li>
+        <li><strong>Pilih Mode Distribusi</strong> — Pilih Round Robin atau Load Balancing.</li>
+        <li><strong>Pilih Agent yang Disertakan</strong> — Centang agent-agent yang ikut menerima distribusi otomatis.</li>
+        <li><strong>Atur Channel</strong> — Tentukan channel mana yang menggunakan auto assignment.</li>
+        <li><strong>Aktifkan & Simpan</strong>.</li>
+      </ol>
+
+      <!-- WORKING HOURS -->
+      <h2 id="working-hours">Jam Operasional</h2>
+      <p>Atur jadwal operasional bisnis Anda. Di luar jam operasional, sistem dapat mengirim pesan otomatis atau menahan distribusi chat ke agent.</p>
+
+      <h3>Cara Mengatur Jam Operasional</h3>
+      <ol class="steps">
+        <li><strong>Buka Jam Operasional</strong> — Navigasi ke <strong>Settings → Jam Operasional</strong>.</li>
+        <li><strong>Pilih Hari Aktif</strong> — Centang hari-hari bisnis beroperasi (Senin–Jumat, atau termasuk Sabtu).</li>
+        <li><strong>Atur Waktu Buka & Tutup</strong> — Masukkan jam mulai dan jam selesai operasional untuk setiap hari.</li>
+        <li><strong>Atur Zona Waktu</strong> — Pastikan zona waktu sesuai dengan lokasi operasional bisnis.</li>
+        <li><strong>Pesan di Luar Jam</strong> — Opsional: tulis pesan otomatis yang dikirim ketika ada chat masuk di luar jam operasional.</li>
+        <li><strong>Simpan Pengaturan</strong>.</li>
+      </ol>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Penting</strong>
+          <p>Jam operasional memengaruhi Auto Assignment dan perhitungan SLA. Pastikan pengaturan ini benar sebelum mengaktifkan fitur-fitur tersebut.</p>
+        </div>
+      </div>
+
+      <!-- SLA -->
+      <h2 id="sla">Kebijakan SLA</h2>
+      <p>SLA (Service Level Agreement) adalah standar waktu respons yang harus dipenuhi tim CS Anda. CRMHUB mengukur dan memperingatkan saat SLA terancam terlewat.</p>
+
+      <h3>Metrik SLA yang Diukur</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metrik</th><th>Definisi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>First Response Time</strong></td><td>Waktu dari pesan masuk pertama hingga agent pertama kali membalas</td></tr>
+            <tr><td><strong>Resolution Time</strong></td><td>Waktu total dari percakapan dibuka hingga ditandai selesai (resolved)</td></tr>
+            <tr><td><strong>Next Response Time</strong></td><td>Waktu maksimal untuk merespons pesan lanjutan dari pelanggan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Cara Mengatur Kebijakan SLA</h3>
+      <ol class="steps">
+        <li><strong>Buka Kebijakan SLA</strong> — Navigasi ke <strong>Settings → Kebijakan SLA</strong>.</li>
+        <li><strong>Buat Kebijakan Baru</strong> — Klik tombol Tambah Kebijakan.</li>
+        <li><strong>Beri Nama Kebijakan</strong> — Contoh: "SLA Standard", "SLA Priority".</li>
+        <li><strong>Atur Target Waktu</strong> — Masukkan batas waktu untuk First Response dan Resolution Time (dalam menit atau jam).</li>
+        <li><strong>Aktifkan Notifikasi</strong> — Pilih apakah sistem mengirim peringatan ke supervisor saat SLA hampir terlewat.</li>
+        <li><strong>Terapkan ke Channel</strong> — Pilih channel atau divisi yang menggunakan kebijakan ini.</li>
+        <li><strong>Simpan</strong>.</li>
+      </ol>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">📊</span>
+        <div class="callout-content">
+          <strong>Pantau SLA di Laporan</strong>
+          <p>Data pemenuhan SLA dapat dilihat di halaman <strong>Laporan & Analitik</strong>. Tersedia filter per agent, channel, dan periode waktu untuk analisis performa tim.</p>
+        </div>
+      </div>
+
+      <!-- MULTI-LANGUAGE AI -->
+      <h2 id="multi-language">Multi-Language AI</h2>
+      <p>Fitur ini memungkinkan chatbot dan sistem memahami serta membalas pesan dalam berbagai bahasa secara otomatis menggunakan kecerdasan buatan.</p>
+
+      <h3>Cara Mengaktifkan Multi-Language AI</h3>
+      <ol class="steps">
+        <li><strong>Buka Multi-Language AI</strong> — Navigasi ke <strong>Settings → Multi-Language AI</strong>.</li>
+        <li><strong>Aktifkan Deteksi Bahasa Otomatis</strong> — Toggle untuk mengaktifkan deteksi bahasa dari pesan masuk.</li>
+        <li><strong>Pilih Bahasa yang Didukung</strong> — Centang bahasa-bahasa yang ingin didukung (Indonesia, English, Mandarin, Arab, dll).</li>
+        <li><strong>Atur Bahasa Default</strong> — Pilih bahasa fallback jika bahasa tidak terdeteksi.</li>
+        <li><strong>Simpan & Uji</strong> — Kirim pesan uji dalam berbagai bahasa untuk memastikan sistem mendeteksi dengan benar.</li>
+      </ol>
+
+      <div class="page-nav">
+        <a href="chatbot.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Chatbot &amp; Flow Builder</div></a>
+        <a href="invoicing.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Invoice &amp; Tagihan</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#auto-reply">Auto Reply</a>
+      <a href="#auto-label">Auto Label</a>
+      <a href="#auto-archive">Auto Archive</a>
+      <a href="#auto-assignment">Auto Assignment</a>
+      <a href="#working-hours">Jam Operasional</a>
+      <a href="#sla">Kebijakan SLA</a>
+      <a href="#multi-language">Multi-Language AI</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('automation.html');</script>
+</body>
+</html>

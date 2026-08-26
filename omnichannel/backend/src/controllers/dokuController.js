@@ -1,0 +1,165 @@
+import pool from '../config/db.js';
+import * as dokuHelper from '../utils/dokuHelper.js';
+import { sendInvoice } from '../services/emailService.js';
+import { sendSystemNotification } from '../services/notificationService.js';
+import { processAffiliateCommission } from './affiliateController.js';
+
+export const handleDokuWebhook = async (req, res) => {
+    // 1. Verify Signature
+    const isSignatureValid = dokuHelper.verifyNotificationSignature(
+        req.headers,
+        req.rawBody || req.body,
+        '/webhook/doku'
+    );
+
+    if (!isSignatureValid) {
+        console.error("[DOKU Webhook] Invalid Signature");
+        return res.status(401).json({ message: "Invalid Signature" });
+    }
+
+    const { transaction, order } = req.body;
+    const invoice_number = order.invoice_number;
+    const status = transaction.status;
+
+    if (status !== 'SUCCESS') return res.sendStatus(200);
+
+    if (invoice_number === 'INV-TEST-SIGNATURE-VERIFY') {
+        console.log(`[DOKU Webhook] Test Signature Verification Success for ${invoice_number}`);
+        return res.status(200).json({ message: "Signature Verified (Test Mode)" });
+    }
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const trxRes = await client.query(
+            `SELECT t.*, u.name as user_name, u.phone, u.email, o.name as org_name
+             FROM transactions t
+             JOIN organizations o ON t.organization_id = o.id
+             LEFT JOIN users u ON t.organization_id = u.organization_id AND u.role IN ('admin_member', 'super_admin')
+             WHERE t.invoice_number = $1
+             LIMIT 1`,
+            [invoice_number]
+        );
+
+        if (trxRes.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).send('Transaction not found');
+        }
+        const trx = trxRes.rows[0];
+
+        if (trx.status === 'success') {
+            await client.query('ROLLBACK');
+            return res.sendStatus(200);
+        }
+
+        await client.query(
+            `UPDATE transactions SET status = 'success', approved_at = NOW(), payment_method = 'DOKU_AUTO' WHERE id = $1`,
+            [trx.id]
+        );
+
+        if (trx.addon_id) {
+            const addonRes = await client.query('SELECT duration_days, name FROM addons WHERE id = $1', [trx.addon_id]);
+            const addon = addonRes.rows[0];
+            const duration = addon?.duration_days || 30;
+
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + duration);
+
+            let subId;
+            const subRes = await client.query(
+                'SELECT id FROM subscriptions WHERE organization_id = $1 AND status = \'active\'',
+                [trx.organization_id]
+            );
+
+            if (subRes.rows.length > 0) {
+                subId = subRes.rows[0].id;
+                await client.query(
+                    `INSERT INTO subscription_addons (subscription_id, addon_id, quantity, price_at_purchase, expires_at, status)
+                     VALUES ($1, $2, $3, $4, $5, 'active')`,
+                    [subId, trx.addon_id, 1, trx.amount, expiresAt]
+                );
+            } else {
+                const newSub = await client.query(
+                    `INSERT INTO subscriptions (organization_id, plan_id, status, expires_at)
+                     VALUES ($1, 1, 'active', NOW() + interval '1 year') RETURNING id`,
+                    [trx.organization_id]
+                );
+                subId = newSub.rows[0].id;
+
+                await client.query(
+                    `INSERT INTO subscription_addons (subscription_id, addon_id, quantity, price_at_purchase, expires_at, status)
+                     VALUES ($1, $2, $3, $4, $5, 'active')`,
+                    [subId, trx.addon_id, 1, trx.amount, expiresAt]
+                );
+            }
+            trx.item_name = addon?.name || 'Add-on';
+
+        } else if (trx.plan_id) {
+            const planRes = await client.query('SELECT name FROM plans WHERE id = $1', [trx.plan_id]);
+            trx.item_name = planRes.rows[0]?.name || 'Subscription Plan';
+
+            let durationMonths = trx.cycle === 'yearly' ? 12 : 1;
+            const now = new Date();
+            let newExpiresAt;
+
+            const subRes = await client.query(
+                'SELECT * FROM subscriptions WHERE organization_id = $1 AND status = \'active\'',
+                [trx.organization_id]
+            );
+
+            if (subRes.rows.length > 0) {
+                const currentExpiry = new Date(subRes.rows[0].expires_at);
+                const baseDate = currentExpiry > now ? currentExpiry : now;
+                const nextDate = new Date(baseDate);
+                nextDate.setMonth(nextDate.getMonth() + durationMonths);
+                newExpiresAt = nextDate;
+
+                await client.query(
+                    'UPDATE subscriptions SET plan_id = $1, expires_at = $2, updated_at = NOW() WHERE id = $3',
+                    [trx.plan_id, newExpiresAt, subRes.rows[0].id]
+                );
+            } else {
+                const nextDate = new Date();
+                nextDate.setMonth(nextDate.getMonth() + durationMonths);
+                newExpiresAt = nextDate;
+
+                await client.query(
+                    `INSERT INTO subscriptions (organization_id, plan_id, status, expires_at) VALUES ($1, $2, 'active', $3)`,
+                    [trx.organization_id, trx.plan_id, newExpiresAt]
+                );
+            }
+
+            await client.query(
+                'UPDATE organizations SET plan_id = $1, subscription_status = \'active\' WHERE id = $2',
+                [trx.plan_id, trx.organization_id]
+            );
+        }
+
+        // --- AFFILIATE COMMISSION HOOK ---
+        await processAffiliateCommission(trx, client);
+
+        await client.query('COMMIT');
+        sendInvoice(trx.id).catch(err => console.error("Failed to send invoice email", err));
+
+        sendSystemNotification('order_success', {
+            name: trx.user_name || 'System User',
+            phone: trx.phone || '-',
+            email: trx.email || '-',
+            org_name: trx.org_name || 'Organization'
+        }, {
+            item_name: trx.item_name,
+            amount: parseInt(trx.amount).toLocaleString('id-ID'),
+            invoice_url: `${process.env.APP_URL}/invoice/${trx.invoice_number}`
+        });
+
+        res.sendStatus(200);
+
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error("[DOKU Webhook] Error processing:", err);
+        res.sendStatus(500);
+    } finally {
+        client.release();
+    }
+};

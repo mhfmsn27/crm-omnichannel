@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline CRM — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Manajemen<span>›</span>Pipeline CRM</div>
+      <h1>🔄 Pipeline CRM</h1>
+      <p class="page-subtitle">Kelola peluang penjualan dari prospek hingga closing menggunakan papan Kanban yang intuitif dan terintegrasi dengan inbox percakapan.</p>
+
+      <h2 id="overview">Gambaran Fitur</h2>
+      <p>Pipeline CRM membantu tim Anda melacak setiap peluang penjualan secara visual. Setiap kontak atau deal bisa dipindahkan antar tahap cukup dengan seret-dan-lepas (drag and drop). Pipeline terintegrasi langsung dengan inbox percakapan, sehingga tidak perlu berpindah aplikasi.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">🗂️</span>
+          <div><h4>Multi Pipeline</h4><p>Buat beberapa pipeline berbeda untuk proses bisnis yang berbeda — misalnya Penjualan, After Sales, dan Rekrutmen</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🃏</span>
+          <div><h4>Papan Kanban</h4><p>Visualisasi deal per tahap dengan kartu yang bisa diseret antar kolom</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📝</span>
+          <div><h4>Detail Deal</h4><p>Catat nilai deal, catatan agen, lampiran, dan riwayat aktivitas di satu tempat</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📈</span>
+          <div><h4>Laporan Pipeline</h4><p>Pantau konversi per tahap, nilai total deal, dan performa tim</p></div>
+        </div>
+      </div>
+
+      <h2 id="buat-pipeline">Membuat Pipeline Baru</h2>
+      <p>Setiap pipeline mewakili satu alur proses bisnis. Anda bisa membuat sebanyak yang diperlukan.</p>
+      <ol class="steps">
+        <li>Buka menu <strong>Pipeline</strong> di sidebar.</li>
+        <li>Klik tombol <em>"+ Buat Pipeline"</em> di pojok kanan atas.</li>
+        <li>Beri nama pipeline (contoh: "Penjualan B2B", "After Sales", "Lead Prospek").</li>
+        <li>Tambahkan deskripsi singkat agar tim memahami tujuan pipeline ini.</li>
+        <li>Klik <strong>Simpan</strong>. Pipeline baru akan muncul di daftar pipeline Anda.</li>
+      </ol>
+
+      <h2 id="tahapan">Mengatur Tahapan Pipeline</h2>
+      <p>Setiap pipeline terdiri dari beberapa <strong>tahap (stage)</strong> yang merepresentasikan langkah-langkah proses bisnis Anda.</p>
+
+      <h3>Contoh Tahapan untuk Pipeline Penjualan</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tahap</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Prospek Baru</strong></td><td>Kontak baru yang belum dihubungi</td></tr>
+            <tr><td><strong>Dihubungi</strong></td><td>Sudah ada komunikasi awal</td></tr>
+            <tr><td><strong>Negosiasi</strong></td><td>Sedang dalam proses tawar-menawar harga/syarat</td></tr>
+            <tr><td><strong>Penawaran Terkirim</strong></td><td>Proposal atau invoice sudah dikirim</td></tr>
+            <tr><td><strong>Closing</strong></td><td>Deal berhasil ditutup</td></tr>
+            <tr><td><strong>Tidak Jadi</strong></td><td>Deal gagal atau ditolak</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Cara Menambah dan Mengedit Tahapan</h3>
+      <ol class="steps">
+        <li>Masuk ke pipeline yang ingin diatur, lalu klik ikon <strong>⚙️ Pengaturan Pipeline</strong>.</li>
+        <li>Di bagian <strong>Tahapan</strong>, klik <em>"+ Tambah Tahap"</em>.</li>
+        <li>Beri nama tahap, pilih warna label, dan atur apakah tahap ini termasuk kategori "Menang" atau "Kalah".</li>
+        <li>Urutkan tahapan dengan menyeret ikon urutan ke posisi yang diinginkan.</li>
+        <li>Klik <strong>Simpan</strong>.</li>
+      </ol>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Kategori Tahap</strong>
+          <p>Tandai tahap sebagai <strong>"Menang"</strong> (contoh: Closing) atau <strong>"Kalah"</strong> (contoh: Tidak Jadi) agar laporan konversi pipeline dihitung dengan tepat.</p>
+        </div>
+      </div>
+
+      <h2 id="tambah-deal">Menambahkan Deal ke Pipeline</h2>
+      <p>Deal adalah satu entri di pipeline — bisa berupa kontak, peluang penjualan, atau tiket layanan, tergantung jenis pipeline Anda.</p>
+
+      <h3>Cara Menambah Deal Baru</h3>
+      <ol class="steps">
+        <li>Buka pipeline yang diinginkan.</li>
+        <li>Di kolom tahap pertama (atau tahap manapun), klik <em>"+ Tambah Deal"</em>.</li>
+        <li>Isi informasi deal:
+          <ul>
+            <li><strong>Nama Deal</strong> — nama peluang atau nama kontak</li>
+            <li><strong>Kontak Terkait</strong> — pilih dari daftar kontak CRMHUB</li>
+            <li><strong>Nilai Deal</strong> — estimasi nilai penjualan (opsional)</li>
+            <li><strong>Tanggal Target</strong> — deadline atau expected closing date</li>
+            <li><strong>Assign ke Agent</strong> — pilih agent yang bertanggung jawab</li>
+          </ul>
+        </li>
+        <li>Klik <strong>Simpan</strong>. Kartu deal muncul di kolom tahap yang dipilih.</li>
+      </ol>
+
+      <h3>Membuat Deal dari Percakapan Inbox</h3>
+      <p>Anda juga bisa langsung membuat deal dari dalam percakapan tanpa membuka menu Pipeline:</p>
+      <ol class="steps">
+        <li>Buka percakapan di inbox.</li>
+        <li>Di panel kanan percakapan, temukan bagian <strong>Pipeline</strong>.</li>
+        <li>Klik <em>"+ Tambahkan ke Pipeline"</em>.</li>
+        <li>Pilih pipeline dan tahap yang sesuai, lalu isi detail deal.</li>
+        <li>Deal langsung terhubung ke percakapan ini.</li>
+      </ol>
+
+      <h2 id="kanban">Menggunakan Papan Kanban</h2>
+      <p>Papan Kanban adalah tampilan utama pipeline yang menampilkan semua deal dalam kolom bertahap.</p>
+
+      <h3>Navigasi Kanban</h3>
+      <ul>
+        <li><strong>Kolom</strong> — setiap kolom mewakili satu tahap pipeline</li>
+        <li><strong>Kartu Deal</strong> — menampilkan nama deal, kontak, nilai, dan agent yang di-assign</li>
+        <li><strong>Badge Warna</strong> — warna sesuai tahap yang dikonfigurasi</li>
+        <li><strong>Indikator Overdue</strong> — kartu yang melewati tanggal target ditandai merah</li>
+      </ul>
+
+      <h3>Memindahkan Deal Antar Tahap</h3>
+      <p>Ada dua cara memindahkan deal ke tahap lain:</p>
+      <ul>
+        <li><strong>Drag and Drop</strong> — seret kartu deal dari satu kolom ke kolom lain</li>
+        <li><strong>Dari Detail Deal</strong> — buka detail deal, lalu ubah tahap melalui dropdown "Tahap Saat Ini"</li>
+      </ul>
+
+      <h3>Filter Kanban</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Filter</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Agent</strong></td><td>Tampilkan hanya deal milik agent tertentu</td></tr>
+            <tr><td><strong>Tanggal</strong></td><td>Filter berdasarkan tanggal target atau tanggal dibuat</td></tr>
+            <tr><td><strong>Label</strong></td><td>Filter berdasarkan label yang ditempelkan ke deal</td></tr>
+            <tr><td><strong>Nilai Deal</strong></td><td>Filter deal di atas atau di bawah nilai tertentu</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="detail-deal">Detail Deal</h2>
+      <p>Klik kartu deal di papan Kanban untuk membuka panel detail. Di sini Anda bisa melihat dan mengelola semua informasi terkait deal tersebut.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bagian</th><th>Isi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Info Dasar</strong></td><td>Nama deal, nilai, tanggal target, tahap saat ini, agent penanggung jawab</td></tr>
+            <tr><td><strong>Kontak Terkait</strong></td><td>Nama dan nomor kontak, tombol langsung menuju percakapan di inbox</td></tr>
+            <tr><td><strong>Catatan</strong></td><td>Catatan bebas dari agent — hasil diskusi, kesepakatan, atau hal yang perlu di-follow-up</td></tr>
+            <tr><td><strong>Lampiran</strong></td><td>File dokumen, proposal, atau gambar yang relevan</td></tr>
+            <tr><td><strong>Log Aktivitas</strong></td><td>Riwayat otomatis: kapan deal dibuat, dipindah tahap, atau diperbarui</td></tr>
+            <tr><td><strong>Percakapan Terkait</strong></td><td>Link ke percakapan inbox yang terhubung ke deal ini</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Menambah Catatan ke Deal</h3>
+      <ol class="steps">
+        <li>Buka detail deal yang diinginkan.</li>
+        <li>Scroll ke bagian <strong>Catatan</strong>.</li>
+        <li>Klik <em>"+ Tambah Catatan"</em> dan tulis catatan Anda.</li>
+        <li>Klik <strong>Simpan Catatan</strong>. Catatan tersimpan beserta timestamp dan nama agent.</li>
+      </ol>
+
+      <h2 id="integrasi">Integrasi Pipeline dengan Fitur Lain</h2>
+
+      <h3>Pipeline + Broadcast</h3>
+      <p>Kirim broadcast yang ditargetkan ke kontak berdasarkan tahap pipeline mereka. Saat membuat broadcast, pada bagian <strong>Pilih Penerima</strong>, pilih filter <em>"Berdasarkan Pipeline"</em> lalu pilih pipeline dan tahap yang diinginkan.</p>
+
+      <h3>Pipeline + Invoice</h3>
+      <p>Buat invoice langsung dari halaman detail deal saat deal mencapai tahap penawaran:</p>
+      <ol class="steps">
+        <li>Buka detail deal.</li>
+        <li>Klik tombol <em>"Buat Invoice"</em> di panel kanan.</li>
+        <li>Form invoice terbuka dengan nama kontak dan nilai deal sudah terisi otomatis.</li>
+        <li>Lengkapi detail invoice dan kirim ke kontak via WhatsApp.</li>
+      </ol>
+
+      <h3>Pipeline + Chatbot</h3>
+      <p>Di Flow Builder, tambahkan node <strong>"Tambah ke Pipeline"</strong> untuk otomatis memasukkan kontak ke pipeline tertentu saat mengisi form atau memenuhi kondisi chatbot. Misalnya: saat pelanggan memilih "Ya, saya tertarik", kontak otomatis masuk ke pipeline "Penjualan" di tahap "Prospek Baru".</p>
+
+      <h2 id="laporan">Laporan Pipeline</h2>
+      <p>Pantau performa pipeline di <strong>Analytics → Pipeline Penjualan</strong>:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metrik</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Total Deal</strong></td><td>Jumlah deal aktif di semua tahap</td></tr>
+            <tr><td><strong>Total Nilai</strong></td><td>Estimasi nilai agregat semua deal aktif</td></tr>
+            <tr><td><strong>Tingkat Konversi</strong></td><td>Persentase deal yang mencapai tahap "Menang"</td></tr>
+            <tr><td><strong>Rata-rata Siklus Deal</strong></td><td>Waktu rata-rata dari tahap pertama ke penutupan</td></tr>
+            <tr><td><strong>Deal per Agent</strong></td><td>Distribusi deal berdasarkan agent penanggung jawab</td></tr>
+            <tr><td><strong>Deal Overdue</strong></td><td>Deal yang melewati tanggal target tanpa pergerakan</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Lihat panduan lengkap di <a href="analytics.html#sales-pipeline">Laporan Pipeline Penjualan</a>.</p>
+
+      <div class="page-nav">
+        <a href="billing.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Langganan &amp; Billing</div></a>
+        <a href="settings.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Pengaturan</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#overview">Gambaran Fitur</a>
+      <a href="#buat-pipeline">Membuat Pipeline</a>
+      <a href="#tahapan">Mengatur Tahapan</a>
+      <a href="#tambah-deal">Menambahkan Deal</a>
+      <a href="#kanban">Papan Kanban</a>
+      <a href="#detail-deal">Detail Deal</a>
+      <a href="#integrasi">Integrasi</a>
+      <a href="#laporan">Laporan Pipeline</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('pipeline.html');</script>
+</body>
+</html>

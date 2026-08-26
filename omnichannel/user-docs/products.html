@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produk & Katalog — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Manajemen<span>›</span>Produk & Katalog</div>
+      <h1>📦 Produk & Katalog</h1>
+      <p class="page-subtitle">Kelola katalog produk dan layanan bisnis Anda — gunakan dalam pembuatan invoice, broadcast, dan balasan otomatis kepada pelanggan.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Integrasi Lintas Fitur</strong>
+          <p>Data produk yang Anda buat di sini terintegrasi langsung dengan fitur Invoice, Pipeline CRM, dan Chatbot — sehingga tidak perlu input ulang di setiap fitur.</p>
+        </div>
+      </div>
+
+      <h2 id="gambaran">Gambaran Fitur</h2>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">📦</span><div><h4>Produk & Jasa</h4><p>Dukung dua tipe item: Produk fisik dan Jasa/layanan.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🏷️</span><div><h4>Kategori & Warna</h4><p>Kelompokkan produk dalam kategori dengan kode warna untuk navigasi mudah.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🔍</span><div><h4>Pencarian & Filter</h4><p>Cari produk berdasarkan nama, SKU, atau kategori dengan cepat.</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🔄</span><div><h4>Toggle Aktif/Nonaktif</h4><p>Nonaktifkan produk tanpa menghapusnya agar tidak muncul di pilihan invoice.</p></div></div>
+      </div>
+
+      <h2 id="tipe-produk">Tipe Produk</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tipe</th><th>Kapan Digunakan</th><th>Contoh Satuan</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-blue">Produk</span></td>
+              <td>Barang fisik yang dijual</td>
+              <td>pcs, unit, kg, gram, liter, box, karton, lusin</td>
+            </tr>
+            <tr>
+              <td><span class="badge" style="background:#f3e8ff;color:#7c3aed;">Jasa</span></td>
+              <td>Layanan non-fisik yang ditawarkan</td>
+              <td>jam, hari, sesi, proyek, kunjungan, orang</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="kategori">Mengelola Kategori</h2>
+      <p>Sebelum menambah produk, sebaiknya buat kategori terlebih dahulu untuk pengelompokan yang rapi.</p>
+      <ol class="steps">
+        <li><strong>Buka Products</strong> — Klik menu <strong>Products</strong> di sidebar navigasi.</li>
+        <li><strong>Klik Kelola Kategori</strong> — Tombol di pojok kanan atas halaman.</li>
+        <li><strong>Isi Nama Kategori</strong> — Contoh: "Elektronik", "Makanan", "Konsultasi".</li>
+        <li><strong>Pilih Warna</strong> — Gunakan color picker untuk membedakan kategori secara visual.</li>
+        <li><strong>Klik Tambah</strong> — Kategori langsung tersedia untuk dipilih saat membuat produk.</li>
+      </ol>
+      <p>Untuk menghapus kategori, klik ikon 🗑️ di samping nama kategori. Produk yang sudah menggunakan kategori tersebut tidak akan ikut terhapus.</p>
+
+      <h2 id="tambah-produk">Menambah Produk Baru</h2>
+      <ol class="steps">
+        <li><strong>Klik + Tambah Produk</strong> — Tombol di pojok kanan atas daftar produk.</li>
+        <li><strong>Pilih Tipe</strong> — Produk atau Jasa.</li>
+        <li><strong>Isi Nama Produk</strong> — Nama yang akan muncul di invoice dan pilihan item.</li>
+        <li><strong>Masukkan SKU/Kode</strong> — Kode unik produk (opsional, berguna untuk manajemen inventaris).</li>
+        <li><strong>Isi Harga</strong> — Harga dalam Rupiah. Format otomatis.</li>
+        <li><strong>Pilih Satuan</strong> — pcs, kg, jam, dll sesuai tipe produk.</li>
+        <li><strong>Pilih Kategori</strong> — Kelompokkan produk ke dalam kategori yang sudah dibuat.</li>
+        <li><strong>Upload Foto Produk</strong> — Foto akan tampil saat produk dipilih di invoice (opsional).</li>
+        <li><strong>Tambah Deskripsi</strong> — Deskripsi singkat produk (opsional).</li>
+        <li><strong>Klik Simpan</strong>.</li>
+      </ol>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">📌</span>
+        <div class="callout-content">
+          <strong>SKU (Stock Keeping Unit)</strong>
+          <p>SKU adalah kode unik untuk setiap produk. Gunakan SKU yang konsisten agar mudah dicari dan diidentifikasi, misalnya: <code>ELEC-001</code>, <code>SVC-KONSUL</code>.</p>
+        </div>
+      </div>
+
+      <h2 id="edit-nonaktifkan">Mengedit & Menonaktifkan Produk</h2>
+
+      <h3>Edit Produk</h3>
+      <p>Klik ikon pensil (✏️) pada baris produk di daftar untuk membuka form edit. Ubah data yang diperlukan, lalu klik Simpan.</p>
+
+      <h3>Nonaktifkan Produk</h3>
+      <p>Klik toggle <strong>Aktif/Nonaktif</strong> pada baris produk. Produk yang nonaktif tidak akan muncul sebagai pilihan saat membuat invoice baru, tetapi data historis tetap tersimpan.</p>
+
+      <h3>Hapus Produk</h3>
+      <p>Klik ikon tempat sampah (🗑️) lalu konfirmasi. Perhatikan: produk yang sudah digunakan dalam invoice tidak disarankan dihapus untuk menjaga integritas data historis — lebih baik nonaktifkan saja.</p>
+
+      <h2 id="filter-cari">Filter & Pencarian</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cara Filter</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Kolom Pencarian</strong></td><td>Cari berdasarkan nama produk atau SKU</td></tr>
+            <tr><td><strong>Filter Kategori</strong></td><td>Tampilkan produk dari kategori tertentu saja</td></tr>
+            <tr><td><strong>Filter Tipe</strong></td><td>Tampilkan hanya Produk atau hanya Jasa</td></tr>
+            <tr><td><strong>Paginasi</strong></td><td>Navigasi halaman untuk daftar produk yang banyak</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="di-invoice">Penggunaan di Invoice</h2>
+      <p>Saat membuat invoice, klik <strong>+ Tambah Item</strong> lalu mulai ketik nama produk. Sistem akan menampilkan autocomplete dari katalog produk Anda. Pilih produk, ubah jumlah jika perlu, dan harga otomatis terisi sesuai data katalog.</p>
+
+      <h2 id="ecommerce">Integrasi E-Commerce</h2>
+      <p>Jika Anda menggunakan platform e-commerce (Shopify, WooCommerce, Tokopedia, Lazada), produk dapat disinkronisasi otomatis melalui menu <strong>Settings → Integrasi E-Commerce</strong>. Konfigurasi koneksi API e-commerce Anda agar data produk selalu sinkron.</p>
+
+      <div class="page-nav">
+        <a href="invoicing.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Invoice & Tagihan</div></a>
+        <a href="templates.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Templates & Quick Reply</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#gambaran">Gambaran Fitur</a>
+      <a href="#tipe-produk">Tipe Produk</a>
+      <a href="#kategori">Mengelola Kategori</a>
+      <a href="#tambah-produk">Menambah Produk</a>
+      <a href="#edit-nonaktifkan">Edit & Nonaktifkan</a>
+      <a href="#filter-cari">Filter & Pencarian</a>
+      <a href="#di-invoice">Penggunaan di Invoice</a>
+      <a href="#ecommerce">Integrasi E-Commerce</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('products.html');</script>
+</body>
+</html>

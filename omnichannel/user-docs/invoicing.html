@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice & Tagihan — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Invoice &amp; Tagihan</div>
+      <h1>🧾 Invoice &amp; Tagihan</h1>
+      <p class="page-subtitle">Buat, kirim, dan kelola invoice pelanggan langsung dari CRMHUB — terintegrasi dengan percakapan WhatsApp.</p>
+
+      <p>Fitur Invoicing memungkinkan Anda membuat tagihan profesional dan mengirimkannya langsung ke pelanggan via WhatsApp, tanpa perlu berpindah ke aplikasi lain. Akses melalui menu <strong>Invoicing</strong> di sidebar.</p>
+
+      <h2 id="overview">Gambaran Fitur</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">📄</span>
+          <div><h4>Buat Invoice</h4><p>Invoice profesional dengan logo, nomor otomatis, daftar item, pajak, dan diskon</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📱</span>
+          <div><h4>Kirim via WhatsApp</h4><p>Kirim invoice langsung ke nomor WhatsApp pelanggan dengan satu klik</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">💰</span>
+          <div><h4>Tandai Lunas</h4><p>Update status pembayaran dan catat tanggal pelunasan</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📊</span>
+          <div><h4>Statistik Tagihan</h4><p>Pantau total tagihan, yang sudah dibayar, dan yang masih tertunda</p></div>
+        </div>
+      </div>
+
+      <h2 id="buat-invoice">Cara Membuat Invoice</h2>
+      <ol class="steps">
+        <li><strong>Buka Menu Invoicing</strong> — Klik menu <strong>Invoicing</strong> di sidebar kiri.</li>
+        <li><strong>Klik Buat Invoice</strong> — Klik tombol <em>"+ Buat Invoice"</em> di pojok kanan atas.</li>
+        <li><strong>Pilih Pelanggan</strong> — Ketik nama atau nomor pelanggan. Sistem akan mencari dari daftar kontak yang ada.</li>
+        <li><strong>Isi Detail Invoice</strong> — Masukkan nomor invoice (atau biarkan otomatis), tanggal, dan tanggal jatuh tempo.</li>
+        <li><strong>Tambah Item</strong> — Klik <em>"Tambah Item"</em> untuk setiap produk/jasa. Isi nama, jumlah, harga satuan.</li>
+        <li><strong>Atur Pajak &amp; Diskon</strong> — Opsional: tambahkan persentase pajak (PPN) atau diskon.</li>
+        <li><strong>Simpan Invoice</strong> — Klik Simpan. Invoice tersimpan dengan status "Draft".</li>
+      </ol>
+
+      <h2 id="kirim-invoice">Mengirim Invoice ke Pelanggan</h2>
+      <ol class="steps">
+        <li>Buka invoice yang ingin dikirim dari daftar Invoicing.</li>
+        <li>Klik tombol <em>"Kirim via WhatsApp"</em>.</li>
+        <li>Sistem akan membuka chat ke nomor WhatsApp pelanggan dan mengirimkan link invoice beserta ringkasan tagihan.</li>
+        <li>Pelanggan dapat membuka link untuk melihat invoice lengkap dalam format yang rapi.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Download PDF</strong>
+          <p>Invoice juga dapat diunduh dalam format PDF untuk dikirim via email atau disimpan sebagai arsip bisnis. Klik tombol <em>"Download PDF"</em> di halaman detail invoice.</p>
+        </div>
+      </div>
+
+      <h2 id="status">Status Invoice</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Arti</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-blue">Draft</span></td><td>Invoice dibuat tapi belum dikirim ke pelanggan</td></tr>
+            <tr><td><span class="badge badge-yellow" style="background:#fef3c7;color:#92400e">Terkirim</span></td><td>Invoice sudah dikirim, menunggu pembayaran</td></tr>
+            <tr><td><span class="badge badge-green">Lunas</span></td><td>Pembayaran sudah dikonfirmasi dan dicatat</td></tr>
+            <tr><td><span class="badge badge-red">Jatuh Tempo</span></td><td>Melewati tanggal jatuh tempo dan belum dibayar</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="tandai-lunas">Menandai Invoice sebagai Lunas</h2>
+      <ol class="steps">
+        <li>Buka invoice yang ingin ditandai lunas.</li>
+        <li>Klik tombol <em>"Tandai Lunas"</em>.</li>
+        <li>Masukkan tanggal pembayaran diterima.</li>
+        <li>Konfirmasi. Status invoice berubah menjadi <strong>Lunas</strong>.</li>
+      </ol>
+
+      <h2 id="invoice-massal">Invoice Massal</h2>
+      <p>Untuk membuat banyak invoice sekaligus (misalnya tagihan bulanan ke semua pelanggan), gunakan fitur <strong>Invoice Massal</strong>:</p>
+      <ol class="steps">
+        <li>Di halaman Invoicing, klik tombol <em>"Buat Invoice Massal"</em>.</li>
+        <li>Upload file CSV berisi daftar pelanggan dan detail tagihan.</li>
+        <li>Preview hasil dan konfirmasi pembuatan.</li>
+        <li>Sistem membuat semua invoice sekaligus. Anda dapat mengirimnya satu per satu atau massal.</li>
+      </ol>
+
+      <h2 id="pengaturan-invoice">Pengaturan Invoice</h2>
+      <p>Kustomisasi tampilan invoice di <strong>Invoicing → Pengaturan Invoice</strong>:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pengaturan</th><th>Deskripsi</th></tr></thead>
+          <tbody>
+            <tr><td>Logo Perusahaan</td><td>Upload logo untuk ditampilkan di header invoice</td></tr>
+            <tr><td>Nama &amp; Alamat Bisnis</td><td>Informasi bisnis yang muncul di invoice</td></tr>
+            <tr><td>Format Nomor Invoice</td><td>Prefix dan format penomoran otomatis (contoh: INV-2025-001)</td></tr>
+            <tr><td>Mata Uang</td><td>Pilih mata uang default (IDR, USD, SGD, dll)</td></tr>
+            <tr><td>Catatan Standar</td><td>Teks standar yang selalu muncul di bagian bawah invoice</td></tr>
+            <tr><td>Metode Pembayaran</td><td>Informasi rekening/metode pembayaran yang ditampilkan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="ai-invoice">Generate Invoice dari Chat (AI)</h2>
+      <p>CRMHUB dapat membuat draft invoice otomatis dari percakapan WhatsApp menggunakan AI:</p>
+      <ol class="steps">
+        <li>Buka percakapan yang berisi diskusi pembelian/order.</li>
+        <li>Klik ikon Invoice di toolbar chat, lalu pilih <em>"Generate dari Chat"</em>.</li>
+        <li>AI akan menganalisis percakapan dan membuat draft invoice dengan item-item yang terdeteksi.</li>
+        <li>Review dan edit draft, lalu simpan atau langsung kirim.</li>
+      </ol>
+
+      <h2 id="payment-link">Payment Link (Tautan Pembayaran Instan)</h2>
+      <p>Payment Link memungkinkan Anda membuat tautan pembayaran langsung dari percakapan di Inbox — tanpa harus keluar dari chat. Pelanggan klik link, bayar, selesai.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Beda Payment Link vs Invoice</strong>
+          <p><strong>Invoice</strong> — dokumen tagihan lengkap dengan detail item, nomor invoice, dan bisa dicetak. Cocok untuk transaksi formal.<br>
+          <strong>Payment Link</strong> — tautan pembayaran cepat tanpa dokumen invoice formal. Cocok untuk pembayaran spontan langsung dari chat.</p>
+        </div>
+      </div>
+
+      <h3>Cara Membuat Payment Link dari Inbox</h3>
+      <ol class="steps">
+        <li><strong>Buka percakapan</strong> di Inbox dengan pelanggan yang ingin ditagih.</li>
+        <li><strong>Klik ikon 💳 Payment Link</strong> di toolbar bawah area chat (atau melalui menu ⋮ → Buat Payment Link).</li>
+        <li><strong>Isi Jumlah</strong> — Nominal pembayaran dalam Rupiah.</li>
+        <li><strong>Isi Deskripsi</strong> — Keterangan pembayaran (contoh: "DP Produk X", "Biaya Konsultasi").</li>
+        <li><strong>Atur Durasi</strong> — Berapa jam link aktif sebelum kedaluwarsa (1–72 jam, default 24 jam).</li>
+        <li><strong>Klik Buat</strong> — Sistem membuat link pembayaran via Xendit dan otomatis mengirimkan ke pelanggan di chat.</li>
+      </ol>
+
+      <h3>Alur Pembayaran Pelanggan</h3>
+      <ol class="steps">
+        <li>Pelanggan menerima pesan berisi link pembayaran di WhatsApp.</li>
+        <li>Pelanggan klik link → halaman pembayaran Xendit terbuka di browser.</li>
+        <li>Pelanggan pilih metode pembayaran (transfer bank, e-wallet, QRIS, kartu kredit).</li>
+        <li>Setelah bayar, status payment link di CRMHUB otomatis berubah menjadi <span class="badge badge-green">Lunas</span>.</li>
+        <li>Anda mendapat notifikasi pembayaran berhasil.</li>
+      </ol>
+
+      <h3>Metode Pembayaran yang Didukung</h3>
+      <p>Payment Link mendukung semua metode pembayaran yang tersedia di Xendit:</p>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">🏦</span><div><h4>Transfer Bank</h4><p>Virtual Account BCA, Mandiri, BNI, BRI, Permata, dan lainnya</p></div></div>
+        <div class="feature-card"><span class="fc-icon">👛</span><div><h4>E-Wallet</h4><p>OVO, DANA, GoPay, ShopeePay, LinkAja</p></div></div>
+        <div class="feature-card"><span class="fc-icon">📱</span><div><h4>QRIS</h4><p>Scan QR dari semua aplikasi dompet digital</p></div></div>
+        <div class="feature-card"><span class="fc-icon">💳</span><div><h4>Kartu Kredit</h4><p>Visa, Mastercard (jika diaktifkan di akun Xendit)</p></div></div>
+      </div>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Konfigurasi Xendit Diperlukan</strong>
+          <p>Fitur Payment Link membutuhkan akun Xendit yang sudah terhubung. Konfigurasi di <strong>Settings → Integrasi → Payment Gateway</strong>. Masukkan API Key Xendit Anda.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="pipeline.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Pipeline</div></a>
+        <a href="tools.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Tools</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#overview">Gambaran Fitur</a>
+      <a href="#buat-invoice">Buat Invoice</a>
+      <a href="#kirim-invoice">Kirim Invoice</a>
+      <a href="#status">Status Invoice</a>
+      <a href="#tandai-lunas">Tandai Lunas</a>
+      <a href="#invoice-massal">Invoice Massal</a>
+      <a href="#pengaturan-invoice">Pengaturan Invoice</a>
+      <a href="#ai-invoice">Generate dari Chat (AI)</a>
+      <a href="#payment-link">Payment Link</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('invoicing.html');</script>
+</body>
+</html>

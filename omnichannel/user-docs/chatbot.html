@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbot & Otomasi — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Chatbot &amp; Otomasi</div>
+      <h1>🤖 Chatbot &amp; Otomasi</h1>
+      <p class="page-subtitle">Otomasi respons pelanggan 24/7 menggunakan Knowledge Base, Flow Builder visual, dan chatbot berbasis AI.</p>
+
+      <h2 id="overview">Gambaran Fitur</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">📚</span>
+          <div><h4>Knowledge Base</h4><p>Latih bot dengan Q&amp;A, dokumen, dan data bisnis Anda</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🔀</span>
+          <div><h4>Flow Builder</h4><p>Buat alur percakapan visual drag-and-drop tanpa coding</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🧠</span>
+          <div><h4>AI Training</h4><p>Tingkatkan akurasi bot dari riwayat percakapan nyata</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">⚡</span>
+          <div><h4>Auto Reply</h4><p>Balas pesan otomatis berdasarkan kata kunci dan kondisi</p></div>
+        </div>
+      </div>
+
+      <!-- KNOWLEDGE BASE -->
+      <h2 id="knowledge-base">Global Knowledge Base</h2>
+      <p>Knowledge Base adalah "otak" chatbot Anda. Isi dengan informasi bisnis, FAQ produk, kebijakan layanan, dan dokumen referensi — bot akan menjawab pertanyaan pelanggan berdasarkan data ini.</p>
+
+      <h3>Menambah Q&amp;A</h3>
+      <ol class="steps">
+        <li>Buka <strong>Chatbot → Global Knowledge Base</strong>.</li>
+        <li>Klik <em>"+ Tambah Q&amp;A"</em>.</li>
+        <li>Isi kolom <strong>Pertanyaan</strong> — Masukkan pertanyaan yang sering diajukan pelanggan.</li>
+        <li>Isi kolom <strong>Jawaban</strong> — Masukkan jawaban yang ingin diberikan bot.</li>
+        <li>Klik Simpan. Bot akan mulai menggunakan data ini.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Tips Q&amp;A yang Efektif</strong>
+          <p>Gunakan variasi pertanyaan yang sama (sinonim). Contoh: "berapa harganya", "harga produk", "biaya berapa" — semua bisa dijawab dengan satu entri jawaban. Bot AI dapat memahami maksud yang serupa.</p>
+        </div>
+      </div>
+
+      <h3>Upload Dokumen Referensi</h3>
+      <p>Unggah dokumen PDF, Word, atau TXT sebagai sumber pengetahuan bot. Sistem akan mengekstrak teks dari dokumen dan menggunakannya untuk menjawab pertanyaan.</p>
+      <ol class="steps">
+        <li>Di halaman Knowledge Base, klik tab <em>"Dokumen"</em>.</li>
+        <li>Klik <em>"Upload Dokumen"</em> dan pilih file (maks. 10MB per file).</li>
+        <li>Tunggu proses ekstraksi selesai.</li>
+        <li>Dokumen siap digunakan sebagai referensi bot.</li>
+      </ol>
+
+      <!-- FLOW BUILDER -->
+      <h2 id="flow-builder">Flow Builder (Alur Percakapan Visual)</h2>
+      <p>Flow Builder memungkinkan Anda merancang alur percakapan chatbot secara visual menggunakan antarmuka drag-and-drop — tanpa perlu menulis kode satu baris pun.</p>
+
+      <h3>Apa itu Flow?</h3>
+      <p>Flow adalah serangkaian langkah percakapan yang terstruktur. Contoh: Pelanggan mengetik "menu" → Bot menampilkan pilihan → Pelanggan memilih "Info Harga" → Bot membalas dengan daftar harga.</p>
+
+      <h3>Cara Membuat Flow Baru</h3>
+      <ol class="steps">
+        <li>Buka <strong>Chatbot → Flows</strong>.</li>
+        <li>Klik <em>"+ Buat Flow"</em> dan beri nama (contoh: "Flow Pemesanan", "Flow FAQ").</li>
+        <li>Anda akan masuk ke kanvas Flow Builder.</li>
+        <li><strong>Tambah Node Trigger</strong> — Tentukan pemicu flow: kata kunci tertentu, pesan pertama, atau waktu tertentu.</li>
+        <li><strong>Tambah Node Pesan</strong> — Drag node "Kirim Pesan" ke kanvas dan isi dengan teks/gambar yang dikirim bot.</li>
+        <li><strong>Tambah Node Pilihan</strong> — Drag node "Pilihan" untuk membuat menu pilihan. Hubungkan setiap pilihan ke node berikutnya.</li>
+        <li><strong>Tambah Node Kondisi</strong> — Opsional: node "Kondisi" memungkinkan flow bercabang berdasarkan data kontak atau input pelanggan.</li>
+        <li><strong>Hubungkan Node</strong> — Tarik garis dari satu node ke node berikutnya untuk menentukan urutan alur.</li>
+        <li><strong>Simpan &amp; Aktifkan</strong> — Klik Simpan lalu aktifkan flow agar mulai berjalan.</li>
+      </ol>
+
+      <h3>Jenis Node yang Tersedia</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Node</th><th>Fungsi</th></tr></thead>
+          <tbody>
+            <tr><td>🚀 Trigger</td><td>Menentukan kapan flow dimulai (kata kunci, pesan pertama, dll)</td></tr>
+            <tr><td>💬 Kirim Pesan</td><td>Bot mengirim teks, gambar, video, atau dokumen</td></tr>
+            <tr><td>📋 Pilihan/Tombol</td><td>Tampilkan pilihan tombol yang bisa diklik pelanggan</td></tr>
+            <tr><td>❓ Pertanyaan</td><td>Bot bertanya dan menyimpan jawaban pelanggan ke variabel</td></tr>
+            <tr><td>🔀 Kondisi</td><td>Percabangan alur berdasarkan kondisi (data kontak, waktu, input)</td></tr>
+            <tr><td>⏰ Tunda (Delay)</td><td>Jeda sebelum mengirim pesan berikutnya</td></tr>
+            <tr><td>👤 Assign ke Agent</td><td>Alihkan percakapan ke agent manusia</td></tr>
+            <tr><td>🏷️ Tambah Label</td><td>Otomatis beri label pada percakapan</td></tr>
+            <tr><td>📝 Update Kontak</td><td>Simpan data dari input pelanggan ke profil kontak</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BOT LIST -->
+      <h2 id="bot">Konfigurasi Bot</h2>
+      <p>Setiap perangkat WhatsApp dapat memiliki bot tersendiri dengan pengaturan yang berbeda.</p>
+      <ol class="steps">
+        <li>Buka <strong>Chatbot → Daftar Bot</strong>.</li>
+        <li>Klik <em>"+ Buat Bot"</em> atau klik bot yang sudah ada untuk mengedit.</li>
+        <li>Beri nama bot dan pilih perangkat yang terhubung.</li>
+        <li>Atur sumber jawaban: Knowledge Base, Flow aktif, atau keduanya.</li>
+        <li>Atur kondisi aktif: selalu aktif, hanya di luar jam kerja, atau jadwal tertentu.</li>
+        <li>Simpan dan aktifkan bot.</li>
+      </ol>
+
+      <!-- AI TRAINING -->
+      <h2 id="training">AI Training</h2>
+      <p>Tingkatkan akurasi bot secara berkelanjutan dengan melatihnya menggunakan percakapan nyata yang sudah terjadi.</p>
+
+      <h3>Cara Melatih Bot</h3>
+      <ol class="steps">
+        <li>Buka <strong>Chatbot → AI Training</strong>.</li>
+        <li>Lihat daftar percakapan yang direkomendasikan untuk pelatihan — ini adalah percakapan di mana bot tidak menjawab dengan baik atau tidak tahu jawabannya.</li>
+        <li>Untuk setiap percakapan, klik <em>"Tambah ke Training"</em>.</li>
+        <li>Edit pertanyaan dan jawaban sesuai kebutuhan.</li>
+        <li>Klik Simpan. Data training ditambahkan ke Knowledge Base.</li>
+      </ol>
+      <p>Selain manual, Anda juga dapat mengimpor data training secara massal menggunakan file CSV.</p>
+
+      <!-- API SETTINGS -->
+      <h2 id="api-settings">API Key Chatbot</h2>
+      <p>CRMHUB menyediakan API Key untuk mengintegrasikan chatbot dengan sistem eksternal atau menggunakannya dalam pengujian (Sandbox).</p>
+      <ol class="steps">
+        <li>Buka <strong>Chatbot → API Key</strong>.</li>
+        <li>Salin API Key yang ditampilkan untuk digunakan di sistem eksternal.</li>
+        <li>Klik <em>"Perbarui API Key"</em> untuk membuat key baru jika key lama bocor atau perlu diganti.</li>
+        <li>Gunakan fitur <strong>Sandbox</strong> untuk menguji respons bot sebelum diluncurkan ke pelanggan nyata.</li>
+      </ol>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Jaga Keamanan API Key</strong>
+          <p>Jangan pernah membagikan API Key ke pihak yang tidak berwenang. Jika API Key bocor, segera buat key baru melalui halaman API Key.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="contacts.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Manajemen Kontak</div></a>
+        <a href="automation.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Automasi &amp; Customer Service</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#overview">Gambaran Fitur</a>
+      <a href="#knowledge-base">Knowledge Base</a>
+      <a href="#flow-builder">Flow Builder</a>
+      <a href="#bot">Konfigurasi Bot</a>
+      <a href="#training">AI Training</a>
+      <a href="#api-settings">API Key Chatbot</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('chatbot.html');</script>
+</body>
+</html>

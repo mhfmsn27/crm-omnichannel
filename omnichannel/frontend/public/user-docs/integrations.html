@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integrasi Perangkat — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Integrasi Perangkat</div>
+      <h1>📱 Integrasi Perangkat &amp; Channel</h1>
+      <p class="page-subtitle">Hubungkan WhatsApp, Messenger, Instagram, Telegram, Webchat, dan lebih banyak lagi ke platform CRMHUB.</p>
+
+      <p>Semua integrasi channel dikelola di menu <strong>Integrations</strong> di sidebar. Setelah terhubung, semua pesan dari channel tersebut masuk ke inbox CRMHUB secara terpusat.</p>
+
+      <!-- WHATSAPP QR -->
+      <h2 id="whatsapp-qr">WhatsApp via QR Scan</h2>
+      <p>Metode paling umum — hubungkan nomor WhatsApp personal maupun bisnis menggunakan QR Code, tanpa perlu API berbayar.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → WhatsApp Device</strong>.</li>
+        <li>Klik <em>"+ Tambah Perangkat"</em>.</li>
+        <li>Beri nama perangkat (contoh: "WA Marketing 1").</li>
+        <li>QR Code akan tampil di layar. Buka WhatsApp di ponsel Anda.</li>
+        <li>Di WhatsApp, buka <strong>Perangkat Tertaut → Tautkan Perangkat</strong>, lalu scan QR Code.</li>
+        <li>Status berubah menjadi <span class="badge badge-green">Terhubung</span>. Perangkat siap digunakan.</li>
+      </ol>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Jaga Koneksi Stabil</strong>
+          <p>Pastikan ponsel yang di-scan selalu terhubung ke internet dan memiliki baterai cukup. Jika ponsel mati atau tidak ada internet selama beberapa hari, perangkat mungkin terputus dan perlu scan ulang.</p>
+        </div>
+      </div>
+
+      <!-- WHATSAPP CLOUD API -->
+      <h2 id="whatsapp-api">WhatsApp Cloud API (Resmi)</h2>
+      <p>Integrasi resmi melalui Meta Business API — lebih stabil, tidak bergantung pada ponsel, dan mendukung template pesan terverifikasi.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → WhatsApp API</strong>.</li>
+        <li>Siapkan akun Meta Business Manager dan nomor WhatsApp Business yang sudah diverifikasi.</li>
+        <li>Masukkan <strong>Phone Number ID</strong> dan <strong>Access Token</strong> dari Meta Developer Console.</li>
+        <li>Masukkan <strong>Webhook Verify Token</strong> dan salin URL Webhook yang ditampilkan ke Meta Developer Console.</li>
+        <li>Klik Simpan dan uji koneksi.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Perbedaan QR Scan vs Cloud API</strong>
+          <p>QR Scan lebih mudah dipasang tapi bergantung pada koneksi ponsel. Cloud API memerlukan verifikasi bisnis Meta tapi lebih andal dan mendukung fitur enterprise seperti template pesan dan centang hijau.</p>
+        </div>
+      </div>
+
+      <!-- WHATSAPP COEX -->
+      <h2 id="whatsapp-coex">WhatsApp Co-Existence (Messenger Bawaan)</h2>
+      <p>Fitur Co-Existence menghubungkan WhatsApp yang sudah terpasang di perangkat Android/iOS yang sama dengan CRMHUB, memungkinkan pesan WhatsApp masuk ke inbox tanpa scan QR ulang.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → WhatsApp CoEx</strong>.</li>
+        <li>Ikuti panduan instalasi yang ditampilkan untuk menghubungkan aplikasi WhatsApp di perangkat yang sama.</li>
+        <li>Setelah terhubung, pesan WhatsApp dari nomor tersebut langsung masuk ke inbox CRMHUB.</li>
+      </ol>
+
+      <!-- MESSENGER -->
+      <h2 id="messenger">Facebook Messenger</h2>
+      <p>Hubungkan halaman Facebook bisnis Anda agar pesan Messenger masuk ke inbox CRMHUB.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → Facebook Messenger</strong>.</li>
+        <li>Klik <em>"Hubungkan Facebook"</em> — Anda akan diarahkan ke halaman login Facebook.</li>
+        <li>Login dan pilih halaman Facebook yang ingin dihubungkan.</li>
+        <li>Izinkan akses yang diminta CRMHUB.</li>
+        <li>Halaman Facebook Anda sekarang terhubung. Pesan Messenger masuk ke inbox.</li>
+      </ol>
+
+      <!-- INSTAGRAM -->
+      <h2 id="instagram">Instagram Direct Message</h2>
+      <p>Terima dan balas DM Instagram langsung dari CRMHUB. Memerlukan akun Instagram yang terhubung ke halaman Facebook Business.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → Instagram</strong>.</li>
+        <li>Klik <em>"Hubungkan Instagram"</em>.</li>
+        <li>Login ke Facebook dan pilih akun Instagram yang terhubung ke Facebook Page Anda.</li>
+        <li>Izinkan akses yang diminta.</li>
+        <li>Selesai — DM Instagram masuk ke inbox CRMHUB.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Syarat Instagram</strong>
+          <p>Akun Instagram harus bertipe <strong>Professional</strong> (Business atau Creator) dan terhubung ke Facebook Page. Instagram Personal tidak dapat diintegrasikan.</p>
+        </div>
+      </div>
+
+      <!-- TELEGRAM -->
+      <h2 id="telegram">Telegram Bot</h2>
+      <p>Hubungkan Telegram Bot untuk menerima dan membalas pesan Telegram dari inbox CRMHUB.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → Telegram</strong>.</li>
+        <li>Buat bot baru di Telegram dengan mengirim perintah <code>/newbot</code> ke <strong>@BotFather</strong>.</li>
+        <li>Salin <strong>Bot Token</strong> yang diberikan BotFather.</li>
+        <li>Paste token di kolom yang tersedia di CRMHUB dan klik Hubungkan.</li>
+        <li>Bot Telegram Anda sekarang terhubung ke inbox.</li>
+      </ol>
+
+      <!-- WEBCHAT -->
+      <h2 id="webchat">Webchat Widget</h2>
+      <p>Tambahkan tombol live chat ke website Anda agar pengunjung bisa langsung menghubungi tim CS tanpa meninggalkan halaman.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → Webchat Widget</strong>.</li>
+        <li>Klik <em>"+ Buat Widget"</em>.</li>
+        <li>Sesuaikan tampilan: warna, nama bisnis, avatar, dan pesan sambutan.</li>
+        <li>Simpan. Salin kode embed yang ditampilkan.</li>
+        <li>Paste kode embed ke halaman website Anda (sebelum tag <code>&lt;/body&gt;</code>).</li>
+        <li>Tombol chat akan muncul di sudut website. Pesan dari pengunjung masuk ke inbox CRMHUB.</li>
+      </ol>
+
+      <!-- ZAPIER -->
+      <h2 id="zapier">Zapier Integration</h2>
+      <p>Hubungkan CRMHUB dengan 5.000+ aplikasi menggunakan Zapier — tanpa coding, cukup drag-and-drop workflow.</p>
+      <p>Contoh integrasi yang bisa dibuat dengan Zapier:</p>
+      <ul>
+        <li>Kontak baru di CRMHUB → Tambahkan ke Google Sheets</li>
+        <li>Percakapan baru → Buat tiket di Trello atau Jira</li>
+        <li>Form di-submit → Kirim notifikasi WhatsApp otomatis</li>
+        <li>Deal di pipeline berubah stage → Update di CRM eksternal (Salesforce, HubSpot)</li>
+      </ul>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → Zapier</strong>.</li>
+        <li>Klik <em>"Hubungkan ke Zapier"</em> — Anda diarahkan ke platform Zapier.</li>
+        <li>Login ke akun Zapier (atau daftar gratis) dan izinkan akses CRMHUB.</li>
+        <li>Buat Zap baru menggunakan CRMHUB sebagai trigger atau action.</li>
+        <li>Konfigurasikan workflow sesuai kebutuhan dan aktifkan Zap.</li>
+      </ol>
+
+      <!-- STATUS & TROUBLESHOOT -->
+      <h2 id="status">Status Perangkat</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Arti</th><th>Tindakan</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-green">Terhubung</span></td><td>Perangkat aktif dan menerima pesan</td><td>Tidak ada — berjalan normal</td></tr>
+            <tr><td><span class="badge" style="background:#fef3c7;color:#92400e">Menghubungkan</span></td><td>Proses koneksi sedang berlangsung</td><td>Tunggu 1–2 menit</td></tr>
+            <tr><td><span class="badge badge-red">Terputus</span></td><td>Koneksi terputus, pesan tidak diterima</td><td>Scan ulang QR atau periksa koneksi</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="page-nav">
+        <a href="dashboard.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Dashboard</div></a>
+        <a href="broadcast.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Broadcast Campaign</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#whatsapp-qr">WhatsApp QR Scan</a>
+      <a href="#whatsapp-api">WhatsApp Cloud API</a>
+      <a href="#whatsapp-coex">WhatsApp Co-Existence</a>
+      <a href="#messenger">Facebook Messenger</a>
+      <a href="#instagram">Instagram DM</a>
+      <a href="#telegram">Telegram Bot</a>
+      <a href="#webchat">Webchat Widget</a>
+      <a href="#zapier">Zapier</a>
+      <a href="#status">Status Perangkat</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('integrations.html');</script>
+</body>
+</html>

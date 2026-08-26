@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumentasi License System - CRMHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #6366f1;
+        }
+        h3 {
+            font-size: 1.2rem;
+            color: #555;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .card-blue {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+        .card-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .code-block code {
+            white-space: pre;
+        }
+        .code-inline {
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #6366f1;
+        }
+        .step {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .step-number {
+            width: 35px;
+            height: 35px;
+            background: #6366f1;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .step-desc {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 5px;
+        }
+        .info {
+            background: #e0e7ff;
+            border-left: 4px solid #6366f1;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-title {
+            font-weight: 600;
+            color: #3730a3;
+            margin-bottom: 5px;
+        }
+        .toc {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .toc-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .toc a {
+            color: #6366f1;
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .flow-diagram {
+            background: #f8fafc;
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .flow-box {
+            display: inline-block;
+            background: white;
+            border: 2px solid #6366f1;
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin: 5px;
+            font-weight: 500;
+        }
+        .flow-arrow {
+            display: block;
+            color: #6366f1;
+            font-size: 1.5rem;
+            margin: 5px 0;
+        }
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .comparison-box {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .comparison-header {
+            background: #f3f4f6;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        .comparison-row {
+            display: flex;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+        .comparison-label {
+            flex: 1;
+            font-weight: 500;
+        }
+        .comparison-before {
+            flex: 1;
+            color: #dc2626;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        .comparison-after {
+            flex: 1;
+            color: #059669;
+        }
+        .checkmark {
+            color: #059669;
+        }
+        .crossmark {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📜 Dokumentasi Sistem Lisensi CRMHub</h1>
+        <p class="subtitle">One-Time Purchase • No Expiry • No Plan</p>
+
+        <div class="toc">
+            <div class="toc-title">Daftar Isi</div>
+            <a href="#overview">1. Gambaran Umum</a>
+            <a href="#comparison">2. Perbandingan Lama vs Baru</a>
+            <a href="#setup">3. Setup Google Sheets</a>
+            <a href="#env-config">4. Konfigurasi Environment</a>
+            <a href="#usage">5. Cara Penggunaan</a>
+            <a href="#security">6. Keamanan</a>
+        </div>
+
+        <!-- Overview -->
+        <div class="card card-blue">
+            <h3 style="color: white; margin-top: 0;">🎯 Sistem Lisensi Baru</h3>
+            <p style="margin-top: 10px;">One-time purchase license dengan proteksi domain. Sangat simple - tinggal daftarkan domain di Google Sheets untuk mengaktifkan.</p>
+        </div>
+
+        <h2 id="overview">1. Gambaran Umum</h2>
+
+        <div class="card">
+            <h3 style="color: #10b981;">✅ Prinsip Kerja</h3>
+            <ul style="margin-top: 15px;">
+                <li><strong>Domain ada di Sheets</strong> → License ACTIVE (bisa akses)</li>
+                <li><strong>Domain tidak ada di Sheets</strong> → License BLOCKED (tidak bisa akses)</li>
+            </ul>
+            <p style="margin-top: 15px;">Simpel seperti itu. Tidak ada plan, tidak ada expiry, tidak ada tier.</p>
+        </div>
+
+        <div class="card">
+            <h3>Fitur</h3>
+            <ul style="margin-top: 10px;">
+                <li>✅ <strong>One-time purchase</strong> - Tidak ada biaya berulang</li>
+                <li>✅ <strong>No expiry</strong> - Berlaku selamanya</li>
+                <li>✅ <strong>Domain-locked</strong> - 1 license = 1 domain</li>
+                <li>✅ <strong>6h cache</strong> - Tidak cek Sheets setiap request</li>
+                <li>✅ <strong>Instant disable</strong> - Hapus dari Sheets langsung nonaktif</li>
+                <li>✅ <strong>Fail-safe</strong> - Jika Sheets down, tetap bisa akses dengan cache</li>
+            </ul>
+        </div>
+
+        <div class="flow-diagram">
+            <span class="flow-box">Domain打开 aplikasi</span>
+            <span class="flow-arrow">↓</span>
+            <span class="flow-box">Cek Google Sheets</span>
+            <span class="flow-arrow">↓</span>
+            <span class="flow-box">Domain ada?</span>
+            <span class="flow-arrow">↓</span>
+            <span class="flow-box">Ya = AKTIF | Tidak = BLOKED</span>
+        </div>
+
+        <!-- Comparison -->
+        <h2 id="comparison">2. Perbandingan Sistem Lama vs Baru</h2>
+
+        <div class="comparison-box">
+            <div class="comparison-header">Perbandingan Sistem Lisensi</div>
+            <div class="comparison-row">
+                <div class="comparison-label">Plan System</div>
+                <div class="comparison-before">Basic/Pro/Enterprise</div>
+                <div class="comparison-after"><span class="crossmark">✗</span> Dihapus</div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-label">Expiry Date</div>
+                <div class="comparison-before">Expired check</div>
+                <div class="comparison-after"><span class="crossmark">✗</span> Dihapus</div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-label">License Key</div>
+                <div class="comparison-before">Per customer</div>
+                <div class="comparison-after"><span class="checkmark">✓</span> Opsional</div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-label">Active Status</div>
+                <div class="comparison-before">active/suspended/expired</div>
+                <div class="comparison-after"><span class="checkmark">✓</span> Ada di Sheets = Active</div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-label">Disable License</div>
+                <div class="comparison-before">Ubah status ke suspended</div>
+                <div class="comparison-after"><span class="checkmark">✓</span> Hapus dari Sheets</div>
+            </div>
+        </div>
+
+        <!-- Setup -->
+        <h2 id="setup">3. Setup Google Sheets</h2>
+
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <div class="step-title">Buat Google Spreadsheet Baru</div>
+                <div class="step-desc">Buka <a href="https://sheets.google.com" target="_blank">Google Sheets</a> dan buat spreadsheet baru.</div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <div class="step-title">Rename Sheet Tab</div>
+                <div class="step-desc">Rename sheet pertama menjadi <code class="code-inline">licenses</code></div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <div class="step-title">Tambahkan Header & Data</div>
+                <div class="step-desc">Di baris pertama (A1), tambahkan header:</div>
+                <div class="code-block"><code>Domain | License Key</code></div>
+                <div class="step-desc" style="margin-top: 10px;">Di baris kedua (A2), tambahkan domain client:</div>
+                <div class="code-block"><code>clientdomain.com |</code></div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <div class="step-title">Set Sharing ke Public View</div>
+                <div class="step-desc">Klik <strong>Share</strong> → <strong>Anyone with the link</strong> → <strong>Viewer</strong></div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <div class="step-title">Copy Spreadsheet ID</div>
+                <div class="step-desc">Copy ID dari URL spreadsheet:</div>
+                <div class="code-block"><code>https://docs.google.com/spreadsheets/d/<strong style="color: #f59e0b;">[INI-ADALAH-SHEET-ID]</strong>/edit</code></div>
+            </div>
+        </div>
+
+        <!-- Template Sheet -->
+        <div class="card">
+            <h3>📋 Template Google Sheet</h3>
+            <p>Struktur spreadsheet yang benar:</p>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr>
+                    <th style="background: #f3f4f6; padding: 12px; text-align: left; border: 1px solid #e5e7eb;">Domain</th>
+                    <th style="background: #f3f4f6; padding: 12px; text-align: left; border: 1px solid #e5e7eb;">License Key</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">client1.com</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb; color: #666;">(kosongkan)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">client2.com</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb; color: #666;">(kosongkan)</td>
+                </tr>
+            </table>
+            <div class="warning" style="margin-top: 20px;">
+                <div class="warning-title">⚠️ Untuk Menonaktifkan License</div>
+                <p>Cukup hapus baris domain tersebut dari spreadsheet. Domain akan langsung terblokir (setelah cache expired atau refresh manual).</p>
+            </div>
+        </div>
+
+        <!-- Environment Config -->
+        <h2 id="env-config">4. Konfigurasi Environment</h2>
+
+        <div class="card">
+            <h3>Environment Variables</h3>
+            <p>Tambahkan variabel berikut di file <code class="code-inline">.env</code>:</p>
+
+            <div class="code-block"><code># License System Configuration
+LICENSE_SHEET_ID=YOUR_GOOGLE_SHEETS_ID_HERE
+
+# Production mode (penting!)
+NODE_ENV=production</code></div>
+        </div>
+
+        <div class="info">
+            <div class="info-title">💡 Catatan Penting</div>
+            <p>Untuk production, selalu gunakan <code>NODE_ENV=production</code>. Jika tidak diset, sistem akan berjalan dalam mode development (allow all).</p>
+        </div>
+
+        <!-- Usage -->
+        <h2 id="usage">5. Cara Penggunaan</h2>
+
+        <div class="card">
+            <h3>Akses License Page</h3>
+            <p>Di dashboard CRMHub:</p>
+            <ol style="margin-top: 10px; margin-left: 20px;">
+                <li>Buka menu <strong>Settings</strong></li>
+                <li>Klik <strong>License</strong> di submenu</li>
+                <li>Akan tampil status license (Aktif/Invalid)</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h3>Menambah Client Baru</h3>
+            <ol>
+                <li>Buka Google Spreadsheet license</li>
+                <li>Tambah baris baru dengan domain client</li>
+                <li>Simpan</li>
+            </ol>
+        </div>
+
+        <div class="card">
+            <h3>Menonaktifkan License</h3>
+            <ol>
+                <li>Buka Google Spreadsheet license</li>
+                <li><strong>Hapus baris</strong> domain client yang ingin dinonaktifkan</li>
+                <li>Simpan</li>
+            </ol>
+            <div class="info" style="margin-top: 15px;">
+                <div class="info-title">💡 Tips</div>
+                <p>Jika ingin menonaktifkan segera tanpa tunggu cache expire, klik tombol <strong>"Refresh"</strong> di License Page.</p>
+            </div>
+        </div>
+
+        <!-- Security -->
+        <h2 id="security">6. Keamanan</h2>
+
+        <div class="card card-green">
+            <h3 style="color: white; margin-top: 0;">🛡️ Keamanan</h3>
+            <ul style="color: white; margin-top: 10px;">
+                <li>✅ <strong>Domain-locked</strong> - Tidak bisa dipindahkan ke domain lain</li>
+                <li>✅ <strong>6h Cache</strong> - Validasi tidak setiap request</li>
+                <li>✅ <strong>Fail-safe</strong> - Jika Sheets down, tetap akses dengan cache</li>
+                <li>✅ <strong>Instant disable</strong> - Hapus dari Sheets langsung terblokir</li>
+                <li>✅ <strong>No key in client</strong> - Tidak ada license key yang tersimpan di sisi client</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>Mengapa Sulit di-Crack?</h3>
+            <ul>
+                <li><strong>Layer 1:</strong> Domain validation dilakukan di server-side</li>
+                <li><strong>Layer 2:</strong> License server di Google Sheets (di luar kontrol client)</li>
+                <li><strong>Layer 3:</strong> Tidak ada license key yang bisa diexpose</li>
+                <li><strong>Layer 4:</strong> Cache ter-enkripsi</li>
+            </ul>
+        </div>
+
+        <!-- Quick Reference -->
+        <h2>Quick Reference</h2>
+
+        <div class="card">
+            <h3>Environment Variables</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr>
+                    <th style="background: #f3f4f6; padding: 12px; text-align: left; border: 1px solid #e5e7eb;">Variable</th>
+                    <th style="background: #f3f4f6; padding: 12px; text-align: left; border: 1px solid #e5e7eb;">Deskripsi</th>
+                    <th style="background: #f3f4f6; padding: 12px; text-align: left; border: 1px solid #e5e7eb;">Wajib</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;"><code class="code-inline">LICENSE_SHEET_ID</code></td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">ID dari Google Spreadsheet</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">Ya</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;"><code class="code-inline">NODE_ENV</code></td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">development / production</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">Ya</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3>API Endpoints</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr>
+                    <th style="background: #f3f4f6; padding: 12px; text-align: left; border: 1px solid #e5e7eb;">Endpoint</th>
+                    <th style="background: #f3f4f6; padding: 12px; text-align: left; border: 1px solid #e5e7eb;">Method</th>
+                    <th style="background: #f3f4f6; padding: 12px; text-align: left; border: 1px solid #e5e7eb;">Deskripsi</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;"><code>/api/app/license/check</code></td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">GET</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">Cek license validity</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;"><code>/api/app/license/refresh</code></td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">POST</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">Force refresh dari Sheets</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;"><code>/api/app/license/status</code></td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">GET</td>
+                    <td style="padding: 12px; border: 1px solid #e5e7eb;">Get cached status</td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="text-align: center; padding: 40px 0; color: #666;">
+            <p>Dokumentasi ini dibuat untuk CRMHub License System</p>
+            <p style="margin-top: 10px;">Versi 2.0 (Simplified) | One-Time Purchase | © 2024</p>
+        </div>
+    </div>
+</body>
+</html>

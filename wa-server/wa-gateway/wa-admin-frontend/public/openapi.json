@@ -1,0 +1,678 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "WhatsApp SaaS Gateway API",
+    "description": "Complete API documentation for the WhatsApp Multi-Device Gateway service. Supports sending text, media, buttons, group management, contacts, and webhooks.",
+    "version": "3.0.0",
+    "contact": {
+      "name": "Developer Support"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://server.senderchat.com",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Development"
+    }
+  ],
+  "tags": [
+    { "name": "1. Sessions", "description": "WhatsApp device and connection management" },
+    { "name": "2. Messages", "description": "Sending messages (Text, Media, Location, etc.)" },
+    { "name": "3. Groups", "description": "WhatsApp Group management" },
+    { "name": "4. Chat Management", "description": "Chat settings (Archive, Pin, Mute)" },
+    { "name": "5. Contacts & Blocklist", "description": "Number verification and contact blocking" },
+    { "name": "6. User Profile", "description": "Update profile for connected numbers" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API-KEY",
+        "description": "Enter your Client API Key here"
+      }
+    },
+    "schemas": {
+      "SessionID": {
+        "type": "string",
+        "format": "uuid",
+        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        "description": "Unique session/device ID (UUID)"
+      },
+      "JID": {
+        "type": "string",
+        "example": "6281234567890@s.whatsapp.net",
+        "description": "WhatsApp ID format. Use @s.whatsapp.net for users, @g.us for groups."
+      },
+      "GenericSuccess": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "details": { "type": "object" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": { "type": "integer", "example": 400 },
+          "error": { "type": "string", "example": "Bad Request" },
+          "message": { "type": "string", "example": "Invalid parameters" }
+        }
+      }
+    }
+  },
+  "security": [
+    { "BearerAuth": [] }
+  ],
+  "paths": {
+    "/api/v1/sessions": {
+      "get": {
+        "tags": ["1. Sessions"],
+        "summary": "List All Sessions",
+        "responses": {
+          "200": {
+            "description": "List of sessions owned by the client",
+            "content": {
+              "application/json": {
+                "example": [
+                  { "id": "uuid-1", "name": "Marketing WA", "status": "CONNECTED" },
+                  { "id": "uuid-2", "name": "CS WA", "status": "DISCONNECTED" }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["1. Sessions"],
+        "summary": "Create New Session",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string", "example": "My Device 1" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Session created successfully" }
+        }
+      }
+    },
+    "/api/v1/sessions/{sessionId}/start": {
+      "post": {
+        "tags": ["1. Sessions"],
+        "summary": "Start Session / Get QR Code",
+        "parameters": [{ "name": "sessionId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/SessionID" } }],
+        "responses": {
+          "200": {
+            "description": "Returns QR Code if not connected, or connection status",
+            "content": {
+              "application/json": {
+                "example": { "status": "NEED_QR", "qr": "data:image/png;base64,..." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sessionId}/status": {
+      "get": {
+        "tags": ["1. Sessions"],
+        "summary": "Check Session Status",
+        "parameters": [{ "name": "sessionId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/SessionID" } }],
+        "responses": {
+          "200": {
+            "description": "Connection status",
+            "content": {
+              "application/json": {
+                "example": { "status": "CONNECTED", "user": { "id": "62812...@s.whatsapp.net", "name": "John Doe" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{sessionId}": {
+      "delete": {
+        "tags": ["1. Sessions"],
+        "summary": "Delete Session (Logout)",
+        "parameters": [{ "name": "sessionId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/SessionID" } }],
+        "responses": {
+          "204": { "description": "Successfully deleted" }
+        }
+      }
+    },
+    "/api/v1/message/send-text": {
+      "post": {
+        "tags": ["2. Messages"],
+        "summary": "Send Text Message",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "to", "text"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "to": { "$ref": "#/components/schemas/JID" },
+                  "text": { "type": "string", "example": "Hello, this is a message from the API." },
+                  "replyTo": { "type": "object", "description": "Raw message object for reply (optional)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/schemas/GenericSuccess" }
+        }
+      }
+    },
+    "/api/v1/message/send-media": {
+      "post": {
+        "tags": ["2. Messages"],
+        "summary": "Send Media (Image, Video, Audio, Document)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "to", "mediaType", "url"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "to": { "$ref": "#/components/schemas/JID" },
+                  "mediaType": { "type": "string", "enum": ["image", "video", "audio", "document"] },
+                  "url": { "type": "string", "format": "uri", "example": "https://example.com/image.jpg" },
+                  "caption": { "type": "string", "example": "This is an image caption" },
+                  "filename": { "type": "string", "description": "Mandatory if type=document", "example": "invoice.pdf" },
+                  "mimetype": { "type": "string", "description": "Optional, e.g., application/pdf" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/schemas/GenericSuccess" }
+        }
+      }
+    },
+    "/api/v1/message/send-buttons": {
+      "post": {
+        "tags": ["2. Messages"],
+        "summary": "Send Message with Buttons",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "to", "text", "buttons"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "to": { "$ref": "#/components/schemas/JID" },
+                  "text": { "type": "string", "example": "Please select a menu:" },
+                  "footer": { "type": "string", "example": "Powered by WA Gateway" },
+                  "buttons": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "example": "btn-1" },
+                        "text": { "type": "string", "example": "Product Info" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/schemas/GenericSuccess" }
+        }
+      }
+    },
+    "/api/v1/message/send-location": {
+      "post": {
+        "tags": ["2. Messages"],
+        "summary": "Send Location",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "to", "latitude", "longitude"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "to": { "$ref": "#/components/schemas/JID" },
+                  "latitude": { "type": "number", "example": -6.2088 },
+                  "longitude": { "type": "number", "example": 106.8456 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/message/send-bulk": {
+      "post": {
+        "tags": ["2. Messages"],
+        "summary": "Send Bulk Messages",
+        "description": "Send messages to multiple numbers simultaneously with a set delay.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "receivers", "type", "message"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "receivers": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/JID" },
+                    "example": ["62812xx", "62813xx"]
+                  },
+                  "type": { "type": "string", "enum": ["text", "image", "video"] },
+                  "delay": { "type": "number", "default": 1000, "description": "Delay between messages (ms)" },
+                  "message": {
+                    "type": "object",
+                    "properties": {
+                      "text": { "type": "string" },
+                      "url": { "type": "string" },
+                      "caption": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Delivery report",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "report": {
+                    "total": 2,
+                    "sent": 2,
+                    "failed": 0,
+                    "details": [{ "to": "62812...", "status": "sent" }]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/message": {
+      "delete": {
+        "tags": ["2. Messages"],
+        "summary": "Revoke Message (Delete for Everyone)",
+        "description": "Deletes a sent message. Can only be performed if the message was sent by the bot (fromMe: true).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "to", "key"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "to": { "$ref": "#/components/schemas/JID" },
+                  "key": {
+                    "type": "object",
+                    "description": "The key of the target message to be deleted",
+                    "properties": {
+                      "remoteJid": { "type": "string" },
+                      "id": { "type": "string" },
+                      "fromMe": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/message/react": {
+      "post": {
+        "tags": ["2. Messages"],
+        "summary": "React to Message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "to", "key", "emoji"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "to": { "$ref": "#/components/schemas/JID" },
+                  "emoji": { "type": "string", "example": "👍" },
+                  "key": {
+                    "type": "object",
+                    "description": "Target message key",
+                    "properties": {
+                      "remoteJid": { "type": "string" },
+                      "id": { "type": "string" },
+                      "fromMe": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/message/download-media": {
+      "post": {
+        "tags": ["2. Messages"],
+        "summary": "Download Media from Message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "message"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "message": { "type": "object", "description": "Complete message object from webhook/history" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Base64 Media",
+            "content": {
+              "application/json": {
+                "example": { "base64": "iVBORw0KGgo..." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/group/list": {
+      "get": {
+        "tags": ["3. Groups"],
+        "summary": "List All Groups",
+        "description": "Retrieves a list of all groups where the number is a participant.",
+        "parameters": [
+          { "name": "sessionId", "in": "query", "required": true, "schema": { "$ref": "#/components/schemas/SessionID" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of followed groups",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": "1203630239836@g.us",
+                      "subject": "Discussion Group",
+                      "participants": 10,
+                      "creation": 1678900000,
+                      "owner": "62812345@s.whatsapp.net"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/group/info": {
+      "get": {
+        "tags": ["3. Groups"],
+        "summary": "Group Info",
+        "parameters": [
+          { "name": "sessionId", "in": "query", "required": true, "schema": { "$ref": "#/components/schemas/SessionID" } },
+          { "name": "jid", "in": "query", "required": true, "schema": { "$ref": "#/components/schemas/JID" } }
+        ],
+        "responses": {
+          "200": { "description": "Group metadata" }
+        }
+      }
+    },
+    "/api/v1/group": {
+      "post": {
+        "tags": ["3. Groups"],
+        "summary": "Create New Group",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "subject", "participants"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "subject": { "type": "string", "example": "New Group" },
+                  "participants": { "type": "array", "items": { "type": "string" }, "example": ["62812xxx", "62813xxx"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Group created" } }
+      }
+    },
+    "/api/v1/group/participants": {
+      "post": {
+        "tags": ["3. Groups"],
+        "summary": "Manage Group Participants",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "jid", "action", "participants"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "jid": { "$ref": "#/components/schemas/JID" },
+                  "action": { "type": "string", "enum": ["add", "remove", "promote", "demote"] },
+                  "participants": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/group/invite-code": {
+      "get": {
+        "tags": ["3. Groups"],
+        "summary": "Get Group Invite Code",
+        "parameters": [
+          { "name": "sessionId", "in": "query", "required": true, "schema": { "$ref": "#/components/schemas/SessionID" } },
+          { "name": "jid", "in": "query", "required": true, "schema": { "$ref": "#/components/schemas/JID" } }
+        ],
+        "responses": {
+          "200": {
+            "content": { "application/json": { "example": { "invite_code": "F8s7..." } } }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/presence": {
+      "post": {
+        "tags": ["4. Chat Management"],
+        "summary": "Send Typing/Online Status",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "jid", "presence"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "jid": { "$ref": "#/components/schemas/JID" },
+                  "presence": { "type": "string", "enum": ["composing", "recording", "available", "unavailable"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/chat/mute": {
+      "post": {
+        "tags": ["4. Chat Management"],
+        "summary": "Mute/Unmute Chat",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "jid"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "jid": { "$ref": "#/components/schemas/JID" },
+                  "muteDuration": { "type": "integer", "description": "Mute duration in milliseconds. 0 to unmute.", "example": 3600000 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/chat/archive": {
+      "post": { "tags": ["4. Chat Management"], "summary": "Archive Chat", "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "sessionId": { "$ref": "#/components/schemas/SessionID" }, "jid": { "$ref": "#/components/schemas/JID" }, "archive": { "type": "boolean" } } } } } }, "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } } }
+    },
+    "/api/v1/contact/check-whatsapp": {
+      "post": {
+        "tags": ["5. Contacts & Blocklist"],
+        "summary": "Check WhatsApp Registration",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionId", "numbers"],
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "numbers": { "type": "array", "items": { "type": "string" }, "example": ["62812345", "6281999"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": [
+                  { "number": "62812345", "on_whatsapp": true, "jid": "62812345@s.whatsapp.net" },
+                  { "number": "6281999", "on_whatsapp": false }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/contact/block": {
+      "post": {
+        "tags": ["5. Contacts & Blocklist"],
+        "summary": "Block Contact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "jid": { "$ref": "#/components/schemas/JID" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/contact/unblock": {
+      "post": {
+        "tags": ["5. Contacts & Blocklist"],
+        "summary": "Unblock Contact",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "jid": { "$ref": "#/components/schemas/JID" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/profile/status": {
+      "put": {
+        "tags": ["6. User Profile"],
+        "summary": "Update Own Status (About)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "text": { "type": "string", "example": "Available" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    },
+    "/api/v1/profile/picture": {
+      "post": {
+        "tags": ["6. User Profile"],
+        "summary": "Change Own Profile Picture",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionId": { "$ref": "#/components/schemas/SessionID" },
+                  "url": { "type": "string", "format": "uri", "description": "Public image URL" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/schemas/GenericSuccess" } }
+      }
+    }
+  }
+}

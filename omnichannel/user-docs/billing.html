@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Langganan &amp; Billing — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Laporan &amp; Pengaturan<span>›</span>Langganan &amp; Billing</div>
+      <h1>💳 Langganan &amp; Billing</h1>
+      <p class="page-subtitle">Kelola paket langganan, tambah add-on, pantau riwayat pembayaran, dan ikuti Program Partner CRMHUB.</p>
+
+      <p>Menu <strong>Billing</strong> (atau <strong>Order</strong>) adalah pusat pengelolaan langganan akun CRMHUB Anda. Akses melalui menu <strong>Billing</strong> di sidebar, atau melalui avatar akun → Billing. Halaman ini hanya dapat diakses oleh <strong>Owner</strong> atau pengguna dengan izin <code>manage_billing</code>.</p>
+
+      <h2 id="status-langganan">Status Langganan</h2>
+      <p>Bagian atas halaman Billing menampilkan status langganan aktif Anda saat ini:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Informasi</th><th>Keterangan</th></tr></thead>
+          <tbody>
+            <tr><td>Paket Aktif</td><td>Nama paket yang sedang berjalan (contoh: Starter, Pro, Enterprise)</td></tr>
+            <tr><td>Status</td><td><span class="badge badge-green">Aktif</span> / <span class="badge badge-yellow" style="background:#fef3c7;color:#92400e">Masa Uji Coba</span> / <span class="badge badge-red">Kadaluwarsa</span></td></tr>
+            <tr><td>Berlaku Hingga</td><td>Tanggal berakhirnya masa langganan saat ini</td></tr>
+            <tr><td>Hari Tersisa</td><td>Hitung mundur hari sebelum perlu perpanjangan</td></tr>
+            <tr><td>Perangkat Aktif</td><td>Jumlah perangkat WhatsApp yang terhubung vs batas paket</td></tr>
+            <tr><td>Anggota Tim</td><td>Jumlah agen aktif vs batas paket</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Peringatan Kadaluwarsa</strong>
+          <p>CRMHUB akan mengirimkan email notifikasi 7 hari dan 1 hari sebelum langganan berakhir. Pastikan email Owner Anda aktif dan periksa folder spam. Setelah kadaluwarsa, akses fitur akan dibatasi hingga perpanjangan dilakukan.</p>
+        </div>
+      </div>
+
+      <h2 id="pilih-paket">Pilih &amp; Upgrade Paket</h2>
+      <p>Halaman <strong>Pilih Paket</strong> menampilkan semua paket langganan yang tersedia. Setiap paket memiliki fitur, batas perangkat, dan batas agen yang berbeda.</p>
+
+      <h3>Cara Upgrade atau Ganti Paket</h3>
+      <ol class="steps">
+        <li><strong>Buka Billing → Pilih Paket</strong>.</li>
+        <li><strong>Bandingkan Paket</strong> — Klik <em>"Lihat Detail"</em> pada paket mana pun untuk melihat daftar fitur lengkap.</li>
+        <li><strong>Pilih Paket</strong> — Klik tombol <em>"Pilih Paket"</em> atau <em>"Upgrade"</em> pada paket yang diinginkan.</li>
+        <li><strong>Pilih Durasi</strong> — Pilih masa berlangganan: bulanan atau tahunan (diskon biasanya tersedia untuk pembayaran tahunan).</li>
+        <li><strong>Konfirmasi Pesanan</strong> — Periksa ringkasan pesanan: nama paket, durasi, dan total biaya.</li>
+        <li><strong>Lakukan Pembayaran</strong> — Anda akan diarahkan ke halaman pembayaran. Selesaikan pembayaran sebelum waktu habis.</li>
+        <li><strong>Paket Aktif</strong> — Setelah pembayaran dikonfirmasi, paket baru langsung aktif dan limit perangkat/agen diperbarui.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Upgrade di Tengah Periode</strong>
+          <p>Jika Anda upgrade di tengah masa berlangganan, sistem akan memperhitungkan sisa hari dari paket lama sebagai kredit. Anda hanya membayar selisihnya (pro-rata).</p>
+        </div>
+      </div>
+
+      <h2 id="addon">Marketplace Add-on</h2>
+      <p>Add-on adalah fitur atau kapasitas tambahan yang dapat dibeli di luar paket utama. Add-on bersifat opsional dan dapat disesuaikan dengan kebutuhan bisnis Anda.</p>
+
+      <h3>Contoh Add-on yang Tersedia</h3>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="fc-icon">📱</span><div><h4>Tambah Perangkat WhatsApp</h4><p>Tambahkan slot perangkat WA melebihi batas paket utama</p></div></div>
+        <div class="feature-card"><span class="fc-icon">👤</span><div><h4>Tambah Agen/Tim</h4><p>Tambahkan kursi agen untuk anggota tim baru</p></div></div>
+        <div class="feature-card"><span class="fc-icon">📢</span><div><h4>Kuota Broadcast Extra</h4><p>Tambah kuota pengiriman broadcast di luar limit bulanan</p></div></div>
+        <div class="feature-card"><span class="fc-icon">🤖</span><div><h4>AI Credits</h4><p>Kredit tambahan untuk fitur AI Copilot dan chatbot cerdas</p></div></div>
+      </div>
+
+      <h3>Cara Membeli Add-on</h3>
+      <ol class="steps">
+        <li><strong>Buka Billing → Marketplace Add-on</strong>.</li>
+        <li><strong>Pilih Add-on</strong> — Klik add-on yang ingin dibeli.</li>
+        <li><strong>Tentukan Jumlah</strong> — Beberapa add-on bisa dibeli dalam jumlah banyak (contoh: tambah 3 perangkat sekaligus).</li>
+        <li><strong>Klik Beli</strong> — Konfirmasi pembelian dan lakukan pembayaran.</li>
+        <li><strong>Langsung Aktif</strong> — Add-on aktif segera setelah pembayaran dikonfirmasi.</li>
+      </ol>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content">
+          <strong>Syarat Paket Aktif</strong>
+          <p>Pembelian add-on membutuhkan paket langganan utama yang aktif. Add-on tidak dapat dibeli jika langganan sedang kadaluwarsa.</p>
+        </div>
+      </div>
+
+      <h2 id="riwayat-invoice">Riwayat Invoice &amp; Pembayaran</h2>
+      <p>Semua transaksi pembayaran dicatat di halaman <strong>Riwayat Invoice</strong>. Anda dapat melihat, mengunduh, dan mencetak bukti pembayaran dari sini.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kolom</th><th>Keterangan</th></tr></thead>
+          <tbody>
+            <tr><td>No. Invoice</td><td>Nomor unik setiap transaksi</td></tr>
+            <tr><td>Tanggal</td><td>Tanggal pembuatan invoice</td></tr>
+            <tr><td>Deskripsi</td><td>Nama paket atau add-on yang dibeli</td></tr>
+            <tr><td>Jumlah</td><td>Total yang harus/sudah dibayar</td></tr>
+            <tr><td>Status</td><td><span class="badge badge-green">Lunas</span> / <span class="badge badge-yellow" style="background:#fef3c7;color:#92400e">Menunggu</span> / <span class="badge badge-red">Gagal</span></td></tr>
+            <tr><td>Aksi</td><td>Unduh PDF atau lihat detail invoice</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Mengunduh Invoice PDF</h3>
+      <p>Klik ikon unduh (📥) atau tombol <em>"Download PDF"</em> di samping invoice untuk menyimpan bukti pembayaran dalam format PDF. Invoice dapat digunakan untuk keperluan keuangan atau pelaporan pajak.</p>
+
+      <h2 id="perpanjangan">Perpanjangan Langganan</h2>
+      <p>CRMHUB mendukung dua mode perpanjangan langganan:</p>
+
+      <h3>Perpanjangan Manual</h3>
+      <ol class="steps">
+        <li>Buka <strong>Billing → Status Langganan</strong>.</li>
+        <li>Klik tombol <em>"Perpanjang Sekarang"</em>.</li>
+        <li>Pilih durasi perpanjangan (1 bulan, 3 bulan, 6 bulan, atau 1 tahun).</li>
+        <li>Lakukan pembayaran.</li>
+        <li>Masa berlaku otomatis diperpanjang dari tanggal kedaluwarsa sebelumnya (bukan dari hari ini — jadi tidak ada hari yang terbuang).</li>
+      </ol>
+
+      <h3>Perpanjangan Otomatis (Auto-Renew)</h3>
+      <p>Jika diaktifkan, sistem akan memproses pembayaran perpanjangan secara otomatis sebelum langganan berakhir menggunakan metode pembayaran yang tersimpan.</p>
+      <ol class="steps">
+        <li>Buka <strong>Billing → Status Langganan</strong>.</li>
+        <li>Aktifkan toggle <em>"Perpanjangan Otomatis"</em>.</li>
+        <li>Tambahkan metode pembayaran (kartu kredit atau e-wallet yang mendukung recurring).</li>
+        <li>Konfirmasi. Sistem akan otomatis memperbarui langganan sebelum masa berlaku habis.</li>
+      </ol>
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Notifikasi Sebelum Auto-Renew</strong>
+          <p>Anda akan mendapat email notifikasi 3 hari sebelum auto-renew diproses. Jika ingin membatalkan, nonaktifkan toggle sebelum tanggal tersebut.</p>
+        </div>
+      </div>
+
+      <h2 id="program-partner">Program Partner (Afiliasi)</h2>
+      <p>Program Partner CRMHUB memungkinkan Anda mendapatkan komisi dengan mereferensikan bisnis lain untuk menggunakan CRMHUB. Setiap kali referral Anda berlangganan, Anda mendapat komisi otomatis.</p>
+
+      <h3>Cara Bergabung &amp; Mendapatkan Komisi</h3>
+      <ol class="steps">
+        <li><strong>Buka Billing → Program Partner</strong>.</li>
+        <li><strong>Dapatkan Link Referral</strong> — Link unik Anda ditampilkan di bagian atas halaman. Salin dan bagikan ke calon pengguna CRMHUB.</li>
+        <li><strong>Calon Pengguna Mendaftar</strong> — Ketika seseorang mendaftar menggunakan link referral Anda, mereka otomatis terhubung ke akun afiliasi Anda.</li>
+        <li><strong>Komisi Dikreditkan</strong> — Setelah referral Anda melakukan pembayaran pertama, komisi langsung masuk ke saldo afiliasi Anda.</li>
+        <li><strong>Ajukan Pencairan</strong> — Klik <em>"Ajukan Pencairan"</em> saat saldo mencapai batas minimum pencairan. Masukkan detail rekening bank.</li>
+        <li><strong>Pencairan Diproses</strong> — Tim keuangan CRMHUB akan memproses pencairan dalam 3–7 hari kerja.</li>
+      </ol>
+
+      <h3>Statistik Afiliasi</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Statistik</th><th>Keterangan</th></tr></thead>
+          <tbody>
+            <tr><td>Total Referral</td><td>Jumlah pengguna yang mendaftar via link Anda</td></tr>
+            <tr><td>Total Komisi</td><td>Akumulasi komisi yang pernah Anda hasilkan</td></tr>
+            <tr><td>Saldo Tersedia</td><td>Komisi yang siap dicairkan</td></tr>
+            <tr><td>Total Dicairkan</td><td>Jumlah komisi yang sudah berhasil Anda tarik</td></tr>
+            <tr><td>Riwayat Referral</td><td>Daftar semua referral beserta status pembayaran mereka</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout-success">
+        <span class="callout-icon">🚀</span>
+        <div class="callout-content">
+          <strong>Monetisasi CRMHUB sebagai Reseller</strong>
+          <p>Program Partner cocok untuk digital agency atau konsultan yang ingin menjual CRMHUB kepada klien mereka. Anda bisa menjadikan CRMHUB sebagai produk SaaS yang Anda jual dengan harga Anda sendiri, menggunakan fitur white-label yang tersedia di paket Enterprise.</p>
+        </div>
+      </div>
+
+      <h2 id="faq-billing">FAQ Billing</h2>
+      <div class="faq-item">
+        <div class="faq-q">Apa yang terjadi jika langganan saya kadaluwarsa?</div>
+        <div class="faq-a">
+          <p>Akses ke fitur berbayar akan dibatasi. Data dan percakapan Anda aman dan tidak dihapus. Anda masih bisa login dan melihat data historis, namun tidak dapat mengirim pesan, menggunakan broadcast, atau menghubungkan perangkat baru. Perpanjang langganan kapan saja untuk memulihkan akses penuh.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Apakah ada refund jika saya ingin downgrade atau berhenti berlangganan?</div>
+        <div class="faq-a">
+          <p>Kebijakan refund mengikuti ketentuan yang berlaku. Secara umum, pembayaran yang sudah dilakukan tidak dapat dikembalikan (non-refundable). Namun jika terdapat kendala teknis serius yang dapat dibuktikan, silakan hubungi tim support untuk evaluasi kasus per kasus.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Metode pembayaran apa saja yang diterima?</div>
+        <div class="faq-a">
+          <p>CRMHUB menerima berbagai metode pembayaran via gateway yang terintegrasi: transfer bank (virtual account BCA, Mandiri, BNI, BRI), e-wallet (OVO, GoPay, DANA, ShopeePay), QRIS, dan kartu kredit/debit Visa/Mastercard.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Bisakah saya ganti paket ke yang lebih rendah (downgrade)?</div>
+        <div class="faq-a">
+          <p>Downgrade dapat dilakukan, namun akan berlaku di awal periode langganan berikutnya — bukan langsung. Pastikan penggunaan perangkat dan agen Anda sudah sesuai dengan batas paket baru sebelum downgrade berlaku, untuk menghindari pembatasan otomatis.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="settings.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Pengaturan</div></a>
+        <a href="api.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Developer &amp; API</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#status-langganan">Status Langganan</a>
+      <a href="#pilih-paket">Pilih &amp; Upgrade Paket</a>
+      <a href="#addon">Marketplace Add-on</a>
+      <a href="#riwayat-invoice">Riwayat Invoice</a>
+      <a href="#perpanjangan">Perpanjangan</a>
+      <a href="#program-partner">Program Partner</a>
+      <a href="#faq-billing">FAQ Billing</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('billing.html');</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pemecahan Masalah — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Referensi<span>›</span>Pemecahan Masalah</div>
+      <h1>🔧 Pemecahan Masalah</h1>
+      <p class="page-subtitle">Panduan langkah demi langkah untuk mengatasi masalah umum di CRMHUB — dari koneksi WhatsApp hingga error login dan broadcast.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Sebelum Memulai</strong>
+          <p>Pastikan browser Anda sudah diperbarui ke versi terbaru dan koneksi internet stabil. Banyak masalah umum terselesaikan hanya dengan refresh halaman (<kbd>Ctrl+Shift+R</kbd>) atau membersihkan cache browser.</p>
+        </div>
+      </div>
+
+      <h2 id="whatsapp">WhatsApp Tidak Bisa Terhubung</h2>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content"><strong>Gejala:</strong> Status perangkat tetap "Menunggu" atau "Terputus" setelah scan QR. QR Code tidak muncul atau terus berputar.</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Periksa koneksi internet kedua sisi</strong> — Pastikan ponsel WhatsApp dan server VPS memiliki internet yang stabil. Coba buka website di browser ponsel untuk konfirmasi.</li>
+        <li><strong>Hapus semua sesi WhatsApp Web</strong> — Di ponsel: WhatsApp → Perangkat Tertaut → hapus SEMUA sesi aktif → tunggu 30 detik.</li>
+        <li><strong>Scan QR Code baru</strong> — Muat ulang halaman Integrations di CRMHUB (tekan F5) dan scan QR yang baru muncul. QR berlaku 60 detik.</li>
+        <li><strong>Restart perangkat WhatsApp di CRMHUB</strong> — Di halaman Integrations, klik tombol <strong>Restart</strong> pada perangkat yang bermasalah.</li>
+        <li><strong>Periksa status WA Gateway server</strong> — Jika Anda admin, cek apakah proses WA Gateway masih berjalan: <code>pm2 status</code> di server.</li>
+        <li><strong>Coba di waktu berbeda</strong> — WhatsApp kadang memblokir sementara jika terlalu banyak percobaan scan. Tunggu 10–15 menit lalu coba lagi.</li>
+      </ol>
+
+      <h2 id="wa-terputus">WhatsApp Tiba-tiba Terputus</h2>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content"><strong>Gejala:</strong> Perangkat yang sebelumnya terhubung tiba-tiba menjadi Disconnected saat sedang digunakan.</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Scan QR ulang</strong> — Ini cara paling cepat. Scan QR baru dari halaman Integrations.</li>
+        <li><strong>Cek apakah ponsel digunakan orang lain</strong> — Jika ada yang membuka WhatsApp di ponsel utama dan mengakhiri sesi web, koneksi akan putus.</li>
+        <li><strong>Periksa apakah WhatsApp diupdate</strong> — Update versi WhatsApp kadang memutus semua sesi perangkat tertaut. Scan ulang diperlukan.</li>
+        <li><strong>Cek apakah ponsel mengalami gangguan internet</strong> — Koneksi yang tidak stabil di ponsel bisa memutus WA Gateway.</li>
+      </ol>
+
+      <h2 id="broadcast">Broadcast Gagal Terkirim</h2>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content"><strong>Gejala:</strong> Status pesan di laporan broadcast menunjukkan "Gagal" atau "Error". Beberapa pesan terkirim, sebagian tidak.</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Periksa status perangkat pengirim</strong> — Pastikan perangkat WhatsApp yang digunakan berstatus Connected (hijau) di halaman Integrations.</li>
+        <li><strong>Periksa format nomor tujuan</strong> — Nomor harus format internasional tanpa tanda + (contoh: <code>6281234567890</code>, bukan <code>081234567890</code> atau <code>+6281234567890</code>).</li>
+        <li><strong>Cek isi pesan</strong> — Hindari kata-kata yang sering ditandai spam. Jangan kirim link yang sama ke banyak orang sekaligus.</li>
+        <li><strong>Periksa Device Rotator</strong> — Jika menggunakan rotator, pastikan semua perangkat dalam rotator terhubung dengan baik.</li>
+        <li><strong>Kurangi kecepatan pengiriman</strong> — Jika banyak pesan gagal, coba atur delay antar pesan lebih lama di pengaturan broadcast.</li>
+        <li><strong>Periksa apakah nomor valid</strong> — Gunakan Number Checker untuk validasi nomor sebelum broadcast.</li>
+      </ol>
+
+      <h2 id="login">Masalah Login</h2>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content"><strong>Gejala:</strong> Tidak dapat masuk meskipun memasukkan email dan password yang benar. Muncul pesan "Invalid password" atau "User not found".</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Pastikan Caps Lock tidak aktif</strong> — Password bersifat case-sensitive. Cek apakah Caps Lock menyala.</li>
+        <li><strong>Gunakan fitur Lupa Password</strong> — Klik <em>"Lupa Kata Sandi"</em> di halaman login, masukkan email, cek kotak masuk (dan folder Spam).</li>
+        <li><strong>Hapus cache dan cookie browser</strong> — Buka pengaturan browser → Privacy → Hapus data browsing → centang Cache & Cookie → hapus.</li>
+        <li><strong>Coba browser berbeda</strong> — Gunakan Chrome, Firefox, atau Edge versi terbaru.</li>
+        <li><strong>Nonaktifkan ekstensi browser</strong> — Beberapa ekstensi (ad blocker, VPN) bisa mengganggu proses login.</li>
+        <li><strong>Reset password via script</strong> — Jika Super Admin lupa password, jalankan <code>node reset-password.js</code> di server backend untuk reset manual.</li>
+      </ol>
+
+      <h2 id="chatbot">Chatbot Tidak Merespons</h2>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content"><strong>Gejala:</strong> Pesan pelanggan tidak dijawab otomatis oleh chatbot meskipun sudah dikonfigurasi.</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Cek apakah chatbot diaktifkan</strong> — Buka <strong>Chatbot → Global Knowledge</strong>. Pastikan toggle <strong>Aktif</strong> dalam keadaan ON.</li>
+        <li><strong>Cek pengaturan per perangkat</strong> — Setiap perangkat WhatsApp harus diaktifkan chatbot-nya secara terpisah di <strong>Integrations → [nama perangkat] → Bot Settings</strong>.</li>
+        <li><strong>Pastikan perangkat terhubung</strong> — Chatbot hanya bisa membalas jika ada perangkat WhatsApp yang Connected.</li>
+        <li><strong>Tambah variasi pertanyaan</strong> — Jika chatbot tidak mengenali pertanyaan, tambahkan variasi kata di Knowledge Base. Bot AI butuh beberapa contoh kalimat yang berbeda.</li>
+        <li><strong>Periksa apakah percakapan sudah di-assign ke agent</strong> — Jika percakapan sudah di-assign ke agent dan agent sedang Online, chatbot tidak akan merespons agar tidak mengganggu agen yang aktif.</li>
+      </ol>
+
+      <h2 id="pesan-tidak-masuk">Pesan Tidak Masuk ke Inbox</h2>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content"><strong>Gejala:</strong> Pelanggan sudah mengirim pesan tapi tidak muncul di Inbox CRMHUB.</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Refresh halaman Inbox</strong> — Tekan F5 atau Ctrl+R. Pesan mungkin sudah masuk tapi tampilan belum terupdate.</li>
+        <li><strong>Periksa filter aktif</strong> — Pastikan tidak ada filter yang menyembunyikan percakapan. Klik tab <strong>Semua</strong> untuk tampilkan semua percakapan.</li>
+        <li><strong>Cek status perangkat</strong> — Jika perangkat Disconnected, pesan tidak akan masuk. Reconnect perangkat terlebih dahulu.</li>
+        <li><strong>Cek apakah masuk ke archived</strong> — Pesan dari kontak yang pernah diarsipkan bisa langsung masuk ke tab Terarsip.</li>
+        <li><strong>Restart WA Gateway</strong> — Jika admin server: <code>pm2 restart wa-gateway</code> untuk refresh koneksi.</li>
+      </ol>
+
+      <h2 id="notifikasi">Notifikasi Tidak Muncul</h2>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content"><strong>Gejala:</strong> Tidak ada notifikasi browser atau suara saat pesan baru masuk.</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Aktifkan izin notifikasi browser</strong> — Klik ikon gembok 🔒 di address bar browser → pilih <em>Izinkan Notifikasi</em> untuk domain CRMHUB.</li>
+        <li><strong>Pastikan tab CRMHUB tidak diminimize ke system tray</strong> — Browser yang diperkecil ke systray kadang menghambat notifikasi.</li>
+        <li><strong>Periksa pengaturan "Jangan Ganggu" OS</strong> — Windows Focus Assist atau macOS Do Not Disturb bisa memblokir notifikasi.</li>
+        <li><strong>Cek volume sistem</strong> — Pastikan volume komputer tidak di-mute.</li>
+      </ol>
+
+      <h2 id="file-upload">Upload File Gagal</h2>
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-content"><strong>Gejala:</strong> Tidak bisa upload foto, dokumen, atau file dari Inbox. Muncul error saat upload.</div>
+      </div>
+      <ol class="steps">
+        <li><strong>Periksa ukuran file</strong> — WhatsApp memiliki batas ukuran file. Gambar max ~5MB, dokumen max ~100MB, video max ~16MB.</li>
+        <li><strong>Periksa tipe file</strong> — Beberapa tipe file tidak didukung WhatsApp. Gunakan format umum: JPG, PNG, PDF, DOCX, MP4.</li>
+        <li><strong>Cek ruang penyimpanan server</strong> — Jika admin: <code>df -h</code> untuk cek disk usage. Full disk menyebabkan upload gagal.</li>
+        <li><strong>Periksa konfigurasi Nginx</strong> — Batas upload di Nginx default 1MB. Tambahkan <code>client_max_body_size 100M;</code> di config Nginx jika perlu.</li>
+      </ol>
+
+      <h2 id="lambat">Aplikasi Terasa Lambat</h2>
+      <ol class="steps">
+        <li><strong>Bersihkan cache browser</strong> — Data cache yang menumpuk bisa memperlambat loading halaman.</li>
+        <li><strong>Periksa resource server</strong> — Jika admin: <code>htop</code> atau <code>top</code> untuk cek CPU dan RAM. Jika penuh, pertimbangkan upgrade server.</li>
+        <li><strong>Kurangi jumlah percakapan yang dimuat</strong> — Arsipkan percakapan lama yang sudah resolved agar inbox lebih ringan.</li>
+        <li><strong>Periksa koneksi database</strong> — Jalankan query lambat mungkin membutuhkan optimasi index PostgreSQL.</li>
+        <li><strong>Cek Redis connection</strong> — CRMHUB menggunakan Redis untuk caching. Pastikan Redis berjalan: <code>redis-cli ping</code> harus menjawab PONG.</li>
+      </ol>
+
+      <h2 id="invoice">Masalah Invoice</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Masalah</th><th>Solusi</th></tr></thead>
+          <tbody>
+            <tr><td>Invoice tidak terkirim ke pelanggan</td><td>Periksa status perangkat WhatsApp. Pastikan nomor pelanggan terdaftar di WhatsApp. Cek log invoice untuk pesan error.</td></tr>
+            <tr><td>Format angka tidak sesuai</td><td>Pastikan pengaturan mata uang dan format angka sudah benar di Settings → Invoice Settings.</td></tr>
+            <tr><td>Logo tidak muncul di invoice</td><td>Upload logo dengan ukuran minimal 200x200px format PNG/JPG. Periksa URL logo di pengaturan.</td></tr>
+            <tr><td>Payment link tidak berfungsi</td><td>Periksa konfigurasi payment gateway (Xendit/Tripay/Doku) di Settings → Integrasi Pembayaran.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="error-umum">Kode Error Umum</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kode Error</th><th>Artinya</th><th>Solusi</th></tr></thead>
+          <tbody>
+            <tr><td><code>401 Unauthorized</code></td><td>Sesi login kedaluwarsa</td><td>Logout lalu login kembali</td></tr>
+            <tr><td><code>403 Forbidden</code></td><td>Tidak punya izin untuk aksi ini</td><td>Hubungi Admin untuk penyesuaian role/permission</td></tr>
+            <tr><td><code>404 Not Found</code></td><td>Data atau halaman tidak ditemukan</td><td>Refresh halaman. Jika persisten, data mungkin sudah dihapus</td></tr>
+            <tr><td><code>429 Too Many Requests</code></td><td>Terlalu banyak request dalam waktu singkat</td><td>Tunggu beberapa menit sebelum mencoba lagi</td></tr>
+            <tr><td><code>500 Internal Server Error</code></td><td>Error di sisi server</td><td>Cek log server. Jika persisten, hubungi support dengan screenshot error</td></tr>
+            <tr><td><code>Network Error</code></td><td>Koneksi internet terputus</td><td>Periksa koneksi internet dan coba lagi</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="support">Hubungi Support</h2>
+      <p>Jika masalah Anda tidak terselesaikan dengan panduan di atas, hubungi tim support dengan menyertakan informasi berikut agar penanganan lebih cepat:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Informasi</th><th>Keterangan</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Kode Pembelian / Lisensi</strong></td><td>Kode yang diterima saat pembelian CRMHUB</td></tr>
+            <tr><td><strong>URL/Domain</strong></td><td>Alamat website CRMHUB Anda yang terinstall</td></tr>
+            <tr><td><strong>Screenshot Error</strong></td><td>Tangkapan layar pesan error yang muncul beserta URL-nya</td></tr>
+            <tr><td><strong>Langkah yang Sudah Dicoba</strong></td><td>Tuliskan apa saja yang sudah Anda coba dari panduan ini</td></tr>
+            <tr><td><strong>Waktu Kejadian</strong></td><td>Kapan masalah pertama kali terjadi</td></tr>
+            <tr><td><strong>Browser & Versi</strong></td><td>Contoh: Chrome 120, Firefox 121</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-content">
+          <strong>Lihat juga FAQ</strong>
+          <p>Banyak pertanyaan umum dijawab di halaman <a href="faq.html">FAQ</a>. Periksa terlebih dahulu sebelum menghubungi support.</p>
+        </div>
+      </div>
+
+      <div class="page-nav">
+        <a href="security.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Keamanan</div></a>
+        <a href="faq.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">FAQ</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#whatsapp">WhatsApp Tidak Terhubung</a>
+      <a href="#wa-terputus">WhatsApp Tiba-tiba Putus</a>
+      <a href="#broadcast">Broadcast Gagal</a>
+      <a href="#login">Masalah Login</a>
+      <a href="#chatbot">Chatbot Tidak Aktif</a>
+      <a href="#pesan-tidak-masuk">Pesan Tidak Masuk</a>
+      <a href="#notifikasi">Notifikasi Tidak Muncul</a>
+      <a href="#file-upload">Upload File Gagal</a>
+      <a href="#lambat">Aplikasi Lambat</a>
+      <a href="#invoice">Masalah Invoice</a>
+      <a href="#error-umum">Kode Error Umum</a>
+      <a href="#support">Hubungi Support</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('troubleshooting.html');</script>
+</body>
+</html>
