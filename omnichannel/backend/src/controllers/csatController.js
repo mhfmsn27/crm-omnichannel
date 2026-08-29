@@ -1,312 +1,158 @@
+/**
+ * CSAT (Customer Satisfaction Survey) Controller
+ * Benchmark Mekari Qontak / SleekFlow
+ */
 import pool from '../config/db.js';
 import crypto from 'crypto';
+import * as waService from '../services/waGatewayService.js';
 
-// --- CSAT Settings ---
+const generateToken = () => crypto.randomBytes(16).toString('hex');
 
-export const getSettings = async (req, res) => {
-    const { organization_id } = req.user;
-
+// Trigger CSAT Survey after a conversation is resolved
+export const triggerCsatSurvey = async (conversationId, organizationId, customMessage = null) => {
     try {
-        const result = await pool.query(
-            `SELECT csat_enabled, csat_trigger, csat_questions FROM organizations WHERE id = $1`,
-            [organization_id]
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Organization not found' });
-        }
-
-        res.json({
-            csatEnabled: result.rows[0].csat_enabled || false,
-            csatTrigger: result.rows[0].csat_trigger || 'conversation_closed',
-            csatQuestions: result.rows[0].csat_questions || []
-        });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-};
-
-export const updateSettings = async (req, res) => {
-    const { organization_id } = req.user;
-    const { csatEnabled, csatTrigger, csatQuestions } = req.body;
-
-    try {
-        await pool.query(
-            `UPDATE organizations SET
-             csat_enabled = COALESCE($2, csat_enabled),
-             csat_trigger = COALESCE($3, csat_trigger),
-             csat_questions = COALESCE($4, csat_questions)
-             WHERE id = $1`,
-            [organization_id, csatEnabled, csatTrigger, csatQuestions ? JSON.stringify(csatQuestions) : null]
-        );
-
-        res.json({ success: true });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-};
-
-// --- CSAT Surveys ---
-
-export const getSurveys = async (req, res) => {
-    const { organization_id } = req.user;
-    const { page = 1, limit = 20, start_date, end_date } = req.query;
-    const offset = (page - 1) * limit;
-
-    try {
-        let query = `
-            SELECT cs.*, c.contact_name, c.phone_number, conv.channel
-            FROM csat_surveys cs
-            LEFT JOIN contacts c ON cs.contact_id = c.id
-            LEFT JOIN conversations conv ON cs.conversation_id = conv.id
-            WHERE cs.organization_id = $1
-        `;
-        const params = [organization_id];
-        let idx = 2;
-
-        if (start_date) {
-            query += ` AND cs.created_at >= $${idx++}`;
-            params.push(start_date);
-        }
-        if (end_date) {
-            query += ` AND cs.created_at <= $${idx++}`;
-            params.push(end_date);
-        }
-
-        query += ` ORDER BY cs.created_at DESC LIMIT $${idx++} OFFSET $${idx}`;
-        params.push(parseInt(limit), offset);
-
-        const result = await pool.query(query, params);
-
-        // Get total count
-        const countRes = await pool.query(
-            `SELECT COUNT(*) FROM csat_surveys WHERE organization_id = $1`,
-            [organization_id]
-        );
-
-        const totalCount = parseInt(countRes.rows[0].count) || 0;
-
-        res.json({
-            data: result.rows,
-            meta: {
-                total: totalCount,
-                page: parseInt(page),
-                last_page: Math.ceil(totalCount / limit)
-            }
-        });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-};
-
-export const getStats = async (req, res) => {
-    const { organization_id } = req.user;
-    const { days = 30 } = req.query;
-    const daysNum = parseInt(days) || 30;
-
-    try {
-        // Average rating
-        const avgRes = await pool.query(
-            `SELECT AVG(rating)::DECIMAL(3,2) as avg_rating, COUNT(*) as total_responses
-             FROM csat_surveys
-             WHERE organization_id = $1 AND rating IS NOT NULL
-             AND created_at >= NOW() - INTERVAL '${daysNum} days'`,
-            [organization_id]
-        );
-
-        // Rating distribution
-        const distRes = await pool.query(
-            `SELECT rating, COUNT(*) as count
-             FROM csat_surveys
-             WHERE organization_id = $1 AND rating IS NOT NULL
-             AND created_at >= NOW() - INTERVAL '${daysNum} days'
-             GROUP BY rating
-             ORDER BY rating`,
-            [organization_id]
-        );
-
-        // Response rate
-        const totalConvRes = await pool.query(
-            `SELECT COUNT(*) as total FROM conversations
-             WHERE organization_id = $1 AND status = 'resolved'
-             AND updated_at >= NOW() - INTERVAL '${daysNum} days'`,
-            [organization_id]
-        );
-
-        const totalSurvRes = await pool.query(
-            `SELECT COUNT(*) as total FROM csat_surveys
-             WHERE organization_id = $1
-             AND created_at >= NOW() - INTERVAL '${daysNum} days'`,
-            [organization_id]
-        );
-
-        const totalConv = parseInt(totalConvRes.rows[0].total) || 0;
-        const totalSurv = parseInt(totalSurvRes.rows[0].total) || 0;
-        const responseRate = totalConv > 0 ? (totalSurv / totalConv) * 100 : 0;
-
-        // NPS calculation
-        const promoters = await pool.query(
-            `SELECT COUNT(*) FROM csat_surveys WHERE organization_id = $1 AND rating >= 9 AND created_at >= NOW() - INTERVAL '${daysNum} days'`,
-            [organization_id]
-        );
-        const detractors = await pool.query(
-            `SELECT COUNT(*) FROM csat_surveys WHERE organization_id = $1 AND rating <= 6 AND created_at >= NOW() - INTERVAL '${daysNum} days'`,
-            [organization_id]
-        );
-
-        const p = parseInt(promoters.rows[0].count) || 0;
-        const d = parseInt(detractors.rows[0].count) || 0;
-        const n = totalSurv > 0 ? ((p - d) / totalSurv) * 100 : 0;
-
-        res.json({
-            avgRating: parseFloat(avgRes.rows[0].avg_rating) || 0,
-            totalResponses: parseInt(avgRes.rows[0].total_responses) || 0,
-            responseRate: Math.round(responseRate * 10) / 10,
-            nps: Math.round(n * 10) / 10,
-            ratingDistribution: distRes.rows,
-            period: `${daysNum} days`
-        });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-};
-
-// --- Trigger Survey ---
-
-export const triggerSurvey = async (req, res) => {
-    const { organization_id } = req.user;
-    const { conversationId } = req.params;
-
-    try {
-        // Check if CSAT is enabled
-        const orgRes = await pool.query(
-            `SELECT csat_enabled FROM organizations WHERE id = $1`,
-            [organization_id]
-        );
-
-        if (!orgRes.rows[0]?.csat_enabled) {
-            return res.status(400).json({ error: 'CSAT survey is not enabled' });
-        }
-
-        // Get conversation info
         const convRes = await pool.query(
-            `SELECT c.*, co.contact_name, co.phone_number
+            `SELECT c.*, ct.phone_number, ct.name as contact_name, ws.session_id as wa_uuid, o.csat_enabled, o.csat_message_template
              FROM conversations c
-             JOIN contacts co ON c.contact_id = co.id
+             JOIN contacts ct ON c.contact_id = ct.id
+             JOIN organizations o ON o.id = c.organization_id
+             LEFT JOIN whatsapp_sessions ws ON ws.organization_id = c.organization_id AND ws.status = 'connected'
              WHERE c.id = $1 AND c.organization_id = $2`,
-            [conversationId, organization_id]
+            [conversationId, organizationId]
         );
 
-        if (convRes.rows.length === 0) {
-            return res.status(404).json({ error: 'Conversation not found' });
-        }
-
+        if (convRes.rows.length === 0) return null;
         const conv = convRes.rows[0];
 
-        // Generate unique token
-        const token = crypto.randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+        // Check if organization has CSAT enabled
+        if (conv.csat_enabled === false) return null;
 
-        // Create survey link
-        await pool.query(
-            `INSERT INTO csat_survey_links (organization_id, conversation_id, token, expires_at)
-             VALUES ($1, $2, $3, $4)`,
-            [organization_id, conversationId, token, expiresAt]
+        const token = generateToken();
+
+        // 1. Create CSAT survey record
+        const surveyRes = await pool.query(
+            `INSERT INTO csat_surveys (organization_id, conversation_id, contact_id, agent_id, public_token, status)
+             VALUES ($1, $2, $3, $4, $5, 'pending')
+             RETURNING *`,
+            [organizationId, conversationId, conv.contact_id, conv.assigned_to_agent_id, token]
         );
 
-        // Emit socket event for frontend to send the survey link
-        if (req.io) {
-            req.io.to(`org_${organization_id}`).emit('csat_survey_ready', {
-                conversationId,
-                surveyLink: `/rating/${token}`,
-                contactName: conv.contact_name
+        await pool.query(
+            `UPDATE conversations SET csat_status = 'sent', csat_token = $1, updated_at = NOW() WHERE id = $2`,
+            [token, conversationId]
+        );
+
+        // 2. Dispatch via WhatsApp if available
+        if (conv.phone_number && conv.wa_uuid) {
+            const appUrl = (process.env.APP_URL || 'http://localhost:5173').replace(/\/$/, '');
+            const ratingUrl = `${appUrl}/rating/${token}`;
+
+            const defaultTemplate = `Halo kak *${conv.contact_name || 'Pelanggan'}*, percakapan Anda telah diselesaikan oleh tim CS kami. 🙏\n\nBantu kami meningkatkan kualitas layanan dengan memberikan penilaian (1-5 bintang) melalui link berikut:\n⭐ ${ratingUrl}\n\nAtau balas pesan ini dengan angka *1* (Sangat Buruk) sampai *5* (Sangat Puas). Terima kasih!`;
+
+            const messageText = customMessage || conv.csat_message_template || defaultTemplate;
+
+            let phone = String(conv.phone_number).replace(/[^0-9]/g, '');
+            if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+
+            await waService.sendText(conv.wa_uuid, phone, messageText).catch(e => {
+                console.warn("[CSAT WA Send Error]:", e.message);
             });
         }
 
-        res.json({
-            success: true,
-            surveyLink: `/rating/${token}`,
-            token
-        });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
+        return surveyRes.rows[0];
+
+    } catch (err) {
+        console.error('[CSAT Trigger Error]:', err.message);
+        return null;
     }
 };
 
-// --- Public Survey Submission ---
-
-export const getSurveyForm = async (req, res) => {
-    const { token } = req.params;
-
-    try {
-        const linkRes = await pool.query(
-            `SELECT csl.*, o.csat_questions, o.csat_enabled
-             FROM csat_survey_links csl
-             JOIN organizations o ON csl.organization_id = o.id
-             WHERE csl.token = $1`,
-            [token]
-        );
-
-        if (linkRes.rows.length === 0) {
-            return res.status(404).json({ error: 'Survey not found' });
-        }
-
-        const survey = linkRes.rows[0];
-
-        if (survey.used) {
-            return res.status(400).json({ error: 'Survey already completed' });
-        }
-
-        if (new Date(survey.expires_at) < new Date()) {
-            return res.status(400).json({ error: 'Survey has expired' });
-        }
-
-        res.json({
-            token,
-            questions: survey.csat_questions || [],
-            organizationId: survey.organization_id
-        });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-};
-
-export const submitSurvey = async (req, res) => {
+// Public/authenticated endpoint to submit CSAT rating
+export const submitRating = async (req, res) => {
     const { token } = req.params;
     const { rating, feedback } = req.body;
 
+    const ratingVal = parseInt(rating);
+    if (!ratingVal || ratingVal < 1 || ratingVal > 5) {
+        return res.status(400).json({ error: "Rating harus berupa angka 1 sampai 5 bintang." });
+    }
+
     try {
-        // Get survey link
-        const linkRes = await pool.query(
-            `SELECT * FROM csat_survey_links WHERE token = $1`,
+        const surveyRes = await pool.query(
+            `SELECT * FROM csat_surveys WHERE public_token = $1 AND status != 'completed'`,
             [token]
         );
 
-        if (linkRes.rows.length === 0) {
-            return res.status(404).json({ error: 'Survey not found' });
+        if (surveyRes.rows.length === 0) {
+            return res.status(404).json({ error: "Survei tidak ditemukan atau sudah pernah diisi." });
         }
 
-        const survey = linkRes.rows[0];
+        const survey = surveyRes.rows[0];
 
-        if (survey.used) {
-            return res.status(400).json({ error: 'Survey already completed' });
-        }
-
-        // Create survey response
-        await pool.query(
-            `INSERT INTO csat_surveys (organization_id, conversation_id, contact_id, rating, feedback, responded_at)
-             VALUES ($1, $2, $3, $4, $5, NOW())`,
-            [survey.organization_id, survey.conversation_id, survey.contact_id, rating, feedback]
+        const updated = await pool.query(
+            `UPDATE csat_surveys 
+             SET rating = $1, feedback = $2, status = 'completed', responded_at = NOW() 
+             WHERE id = $3
+             RETURNING *`,
+            [ratingVal, feedback || null, survey.id]
         );
 
-        // Mark link as used
+        // Update conversation rating
         await pool.query(
-            `UPDATE csat_survey_links SET used = true WHERE id = $1`,
-            [survey.id]
+            `UPDATE conversations SET csat_rating = $1, csat_status = 'received', updated_at = NOW() WHERE id = $2`,
+            [ratingVal, survey.conversation_id]
         );
 
-        res.json({ success: true, message: 'Thank you for your feedback!' });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.json({
+            success: true,
+            message: "Terima kasih atas penilaian dan masukan yang Anda berikan! 🙏",
+            survey: updated.rows[0]
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get CSAT analytics stats for dashboard
+export const getCsatStats = async (req, res) => {
+    const { organization_id } = req.user;
+    try {
+        const statsRes = await pool.query(
+            `SELECT 
+                COUNT(*) as total_surveys,
+                COUNT(*) FILTER (WHERE status = 'completed') as total_responses,
+                ROUND(AVG(rating) FILTER (WHERE status = 'completed'), 2) as average_rating,
+                ROUND((COUNT(*) FILTER (WHERE rating >= 4)::decimal / NULLIF(COUNT(*) FILTER (WHERE status = 'completed'), 0)) * 100, 1) as csat_percentage,
+                COUNT(*) FILTER (WHERE rating = 5) as stars_5,
+                COUNT(*) FILTER (WHERE rating = 4) as stars_4,
+                COUNT(*) FILTER (WHERE rating = 3) as stars_3,
+                COUNT(*) FILTER (WHERE rating = 2) as stars_2,
+                COUNT(*) FILTER (WHERE rating = 1) as stars_1
+             FROM csat_surveys
+             WHERE organization_id = $1`,
+            [organization_id]
+        );
+
+        const agentLeaderboard = await pool.query(
+            `SELECT u.id, u.name, 
+                    COUNT(s.id) as total_reviews,
+                    ROUND(AVG(s.rating), 2) as avg_rating,
+                    ROUND((COUNT(*) FILTER (WHERE s.rating >= 4)::decimal / NULLIF(COUNT(s.id), 0)) * 100, 1) as satisfied_rate
+             FROM csat_surveys s
+             JOIN users u ON s.agent_id = u.id
+             WHERE s.organization_id = $1 AND s.status = 'completed'
+             GROUP BY u.id, u.name
+             ORDER BY avg_rating DESC LIMIT 10`,
+            [organization_id]
+        );
+
+        res.json({
+            summary: statsRes.rows[0],
+            leaderboard: agentLeaderboard.rows
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };

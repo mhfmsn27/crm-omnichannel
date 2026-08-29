@@ -25,6 +25,8 @@ const getChannelIcon = (channel, deviceType) => {
         case 'instagram': return '/icons/instagram.svg';
         case 'telegram': return '/icons/telegram.svg';
         case 'webchat': return '/icons/webchat.svg';
+        case 'email': return '/icons/email.svg';
+        case 'shopee': return '/icons/shopee.svg';
         default: return '/icons/device.svg';
     }
 };
@@ -80,6 +82,16 @@ const getDeviceBadgeStyle = (channel) => {
             return 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300';
         case 'webchat':
             return 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300';
+        case 'email':
+            return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300';
+        case 'tiktok':
+            return 'bg-gray-900 text-white dark:bg-black dark:text-white';
+        case 'shopee':
+            return 'bg-orange-100 text-[#EE4D2D] dark:bg-orange-950/50 dark:text-orange-300';
+        case 'tokopedia':
+            return 'bg-emerald-100 text-[#03AC0E] dark:bg-emerald-950/50 dark:text-emerald-300';
+        case 'line':
+            return 'bg-emerald-50 text-[#06C755] dark:bg-green-950/50 dark:text-green-300';
         default:
             return 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-400';
     }

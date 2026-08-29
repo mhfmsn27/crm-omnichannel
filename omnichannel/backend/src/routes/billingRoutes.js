@@ -23,9 +23,20 @@ router.post('/invoices/:id/send', checkSystemFlag('fin_invoice'), invoiceControl
 router.post('/invoices/:id/send-qris', checkSystemFlag('fin_invoice'), invoiceController.sendInvoiceQrisWA);
 router.get('/invoices/:id/qris', checkSystemFlag('fin_invoice'), invoiceController.getInvoiceQris);
 router.post('/invoices/:id/mark-paid', checkSystemFlag('fin_invoice'), invoiceController.markAsPaid);
+router.post('/invoices/:id/partial-payment', checkSystemFlag('fin_invoice'), invoiceController.recordPartialPayment);
+router.get('/invoices/:id/partial-payments', checkSystemFlag('fin_invoice'), invoiceController.getPartialPayments);
+router.post('/invoices/:id/send-reminder', checkSystemFlag('fin_invoice'), invoiceController.triggerDunningReminder);
 router.get('/invoices/:id/payments', checkSystemFlag('fin_invoice'), invoiceController.getPaymentHistory);
 router.post('/invoices/generate-from-chat', checkSystemFlag('fin_invoice'), invoiceController.generateInvoiceDraft);
 router.post('/invoices/create-from-draft', checkSystemFlag('fin_invoice'), invoiceController.createInvoiceFromDraft);
+
+// --- Recurring Invoices (Subscriptions) ---
+router.get('/recurring-invoices', checkSystemFlag('fin_invoice'), invoiceController.getRecurringInvoices);
+router.post('/recurring-invoices', checkSystemFlag('fin_invoice'), invoiceController.createRecurringInvoice);
+router.put('/recurring-invoices/:id', checkSystemFlag('fin_invoice'), invoiceController.updateRecurringInvoice);
+router.patch('/recurring-invoices/:id/toggle', checkSystemFlag('fin_invoice'), invoiceController.toggleRecurringInvoice);
+router.delete('/recurring-invoices/:id', checkSystemFlag('fin_invoice'), invoiceController.deleteRecurringInvoice);
+router.post('/recurring-invoices/:id/generate', checkSystemFlag('fin_invoice'), invoiceController.generateNextRecurringInvoice);
 
 // --- Invoice Settings & Gateway Config ---
 router.get('/invoice-settings', checkSystemFlag('fin_invoice'), invoiceController.getSettings);

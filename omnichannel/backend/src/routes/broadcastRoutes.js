@@ -37,6 +37,7 @@ router.put('/scheduled/:id/cancel', checkSystemFlag('mod_broadcast'), broadcastS
 // --- Warmer Circle ---
 router.get('/warmer', warmerController.getWarmers);
 router.post('/warmer', warmerController.createWarmer);
+router.put('/warmer/:id', warmerController.updateWarmer);
 router.patch('/warmer/:id/toggle', warmerController.toggleWarmer);
 router.post('/warmer/:id/reset', warmerController.resetWarmer);
 router.delete('/warmer/:id', warmerController.deleteWarmer);

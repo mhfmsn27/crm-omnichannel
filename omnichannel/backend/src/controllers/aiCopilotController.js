@@ -405,3 +405,67 @@ export const transcribeAudio = async (req, res) => {
     }
 };
 
+// POST /api/app/ai/translate
+// Real-time bidirectional translation
+export const translateMessage = async (req, res) => {
+    const { text, target_language = 'id' } = req.body;
+    const { organization_id } = req.user;
+
+    if (!text || !text.trim()) {
+        return res.status(400).json({ error: 'Text to translate is required' });
+    }
+
+    try {
+        const orgRes = await pool.query(
+            `SELECT gemini_api_key, openai_api_key FROM organizations WHERE id = $1`,
+            [organization_id]
+        );
+        const apiKey = orgRes.rows[0]?.gemini_api_key;
+
+        if (!apiKey) {
+            return res.status(400).json({ error: 'Gemini API Key belum diatur di Pengaturan Organisasi' });
+        }
+
+        const { GoogleGenAI } = await import('@google/genai');
+        const ai = new GoogleGenAI({ apiKey });
+
+        const langMap = {
+            'id': 'Bahasa Indonesia',
+            'en': 'English',
+            'zh': 'Chinese (Simplified)',
+            'ja': 'Japanese',
+            'ar': 'Arabic',
+            'ms': 'Bahasa Melayu'
+        };
+
+        const targetLangName = langMap[target_language] || target_language;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: [
+                {
+                    role: 'user',
+                    parts: [
+                        {
+                            text: `Terjemahkan teks berikut secara natural dan akurat ke dalam ${targetLangName}. Kembalikan HANYA teks hasil terjemahannya tanpa tanda kutip pembuka atau kalimat penjelasan apapun:\n\n"${text}"`
+                        }
+                    ]
+                }
+            ]
+        });
+
+        const translated = response.text ? response.text.trim().replace(/^["']|["']$/g, '') : text;
+
+        res.json({
+            success: true,
+            original: text,
+            translated,
+            target_language
+        });
+
+    } catch (err) {
+        console.error('[AI Translate] Error:', err.message);
+        res.status(500).json({ error: `Gagal menerjemahkan: ${err.message}` });
+    }
+};
+

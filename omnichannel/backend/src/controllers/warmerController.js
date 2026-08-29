@@ -4,13 +4,33 @@ import redisConnection from '../config/redis.js';
 import { getPreviewMessages } from '../utils/systemDictionary.js';
 import { checkFeatureAccess } from '../services/featureGateService.js';
 import { manualResetCircle } from '../services/warmerScheduler.js';
+import { checkWarmerActiveHours, calculateNextWarmerDelay } from '../services/warmerTimeHelper.js';
 
 const warmerQueue = new Queue('warmer-queue', { connection: redisConnection });
+
+// Ensure active_hours columns exist safely on startup/query
+let schemaChecked = false;
+const ensureWarmerActiveHoursColumns = async () => {
+    if (schemaChecked) return;
+    try {
+        await pool.query(`
+            ALTER TABLE warmer_circles 
+            ADD COLUMN IF NOT EXISTS active_hours_start INTEGER DEFAULT 8,
+            ADD COLUMN IF NOT EXISTS active_hours_end INTEGER DEFAULT 21,
+            ADD COLUMN IF NOT EXISTS enable_active_hours BOOLEAN DEFAULT TRUE;
+        `);
+        schemaChecked = true;
+    } catch (e) {
+        // Ignore if error
+    }
+};
 
 // GET /api/app/warmer
 export const getWarmers = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureWarmerActiveHoursColumns();
+
         const access = await checkFeatureAccess(organization_id, 'tool_warmer');
         const isLocked = !access.allowed;
 
@@ -29,8 +49,23 @@ export const getWarmers = async (req, res) => {
             [organization_id]
         );
 
+        // Enrich circles with active status & human-friendly schedule description
+        const enrichedCircles = circlesRes.rows.map(circle => {
+            const activeStatus = checkWarmerActiveHours(circle);
+            const nextSchedule = calculateNextWarmerDelay(circle, new Date(), { isDailyLimitReached: false });
+            return {
+                ...circle,
+                active_hours_start: circle.active_hours_start ?? 8,
+                active_hours_end: circle.active_hours_end ?? 21,
+                enable_active_hours: circle.enable_active_hours !== false,
+                is_in_active_hours: activeStatus.isActive,
+                current_wib_hour: activeStatus.currentHour,
+                next_schedule_desc: nextSchedule.nextRunWIB
+            };
+        });
+
         res.json({
-            circles: circlesRes.rows,
+            circles: enrichedCircles,
             available_devices: devicesRes.rows,
             system_preview: getPreviewMessages(),
             stats: {
@@ -49,11 +84,14 @@ export const createWarmer = async (req, res) => {
     const {
         name,
         session_ids,
-        interval_min,
-        interval_max,
-        daily_limit_per_device,
-        dictionary_mode,
-        custom_dictionary
+        interval_min = 60,
+        interval_max = 300,
+        daily_limit_per_device = 50,
+        dictionary_mode = 'system',
+        custom_dictionary = [],
+        active_hours_start = 8,
+        active_hours_end = 21,
+        enable_active_hours = true
     } = req.body;
 
     // 1. Check Feature
@@ -65,6 +103,11 @@ export const createWarmer = async (req, res) => {
     if (!session_ids || session_ids.length < 2) {
         return res.status(400).json({ error: "Minimum 2 devices required for a circle." });
     }
+
+    await ensureWarmerActiveHoursColumns();
+
+    const startH = Math.max(0, Math.min(23, parseInt(active_hours_start, 10) || 8));
+    const endH = Math.max(0, Math.min(23, parseInt(active_hours_end, 10) || 21));
 
     const client = await pool.connect();
     try {
@@ -87,12 +130,24 @@ export const createWarmer = async (req, res) => {
         // 1. Create Circle Header
         const circleRes = await client.query(
             `INSERT INTO warmer_circles 
-             (organization_id, name, interval_min, interval_max, daily_limit_per_device, dictionary_mode, custom_dictionary, is_active)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, true) 
-             RETURNING id`,
-            [organization_id, name, interval_min, interval_max, daily_limit_per_device, dictionary_mode, JSON.stringify(custom_dictionary || [])]
+             (organization_id, name, interval_min, interval_max, daily_limit_per_device, dictionary_mode, custom_dictionary, active_hours_start, active_hours_end, enable_active_hours, is_active)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true) 
+             RETURNING *`,
+            [
+                organization_id, 
+                name, 
+                interval_min, 
+                interval_max, 
+                daily_limit_per_device, 
+                dictionary_mode, 
+                JSON.stringify(custom_dictionary || []),
+                startH,
+                endH,
+                enable_active_hours === true || enable_active_hours === 'true'
+            ]
         );
-        const circleId = circleRes.rows[0].id;
+        const circle = circleRes.rows[0];
+        const circleId = circle.id;
 
         // 2. Add Members
         for (const sessionId of session_ids) {
@@ -104,10 +159,15 @@ export const createWarmer = async (req, res) => {
 
         await client.query('COMMIT');
 
-        // 3. Kickstart Worker
-        await warmerQueue.add('warmer-multi-device', { circleId }, { delay: 0 });
+        // 3. Kickstart Worker with Active Hours validation
+        const nextSchedule = calculateNextWarmerDelay(circle, new Date(), { isDailyLimitReached: false });
+        await warmerQueue.add('warmer-multi-device', { circleId }, { delay: nextSchedule.delayMs });
 
-        res.status(201).json({ message: 'Warmer Circle Created & Started' });
+        res.status(201).json({ 
+            message: 'Warmer Circle Created & Scheduled', 
+            circle,
+            next_run: nextSchedule.nextRunWIB
+        });
 
     } catch (err) {
         await client.query('ROLLBACK');
@@ -117,17 +177,102 @@ export const createWarmer = async (req, res) => {
     }
 };
 
+// PUT /api/app/warmer/:id (Update Circle Settings)
+export const updateWarmer = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+    const {
+        name,
+        interval_min,
+        interval_max,
+        daily_limit_per_device,
+        dictionary_mode,
+        custom_dictionary,
+        active_hours_start,
+        active_hours_end,
+        enable_active_hours
+    } = req.body;
+
+    try {
+        await ensureWarmerActiveHoursColumns();
+
+        const circleRes = await pool.query(
+            'SELECT * FROM warmer_circles WHERE id = $1 AND organization_id = $2',
+            [id, organization_id]
+        );
+        if (circleRes.rows.length === 0) {
+            return res.status(404).json({ error: "Circle not found" });
+        }
+
+        const existing = circleRes.rows[0];
+        const updatedName = name || existing.name;
+        const updatedIntMin = interval_min !== undefined ? parseInt(interval_min, 10) : existing.interval_min;
+        const updatedIntMax = interval_max !== undefined ? parseInt(interval_max, 10) : existing.interval_max;
+        const updatedDailyLimit = daily_limit_per_device !== undefined ? parseInt(daily_limit_per_device, 10) : existing.daily_limit_per_device;
+        const updatedDictMode = dictionary_mode || existing.dictionary_mode;
+        const updatedCustomDict = custom_dictionary !== undefined ? JSON.stringify(custom_dictionary) : existing.custom_dictionary;
+        const updatedStartH = active_hours_start !== undefined ? Math.max(0, Math.min(23, parseInt(active_hours_start, 10))) : (existing.active_hours_start ?? 8);
+        const updatedEndH = active_hours_end !== undefined ? Math.max(0, Math.min(23, parseInt(active_hours_end, 10))) : (existing.active_hours_end ?? 21);
+        const updatedEnableActiveHours = enable_active_hours !== undefined ? (enable_active_hours === true || enable_active_hours === 'true') : (existing.enable_active_hours !== false);
+
+        const updateResult = await pool.query(`
+            UPDATE warmer_circles
+            SET name = $1,
+                interval_min = $2,
+                interval_max = $3,
+                daily_limit_per_device = $4,
+                dictionary_mode = $5,
+                custom_dictionary = $6,
+                active_hours_start = $7,
+                active_hours_end = $8,
+                enable_active_hours = $9,
+                updated_at = NOW()
+            WHERE id = $10 AND organization_id = $11
+            RETURNING *
+        `, [
+            updatedName,
+            updatedIntMin,
+            updatedIntMax,
+            updatedDailyLimit,
+            updatedDictMode,
+            updatedCustomDict,
+            updatedStartH,
+            updatedEndH,
+            updatedEnableActiveHours,
+            id,
+            organization_id
+        ]);
+
+        const updatedCircle = updateResult.rows[0];
+
+        if (updatedCircle.is_active) {
+            const nextSchedule = calculateNextWarmerDelay(updatedCircle, new Date(), { isDailyLimitReached: false });
+            await warmerQueue.add('warmer-multi-device', { circleId: id }, { delay: nextSchedule.delayMs });
+        }
+
+        res.json({
+            message: 'Warmer Circle updated successfully',
+            circle: updatedCircle
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 // PATCH /api/app/warmer/:id/toggle
 export const toggleWarmer = async (req, res) => {
     const { id } = req.params;
     const { is_active } = req.body;
 
     try {
-        await pool.query('UPDATE warmer_circles SET is_active = $1 WHERE id = $2', [is_active, id]);
+        const result = await pool.query('UPDATE warmer_circles SET is_active = $1 WHERE id = $2 RETURNING *', [is_active, id]);
+        if (result.rows.length === 0) return res.status(404).json({ error: "Circle not found" });
 
+        const circle = result.rows[0];
         if (is_active) {
-            // Restart by queueing a job immediately
-            await warmerQueue.add('warmer-multi-device', { circleId: id }, { delay: 0 });
+            // Check active hours when starting
+            const nextSchedule = calculateNextWarmerDelay(circle, new Date(), { isDailyLimitReached: false });
+            await warmerQueue.add('warmer-multi-device', { circleId: id }, { delay: nextSchedule.delayMs });
         }
         res.json({ message: `Circle ${is_active ? 'started' : 'stopped'}` });
     } catch (err) {

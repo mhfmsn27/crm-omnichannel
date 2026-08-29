@@ -2877,6 +2877,9 @@ CREATE TABLE public.warmer_circles (
     dictionary_mode character varying(20) DEFAULT 'system'::character varying,
     custom_dictionary jsonb DEFAULT '[]'::jsonb,
     is_active boolean DEFAULT false,
+    active_hours_start integer DEFAULT 8,
+    active_hours_end integer DEFAULT 21,
+    enable_active_hours boolean DEFAULT true,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );

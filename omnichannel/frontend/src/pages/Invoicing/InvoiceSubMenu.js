@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FileText, PlusCircle, Settings, ArrowRight } from 'lucide-react';
+import { FileText, PlusCircle, Settings, ArrowRight, Repeat } from 'lucide-react';
 
 const MenuItem = ({ to, icon: Icon, label , isCollapsed}) => (
     <NavLink
@@ -29,9 +29,10 @@ const MenuItem = ({ to, icon: Icon, label , isCollapsed}) => (
 export default function InvoiceSubMenu({ isCollapsed }) {
   return (
     <div className="flex flex-col px-1">
-        <MenuItem to="list" icon={FileText} label="All Invoices"  isCollapsed={isCollapsed} />
-        <MenuItem to="create" icon={PlusCircle} label="Create Invoice"  isCollapsed={isCollapsed} />
-        <MenuItem to="settings" icon={Settings} label="Settings"  isCollapsed={isCollapsed} />
+        <MenuItem to="list" icon={FileText} label="Semua Faktur & SPO" isCollapsed={isCollapsed} />
+        <MenuItem to="create" icon={PlusCircle} label="Buat Faktur / SPO" isCollapsed={isCollapsed} />
+        <MenuItem to="recurring" icon={Repeat} label="Faktur Berlangganan" isCollapsed={isCollapsed} />
+        <MenuItem to="settings" icon={Settings} label="Pengaturan" isCollapsed={isCollapsed} />
     </div>
   );
 }

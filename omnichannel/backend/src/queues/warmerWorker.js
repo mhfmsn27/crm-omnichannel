@@ -5,13 +5,12 @@ import { redisConfig } from '../config/redis.js'; // Import Config
 import * as waService from '../services/waGatewayService.js';
 import { getRandomSystemMessage } from '../utils/systemDictionary.js';
 import { generateWarmerPersonaMessage } from '../services/aiWarmerPersona.js';
+import { checkWarmerActiveHours, calculateNextWarmerDelay } from '../services/warmerTimeHelper.js';
 
 import crypto from 'crypto';
 
 // Define queue instance using shared connection for Producer (scheduling)
 // The Worker below will use its own connection.
-// NOTE: To fix the import in controller, we might need to ensure controller uses the default export from redis.js which is a connection instance.
-// But here we need `Queue` which also needs a connection.
 import defaultRedisConnection from '../config/redis.js';
 const warmerQueue = new Queue('warmer-queue', { connection: defaultRedisConnection });
 
@@ -28,7 +27,6 @@ export const initWarmerWorker = (io) => {
   const worker = new Worker('warmer-queue', async (job) => {
     // OLD LOGIC (Pair) - Support Legacy or Remove
     if (job.data.settingId) {
-        // Legacy logic removed for brevity, assuming migration to Circles
         return;
     }
 
@@ -43,8 +41,19 @@ export const initWarmerWorker = (io) => {
 
         if (!circle.is_active) return; // Stop if deactivated
 
+        // 2. CHECK NATURAL HUMAN ACTIVE HOURS (WIB / Asia/Jakarta)
+        // Ensure no messages are sent during unnatural hours (e.g. 00:00 - 07:59 or night)
+        const activeCheck = checkWarmerActiveHours(circle);
+        if (!activeCheck.isActive) {
+            const nextSchedule = calculateNextWarmerDelay(circle, new Date(), { isDailyLimitReached: false });
+            console.log(`[Warmer Circle] ${circle.name}: Di luar jam aktif manusiawi (${activeCheck.startHour}:00 - ${activeCheck.endHour}:00 WIB). Mode Istirahat Malam aktif.`);
+            console.log(`[Warmer Circle] ${circle.name}: Dijadwalkan mulai kembali ${nextSchedule.nextRunWIB} (delay: ${Math.round(nextSchedule.delayMs / 60000)} menit).`);
+
+            await warmerQueue.add('warmer-multi-device', { circleId }, { delay: nextSchedule.delayMs });
+            return;
+        }
+
         // Get Members with their Session Data
-        // FIX: Allow devices that are not strictly 'connected' string but valid
         const membersRes = await pool.query(`
             SELECT wcs.*, ws.whatsapp_number as phone, ws.session_id as gateway_uuid, ws.status as device_status
             FROM warmer_circle_sessions wcs
@@ -61,7 +70,7 @@ export const initWarmerWorker = (io) => {
             return; // Don't reschedule - circle needs reactivation
         }
 
-        // 2. Check if any member needs reset (in-memory check to avoid N+1 query)
+        // 3. Check if any member needs reset (in-memory check to avoid N+1 query)
         const now = new Date();
         const membersToReset = [];
 
@@ -91,32 +100,22 @@ export const initWarmerWorker = (io) => {
             );
         }
 
-        // 3. Select Sender
-        // Filter those who haven't reached daily limit
+        // 4. Select Sender (Devices that haven't reached daily limit)
         const eligibleSenders = members.filter(m => m.messages_sent_today < circle.daily_limit_per_device);
 
         if (eligibleSenders.length === 0) {
-            // All devices reached daily limit - this is normal end-of-day state
-            console.log(`[Warmer Circle] ${circle.name}: All devices reached daily limit (${circle.daily_limit_per_device}). Pausing until midnight reset.`);
+            // All devices reached daily limit - resume tomorrow morning at active_hours_start
+            const nextSchedule = calculateNextWarmerDelay(circle, new Date(), { isDailyLimitReached: true });
+            console.log(`[Warmer Circle] ${circle.name}: Semua ${members.length} device telah mencapai batas kuota harian (${circle.daily_limit_per_device} pesan/device).`);
+            console.log(`[Warmer Circle] ${circle.name}: Istirahat malam aktif. Dijadwalkan mulai kembali ${nextSchedule.nextRunWIB} (delay: ${Math.round(nextSchedule.delayMs / 60000)} menit).`);
 
-            // Calculate delay until midnight (00:00)
-            const now = new Date();
-            const midnight = new Date(now);
-            midnight.setHours(24, 0, 0, 0);
-            const msUntilMidnight = midnight.getTime() - now.getTime();
-
-            // Add buffer of 1 minute after midnight for scheduler to run
-            const delayUntilResume = msUntilMidnight + 60000;
-
-            console.log(`[Warmer Circle] ${circle.name}: Next resume in ${Math.round(delayUntilResume / 60000)} minutes (at midnight)`);
-            await warmerQueue.add('warmer-multi-device', { circleId }, { delay: delayUntilResume });
+            await warmerQueue.add('warmer-multi-device', { circleId }, { delay: nextSchedule.delayMs });
             return;
         }
 
         const sender = getRandomElement(eligibleSenders);
 
-        // 3. Select Receiver
-        // Any member that is NOT the sender
+        // 5. Select Receiver (Any member that is NOT the sender)
         const eligibleReceivers = members.filter(m => m.id !== sender.id);
         const receiver = getRandomElement(eligibleReceivers);
 
@@ -125,28 +124,24 @@ export const initWarmerWorker = (io) => {
             return;
         }
 
-        // 4. Select Message (Supports AI Persona, Custom Dictionary, and System Dictionary)
+        // 6. Select Message (Supports AI Persona, Custom Dictionary, and System Dictionary)
         let messageText = "";
         if (circle.dictionary_mode === 'ai_persona' || circle.dictionary_mode === 'persona') {
             messageText = generateWarmerPersonaMessage(circle.persona_topic || 'auto');
         } else if (circle.dictionary_mode === 'custom' && circle.custom_dictionary && circle.custom_dictionary.length > 0) {
             messageText = getRandomElement(circle.custom_dictionary);
         } else {
-            // Default to natural AI Persona or system dictionary
             messageText = generateWarmerPersonaMessage('auto') || getRandomSystemMessage();
         }
-        messageText = (messageText || '').trim(); // Ensure text is trimmed for exact hash matching
+        messageText = (messageText || '').trim();
 
-        // 5. Execute Send
-        console.log(`[Warmer Circle] Sending from ${sender.gateway_uuid} to ${receiver.phone}`);
+        // 7. Execute Send
+        console.log(`[Warmer Circle] [${circle.name}] Sending interaction from ${sender.phone || sender.gateway_uuid} to ${receiver.phone}`);
         try {
             // Block Outbound Echo (Sender) & Incoming Webhook (Receiver)
             const contentString = (messageText || '').trim() + 'text';
-            
-            // Note: crypto is already imported at the top of the file
             const contentHash = crypto.createHash('md5').update(contentString).digest('hex');
             
-            // Helper to normalize phone
             const normalizePhoneLocal = (phone) => {
                 let p = String(phone).replace(/[^0-9]/g, '');
                 if (p.startsWith('0')) p = '62' + p.slice(1);
@@ -166,7 +161,7 @@ export const initWarmerWorker = (io) => {
 
             await waService.sendText(sender.gateway_uuid, receiver.phone, messageText);
             
-            // 6. Update Stats
+            // 8. Update Stats
             await pool.query(
                 `UPDATE warmer_circle_sessions 
                  SET messages_sent_today = messages_sent_today + 1, last_active_at = NOW() 
@@ -185,13 +180,13 @@ export const initWarmerWorker = (io) => {
             console.error(`[Warmer Circle] Send Failed: ${sendErr.message}`);
         }
 
-        // 7. Schedule Next Job
-        const delay = randomInt(circle.interval_min, circle.interval_max) * 1000;
-        await warmerQueue.add('warmer-multi-device', { circleId }, { delay });
+        // 9. Schedule Next Job (Respects Active Hours & Sleep Window)
+        const nextSchedule = calculateNextWarmerDelay(circle, new Date(), { isDailyLimitReached: false });
+        await warmerQueue.add('warmer-multi-device', { circleId }, { delay: nextSchedule.delayMs });
         
     } catch (error) {
       console.error(`[Warmer Worker] Error:`, error.message);
-      // Retry later on system error
+      // Retry in 60s on system error
       await warmerQueue.add('warmer-multi-device', { circleId }, { delay: 60000 });
     }
   }, { 

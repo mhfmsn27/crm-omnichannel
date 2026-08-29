@@ -58,6 +58,23 @@
   @apply min-w-[44px] min-h-[44px] flex items-center justify-center;
 }
 
+/* ===== Mobile Safe Area Insets (PWA & iOS/Android) ===== */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.h-safe-screen {
+  height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+}
+
 /* ===== Responsive Breakpoints ===== */
 @layer utilities {
   /* Mobile (default) */

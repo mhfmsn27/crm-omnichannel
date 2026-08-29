@@ -161,7 +161,27 @@ export const getInvoiceDetail = async (req, res) => {
 };
 
 export const createInvoice = async (req, res) => {
-    const { contact_id, items, notes, issue_date, due_date, document_type = 'invoice', valid_until, shipping_cost = 0, courier, tracking_number } = req.body;
+    const { 
+        contact_id, 
+        items = [], 
+        notes, 
+        issue_date, 
+        due_date, 
+        document_type = 'invoice', 
+        valid_until, 
+        shipping_cost = 0, 
+        courier, 
+        tracking_number,
+        payment_type = 'full',
+        down_payment_amount = 0,
+        buyer_npwp,
+        buyer_nik,
+        buyer_company_name,
+        tax_type = 'exclusive',
+        tax_percentage,
+        is_recurring = false,
+        recurring_frequency = 'monthly'
+    } = req.body;
     const { organization_id, id: userId } = req.user;
 
     // 1. PAYWALL CHECK
@@ -184,7 +204,8 @@ export const createInvoice = async (req, res) => {
         // 1. Get Settings
         const settings = await getSettingsInternal(organization_id);
         const prefix = document_type === 'quotation' ? 'QUO' : (settings.prefix || 'INV');
-        const taxRate = (settings.tax_percentage || 0) / 100;
+        const customTax = tax_percentage !== undefined ? parseFloat(tax_percentage) : (settings.tax_percentage || 0);
+        const taxRate = customTax / 100;
 
         // 2. Generate Number
         const invNumber = `${prefix}/${new Date().getFullYear()}/${Date.now().toString().slice(-6)}`;
@@ -195,7 +216,7 @@ export const createInvoice = async (req, res) => {
         const processedItems = [];
 
         for (const item of items) {
-            const amount = item.quantity * item.unit_price;
+            const amount = parseFloat(item.quantity || 1) * parseFloat(item.unit_price || 0);
             subtotal += amount;
 
             let productId = item.product_id || null;
@@ -213,17 +234,19 @@ export const createInvoice = async (req, res) => {
             const prodRes = await client.query(prodQuery, prodParams);
             if (prodRes.rows.length > 0) {
                 productId = prodRes.rows[0].id;
-                totalCogs += parseFloat(prodRes.rows[0].cost_price || 0) * item.quantity;
+                totalCogs += parseFloat(prodRes.rows[0].cost_price || 0) * (item.quantity || 1);
             }
 
             processedItems.push({ ...item, amount, product_id: productId });
         }
 
-        const taxAmount = subtotal * taxRate;
+        const taxAmount = tax_type === 'inclusive' ? 0 : (subtotal * taxRate);
         const shippingVal = parseFloat(shipping_cost || 0);
         const totalAmount = subtotal + taxAmount + shippingVal;
 
-        const dpAmount = parseFloat(req.body.dp_amount || 0);
+        const dpVal = parseFloat(down_payment_amount || req.body.dp_amount || 0);
+        const initialPaid = 0;
+        const initialBalanceDue = totalAmount;
 
         // Calculate due_date if not provided
         let finalDueDate = due_date;
@@ -236,10 +259,17 @@ export const createInvoice = async (req, res) => {
         // 4. Insert Header
         const invRes = await client.query(
             `INSERT INTO invoices 
-             (organization_id, contact_id, invoice_number, issue_date, due_date, subtotal, tax_amount, dp_amount, total_amount, notes, public_token, status, document_type, valid_until, created_by, shipping_cost, courier, tracking_number, total_cogs)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'unpaid', $12, $13, $14, $15, $16, $17, $18)
+             (organization_id, contact_id, invoice_number, issue_date, due_date, subtotal, tax_amount, dp_amount, total_amount, notes, public_token, status, document_type, valid_until, created_by, shipping_cost, courier, tracking_number, total_cogs, payment_type, down_payment_amount, paid_amount, balance_due, buyer_npwp, buyer_nik, buyer_company_name, tax_type, tax_percentage, is_recurring, recurring_frequency)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'unpaid', $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29)
              RETURNING id`,
-            [organization_id, contact_id, invNumber, issue_date || new Date(), finalDueDate, subtotal, taxAmount, dpAmount, totalAmount, notes, generateToken(), document_type, valid_until || null, userId, shippingVal, courier || null, tracking_number || null, totalCogs]
+            [
+                organization_id, contact_id, invNumber, issue_date || new Date(), finalDueDate, 
+                subtotal, taxAmount, dpVal, totalAmount, notes, generateToken(), document_type, 
+                valid_until || null, userId, shippingVal, courier || null, tracking_number || null, 
+                totalCogs, payment_type, dpVal, initialPaid, initialBalanceDue, buyer_npwp || null, 
+                buyer_nik || null, buyer_company_name || null, tax_type, customTax, 
+                is_recurring === true || is_recurring === 'true', recurring_frequency
+            ]
         );
         const invoiceId = invRes.rows[0].id;
 
@@ -981,5 +1011,413 @@ export const createQuickLink = async (req, res) => {
         }
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+};
+
+// --- PARTIAL PAYMENTS & DP / TERMIN ---
+
+export const recordPartialPayment = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id, id: userId } = req.user;
+    const { amount, payment_method = 'manual', payment_reference, notes, proof_url } = req.body;
+
+    const payAmount = parseFloat(amount);
+    if (!payAmount || payAmount <= 0) {
+        return res.status(400).json({ error: "Nominal pembayaran harus lebih dari 0." });
+    }
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const invRes = await client.query(
+            'SELECT * FROM invoices WHERE id = $1 AND organization_id = $2',
+            [id, organization_id]
+        );
+        if (invRes.rows.length === 0) {
+            client.release();
+            return res.status(404).json({ error: "Faktur tidak ditemukan." });
+        }
+
+        const invoice = invRes.rows[0];
+        const totalAmount = parseFloat(invoice.total_amount || 0);
+        const currentPaid = parseFloat(invoice.paid_amount || 0);
+        const newPaid = currentPaid + payAmount;
+        const newBalanceDue = Math.max(0, totalAmount - newPaid);
+        const newStatus = newBalanceDue <= 0 ? 'paid' : 'partially_paid';
+
+        // 1. Insert Milestone Record
+        const payRes = await client.query(
+            `INSERT INTO invoice_partial_payments 
+             (organization_id, invoice_id, amount, payment_method, payment_reference, notes, proof_url, recorded_by, payment_date)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+             RETURNING *`,
+            [organization_id, id, payAmount, payment_method, payment_reference || null, notes || null, proof_url || null, userId]
+        );
+
+        // 2. Also record in invoice_payments for legacy backward-compatibility
+        await client.query(
+            `INSERT INTO invoice_payments (invoice_id, amount, payment_method, payment_reference, notes, created_by, paid_at)
+             VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+            [id, payAmount, payment_method, payment_reference || null, notes || null, userId]
+        );
+
+        // 3. Update Invoice State
+        const updatedInvRes = await client.query(
+            `UPDATE invoices 
+             SET paid_amount = $1, balance_due = $2, status = $3, 
+                 paid_at = CASE WHEN $3 = 'paid' THEN NOW() ELSE paid_at END,
+                 updated_at = NOW()
+             WHERE id = $4 AND organization_id = $5
+             RETURNING *`,
+            [newPaid, newBalanceDue, newStatus, id, organization_id]
+        );
+
+        await client.query('COMMIT');
+
+        res.status(201).json({
+            message: newStatus === 'paid' ? 'Faktur telah LUNAS Penuh' : 'Pembayaran sebagian / DP berhasil dicatat',
+            payment: payRes.rows[0],
+            invoice: updatedInvRes.rows[0]
+        });
+
+    } catch (err) {
+        await client.query('ROLLBACK');
+        res.status(500).json({ error: err.message });
+    } finally {
+        client.release();
+    }
+};
+
+export const getPartialPayments = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+    try {
+        const result = await pool.query(
+            `SELECT p.*, u.name as recorded_by_name
+             FROM invoice_partial_payments p
+             LEFT JOIN users u ON p.recorded_by = u.id
+             WHERE p.invoice_id = $1 AND p.organization_id = $2
+             ORDER BY p.payment_date DESC`,
+            [id, organization_id]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// --- SMART WHATSAPP DUNNING REMINDER ---
+
+export const triggerDunningReminder = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+    const { custom_message } = req.body;
+
+    try {
+        const invRes = await pool.query(
+            `SELECT i.*, c.name as contact_name, c.phone_number as contact_phone, c.whatsapp_lid, ws.session_id as wa_uuid
+             FROM invoices i
+             LEFT JOIN contacts c ON i.contact_id = c.id
+             LEFT JOIN whatsapp_sessions ws ON ws.organization_id = i.organization_id AND ws.status = 'connected'
+             WHERE i.id = $1 AND i.organization_id = $2`,
+            [id, organization_id]
+        );
+
+        if (invRes.rows.length === 0) {
+            return res.status(404).json({ error: "Faktur tidak ditemukan." });
+        }
+
+        const inv = invRes.rows[0];
+        if (!inv.contact_phone) {
+            return res.status(400).json({ error: "Kontak tidak memiliki nomor WhatsApp yang valid." });
+        }
+
+        const appUrl = (process.env.APP_URL || 'http://localhost:5173').replace(/\/$/, '');
+        const payUrl = `${appUrl}/p/invoice/${inv.public_token}`;
+        const formattedTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(inv.total_amount);
+        const formattedBalance = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(inv.balance_due || inv.total_amount);
+
+        const defaultMessage = `Halo kak *${inv.contact_name || 'Pelanggan'}*, mengingatkan tagihan faktur *${inv.invoice_number}* sebesar *${formattedBalance}* (Total: ${formattedTotal}) dengan tanggal jatuh tempo: *${inv.due_date ? new Date(inv.due_date).toLocaleDateString('id-ID') : 'Segera'}*.\n\nSilakan lakukan pembayaran via link resmi berikut:\n👉 ${payUrl}\n\nTerima kasih atas kerja samanya! 🙏`;
+
+        const messageText = custom_message || defaultMessage;
+
+        // Dispatch via WhatsApp Gateway if session available
+        if (inv.wa_uuid) {
+            let phone = String(inv.contact_phone).replace(/[^0-9]/g, '');
+            if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+            await waService.sendText(inv.wa_uuid, phone, messageText).catch(err => {
+                console.warn("[Dunning WA Error]:", err.message);
+            });
+        }
+
+        // Increment dunning counter
+        await pool.query(
+            `UPDATE invoices 
+             SET dunning_count = COALESCE(dunning_count, 0) + 1, last_dunning_at = NOW(), updated_at = NOW() 
+             WHERE id = $1`,
+            [id]
+        );
+
+        res.json({
+            success: true,
+            message: `Pengingat tagihan untuk ${inv.invoice_number} berhasil dikirim ke ${inv.contact_phone}.`,
+            preview: messageText
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// --- RECURRING INVOICES CRUD ---
+
+export const getRecurringInvoices = async (req, res) => {
+    const { organization_id } = req.user;
+    try {
+        const result = await pool.query(
+            `SELECT r.*, c.name as contact_name, c.phone_number as contact_phone, c.email as contact_email, u.name as created_by_name
+             FROM recurring_invoices r
+             LEFT JOIN contacts c ON r.contact_id = c.id
+             LEFT JOIN users u ON r.created_by = u.id
+             WHERE r.organization_id = $1
+             ORDER BY r.created_at DESC`,
+            [organization_id]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const createRecurringInvoice = async (req, res) => {
+    const { organization_id, id: userId } = req.user;
+    const {
+        contact_id,
+        title,
+        frequency = 'monthly',
+        start_date,
+        end_date,
+        items = [],
+        tax_percentage = 0,
+        discount_amount = 0,
+        notes,
+        auto_send_whatsapp = true,
+        auto_send_email = false
+    } = req.body;
+
+    if (!title) {
+        return res.status(400).json({ error: "Judul langganan (title) wajib diisi." });
+    }
+
+    try {
+        let subtotal = 0;
+        for (const it of items) {
+            subtotal += parseFloat(it.quantity || 1) * parseFloat(it.unit_price || 0);
+        }
+        const taxRate = parseFloat(tax_percentage || 0) / 100;
+        const taxAmount = subtotal * taxRate;
+        const totalAmount = subtotal + taxAmount - parseFloat(discount_amount || 0);
+
+        const startDateParsed = start_date ? new Date(start_date) : new Date();
+        const nextRun = new Date(startDateParsed);
+
+        const result = await pool.query(
+            `INSERT INTO recurring_invoices 
+             (organization_id, contact_id, title, frequency, start_date, end_date, next_run_date, status, subtotal, tax_percentage, tax_amount, discount_amount, total_amount, notes, items, auto_send_whatsapp, auto_send_email, created_by)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, 'active', $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+             RETURNING *`,
+            [
+                organization_id, contact_id || null, title, frequency, startDateParsed, end_date || null, nextRun,
+                subtotal, tax_percentage, taxAmount, discount_amount, totalAmount, notes || null, 
+                JSON.stringify(items), auto_send_whatsapp, auto_send_email, userId
+            ]
+        );
+
+        res.status(201).json({
+            message: "Jadwal Faktur Berlangganan berhasil dibuat",
+            data: result.rows[0]
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const updateRecurringInvoice = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+    const {
+        contact_id,
+        title,
+        frequency,
+        start_date,
+        end_date,
+        items,
+        tax_percentage,
+        discount_amount,
+        notes,
+        auto_send_whatsapp,
+        auto_send_email,
+        status
+    } = req.body;
+
+    try {
+        const existingRes = await pool.query(
+            'SELECT * FROM recurring_invoices WHERE id = $1 AND organization_id = $2',
+            [id, organization_id]
+        );
+        if (existingRes.rows.length === 0) return res.status(404).json({ error: "Not found" });
+        const existing = existingRes.rows[0];
+
+        const updatedItems = items || existing.items || [];
+        let subtotal = 0;
+        for (const it of updatedItems) {
+            subtotal += parseFloat(it.quantity || 1) * parseFloat(it.unit_price || 0);
+        }
+        const taxRate = parseFloat(tax_percentage !== undefined ? tax_percentage : existing.tax_percentage) / 100;
+        const taxAmount = subtotal * taxRate;
+        const totalAmount = subtotal + taxAmount - parseFloat(discount_amount !== undefined ? discount_amount : existing.discount_amount);
+
+        const result = await pool.query(
+            `UPDATE recurring_invoices 
+             SET contact_id = $1, title = $2, frequency = $3, start_date = $4, end_date = $5,
+                 subtotal = $6, tax_percentage = $7, tax_amount = $8, discount_amount = $9, total_amount = $10,
+                 notes = $11, items = $12, auto_send_whatsapp = $13, auto_send_email = $14, status = $15, updated_at = NOW()
+             WHERE id = $16 AND organization_id = $17
+             RETURNING *`,
+            [
+                contact_id !== undefined ? contact_id : existing.contact_id,
+                title || existing.title,
+                frequency || existing.frequency,
+                start_date || existing.start_date,
+                end_date !== undefined ? end_date : existing.end_date,
+                subtotal,
+                tax_percentage !== undefined ? tax_percentage : existing.tax_percentage,
+                taxAmount,
+                discount_amount !== undefined ? discount_amount : existing.discount_amount,
+                totalAmount,
+                notes !== undefined ? notes : existing.notes,
+                JSON.stringify(updatedItems),
+                auto_send_whatsapp !== undefined ? auto_send_whatsapp : existing.auto_send_whatsapp,
+                auto_send_email !== undefined ? auto_send_email : existing.auto_send_email,
+                status || existing.status,
+                id,
+                organization_id
+            ]
+        );
+
+        res.json({ message: "Jadwal Faktur Berlangganan berhasil diperbarui", data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const toggleRecurringInvoice = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+    const { status } = req.body; // 'active' or 'paused'
+
+    try {
+        const result = await pool.query(
+            `UPDATE recurring_invoices 
+             SET status = $1, updated_at = NOW() 
+             WHERE id = $2 AND organization_id = $3 
+             RETURNING *`,
+            [status, id, organization_id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: "Not found" });
+        res.json({ message: `Status langganan diubah menjadi ${status}`, data: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const deleteRecurringInvoice = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+    try {
+        await pool.query(
+            'DELETE FROM recurring_invoices WHERE id = $1 AND organization_id = $2',
+            [id, organization_id]
+        );
+        res.json({ message: "Jadwal langganan berhasil dihapus" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const generateNextRecurringInvoice = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id, id: userId } = req.user;
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const recRes = await client.query(
+            'SELECT * FROM recurring_invoices WHERE id = $1 AND organization_id = $2',
+            [id, organization_id]
+        );
+        if (recRes.rows.length === 0) {
+            client.release();
+            return res.status(404).json({ error: "Langganan tidak ditemukan" });
+        }
+
+        const rec = recRes.rows[0];
+        const settings = await getSettingsInternal(organization_id);
+        const prefix = settings.prefix || 'INV';
+        const invNumber = `${prefix}/${new Date().getFullYear()}/${Date.now().toString().slice(-6)}`;
+        const token = generateToken();
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + (settings.due_days || 7));
+
+        // 1. Create Invoice
+        const invRes = await client.query(
+            `INSERT INTO invoices 
+             (organization_id, contact_id, invoice_number, issue_date, due_date, subtotal, tax_amount, total_amount, notes, public_token, status, document_type, created_by, is_recurring, recurring_frequency, paid_amount, balance_due)
+             VALUES ($1, $2, $3, NOW(), $4, $5, $6, $7, $8, $9, 'unpaid', 'invoice', $10, true, $11, 0, $7)
+             RETURNING id`,
+            [organization_id, rec.contact_id, invNumber, dueDate, rec.subtotal, rec.tax_amount, rec.total_amount, rec.notes, token, userId, rec.frequency]
+        );
+        const invoiceId = invRes.rows[0].id;
+
+        // 2. Insert items
+        const items = typeof rec.items === 'string' ? JSON.parse(rec.items) : (rec.items || []);
+        for (const it of items) {
+            await client.query(
+                `INSERT INTO invoice_items (invoice_id, description, quantity, unit_price, amount)
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [invoiceId, it.description || 'Subscription Item', it.quantity || 1, it.unit_price || 0, (it.quantity || 1) * (it.unit_price || 0)]
+            );
+        }
+
+        // 3. Compute next run date
+        const nextDate = new Date();
+        if (rec.frequency === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
+        else if (rec.frequency === 'quarterly') nextDate.setMonth(nextDate.getMonth() + 3);
+        else if (rec.frequency === 'yearly') nextDate.setFullYear(nextDate.getFullYear() + 1);
+        else nextDate.setMonth(nextDate.getMonth() + 1); // default monthly
+
+        await client.query(
+            `UPDATE recurring_invoices 
+             SET next_run_date = $1, last_generated_at = NOW(), generated_count = COALESCE(generated_count, 0) + 1, updated_at = NOW() 
+             WHERE id = $2`,
+            [nextDate, id]
+        );
+
+        await client.query('COMMIT');
+
+        res.status(201).json({
+            message: `Faktur baru ${invNumber} berhasil di-generate dari jadwal langganan.`,
+            invoice_id: invoiceId,
+            invoice_number: invNumber,
+            next_run_date: nextDate
+        });
+
+    } catch (err) {
+        await client.query('ROLLBACK');
+        res.status(500).json({ error: err.message });
+    } finally {
+        client.release();
     }
 };

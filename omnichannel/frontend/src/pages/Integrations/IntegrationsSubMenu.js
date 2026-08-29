@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { ArrowRight, Zap, Activity } from 'lucide-react';
+import { ArrowRight, Zap, Activity, Mail, Video, MessageSquare, ShoppingBag } from 'lucide-react';
 import { getApiUrl } from '../../config/api';
 
 const MenuItem = ({ to, iconSrc, Icon, label, isBeta, isNew , isCollapsed}) => (
@@ -41,8 +41,13 @@ export default function IntegrationsSubMenu({ isCollapsed }) {
                 <MenuItem to="whatsapp" iconSrc="/icons/whatsapp-unofficial.svg" label="WhatsApp"  isCollapsed={isCollapsed} />
                 <MenuItem to="wa-api" iconSrc="/icons/whatsapp-official.svg" label="WhatsApp API"  isCollapsed={isCollapsed} />
                 <MenuItem to="wa-coex" iconSrc="/icons/whatsapp-official.svg" label="WhatsApp CoEx"  isCollapsed={isCollapsed} />
+                <MenuItem to="email" Icon={Mail} label="Email Inbox" isNew isCollapsed={isCollapsed} />
                 <MenuItem to="messenger" iconSrc="/icons/messenger.svg" label="Messenger" isNew  isCollapsed={isCollapsed} />
                 <MenuItem to="instagram" iconSrc="/icons/instagram.svg" label="Instagram" isNew  isCollapsed={isCollapsed} />
+                <MenuItem to="tiktok" Icon={Video} label="TikTok Shop & DM" isNew isCollapsed={isCollapsed} />
+                <MenuItem to="shopee" Icon={ShoppingBag} label="Shopee Chat" isNew isCollapsed={isCollapsed} />
+                <MenuItem to="tokopedia" Icon={ShoppingBag} label="Tokopedia Chat" isNew isCollapsed={isCollapsed} />
+                <MenuItem to="line" Icon={MessageSquare} label="LINE Official" isNew isCollapsed={isCollapsed} />
                 <MenuItem to="telegram" iconSrc="/icons/telegram.svg" label="Telegram" isNew  isCollapsed={isCollapsed} />
                 <MenuItem to="webchat" iconSrc="/icons/webchat.svg" label="Webchat Widget"  isCollapsed={isCollapsed} />
             </div>
@@ -62,7 +67,6 @@ export default function IntegrationsSubMenu({ isCollapsed }) {
                 <MenuItem to="ecommerce" iconSrc="/icons/shopee.svg" label="E-Commerce"  isCollapsed={isCollapsed} />
                 <MenuItem to="ongkir" iconSrc="/icons/package.svg" Icon={Zap} label="Ongkir & Shipping"  isCollapsed={isCollapsed} />
                 <MenuItem to="webhooks" Icon={Zap} label="Webhook Outbound"  isCollapsed={isCollapsed} />
-                <MenuItem to="email" iconSrc="/icons/email.svg" Icon={Zap} label="Email Channel"  isCollapsed={isCollapsed} />
             </div>
         </div>
     );

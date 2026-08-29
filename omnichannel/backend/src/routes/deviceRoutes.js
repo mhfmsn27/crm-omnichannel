@@ -220,4 +220,11 @@ router.delete('/wa-templates/:id', waTemplateController.deleteTemplate);
 router.post('/wa-templates/:id/use', waTemplateController.useTemplate);
 router.get('/wa-templates/categories', waTemplateController.getCategories);
 
+// --- Channel Integrations (Email, TikTok, LINE) ---
+import * as channelIntegrationController from '../controllers/channelIntegrationController.js';
+router.get('/integrations/channels', channelIntegrationController.getChannelIntegrations);
+router.post('/integrations/channels', channelIntegrationController.saveChannelIntegration);
+router.post('/integrations/channels/:id/test', channelIntegrationController.testChannelConnection);
+router.delete('/integrations/channels/:id', channelIntegrationController.deleteChannelIntegration);
+
 export default router;

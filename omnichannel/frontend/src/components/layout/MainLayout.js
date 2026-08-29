@@ -106,7 +106,7 @@ export default function MainLayout({ children }) {
                         </div>
                     )}
                     
-                    <div className="flex-1 relative">
+                    <div className={`flex-1 relative ${isInbox ? '' : 'pb-16 md:pb-0'}`}>
                         {children}
                     </div>
                 </div>

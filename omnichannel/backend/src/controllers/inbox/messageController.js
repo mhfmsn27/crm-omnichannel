@@ -4,6 +4,11 @@ import MetaService from '../../services/MetaService.js';
 import MessengerService from '../../services/MessengerService.js';
 import InstagramService from '../../services/InstagramService.js';
 import TelegramService from '../../services/TelegramService.js';
+import { sendOutboundEmail } from '../../services/channels/emailChannelService.js';
+import { sendTikTokMessage } from '../../services/channels/tiktokChannelService.js';
+import { sendLineMessage } from '../../services/channels/lineChannelService.js';
+import { sendShopeeMessage } from '../../services/channels/shopeeChannelService.js';
+import { sendTokopediaMessage } from '../../services/channels/tokopediaChannelService.js';
 import redisConnection from '../../config/redis.js';
 import crypto from 'crypto';
 
@@ -242,10 +247,51 @@ export const sendMessage = async (req, res) => {
             const igRes = await InstagramService.sendMessage(ig_access_token, phone_number, content, fullMediaUrl, type);
             if (igRes && igRes.message_id) providerMessageId = igRes.message_id;
         }
-        else if (channel === 'messenger') {
-            if (!page_access_token) return res.status(400).json({ error: "Page token missing" });
-            const fbRes = await MessengerService.sendMessage(page_access_token, phone_number, content, fullMediaUrl, type);
-            if (fbRes && fbRes.message_id) providerMessageId = fbRes.message_id;
+        else if (channel === 'email') {
+            const emailRes = await sendOutboundEmail({
+                organizationId: organization_id,
+                to: phone_number,
+                subject: 'Customer Support Response',
+                body: content,
+                html: fullMediaUrl ? `<p>${(content || '').replace(/\n/g, '<br/>')}</p><p><a href="${fullMediaUrl}">Attachment</a></p>` : undefined
+            });
+            providerMessageId = emailRes.messageId || `email-${Date.now()}`;
+        }
+        else if (channel === 'tiktok') {
+            const ttRes = await sendTikTokMessage({
+                organizationId: organization_id,
+                recipientOpenId: phone_number,
+                text: content,
+                mediaUrl: fullMediaUrl
+            });
+            providerMessageId = ttRes.messageId || `tt-${Date.now()}`;
+        }
+        else if (channel === 'line') {
+            const lineRes = await sendLineMessage({
+                organizationId: organization_id,
+                lineUserId: phone_number,
+                text: content,
+                mediaUrl: fullMediaUrl
+            });
+            providerMessageId = lineRes.messageId || `line-${Date.now()}`;
+        }
+        else if (channel === 'shopee') {
+            const shopeeRes = await sendShopeeMessage({
+                organizationId: organization_id,
+                recipientId: phone_number,
+                text: content,
+                mediaUrl: fullMediaUrl
+            });
+            providerMessageId = shopeeRes.message_id || `shopee-${Date.now()}`;
+        }
+        else if (channel === 'tokopedia') {
+            const tokpedRes = await sendTokopediaMessage({
+                organizationId: organization_id,
+                msgId: phone_number,
+                text: content,
+                mediaUrl: fullMediaUrl
+            });
+            providerMessageId = tokpedRes.message_id || `tokopedia-${Date.now()}`;
         }
         else if (channel === 'webchat') {
             providerMessageId = `web-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;

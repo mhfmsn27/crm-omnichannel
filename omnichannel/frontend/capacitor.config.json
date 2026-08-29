@@ -1,0 +1,25 @@
+{
+  "appId": "com.crmhub.omnichannel",
+  "appName": "CRMHUB Omnichannel",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0F172A",
+      "showSpinner": true,
+      "spinnerColor": "#6366F1"
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0F172A"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}

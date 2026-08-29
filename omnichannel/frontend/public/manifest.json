@@ -1,16 +1,63 @@
 {
-  "name": "CRMHUB Omnichannel",
+  "name": "CRMHUB Omnichannel CRM",
   "short_name": "CRMHUB",
-  "description": "Enterprise Omnichannel Customer Relationship Management Platform",
+  "id": "com.crmhub.omnichannel",
+  "description": "Platform Omnichannel CRM, E-Commerce Live Chat Bridge & Predictive AI Sales Platform",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#4f46e5",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Unified Inbox",
+      "short_name": "Inbox",
+      "description": "Buka Kotak Masuk Pesan Pelanggan Terpadu",
+      "url": "/inbox",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sales GPS Check-in",
+      "short_name": "Sales Visit",
+      "description": "Catat Kunjungan Klien Lapangan dengan GPS",
+      "url": "/sales-visits",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Live TV Wallboard",
+      "short_name": "Wallboard",
+      "description": "Pantau Operasional Tim Secara Real-time",
+      "url": "/wallboard",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Daftar Kontak",
+      "short_name": "Kontak",
+      "description": "Kelola Database Prospek & Pelanggan",
+      "url": "/contacts",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

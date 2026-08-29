@@ -7,6 +7,10 @@ import * as messengerWebhookController from '../controllers/messenger/webhookCon
 import * as instagramWebhookController from '../controllers/instagram/webhookController.js';
 import * as telegramWebhookController from '../controllers/telegram/webhookController.js';
 import * as tiktokWebhookController from '../controllers/tiktok/webhookController.js';
+import * as emailWebhookController from '../controllers/email/webhookController.js';
+import * as lineWebhookController from '../controllers/line/webhookController.js';
+import * as shopeeWebhookController from '../controllers/shopee/webhookController.js';
+import * as tokopediaWebhookController from '../controllers/tokopedia/webhookController.js';
 import { webhookLimiter } from '../middleware/rateLimiter.js';
 import { verifyWebhookSignature, verifyTelegramWebhook, verifyTikTokWebhook, verifyXenditWebhook } from '../middleware/webhookSecurity.js';
 
@@ -39,5 +43,17 @@ router.post('/telegram/:token', verifyTelegramWebhook, telegramWebhookController
 
 // TikTok
 router.post('/tiktok', verifyTikTokWebhook, tiktokWebhookController.handleWebhook);
+
+// Email Two-Way Inbound
+router.post('/email', emailWebhookController.handleInboundEmailWebhook);
+
+// LINE Official Account
+router.post('/line', lineWebhookController.handleLineWebhook);
+
+// Shopee Seller Chat
+router.post('/shopee', shopeeWebhookController.handleShopeeWebhook);
+
+// Tokopedia Seller Chat
+router.post('/tokopedia', tokopediaWebhookController.handleTokopediaWebhook);
 
 export default router;

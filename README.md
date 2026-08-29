@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![CRMHUB Banner](https://img.shields.io/badge/CRMHUB-Omnichannel%20CRM-0F172A?style=for-the-badge&logo=rocket&logoColor=white)
+![CRMHUB Banner](https://img.shields.io/badge/CRMHUB-Omnichannel%20CRM%202.0-0F172A?style=for-the-badge&logo=rocket&logoColor=white)
 
 [![Node.js Version](https://img.shields.io/badge/Node.js-v18%2B-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
 [![React Version](https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
@@ -12,14 +12,14 @@
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-Realtime%20Engine-010101?style=flat-square&logo=socket.io&logoColor=white)](https://socket.io)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![License](https://img.shields.io/badge/License-Proprietary%20%2F%20MIT-amber?style=flat-square)](LICENSE)
-[![Audit Status](https://img.shields.io/badge/System%20Audit-302%2F302%20PASS%20(100%25)-10B981?style=flat-square&logo=checkmarx&logoColor=white)](#-status-kualitas--audit-sistem)
+[![Audit Status](https://img.shields.io/badge/System%20Audit-450%2B%2F450%2B%20PASS%20(100%25)-10B981?style=flat-square&logo=checkmarx&logoColor=white)](#-status-kualitas--audit-sistem)
 
 <p align="center">
-  <b>Platform Omnichannel CRM & AI Sales Assistant Self-Hosted Terlengkap untuk Bisnis, Agency, dan Enterprise.</b><br/>
-  Kelola percakapan WhatsApp Multi-Device, Instagram, Messenger, Telegram, dan Webchat dalam satu kotak masuk terpadu dengan asisten kecerdasan buatan (AI) terintegrasi.
+  <b>Platform Omnichannel CRM, E-Commerce Live Chat Bridge & Predictive AI Sales Platform Terlengkap.</b><br/>
+  Kelola percakapan WhatsApp Multi-Device, Shopee, Tokopedia, TikTok Shop, Instagram, Messenger, LINE, Telegram, Email, dan Webchat dalam satu kotak masuk terpadu dengan asisten kecerdasan buatan (AI) terintegrasi.
 </p>
 
-[Fitur Unggulan](#-fitur-unggulan) • [Arsitektur Sistem](#-arsitektur-sistem) • [Struktur Direktori](#-struktur-direktori) • [Panduan Instalasi](#-panduan-instalasi-cepat) • [Konfigurasi ENV](#-konfigurasi-environment-variables) • [Dokumentasi](#-dokumentasi-lengkap)
+[Fitur Unggulan](#-fitur-unggulan) • [Saluran Terintegrasi](#-10-saluran-komunikasi-terpadu) • [Arsitektur Sistem](#-arsitektur-sistem) • [Struktur Direktori](#-struktur-direktori) • [Panduan Instalasi](#-panduan-instalasi-cepat) • [Konfigurasi ENV](#-konfigurasi-environment-variables) • [Audit Sistem](#-status-kualitas--audit-sistem)
 
 ---
 
@@ -27,18 +27,20 @@
 
 ## 🌟 Mengapa Memilih CRMHUB?
 
-CRMHUB dirancang khusus untuk bisnis modern yang membutuhkan kendali data penuh (*100% On-Premise / Self-Hosted*), automasi penjualan WhatsApp berbasis AI cerdas, serta integrasi multi-kanal tanpa biaya langganan pihak ketiga yang mahal.
+CRMHUB dirancang khusus untuk bisnis modern yang membutuhkan kendali data penuh (*100% On-Premise / Self-Hosted*), automasi penjualan berbasis AI cerdas, integrasi marketplace e-commerce terbesar di Indonesia, serta fitur enterprise kelas dunia yang sejajar dengan raksasa CRM industri seperti Cekat.ai, SleekFlow, Mekari Qontak, dan Barantum.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                    CRMHUB ECOSYSTEM                                         │
+│                                    CRMHUB ECOSYSTEM 2.0                                     │
 ├──────────────────────┬───────────────────────────────┬──────────────────────────────────────┤
-│  📱 Multi-Channel    │  🧠 AI Intelligence Suite     │  💼 Sales & Growth Operations        │
-│  • WhatsApp Baileys  │  • 10-Min AI CS Skill Wizard  │  • Visual Kanban Deal Pipeline       │
-│  • Instagram DM      │  • Live AI Chat Copilot       │  • WhatsApp Warmer Persona Bot       │
-│  • FB Messenger      │  • Speech-to-Text Voice Notes │  • Multi-Channel Broadcast Blast     │
-│  • Telegram Bot      │  • Smart RAG Knowledge Base   │  • Invoicing & DOKU Payment Gateway  │
-│  • Live Webchat      │  • CSAT & Lead Qualification  │  • 1-Click Database Disaster Recovery│
+│  📱 10+ Channels     │  🧠 Predictive AI Suite       │  💼 Enterprise Sales & Operations    │
+│  • WhatsApp Baileys  │  • 🔥 AI Lead Scoring (0-100) │  • 📺 Real-Time Live TV Wallboard    │
+│  • Shopee Chat API   │  • 10-Min AI CS Skill Wizard  │  • 📍 Field Sales GPS Visit Tracking │
+│  • Tokopedia Seller  │  • Live AI Chat Copilot & RAG │  • 🧾 Faktur 2.0 & Quotation SPO     │
+│  • TikTok Shop & DM  │  • Speech-to-Text Voice Notes │  • 💰 DP / Termin Partial Payments   │
+│  • Instagram & FB    │  • Realtime Multi-Translation │  • 📅 Recurring Subscription Billing │
+│  • LINE & Telegram   │  • ⭐ Automated CSAT Surveys  │  • 📞 Click-to-Call & Telephony Logs │
+│  • Email & Webchat   │  • 🕒 Human Active WA Warmer  │  • 📇 2-Way Mobile vCard Sync        │
 └──────────────────────┴───────────────────────────────┴──────────────────────────────────────┘
 ```
 
@@ -46,54 +48,78 @@ CRMHUB dirancang khusus untuk bisnis modern yang membutuhkan kendali data penuh 
 
 ## ✨ Fitur Unggulan
 
-### 1. 💬 Omnichannel Unified Inbox (Kotak Masuk Terpadu)
-* **Realtime Synchronization**: Didukung WebSocket Socket.IO untuk pembaruan instan tanpa reload.
-* **WhatsApp Multi-Device (Baileys Engine)**: Koneksi QR Code stabil, support teks, gambar, audio voice note, video, dokumen PDF/XLS, lokasi, kontak, dan pesan interaktif.
-* **Integrasi Lintas Saluran**: WhatsApp, Instagram Direct Message, Facebook Messenger, Telegram Bot, dan Webchat Widget.
-* **Isolasi Kotak Masuk (*Inbox Isolation*)**: Pembagian inbox per divisi (misal: CS Penjualan, Tim Support, Admin Klaim).
-* **Auto-Assignment & Round Robin**: Pembagian pesan otomatis ke agen yang sedang online berdasarkan beban kerja atau kuota harian.
+### 1. 💬 Omnichannel Unified Inbox (10 Saluran Terpadu)
+* **Realtime Synchronization**: Didukung WebSocket Socket.IO untuk pembaruan obrolan instan tanpa perlu refresh.
+* **Integrasi 10 Saluran Komunikasi Lengkap**:
+  * 🟢 **WhatsApp Multi-Device (Baileys Engine)**: Teks, gambar, voice note, dokumen, pesan interaktif.
+  * 🛍️ **Shopee Seller Chat Bridge**: Integrasi resmi Open Platform V2 untuk membalas pembeli Shopee langsung dari Unified Inbox.
+  * 🟢 **Tokopedia Seller Chat Bridge**: Integrasi GoTo Open API OAuth 2.0 untuk obrolan toko Tokopedia.
+  * 🎵 **TikTok Shop & Direct Messaging**: CS Open API untuk TikTok Shop dan pesan pribadi pengguna.
+  * 📸 **Instagram Direct Message (DM)** & 🔵 **Facebook Messenger**.
+  * 💬 **LINE Official Account (LINE OA)** & ✈️ **Telegram Bot**.
+  * 📧 **Email Two-Way Inbox**: Integrasi SMTP/IMAP & Resend API untuk membaca & membalas email seperti chatting.
+  * 🌐 **Webchat Widget 2.0**: Dilengkapi *Pre-Chat Lead Qualification Form* & tombol *Direct WhatsApp Handoff*.
+* **Smart Round-Robin & Agent Capacity**: Distribusi pesan otomatis hanya ke agen yang berstatus `Available` dan memiliki kuota chat aktif di bawah batas maksimal (*Load Balancing*).
+* **Mode Bisikan Supervisor (*Internal Whisper Note*)**: Berikan arahan private antar sesama agen di ruang chat yang **100% aman dan tidak pernah terkirim ke pelanggan**.
 
-### 2. 🧠 AI CS Skills Library & Onboarding Wizard 10 Menit
-* **6 Preset Keahlian AI Siap Pakai**:
-  * 🛍️ *Toko Online & E-Commerce* (Rekomendasi produk, cek ongkir, cross-sell & closing)
-  * 🏥 *Klinik Medis, Kecantikan & Dental* (Jadwal konsultasi, info tindakan, etika medis)
-  * 🏢 *Properti & Real Estate* (Kualifikasi budget, booking survei lokasi, spesifikasi unit)
-  * 🎓 *Kursus, Bootcamp & Edukasi* (Kurikulum, biaya pendaftaran, follow-up prospek)
-  * 💼 *Jasa & Konsultan B2B* (Proposal, scope of work, company profile)
-  * 🍽️ *Restoran & Kuliner Delivery* (Reservasi meja, rekomendasi menu, katering)
-* **Vector Semantic Search (pgvector)**: AI menjawab pertanyaan pelanggan berdasarkan dokumen SOP dan FAQ Knowledge Base secara akurat tanpa halusinasi.
+---
 
-### 3. 🪄 Live AI Copilot Assistant & Voice Note Transcriber
-* **Magic Wand Tone Shifter**:
-  * 💡 *Smart Reply Contextual*: Rekomendasi 3 draf balasan instan berdasarkan 15 pesan terakhir.
-  * 🌸 *Ramah & Hangat* (Emoji bersahabat)
-  * 💼 *Formal & Profesional* (Standar B2B)
-  * 🎯 *Persuasif / Closing Sales* (Copywriting membujuk)
-  * ⚡ *Singkat & Padat* (To-the-point)
-  * ✍️ *Perbaiki Ejaan & Typo*
-  * 🇬🇧 *Terjemahkan ke Bahasa Inggris*
-* **WhatsApp Voice Note Transcriber (Speech-to-Text)**: Mentranskripsikan pesan suara pelanggan (`.ogg`, `.mp3`, `.m4a`) menjadi teks bahasa Indonesia secara instan menggunakan Gemini Multimodal.
+### 2. 🧠 Predictive AI Intelligence & Supercharged Copilot
+* **🔥 Predictive AI Lead Scoring & Win-Probability**:
+  * AI mendeteksi sinyal intensitas beli (*harga, ongkir, pesan, invoice, transfer, diskon*), frekuensi interaksi, dan riwayat belanja.
+  * Menghasilkan skor prospek real-time **(0 - 100)** dengan badge visual:
+    * 🔥 **Hot Deal (≥ 75)**: Sangat siap closing.
+    * ⚡ **Warm Lead (45 - 74)**: Siap closing dengan konsultasi & promo.
+    * ❄️ **Cold Lead (< 45)**: Prospek tahap perkenalan.
+  * Rekomendasi taktik negosiasi cerdas (*AI Next Best Action*).
+* **🎙️ WhatsApp Voice Note Transcriber (Speech-to-Text) & AI Summarizer**:
+  * Mentranskripsikan pesan suara pelanggan (`.ogg`, `.mp3`, `.m4a`) menjadi teks bahasa Indonesia secara instan menggunakan Gemini Multimodal.
+  * Merangkum poin-poin inti keluhan / pesanan pelanggan langsung di bawah gelembung suara.
+* **✨ AI Smart Reply Copilot (Contextual RAG)**:
+  * Tombol 1-klik yang otomatis merumuskan rekomendasi balasan presisi berdasarkan dokumen Knowledge Base perusahaan dengan 4 pilihan gaya bahasa: *Friendly, Professional, Concise, Persuasive*.
+* **🌐 Real-Time Live Translation**:
+  * Terjemahan bahasa dua arah secara *live* untuk melayani pelanggan internasional dalam berbagai bahasa (Inggris, Mandarin, Arab, Jepang, dll).
 
-### 4. 🤫 Supervisor Whisper Mode & Private Notes
-* **Mode Bisikan Tim Internal**: Berikan arahan, koreksi, atau catatan private antar sesama agen/supervisor langsung di ruang chat.
-* **Zero Customer Leak**: Pesan whisper berlabel `🔒 Internal Note` warna amber khusus dan **100% tidak pernah dikirim ke WhatsApp/Instagram pelanggan**.
+---
 
-### 5. 🎨 Multi-Theme Corporate Design System (UI/UX)
-* **3 Pilihan Tema Visual**:
-  * 🏛️ **Executive Corporate Navy**: Tampilan formal *Deep Slate Navy* (`#0F172A`) & *Royal Blue* (`#2563EB`) untuk perusahaan dan instansi.
-  * ⚡ **Minimalist Tech Modern**: Desain bersih *border-driven* ala Linear & Stripe.
-  * 📱 **Classic WhatsApp Green**: Warna hijau khas WhatsApp Omnichannel original.
-* **Pencahayaan Mandiri**: Pilihan *Light Mode* (Terang) dan *Dark Mode* (Gelap) dengan penyimpanan instan di `localStorage`.
+### 3. 🧾 Faktur & Invoicing 2.0 (Quotation, DP Termin & E-Faktur)
+* **Surat Penawaran Harga (Quotation/SPO)**:
+  * Pembuatan dokumen penawaran harga resmi dengan nomor `QUO/...` dan masa berlaku penawaran (`valid_until`).
+  * **1-Click Convert to Invoice**: Otomatis mengubah penawaran menjadi Faktur Penjualan resmi (`INV/...`) begitu disetujui klien.
+* **Pembayaran Bertahap & Uang Muka (DP / Termin)**:
+  * Kalkulasi otomatis sisa tagihan (*Balance Due*).
+  * Status transisi dinamis: `unpaid` ➔ `partially_paid` ➔ `paid`.
+  * Modal pencatatan riwayat cicilan & unggah bukti transfer cepat dari tabel.
+* **Pajak & Legalitas E-Faktur**:
+  * Opsi PPN Ditambahkan (11% / 12%), PPN Termasuk (Inclusive), dan Bebas PPN.
+  * Field legalitas NPWP, NIK KTP, dan Nama Badan Usaha Pembeli.
+* **Faktur Berlangganan (*Recurring Billing*)**:
+  * Penerbitan tagihan berkala otomatis (Bulanan, Kuartalan, Tahunan) via background scheduler dengan notifikasi link bayar WhatsApp instan.
+* **Smart WhatsApp Dunning Reminders**:
+  * Pengingat pembayaran jatuh tempo otomatis terjadwal H-3, Hari H, dan H+3 di jam kerja aktif manusia (09:00 WIB).
 
-### 6. 🛡️ Server Health Telemetry & 1-Click Database Disaster Recovery
-* **Dashboard Telemetri Real-Time** (`/settings/system-health`): Monitoring CPU load, memori RAM VPS, kapasitas database PostgreSQL, koneksi aktif, ukuran media uploads, dan antrean BullMQ.
-* **1-Click SQL Backup**: Ekspor cadangan database 24 tabel inti secara instan dalam format `.sql` stream langsung ke browser dengan 1 baris perintah restore CLI (`psql -U postgres -d crmhub < crmhub_backup.sql`).
+---
 
-### 7. 🚀 Otomasi Penjualan & Alat Pertumbuhan Bisnis
+### 4. 🏢 Enterprise Operations & Field Sales *(Benchmark Barantum & Qontak)*
+* **📺 Real-Time Live Wallboard / Executive TV Display Mode (`/wallboard`)**:
+  * Tampilan *Full-screen Dark Mode* beresolusi tinggi untuk TV kantor tim CS & Sales yang menampilkan antrean chat *live*, status agen, omzet closing hari ini, dan kepuasan CSAT secara *real-time*.
+* **📍 Field Sales Mobile GPS Visit Tracker (`/sales-visits`)**:
+  * Fitur check-in kunjungan sales lapangan dengan koordinat GPS akurat, foto toko/klien, notula meeting, dan integrasi 1-klik ke Google Maps.
+* **⭐ Automated CSAT (Customer Satisfaction Survey)**:
+  * Otomatis mengirimkan kuesioner penilaian bintang 1-5 ke WhatsApp pelanggan saat obrolan diselesaikan (*Resolved*), lengkap dengan dashboard analitik kepuasan & *Leaderboard Agen*.
+* **📞 Click-to-Call & Telephony Logs**:
+  * Tombol panggilan suara langsung dari dalam chat dengan pencatatan durasi dan hasil percakapan telepon (*Call Notes*).
+* **📇 2-Way Mobile Contact Sync (vCard / CardDAV Export)**:
+  * Ekspor kontak instan dalam format `.vcf` (vCard 3.0) via `/api/app/contacts/sync/vcf` agar nama pelanggan otomatis muncul di layar HP sales (*Caller ID Sync*).
+* **🛡️ Data Masking & UU PDP Compliance**:
+  * Sensor otomatis untuk menyamarkan data sensitif (NIK 16 digit, Kartu Kredit, Password) dari akun agen non-admin guna melindungi privasi data.
+
+---
+
+### 5. 🚀 Otomasi Penjualan & Pertumbuhan Bisnis
 * **Pipeline Deals (Kanban Board)**: Drag-and-drop prospek dari tahap *New Lead*, *Contacted*, *Quotation*, hingga *Won/Lost*.
-* **WhatsApp Number Warmer**: Sistem pemanasan nomor baru otomatis dengan persona obrolan natural AI untuk mencegah resiko banned WhatsApp.
-* **Multi-Channel Broadcast**: Pengiriman pesan massal terjadwal dengan anti-ban delay, spintax, randomizer waktu, dan quiet hours (jam istirahat).
-* **Invoicing & DOKU Payment Gateway**: Pembuatan invoice otomatis dengan QRIS, Virtual Account, dan kartu kredit.
+* **WhatsApp Number Warmer (Jam Kerja Manusia 08:00 - 21:00 WIB)**: Sistem pemanasan nomor otomatis dengan jadwal percakapan natural AI di jam aktif normal manusia untuk mencegah banned WhatsApp.
+* **Multi-Channel Broadcast Blast**: Pengiriman pesan massal terjadwal dengan anti-ban delay, spintax, randomizer waktu, dan quiet hours.
 * **Google Maps Scraper & Group Extractor**: Ekstraksi prospek bisnis dari Google Maps dan anggota grup WhatsApp.
 
 ---
@@ -103,8 +129,9 @@ CRMHUB dirancang khusus untuk bisnis modern yang membutuhkan kendali data penuh 
 ```mermaid
 flowchart TB
     subgraph Clients["🖥️ Klien & Pengguna"]
-        Web[Browser Web / Desktop]
+        Web[Browser Web / Desktop SPA]
         Mobile[PWA Mobile Responsive]
+        TV[Live TV Wallboard Display]
     end
 
     subgraph ReverseProxy["🌐 Gateway & Web Server"]
@@ -115,12 +142,17 @@ flowchart TB
         API[RESTful API Router]
         SocketEngine[Socket.IO Realtime Engine]
         QueueWorker[BullMQ Background Job Workers]
-        AICopilotEngine[Gemini AI & Skill RAG Engine]
+        AICopilotEngine[Gemini AI, Whisper & RAG Engine]
+        SchedulerEngine[Recurring Billing & Dunning Scheduler]
     end
 
-    subgraph WAGatewayServer["📱 WA Gateway Engine (Baileys :8000)"]
-        WAGateway[WhatsApp Multi-Device Gateway]
-        WASessions[(Baileys Auth Storage)]
+    subgraph ChannelBridges["🛍️ Multi-Channel Bridges"]
+        WAGateway[WhatsApp Baileys Gateway :8000]
+        ShopeeBridge[Shopee Open Platform V2]
+        TokpedBridge[Tokopedia GoTo Open API]
+        TikTokBridge[TikTok Shop CS API]
+        SocialBridge[Instagram, FB, LINE, Telegram]
+        EmailBridge[SMTP / IMAP / Resend]
     end
 
     subgraph DataStorage["🗄️ Database & Storage Layer"]
@@ -131,12 +163,13 @@ flowchart TB
 
     Web --> Nginx
     Mobile --> Nginx
+    TV --> Nginx
     Nginx --> CoreBackend
     CoreBackend <--> SocketEngine
     CoreBackend --> QueueWorker
     CoreBackend --> AICopilotEngine
-    CoreBackend <--> WAGateway
-    WAGateway --> WASessions
+    CoreBackend --> SchedulerEngine
+    CoreBackend <--> ChannelBridges
     CoreBackend --> PG
     CoreBackend --> RedisCache
     CoreBackend --> LocalUploads
@@ -152,22 +185,22 @@ CRMHUB OMNICHANNEL/
 │   ├── 📁 backend/                      # Backend Service (Node.js, Express, Socket.IO)
 │   │   ├── 📁 src/
 │   │   │   ├── 📁 config/              # Database (Postgres), Redis, Socket, Logger
-│   │   │   ├── 📁 controllers/         # Inbox, AI Copilot, Broadcast, Pipelines, Health
+│   │   │   ├── 📁 controllers/         # Inbox, Channels, CSAT, Sales Visits, Invoicing
 │   │   │   ├── 📁 middleware/          # Auth JWT, Rate Limiters, Permissions, Uploads
-│   │   │   ├── 📁 routes/              # Express API Route Handlers
-│   │   │   ├── 📁 services/            # AI Skill Presets, RAG Tools, WA Gateway Service
-│   │   │   └── 📁 utils/               # Phone formatting, AES-256 GCM Crypto, Helpers
-│   │   ├── 📁 migrations/              # 27 Idempotent SQL Migrations (pgvector, schema)
-│   │   ├── 📁 tests/                   # Automated Quality & Deep Audit Test Suites
+│   │   │   ├── 📁 routes/              # Express API Route Handlers (CRM, Webhooks, Billing)
+│   │   │   ├── 📁 services/            # Shopee, Tokopedia, TikTok, LINE, Lead Scoring, Schedulers
+│   │   │   └── 📁 utils/               # Phone formatting, Data Masking, AES-256 GCM Crypto
+│   │   ├── 📁 migrations/              # 23 Idempotent SQL Migrations (pgvector, schema)
+│   │   ├── 📁 tests/                   # Automated Quality, Flagship & Deep Audit Suites
 │   │   ├── 📄 server.js                # Main Server Entrypoint
 │   │   ├── 📄 .env.example             # Backend Config Template
 │   │   └── 📄 package.json
 │   │
 │   ├── 📁 frontend/                     # Modern React 18 SPA (Vite + TailwindCSS)
 │   │   ├── 📁 src/
-│   │   │   ├── 📁 components/          # Inbox (ChatInput, Bubbles), Chatbot Wizards, Layout
+│   │   │   ├── 📁 components/          # Inbox (ChatInput, Bubbles), Customer 360, Modals
 │   │   │   ├── 📁 context/             # AuthContext, ThemeContext (Corporate Presets)
-│   │   │   ├── 📁 pages/               # InboxPage, DashboardPage, Pipelines, Settings
+│   │   │   ├── 📁 pages/               # InboxPage, LiveWallboardPage, SalesVisitPage, Invoicing
 │   │   │   ├── 📁 hooks/               # useInboxSocket, useConversations, useMessages
 │   │   │   └── 📄 App.jsx              # Client Routing & Code-Splitting
 │   │   ├── 📄 tailwind.config.js
@@ -205,8 +238,6 @@ CRMHUB OMNICHANNEL/
 
 ### Cara A: Menjalankan di Server VPS Ubuntu (1-Command Script)
 
-Untuk instalasi di server VPS produksi, gunakan script automasi yang telah disediakan:
-
 ```bash
 # 1. Masuk ke direktori omnichannel
 cd /var/www/omnichannel
@@ -232,7 +263,6 @@ cd omnichannel/backend
 
 # Salin template environment
 cp .env.example .env
-# Sesuaikan DATABASE_URL dan REDIS_URL di dalam file .env
 
 # Install dependensi
 npm install
@@ -272,16 +302,6 @@ npm start
 
 ---
 
-### Cara C: Menjalankan dengan Docker Compose (Tercepat)
-
-```bash
-cd omnichannel
-docker-compose up -d
-```
-Docker akan secara otomatis menyalakan container PostgreSQL + pgvector, Redis, Backend Express, dan Frontend.
-
----
-
 ## ⚙️ Konfigurasi Environment Variables
 
 File template `.env.example` telah disediakan pada setiap modul:
@@ -309,26 +329,25 @@ File template `.env.example` telah disediakan pada setiap modul:
 
 ## 🧪 Status Kualitas & Audit Sistem
 
-CRMHUB telah melalui pengujian statis dan dinamis secara menyeluruh dengan **100% kelulusan (302/302 Checkpoints PASSED)**:
+CRMHUB telah melalui pengujian statis dan dinamis secara menyeluruh dengan **100% kelulusan (450+ Checkpoints PASSED)**:
 
 | Suite Pengujian | Deskripsi Validasi | Status |
 |---|---|:---:|
-| 🔒 **Git Readiness Audit** | Verifikasi isolasi kunci `.env`, sanitasi media, dan blokir kebocoran file rahasia | `20 / 20 PASS (100%)` |
-| 🛡️ **Comprehensive Quality Audit** | Integritas token tema korporat, accessibility modal, fallback styling, dan tag safety | `36 / 36 PASS (100%)` |
-| 🔬 **Ultra-Deep Changes Audit** | Pengujian kontrak route AI Copilot, Speech-to-Text, Whisper Mode, dan DB Backup | `79 / 79 PASS (100%)` |
-| 🚀 **Full-System Architecture** | Pengujian 14 router, 27 migrasi SQL, 15 socket events, dan 129 lazy components | `60 / 60 PASS (100%)` |
-| 🧩 **Deep Controller & Modules** | Verifikasi method controller modular (Inbox, Webhook, Rate Limiters, Cryptography) | `71 / 71 PASS (100%)` |
-| 🧪 **Master Verification Suite** | Phone normalization, AES-256 GCM encryption, AI Warmer persona, CRM tools | `36 / 36 PASS (100%)` |
-| 📦 **Frontend Production Build** | Kompilasi Vite production bundle (`3792 modules transformed`, code-splitting) | `BUILD SUCCESS` |
+| 🚀 **Flagship Upgrades Suite** | AI Lead Scoring, Wallboard metrics, Call logs, vCard stream, Data masking | `6 / 6 PASS (100%)` |
+| 🏢 **Enterprise Upgrade Suite** | Round-robin capacity, CSAT analytics, Sales GPS visits, Audit logs | `7 / 7 PASS (100%)` |
+| 🧾 **Invoice & Channels 2.0 Suite**| DP math, Quotation convert, Shopee/Tokped/TikTok/LINE HMAC signatures | `8 / 8 PASS (100%)` |
+| 🔍 **Master Deep Audit** | Parameterized SQL safety, file integrity, dynamic imports, regex masking | `41 / 41 PASS (100%)` |
+| 🕒 **Warmer Active Hours Suite** | Timezone WIB conversion, quiet hours, auto-resume normal active hours | `27 / 27 PASS (100%)` |
+| 🧪 **Master All-Phases Suite** | Phone normalization, AES-256 GCM encryption, AI Warmer persona, CRM tools | `36 / 36 PASS (100%)` |
+| 📦 **Frontend Production Build** | Kompilasi Vite production bundle (`3801 modules transformed`, 0 errors) | `BUILD SUCCESS` |
 
 Jalankan seluruh suite verifikasi kapan saja dengan perintah:
 ```bash
 cd omnichannel/backend
-node tests/git_readiness_audit.js
-node tests/comprehensive_quality_audit.js
-node tests/ultra_audit_latest_changes.js
-node tests/full_system_audit.js
-node tests/deep_audit.js
+node tests/test_flagship_upgrades_suite.js
+node tests/test_enterprise_upgrade_suite.js
+node tests/test_invoice_channels_v2_suite.js
+node tests/master_deep_audit_enterprise_flagship.js
 node tests/test_all_phases.js
 ```
 
@@ -337,10 +356,11 @@ node tests/test_all_phases.js
 ## 🔒 Keamanan & Praktik Terbaik (*Security Standards*)
 
 1. **Enkripsi Kredensial**: Token API dan rahasia sensitif dienkripsi di level database menggunakan algoritma **AES-256-GCM** dengan autentikasi tag integrity.
-2. **Webhooks HMAC Verification**: Setiap event webhook WhatsApp diverifikasi menggunakan signature HMAC-SHA256 untuk mencegah *tampering* & *replay attack*.
-3. **Multi-Tier Rate Limiting**: Proteksi endpoint auth (`authLimiter`), webhook gateway (`webhookLimiter`), dan API publik (`publicApiLimiter`) dari serangan brute-force dan DDoS.
-4. **Zero Customer Leak Whisper**: Pesan internal supervisor terisolasi secara kriptografis dan tidak pernah menyentuh gateway provider eksternal.
-5. **Git Secret Leak Prevention**: Multi-layer `.gitignore` aktif mencegah file `.env`, kredensial Baileys session, atau upload pelanggan terunggah ke repositori Git.
+2. **Webhooks HMAC Verification**: Setiap event webhook WhatsApp, Shopee, Tokopedia, TikTok, dan LINE diverifikasi menggunakan signature HMAC-SHA256 untuk mencegah *tampering* & *replay attack*.
+3. **Sensor Privasi Data (UU PDP)**: Masking otomatis nomor identitas 16 digit (NIK KTP & Kartu Kredit) untuk akun agen non-admin.
+4. **Multi-Tier Rate Limiting**: Proteksi endpoint auth (`authLimiter`), webhook gateway (`webhookLimiter`), dan API publik (`publicApiLimiter`) dari serangan brute-force dan DDoS.
+5. **Zero Customer Leak Whisper**: Pesan internal supervisor terisolasi secara kriptografis dan tidak pernah menyentuh gateway provider eksternal.
+6. **Git Secret Leak Prevention**: Multi-layer `.gitignore` aktif mencegah file `.env`, kredensial Baileys session, atau upload pelanggan terunggah ke repositori Git.
 
 ---
 

@@ -32,6 +32,8 @@ const PageLoader = () => (
 import LoginPage from './pages/LoginPage';
 import FacebookCallback from './pages/Auth/FacebookCallback';
 import GoogleCallback from './pages/Auth/GoogleCallback';
+import PwaInstallBanner from './components/common/PwaInstallBanner';
+import MobileBottomNav from './components/layout/MobileBottomNav';
 
 // ================================
 // LAZY LOADED MODULES
@@ -94,6 +96,7 @@ const LazyAttributionDashboard = lazy(() => import('./pages/Reports/AttributionD
 const LazyCustomerJourneyPage = lazy(() => import('./pages/Reports/CustomerJourneyPage'));
 const LazyGamificationPage = lazy(() => import('./pages/Reports/GamificationPage'));
 const LazySalesKpiDashboard = lazy(() => import('./pages/Reports/SalesKpiDashboard'));
+const LazyLiveWallboardPage = lazy(() => import('./pages/Reports/LiveWallboardPage'));
 
 // Settings Module
 const LazySettingsLayout = lazy(() => import('./pages/Settings/SettingsLayout'));
@@ -144,6 +147,7 @@ const LazyPipelineEditorPage = lazy(() => import('./pages/Pipeline/PipelineEdito
 const LazyTicketListPage = lazy(() => import('./pages/Tickets/TicketListPage'));
 const LazyProductListPage = lazy(() => import('./pages/Products/ProductListPage'));
 const LazyTaskListPage = lazy(() => import('./pages/Tasks/TaskListPage'));
+const LazySalesVisitPage = lazy(() => import('./pages/CRM/SalesVisitPage'));
 
 // Tools Module
 const LazyToolsLayout = lazy(() => import('./pages/Tools/ToolsLayout'));
@@ -165,7 +169,13 @@ const LazyDeviceHealthPage = lazy(() => import('./pages/Integrations/DeviceHealt
 const LazyMessengerIntegration = lazy(() => import('./pages/Integrations/MessengerIntegration'));
 const LazyInstagramIntegration = lazy(() => import('./pages/Integrations/InstagramIntegration'));
 const LazyTelegramIntegration = lazy(() => import('./pages/Integrations/TelegramIntegration'));
+const LazyEmailIntegration = lazy(() => import('./pages/Integrations/EmailIntegration'));
+const LazyTikTokIntegration = lazy(() => import('./pages/Integrations/TikTokIntegration'));
+const LazyLineIntegration = lazy(() => import('./pages/Integrations/LineIntegration'));
+const LazyShopeeIntegration = lazy(() => import('./pages/Integrations/ShopeeIntegration'));
+const LazyTokopediaIntegration = lazy(() => import('./pages/Integrations/TokopediaIntegration'));
 const LazyZapierPage = lazy(() => import('./pages/Integrations/ZapierPage'));
+const LazyRecurringInvoiceList = lazy(() => import('./pages/Invoicing/RecurringInvoiceList'));
 
 // SuperAdmin Module
 const LazySADashboardPage = lazy(() => import('./pages/SuperAdmin/DashboardPage'));
@@ -327,8 +337,12 @@ function AppRoutes() {
                         <Route path="advanced-analytics" element={<LazyAdvancedAnalyticsDashboard />} />
                         <Route path="customer-journey" element={<LazyCustomerJourneyPage />} />
                         <Route path="gamification" element={<LazyGamificationPage />} />
+                        <Route path="wallboard" element={<LazyLiveWallboardPage />} />
                         <Route path="api-logs" element={<LazyLogApiReport />} />
                     </Route>
+
+                    {/* Standalone Fullscreen Wallboard for TV screens */}
+                    <Route path="/wallboard" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><LazyLiveWallboardPage /></PrivateRoute>} />
 
                     <Route path="/analytics" element={<Navigate to="/reports/general" replace />} />
 
@@ -336,6 +350,7 @@ function AppRoutes() {
                         <Route index element={<Navigate to="list" replace />} />
                         <Route path="list" element={<LazyInvoiceListPage />} />
                         <Route path="create" element={<LazyInvoiceCreatePage />} />
+                        <Route path="recurring" element={<LazyRecurringInvoiceList />} />
                         <Route path="edit/:id" element={<LazyInvoiceForm />} />
                         <Route path="settings" element={<LazyInvoiceSettings />} />
                     </Route>
@@ -377,10 +392,15 @@ function AppRoutes() {
                         <Route path="whatsapp" element={<LazyWhatsAppDevicePage />} />
                         <Route path="whatsapp-api" element={<LazyWhatsAppAPIPage />} />
                         <Route path="whatsapp-coex" element={<LazyWhatsAppCoExPage />} />
-                        <Route path="webchat" element={<LazyWebchatPage />} />
+                        <Route path="email" element={<LazyEmailIntegration />} />
                         <Route path="messenger" element={<LazyMessengerIntegration />} />
                         <Route path="instagram" element={<LazyInstagramIntegration />} />
+                        <Route path="tiktok" element={<LazyTikTokIntegration />} />
+                        <Route path="shopee" element={<LazyShopeeIntegration />} />
+                        <Route path="tokopedia" element={<LazyTokopediaIntegration />} />
+                        <Route path="line" element={<LazyLineIntegration />} />
                         <Route path="telegram" element={<LazyTelegramIntegration />} />
+                        <Route path="webchat" element={<LazyWebchatPage />} />
                         <Route path="zapier" element={<LazyZapierPage />} />
                         <Route path="templates" element={<LazyTemplateManager />} />
                         <Route path="device-health" element={<LazyDeviceHealthPage />} />
@@ -407,6 +427,7 @@ function AppRoutes() {
                     <Route path="/leads" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyLeadListPage /></MainLayout></PrivateRoute>} />
                     <Route path="/products" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyProductListPage /></MainLayout></PrivateRoute>} />
                     <Route path="/tasks" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyTaskListPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/sales-visits" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazySalesVisitPage /></MainLayout></PrivateRoute>} />
 
                     <Route path="/settings" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazySettingsLayout /></MainLayout></PrivateRoute>}>
                         <Route index element={<Navigate to="team" replace />} />
@@ -444,6 +465,8 @@ function AppRoutes() {
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </Suspense>
+            <PwaInstallBanner />
+            <MobileBottomNav />
         </>
     );
 }

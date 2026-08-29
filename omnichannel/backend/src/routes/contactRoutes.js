@@ -22,6 +22,17 @@ router.get('/device-counts', contactController.getContactCountsByDevice);
 router.get('/segment-count', contactController.getContactSegmentCount);
 router.get('/by-device', contactController.getContactsByDevice);
 router.get('/export', contactController.exportContacts);
+router.get('/sync/vcf', async (req, res) => {
+    try {
+        const { generateVCardStream } = await import('../services/contactSyncService.js');
+        const vcf = await generateVCardStream(req.user.organization_id);
+        res.setHeader('Content-Type', 'text/vcard; charset=utf-8');
+        res.setHeader('Content-Disposition', 'attachment; filename="crmhub_contacts.vcf"');
+        res.send(vcf);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 router.post('/bulk-delete', contactController.bulkDelete);
 router.post('/bulk-label', contactController.bulkAssignLabel);
 router.post('/import', robustUpload, contactController.importContacts);

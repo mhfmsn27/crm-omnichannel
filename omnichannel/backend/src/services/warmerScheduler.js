@@ -65,13 +65,13 @@ export const startWarmerDailyReset = () => {
                 FROM pg_database WHERE datname = current_database()
             `).catch(() => {}); // Ignore if already exists
 
-            // Just log that circles are ready to resume
+            // Active circles ready for new day
             const activeCircles = await pool.query(
-                'SELECT id FROM warmer_circles WHERE is_active = true'
-            );
+                'SELECT id, name, active_hours_start FROM warmer_circles WHERE is_active = true'
+            ).catch(() => ({ rows: [] }));
             if (activeCircles.rows.length > 0) {
-                console.log(`[Warmer] Active circles ready to resume: ${activeCircles.rows.length}`);
-                console.log('[Warmer] Workers will automatically pick up jobs on next cycle');
+                console.log(`[Warmer] Active circles ready for new day: ${activeCircles.rows.length}`);
+                console.log('[Warmer] Active hours protection active: messages will resume during morning active hours (08:00 WIB)');
             }
 
             console.log('[Warmer] ===========================================');

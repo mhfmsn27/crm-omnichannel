@@ -142,6 +142,24 @@ const WebchatEditorModal = ({ isOpen, onClose, widget, onSave }) => {
                                 <input type="checkbox" id="req_phone" checked={config.require_phone} onChange={e => updateField('require_phone', e.target.checked)} />
                                 <label htmlFor="req_phone" className="text-sm text-gray-600">Require Phone Before Chat</label>
                             </div>
+                            <div className="border-t pt-3 space-y-3">
+                                <label className="block text-xs font-bold text-gray-500 uppercase">Integrasi Webchat 2.0</label>
+                                <div className="flex items-center gap-2">
+                                    <input type="checkbox" id="wa_handoff" checked={config.whatsapp_handoff_enabled !== false} onChange={e => updateField('whatsapp_handoff_enabled', e.target.checked)} />
+                                    <label htmlFor="wa_handoff" className="text-sm text-gray-700 font-medium">Tampilkan Tombol Handoff ke WhatsApp</label>
+                                </div>
+                                {config.whatsapp_handoff_enabled !== false && (
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-600 mb-1">Nomor WhatsApp Bisnis (Handoff)</label>
+                                        <input 
+                                            className="w-full border p-2 rounded-lg text-xs" 
+                                            placeholder="Contoh: 6281234567890" 
+                                            value={config.whatsapp_handoff_number || ''} 
+                                            onChange={e => updateField('whatsapp_handoff_number', e.target.value)} 
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </section>
                 </div>

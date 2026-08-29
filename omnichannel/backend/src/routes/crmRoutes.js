@@ -6,6 +6,8 @@ import * as csatController from '../controllers/csatController.js';
 import * as analyticsController from '../controllers/analyticsController.js';
 import * as salesReportController from '../controllers/reports/salesReportController.js';
 import * as gamificationController from '../controllers/gamificationController.js';
+import * as salesVisitController from '../controllers/salesVisitController.js';
+import * as auditLogController from '../services/auditLogService.js';
 
 const router = express.Router();
 
@@ -48,6 +50,20 @@ router.get('/analytics/export/history', analyticsController.exportResponderHisto
 router.get('/analytics', analyticsController.getAnalytics);
 router.get('/analytics/responder-history', analyticsController.getResponderHistory);
 router.get('/reports/pipeline-stats', salesReportController.getPipelineStats);
+
+// --- Sales Visits (GPS Check-In Field Sales) ---
+router.get('/sales-visits', salesVisitController.getSalesVisits);
+router.post('/sales-visits', salesVisitController.recordSalesVisit);
+
+import * as wallboardController from '../controllers/wallboardController.js';
+import * as callLogController from '../controllers/callLogController.js';
+
+// --- Live Wallboard & TV Display ---
+router.get('/analytics/live-wallboard', wallboardController.getLiveWallboardMetrics);
+
+// --- Click-to-Call & Telephony Logs ---
+router.post('/calls/log', callLogController.recordCallLog);
+router.get('/calls/history/:contact_id', callLogController.getCallHistory);
 
 // --- Gamification ---
 router.get('/gamification/leaderboard', gamificationController.getLeaderboard);
