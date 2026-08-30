@@ -1,23 +1,24 @@
 #!/usr/bin/env node
 /**
  * ============================================================================
- * CRMHUB OMNICHANNEL - LIVE DEMO DATA SEEDER
+ * CRMHUB OMNICHANNEL - LIVE DEMO DATA SEEDER (SAFE & CHANNEL-INDEPENDENT)
  * ============================================================================
- * Safe, Idempotent, Non-Destructive Seeder for Live Product Demonstrations.
+ * Populates standalone, non-risky CRM demo data that DOES NOT depend on
+ * active WhatsApp/Channel connections:
  * 
- * Populates:
- *  1. Labels / Tags (VIP Customer, Prospek Panas, Follow Up 1, dll)
+ *  1. Smart Labels / Tags (VIP Customer, Prospek Panas, Follow Up, dll)
  *  2. Contacts (Realistic Indonesian B2B & Retail Clients)
- *  3. Inbox Conversations & Messages (Active realistic chat threads)
- *  4. Sales Pipeline & Kanban Stages (Lead Masuk -> Closing Won)
- *  5. Products & Services (Catalog for billing & invoicing)
- *  6. Professional Invoices & Invoice Items (Paid, Pending, Overdue)
- *  7. Quick Reply Templates (/halo, /harga, /rekening, /closing, /jam-kerja)
- *  8. Chatbot Flow Builder (Pre-built interactive Lead & FAQ Flow)
- *  9. SLA Policies & Divisions (CS, Sales, Tech Support)
- * 10. System Announcements & News Banner
+ *  3. Sales Pipeline & Kanban Stages (Lead Masuk -> Closing Won)
+ *  4. Products & Enterprise Services (Catalog for billing & invoicing)
+ *  5. Professional Invoices & Quotations (Paid, Pending, Quotation)
+ *  6. Quick Reply Templates (/halo, /harga, /rekening, /closing, /jam-kerja)
+ *  7. Chatbot Flow Builder (Pre-built interactive FAQ & Lead Flow)
+ *  8. SLA Policies & Divisions (Customer Care, Sales, Tech Support)
+ *  9. System Announcements & News Banner
  * 
- * NOTE: This seeder NEVER touches, alters, or resets superadmin/admin accounts.
+ * EXCLUSIONS (FOR 100% DEMO SAFETY):
+ *  - Superadmin / Admin accounts are NEVER touched.
+ *  - Inbox conversations & messages are OMITTED (to avoid session/channel dispatch errors).
  * ============================================================================
  */
 
@@ -25,7 +26,7 @@ import pool from '../src/config/db.js';
 
 async function seedDemoLive() {
     console.log('\n================================================================');
-    console.log('🚀 [CRMHUB LIVE DEMO SEEDER] Initializing Demo Data...');
+    console.log('🚀 [CRMHUB LIVE DEMO SEEDER] Initializing Standalone Demo Data...');
     console.log('================================================================\n');
 
     const client = await pool.connect();
@@ -47,10 +48,6 @@ async function seedDemoLive() {
             orgId = orgRes.rows[0].id;
             console.log(`🏢 Target Organization: ${orgRes.rows[0].name} (ID: ${orgId})`);
         }
-
-        // Get first user in org for assignment (without altering password/role)
-        const userRes = await client.query('SELECT id, name FROM users WHERE organization_id = $1 ORDER BY id ASC LIMIT 1', [orgId]);
-        const demoUserId = userRes.rows.length > 0 ? userRes.rows[0].id : null;
 
         // -------------------------------------------------------------
         // 1. SEED LABELS / TAGS
@@ -154,116 +151,9 @@ async function seedDemoLive() {
         console.log(`  ✅ ${demoContacts.length} Contacts with rich metadata seeded.`);
 
         // -------------------------------------------------------------
-        // 3. SEED CONVERSATIONS & ACTIVE CHAT MESSAGES
+        // 3. SEED PIPELINE CRM & KANBAN STAGES
         // -------------------------------------------------------------
-        console.log('\n💬 3. Seeding Live Inbox Conversations & Message Threads...');
-        
-        const chatStories = [
-            {
-                phone: '6281234567801',
-                status: 'open',
-                unread: 0,
-                rating: 5,
-                ticket: 'TKT-10042',
-                priority: 'high',
-                messages: [
-                    { from_me: false, text: 'Halo Admin, salam kenal. Kami dari PT Nusantara Logistik tertarik upgrade CRM Omnichannel 10 Device WhatsApp.', time: 60 },
-                    { from_me: true, text: 'Halo Pak Budi! Salam kenal juga. Terima kasih atas minatnya. Untuk 10 Device, kami sarankan Paket Enterprise yang sudah include Multi-Agent, AI Bot Copilot, dan Integrasi WhatsApp Official & Webhook.', time: 45 },
-                    { from_me: false, text: 'Boleh kirimkan proposal dan invoice resmi penawarannya ke email kami pak?', time: 30 },
-                    { from_me: true, text: 'Siap Pak Budi, invoice resmi INV-2026-0899 sudah kami generate dan kirimkan ke email budi.hartono@nusantaralog.co.id. Terima kasih!', time: 15 }
-                ]
-            },
-            {
-                phone: '6281234567802',
-                status: 'open',
-                unread: 1,
-                rating: null,
-                ticket: 'TKT-10043',
-                priority: 'urgent',
-                messages: [
-                    { from_me: false, text: 'Selamat siang kak, mau tanya fitur Chatbot Flow Builder di CRMHUB ini apakah bisa otomatis balas katalog produk sesuai keyword pelanggan?', time: 20 },
-                    { from_me: true, text: 'Selamat siang Ibu Siti! Betul sekali, Flow Builder kami mendukung multi-level keyword, interactive buttons, pengumpulan formulir lead, hingga handoff otomatis ke tim CS.', time: 10 },
-                    { from_me: false, text: 'Wah pas banget dengan kebutuhan kami kak! Cara aktivasinya bagaimana ya?', time: 2 }
-                ]
-            },
-            {
-                phone: '6281234567803',
-                status: 'open',
-                unread: 0,
-                rating: 4,
-                ticket: 'TKT-10044',
-                priority: 'medium',
-                messages: [
-                    { from_me: false, text: 'Halo tim support, fitur WhatsApp Warmer cara kerjanya bagaimana ya?', time: 120 },
-                    { from_me: true, text: 'Halo Pak Hendra. WhatsApp Warmer bekerja dengan mensimulasikan percakapan dua arah secara natural menggunakan AI antar nomor terdaftar agar reputasi nomor baru tetap aman dari banned.', time: 90 },
-                    { from_me: false, text: 'Mantap, saya sudah coba aktifkan dan hasilnya nomor baru lancar broadcast. Makasih ya.', time: 60 }
-                ]
-            },
-            {
-                phone: '6281234567804',
-                status: 'closed',
-                unread: 0,
-                rating: 5,
-                ticket: 'TKT-10041',
-                priority: 'low',
-                messages: [
-                    { from_me: false, text: 'Halo kak Anita, untuk reminder jadwal konsultasi pasien klinik apakah bisa diatur otomatis H-1?', time: 300 },
-                    { from_me: true, text: 'Halo Dok, tentu bisa! Anda bisa menggunakan modul Pesan Terjadwal & Integrasi Webhook kami untuk trigger otomatis reminder appointment pasien.', time: 280 },
-                    { from_me: false, text: 'Terima kasih banyak atas panduan tim CRMHUB yang sangat responsif!', time: 250 }
-                ]
-            }
-        ];
-
-        for (const story of chatStories) {
-            const contactId = contactMap[story.phone];
-            if (!contactId) continue;
-
-            const lastMsg = story.messages[story.messages.length - 1].text;
-            
-            // Upsert conversation
-            const convCheck = await client.query(
-                `SELECT id FROM conversations WHERE organization_id = $1 AND contact_id = $2`,
-                [orgId, contactId]
-            );
-
-            let convId;
-            if (convCheck.rows.length === 0) {
-                const convRes = await client.query(
-                    `INSERT INTO conversations (
-                        organization_id, contact_id, last_message, last_message_at, 
-                        unread_count, status, is_chatbot_active, rating_score, ticket_number, priority
-                     ) VALUES ($1, $2, $3, NOW(), $4, $5, true, $6, $7, $8) RETURNING id`,
-                    [orgId, contactId, lastMsg, story.unread, story.status, story.rating, story.ticket, story.priority]
-                );
-                convId = convRes.rows[0].id;
-            } else {
-                convId = convCheck.rows[0].id;
-                await client.query(
-                    `UPDATE conversations SET 
-                        last_message = $1, last_message_at = NOW(), unread_count = $2, 
-                        status = $3, rating_score = $4, ticket_number = $5, priority = $6
-                     WHERE id = $7`,
-                    [lastMsg, story.unread, story.status, story.rating, story.ticket, story.priority, convId]
-                );
-            }
-
-            // Insert message items
-            for (const msg of story.messages) {
-                const msgTime = new Date(Date.now() - msg.time * 60 * 1000);
-                await client.query(
-                    `INSERT INTO messages (
-                        conversation_id, organization_id, from_me, type, content, status, created_at
-                     ) VALUES ($1, $2, $3, 'text', $4, 'sent', $5)`,
-                    [convId, orgId, msg.from_me, msg.text, msgTime]
-                );
-            }
-        }
-        console.log(`  ✅ ${chatStories.length} Rich Conversation Threads & Message Dialogues created.`);
-
-        // -------------------------------------------------------------
-        // 4. SEED PIPELINE CRM & KANBAN STAGES
-        // -------------------------------------------------------------
-        console.log('\n📊 4. Seeding Sales Pipeline & Deals...');
+        console.log('\n📊 3. Seeding Sales Pipeline & Deals...');
         
         let pipelineId;
         const pipeCheck = await client.query('SELECT id FROM pipelines WHERE organization_id = $1 LIMIT 1', [orgId]);
@@ -299,9 +189,9 @@ async function seedDemoLive() {
         console.log(`  ✅ Sales Pipeline Kanban Stages configured.`);
 
         // -------------------------------------------------------------
-        // 5. SEED PRODUCTS & SERVICES CATALOG
+        // 4. SEED PRODUCTS & SERVICES CATALOG
         // -------------------------------------------------------------
-        console.log('\n📦 5. Seeding Product Catalog & Services...');
+        console.log('\n📦 4. Seeding Product Catalog & Services...');
         const demoProducts = [
             {
                 name: 'CRMHUB Enterprise Omnichannel (1 Tahun)',
@@ -349,9 +239,9 @@ async function seedDemoLive() {
         console.log(`  ✅ ${demoProducts.length} Products & Enterprise Services Catalog seeded.`);
 
         // -------------------------------------------------------------
-        // 6. SEED DEMO INVOICES & BILLING
+        // 5. SEED DEMO INVOICES & BILLING
         // -------------------------------------------------------------
-        console.log('\n💳 6. Seeding Professional Invoices & Billing Records...');
+        console.log('\n💳 5. Seeding Professional Invoices & Billing Records...');
         const demoInvoices = [
             {
                 num: 'INV-2026-0899',
@@ -396,9 +286,9 @@ async function seedDemoLive() {
         console.log(`  ✅ ${demoInvoices.length} Demo Invoices & Quotations seeded.`);
 
         // -------------------------------------------------------------
-        // 7. SEED QUICK REPLIES
+        // 6. SEED QUICK REPLIES
         // -------------------------------------------------------------
-        console.log('\n⚡ 7. Seeding Quick Reply Templates...');
+        console.log('\n⚡ 6. Seeding Quick Reply Templates...');
         const demoReplies = [
             {
                 shortcut: '/halo',
@@ -434,9 +324,9 @@ async function seedDemoLive() {
         console.log(`  ✅ ${demoReplies.length} Quick Reply Shortcuts (/halo, /harga, /rekening, dll) configured.`);
 
         // -------------------------------------------------------------
-        // 8. SEED CHATBOT FLOW BUILDER
+        // 7. SEED CHATBOT FLOW BUILDER
         // -------------------------------------------------------------
-        console.log('\n🤖 8. Seeding Intelligent Flow Builder Demo...');
+        console.log('\n🤖 7. Seeding Intelligent Flow Builder Demo...');
         const sampleNodes = [
             {
                 id: 'node-start',
@@ -480,9 +370,9 @@ async function seedDemoLive() {
         console.log('  ✅ Visual Chatbot Flow ("Customer Service & Lead Qualification Flow") seeded.');
 
         // -------------------------------------------------------------
-        // 9. SEED SLA POLICIES & DIVISIONS
+        // 8. SEED SLA POLICIES & DIVISIONS
         // -------------------------------------------------------------
-        console.log('\n⏱️  9. Seeding SLA Policies & Divisions...');
+        console.log('\n⏱️  8. Seeding SLA Policies & Divisions...');
         const slaDefaults = [
             { priority: 'urgent', frt: 10, res: 60 },
             { priority: 'high', frt: 30, res: 240 },
@@ -512,9 +402,9 @@ async function seedDemoLive() {
         console.log(`  ✅ SLA Policies & Divisions configured.`);
 
         // -------------------------------------------------------------
-        // 10. SEED PLATFORM ANNOUNCEMENTS
+        // 9. SEED PLATFORM ANNOUNCEMENTS
         // -------------------------------------------------------------
-        console.log('\n📢 10. Seeding System Announcements & Banners...');
+        console.log('\n📢 9. Seeding System Announcements & Banners...');
         await client.query(
             `INSERT INTO announcements (title, content, is_active, priority)
              VALUES ('🚀 Selamat Datang di CRMHUB Omnichannel Platform V2',
@@ -528,8 +418,8 @@ async function seedDemoLive() {
 
         console.log('\n================================================================');
         console.log('🎉 [CRMHUB LIVE DEMO SEEDER COMPLETED SUCCESSFULLY]');
-        console.log('✨ All modules are populated with professional, vibrant demo data.');
-        console.log('🛡️  Admin and Superadmin accounts remain 100% untouched and secure.');
+        console.log('✨ All safe, standalone CRM modules are populated.');
+        console.log('🛡️  Inbox & User accounts left 100% clean & safe for live demo.');
         console.log('================================================================\n');
 
         process.exit(0);
