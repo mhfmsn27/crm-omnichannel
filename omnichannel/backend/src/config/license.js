@@ -21,8 +21,8 @@ export const LICENSE_CONFIG = {
     // Allow all license in development mode or explicit flag
     ALLOW_ALL: process.env.ALLOW_ALL_LICENSE === 'true' || process.env.NODE_ENV === 'development',
 
-    // Cache TTL in milliseconds (default: 6 hours = 21600 seconds)
-    CACHE_TTL_MS: (parseInt(process.env.LICENSE_CACHE_TTL, 10) || 21600) * 1000,
+    // Cache TTL in milliseconds (default: 60 seconds for fast real-time revocation)
+    CACHE_TTL_MS: (parseInt(process.env.LICENSE_CACHE_TTL, 10) || 60) * 1000,
 
     // Offline Grace Period in milliseconds (default: 7 days = 604800 seconds)
     OFFLINE_GRACE_PERIOD_MS: (parseInt(process.env.LICENSE_OFFLINE_GRACE_PERIOD, 10) || 604800) * 1000,
