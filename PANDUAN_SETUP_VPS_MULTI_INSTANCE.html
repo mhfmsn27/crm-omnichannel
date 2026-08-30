@@ -754,16 +754,17 @@ pm2 list</code></pre>
                 </div>
             </div>
 
-            <p style="font-size: 13.5px; color: var(--text-secondary);">
-                Buat file konfigurasi Nginx baru: <code>sudo nano /etc/nginx/sites-available/crmhub.internatechtion.my.id</code>
+            <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 8px;">
+                <strong>Opsi Praktis (Salin & Tempel Langsung ke Terminal VPS):</strong> Perintah di bawah ini otomatis membuat file konfigurasi Nginx tanpa perlu edit manual:
             </p>
 
             <div class="code-box">
                 <div class="code-box-header">
-                    <span>/etc/nginx/sites-available/crmhub.internatechtion.my.id</span>
+                    <span>Bash (SSH VPS) — Pembuatan Otomatis File Nginx</span>
                     <button class="copy-btn" onclick="copyCode(this)">Salin</button>
                 </div>
-                <pre><code>server {
+                <pre><code>cat << 'EOF' > /etc/nginx/sites-available/crmhub.internatechtion.my.id
+server {
     listen 80;
     server_name crmhub.internatechtion.my.id;
 
@@ -809,19 +810,20 @@ pm2 list</code></pre>
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
-}</code></pre>
+}
+EOF</code></pre>
             </div>
 
-            <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 14px;">
-                Aktifkan konfigurasi Nginx dan pasang Sertifikat SSL HTTPS:
+            <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 16px;">
+                Aktifkan virtual host Nginx dan pasang Sertifikat SSL HTTPS Let's Encrypt:
             </p>
             <div class="code-box">
                 <div class="code-box-header">
-                    <span>Bash (SSH VPS)</span>
+                    <span>Bash (SSH VPS) — Aktivasi Nginx & Pasang SSL</span>
                     <button class="copy-btn" onclick="copyCode(this)">Salin</button>
                 </div>
                 <pre><code># 1. Aktifkan symlink virtualhost
-sudo ln -s /etc/nginx/sites-available/crmhub.internatechtion.my.id /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/crmhub.internatechtion.my.id /etc/nginx/sites-enabled/
 
 # 2. Uji sintaks Nginx (Pastikan output: syntax is ok & test is successful)
 sudo nginx -t

@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { Loader2, CheckCircle, XCircle, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
 
 export default function FacebookCallback() {
     const [status, setStatus] = useState('processing'); // processing, success, error
-    const [message, setMessage] = useState('Memproses login Facebook...');
+    const [message, setMessage] = useState('Memverifikasi autentikasi Facebook / Meta...');
     const [errorDetails, setErrorDetails] = useState('');
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Parse URL params
         const params = new URLSearchParams(location.search);
         const code = params.get('code');
         
@@ -27,28 +26,23 @@ export default function FacebookCallback() {
         if (code) {
             processCallback(code, referralCode);
         } else if (error || errorCode || errorMessage) {
-            // Handle error redirect from Facebook
             console.error("Facebook Login Error:", { error, errorCode, errorMessage, errorDesc });
             setStatus('error');
-            setMessage('Gagal login dengan Facebook.');
-            // Display friendly message if possible
+            setMessage('Otorisasi Facebook dibatalkan atau gagal.');
             if (errorMessage && errorMessage.includes('Invalid Scopes')) {
                 setErrorDetails("Konfigurasi aplikasi Facebook belum mengizinkan akses email/profil publik. Hubungi Admin.");
             } else {
                 setErrorDetails(errorMessage || errorDesc || "Otorisasi dibatalkan atau gagal.");
             }
         } else {
-            // No code and no error params (unexpected direct access)
             setStatus('error');
-            setMessage('Link tidak valid.');
-            setErrorDetails('Kode otorisasi tidak ditemukan.');
+            setMessage('Tautan tidak valid.');
+            setErrorDetails('Kode otorisasi tidak ditemukan dalam parameter callback.');
         }
     }, [location]);
 
     const processCallback = async (code, referralCode) => {
         try {
-            // Ensure URI matches EXACTLY what was sent in login (frontend origin based)
-            // It MUST be the exact URL of this callback page
             const redirectUri = `${window.location.origin}/auth/facebook/callback`;
 
             const res = await axios.post('/api/auth/facebook/callback', { 
@@ -57,31 +51,28 @@ export default function FacebookCallback() {
                 referral_code: referralCode 
             });
             
-            // Handle successful login
             const { token, user } = res.data;
             
-            // Manual login handling
             localStorage.setItem('token', token);
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             
             setStatus('success');
-            setMessage(`Selamat datang, ${user.name}!`);
+            setMessage(`Selamat datang kembali, ${user.name}!`);
             
-            // Cleanup query params from URL for clean history
             window.history.replaceState({}, document.title, window.location.pathname);
 
             setTimeout(() => {
                 window.location.href = '/dashboard';
-            }, 1500);
+            }, 1200);
 
         } catch (err) {
             console.error("Facebook Callback Backend Error:", err);
             setStatus('error');
-            setMessage('Gagal memproses login.');
+            setMessage('Autentikasi gagal diproses pada server.');
             
             const backendError = err.response?.data?.error;
             if (backendError && backendError.includes('Redirect URI mismatch')) {
-                setErrorDetails(`Konfigurasi URL Callback salah.\nHarap tambahkan URI ini ke 'Valid OAuth Redirect URIs' di Facebook App Dashboard:\n${window.location.origin}/auth/facebook/callback`);
+                setErrorDetails(`Konfigurasi URL Callback salah. Tambahkan URI ini ke Meta App Dashboard: ${window.location.origin}/auth/facebook/callback`);
             } else {
                 setErrorDetails(backendError || err.message || 'Terjadi kesalahan pada server.');
             }
@@ -89,45 +80,47 @@ export default function FacebookCallback() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-            <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center border border-gray-100">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
+            <div className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm max-w-sm w-full text-center border border-slate-200 dark:border-slate-800">
                 {status === 'processing' && (
                     <div className="flex flex-col items-center py-4">
-                        <Loader2 className="w-12 h-12 text-indigo-600 animate-spin mb-4" />
-                        <h3 className="text-xl font-bold text-gray-800">Menghubungkan...</h3>
-                        <p className="text-gray-500 mt-2 text-sm">{message}</p>
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                            <Loader2 className="w-6 h-6 text-slate-900 dark:text-indigo-400 animate-spin" />
+                        </div>
+                        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Memproses Masuk...</h3>
+                        <p className="text-slate-500 dark:text-slate-400 mt-1 text-xs">{message}</p>
                     </div>
                 )}
 
                 {status === 'success' && (
-                    <div className="flex flex-col items-center animate-in zoom-in py-4">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 shadow-sm">
-                            <CheckCircle className="w-10 h-10 text-green-600" />
+                    <div className="flex flex-col items-center py-4">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4 border border-emerald-200 dark:border-emerald-800/60">
+                            <CheckCircle2 className="w-6 h-6" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-800">Login Berhasil!</h3>
-                        <p className="text-gray-500 mt-2 text-sm">{message}</p>
+                        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Autentikasi Berhasil</h3>
+                        <p className="text-slate-500 dark:text-slate-400 mt-1 text-xs">{message}</p>
                     </div>
                 )}
 
                 {status === 'error' && (
-                    <div className="flex flex-col items-center animate-in zoom-in py-4">
-                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 shadow-sm">
-                            <AlertTriangle className="w-9 h-9 text-red-600" />
+                    <div className="flex flex-col items-center py-4">
+                        <div className="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-4 border border-rose-200 dark:border-rose-800/60">
+                            <XCircle className="w-6 h-6" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-800 mb-1">{message}</h3>
+                        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">Autentikasi Gagal</h3>
+                        <p className="text-rose-600 dark:text-rose-400 mt-1 text-xs font-medium">{message}</p>
                         
                         {errorDetails && (
-                            <div className="bg-red-50 text-red-700 p-3 rounded-lg text-xs mt-3 mb-4 w-full break-words text-left border border-red-100 font-mono">
-                                <strong>Detail Error:</strong><br/>
-                                {errorDetails}
+                            <div className="bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 p-3 rounded-lg text-xs mt-3 w-full break-words text-left border border-slate-200 dark:border-slate-700 font-mono text-[11px]">
+                                <strong>Detail:</strong> {errorDetails}
                             </div>
                         )}
-                        
+
                         <button 
                             onClick={() => navigate('/login')}
-                            className="mt-2 w-full px-4 py-2.5 bg-gray-900 text-white rounded-lg font-bold hover:bg-black transition-colors shadow-sm flex items-center justify-center gap-2"
+                            className="mt-5 w-full py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-2"
                         >
-                            <ArrowLeft className="w-4 h-4" /> Kembali ke Login
+                            <ArrowLeft className="w-3.5 h-3.5" /> Kembali ke Halaman Masuk
                         </button>
                     </div>
                 )}
