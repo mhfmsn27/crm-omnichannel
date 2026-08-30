@@ -184,11 +184,20 @@ export const checkFeatureAccess = async (orgId, featureCode) => {
         }
 
         return { allowed: true, limit: totalLimit, used };
-
     } catch (err) {
         console.error("Feature Gate Error", err);
         return { allowed: false, message: "Gagal memverifikasi limit." };
     } finally {
         client.release();
     }
+};
+
+export const checkPlanFeature = async (orgId, featureCode) => {
+    const res = await checkFeatureAccess(orgId, featureCode);
+    return res.allowed;
+};
+
+export default {
+    checkFeatureAccess,
+    checkPlanFeature
 };
