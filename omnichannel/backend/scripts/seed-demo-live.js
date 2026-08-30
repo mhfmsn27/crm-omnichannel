@@ -1,24 +1,26 @@
 #!/usr/bin/env node
 /**
  * ============================================================================
- * CRMHUB OMNICHANNEL - LIVE DEMO DATA SEEDER (SAFE & CHANNEL-INDEPENDENT)
+ * CRMHUB OMNICHANNEL - LIVE DEMO DATA SEEDER (100% PURE & ZERO-RISK)
  * ============================================================================
- * Populates standalone, non-risky CRM demo data that DOES NOT depend on
- * active WhatsApp/Channel connections:
+ * Only seeds pure, standalone master data that has ZERO dependencies on
+ * external channels, hardware gateways, or payment providers.
  * 
- *  1. Smart Labels / Tags (VIP Customer, Prospek Panas, Follow Up, dll)
- *  2. Contacts (Realistic Indonesian B2B & Retail Clients)
- *  3. Sales Pipeline & Kanban Stages (Lead Masuk -> Closing Won)
- *  4. Products & Enterprise Services (Catalog for billing & invoicing)
- *  5. Professional Invoices & Quotations (Paid, Pending, Quotation)
- *  6. Quick Reply Templates (/halo, /harga, /rekening, /closing, /jam-kerja)
- *  7. Chatbot Flow Builder (Pre-built interactive FAQ & Lead Flow)
- *  8. SLA Policies & Divisions (Customer Care, Sales, Tech Support)
- *  9. System Announcements & News Banner
+ * ✅ INCLUDED (100% SAFE & SOLID):
+ *  1. Smart Labels / Tags (VIP Customer, Prospek Panas, Follow Up, Pelanggan Baru, dll)
+ *  2. Contacts Master Data (Indonesian names, phone numbers, emails, assigned labels)
+ *  3. Sales Pipeline & Kanban Stages (Lead Masuk, Kualifikasi, Penawaran, Closing Won)
+ *  4. Products & Services Catalog (Catalog items with prices, SKUs, and stock)
+ *  5. Quick Reply Shortcuts (/halo, /harga, /rekening, /closing, /jam-kerja)
+ *  6. SLA Policies & Timing Targets (Urgent, High, Medium, Low)
+ *  7. Divisions Master Data (Customer Care, Sales, Tech Support)
+ *  8. System Announcements Banner
  * 
- * EXCLUSIONS (FOR 100% DEMO SAFETY):
- *  - Superadmin / Admin accounts are NEVER touched.
- *  - Inbox conversations & messages are OMITTED (to avoid session/channel dispatch errors).
+ * ❌ STRICTLY EXCLUDED (TO PREVENT ANY DEMO RISKS / ERRORS):
+ *  - Superadmin / Admin accounts (NEVER touched or altered).
+ *  - Inbox conversations & messages (NO fake sessions to avoid reply errors).
+ *  - Invoices & Transactions (NO fake invoice dispatches or payment gateway triggers).
+ *  - Chatbot Flow Triggers (NO keyword interceptors during demo tests).
  * ============================================================================
  */
 
@@ -26,7 +28,7 @@ import pool from '../src/config/db.js';
 
 async function seedDemoLive() {
     console.log('\n================================================================');
-    console.log('🚀 [CRMHUB LIVE DEMO SEEDER] Initializing Standalone Demo Data...');
+    console.log('🚀 [CRMHUB LIVE DEMO SEEDER] Seeding Rock-Solid Standalone Data...');
     console.log('================================================================\n');
 
     const client = await pool.connect();
@@ -43,14 +45,14 @@ async function seedDemoLive() {
                  VALUES ('PT CRMHUB Solusi Indonesia', 'active', true) RETURNING id, name`
             );
             orgId = newOrg.rows[0].id;
-            console.log(`🏢 Created Default Demo Organization: PT CRMHUB Solusi Indonesia (ID: ${orgId})`);
+            console.log(`🏢 Created Default Organization: PT CRMHUB Solusi Indonesia (ID: ${orgId})`);
         } else {
             orgId = orgRes.rows[0].id;
             console.log(`🏢 Target Organization: ${orgRes.rows[0].name} (ID: ${orgId})`);
         }
 
         // -------------------------------------------------------------
-        // 1. SEED LABELS / TAGS
+        // 1. SEED LABELS / TAGS (100% Safe)
         // -------------------------------------------------------------
         console.log('\n🏷️  1. Seeding Smart Labels & Tags...');
         const demoLabels = [
@@ -77,9 +79,9 @@ async function seedDemoLive() {
         console.log(`  ✅ ${demoLabels.length} Smart Labels configured.`);
 
         // -------------------------------------------------------------
-        // 2. SEED CONTACTS
+        // 2. SEED CONTACTS (100% Safe)
         // -------------------------------------------------------------
-        console.log('\n👥 2. Seeding Realistic Demo Contacts...');
+        console.log('\n👥 2. Seeding Contacts Master Data...');
         const demoContacts = [
             {
                 name: 'Budi Hartono (PT Nusantara Logistik)',
@@ -125,7 +127,6 @@ async function seedDemoLive() {
             }
         ];
 
-        const contactMap = {};
         for (const c of demoContacts) {
             const res = await client.query(
                 `INSERT INTO contacts (organization_id, name, phone_number, email, source)
@@ -136,7 +137,6 @@ async function seedDemoLive() {
                 [orgId, c.name, c.phone, c.email, c.source]
             );
             const contactId = res.rows[0].id;
-            contactMap[c.phone] = contactId;
 
             // Link Label
             if (labelMap[c.label]) {
@@ -151,9 +151,9 @@ async function seedDemoLive() {
         console.log(`  ✅ ${demoContacts.length} Contacts with rich metadata seeded.`);
 
         // -------------------------------------------------------------
-        // 3. SEED PIPELINE CRM & KANBAN STAGES
+        // 3. SEED PIPELINE CRM & KANBAN STAGES (100% Safe)
         // -------------------------------------------------------------
-        console.log('\n📊 3. Seeding Sales Pipeline & Deals...');
+        console.log('\n📊 3. Seeding Sales Pipeline & Kanban Stages...');
         
         let pipelineId;
         const pipeCheck = await client.query('SELECT id FROM pipelines WHERE organization_id = $1 LIMIT 1', [orgId]);
@@ -189,9 +189,9 @@ async function seedDemoLive() {
         console.log(`  ✅ Sales Pipeline Kanban Stages configured.`);
 
         // -------------------------------------------------------------
-        // 4. SEED PRODUCTS & SERVICES CATALOG
+        // 4. SEED PRODUCTS & SERVICES CATALOG (100% Safe)
         // -------------------------------------------------------------
-        console.log('\n📦 4. Seeding Product Catalog & Services...');
+        console.log('\n📦 4. Seeding Products & Services Catalog...');
         const demoProducts = [
             {
                 name: 'CRMHUB Enterprise Omnichannel (1 Tahun)',
@@ -239,56 +239,9 @@ async function seedDemoLive() {
         console.log(`  ✅ ${demoProducts.length} Products & Enterprise Services Catalog seeded.`);
 
         // -------------------------------------------------------------
-        // 5. SEED DEMO INVOICES & BILLING
+        // 5. SEED QUICK REPLIES (100% Safe)
         // -------------------------------------------------------------
-        console.log('\n💳 5. Seeding Professional Invoices & Billing Records...');
-        const demoInvoices = [
-            {
-                num: 'INV-2026-0899',
-                client: 'PT Nusantara Logistik',
-                amount: 7990000,
-                status: 'paid',
-                doc_type: 'invoice',
-                paid_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-                contact_id: contactMap['6281234567801']
-            },
-            {
-                num: 'INV-2026-0901',
-                client: 'CV Berkah Herbal',
-                amount: 2490000,
-                status: 'pending',
-                doc_type: 'invoice',
-                paid_at: null,
-                contact_id: contactMap['6281234567802']
-            },
-            {
-                num: 'QUO-2026-0042',
-                client: 'Agensi Digital Kreasi',
-                amount: 9490000,
-                status: 'sent',
-                doc_type: 'quotation',
-                paid_at: null,
-                contact_id: contactMap['6281234567805']
-            }
-        ];
-
-        for (const inv of demoInvoices) {
-            const token = `inv_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-            await client.query(
-                `INSERT INTO invoices (
-                    organization_id, invoice_number, customer_name, total_amount, 
-                    status, document_type, public_token, paid_at, contact_id, created_at, due_date
-                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW() + INTERVAL '7 days')
-                 ON CONFLICT (organization_id, invoice_number) DO NOTHING`,
-                [orgId, inv.num, inv.client, inv.amount, inv.status, inv.doc_type, token, inv.paid_at, inv.contact_id]
-            ).catch(() => {});
-        }
-        console.log(`  ✅ ${demoInvoices.length} Demo Invoices & Quotations seeded.`);
-
-        // -------------------------------------------------------------
-        // 6. SEED QUICK REPLIES
-        // -------------------------------------------------------------
-        console.log('\n⚡ 6. Seeding Quick Reply Templates...');
+        console.log('\n⚡ 5. Seeding Quick Reply Templates...');
         const demoReplies = [
             {
                 shortcut: '/halo',
@@ -324,55 +277,9 @@ async function seedDemoLive() {
         console.log(`  ✅ ${demoReplies.length} Quick Reply Shortcuts (/halo, /harga, /rekening, dll) configured.`);
 
         // -------------------------------------------------------------
-        // 7. SEED CHATBOT FLOW BUILDER
+        // 6. SEED SLA POLICIES & DIVISIONS (100% Safe)
         // -------------------------------------------------------------
-        console.log('\n🤖 7. Seeding Intelligent Flow Builder Demo...');
-        const sampleNodes = [
-            {
-                id: 'node-start',
-                type: 'trigger',
-                position: { x: 100, y: 150 },
-                data: { label: 'Keyword: #menu / halo', keyword: 'halo' }
-            },
-            {
-                id: 'node-welcome',
-                type: 'message',
-                position: { x: 350, y: 150 },
-                data: { message: 'Selamat datang di CRMHUB! Silakan pilih layanan:\n1. Info Paket & Harga\n2. Bantuan CS & Demo\n3. Cek Status Order' }
-            },
-            {
-                id: 'node-lead-capture',
-                type: 'question',
-                position: { x: 620, y: 150 },
-                data: { question: 'Boleh tahu nama bisnis / perusahaan Anda?', variable: 'company_name' }
-            },
-            {
-                id: 'node-cs-handoff',
-                type: 'action',
-                position: { x: 900, y: 150 },
-                data: { action: 'assign_agent', note: 'Dialihkan ke staf Customer Care aktif' }
-            }
-        ];
-
-        const sampleEdges = [
-            { id: 'e1-2', source: 'node-start', target: 'node-welcome' },
-            { id: 'e2-3', source: 'node-welcome', target: 'node-lead-capture' },
-            { id: 'e3-4', source: 'node-lead-capture', target: 'node-cs-handoff' }
-        ];
-
-        await client.query(
-            `INSERT INTO chat_flows (organization_id, name, trigger_keyword, nodes, edges, is_active)
-             VALUES ($1, 'Customer Service & Lead Qualification Flow', 'halo', $2, $3, true)
-             ON CONFLICT (organization_id, trigger_keyword) 
-             DO UPDATE SET nodes = EXCLUDED.nodes, edges = EXCLUDED.edges`,
-            [orgId, JSON.stringify(sampleNodes), JSON.stringify(sampleEdges)]
-        );
-        console.log('  ✅ Visual Chatbot Flow ("Customer Service & Lead Qualification Flow") seeded.');
-
-        // -------------------------------------------------------------
-        // 8. SEED SLA POLICIES & DIVISIONS
-        // -------------------------------------------------------------
-        console.log('\n⏱️  8. Seeding SLA Policies & Divisions...');
+        console.log('\n⏱️  6. Seeding SLA Policies & Divisions...');
         const slaDefaults = [
             { priority: 'urgent', frt: 10, res: 60 },
             { priority: 'high', frt: 30, res: 240 },
@@ -402,9 +309,9 @@ async function seedDemoLive() {
         console.log(`  ✅ SLA Policies & Divisions configured.`);
 
         // -------------------------------------------------------------
-        // 9. SEED PLATFORM ANNOUNCEMENTS
+        // 7. SEED PLATFORM ANNOUNCEMENTS (100% Safe)
         // -------------------------------------------------------------
-        console.log('\n📢 9. Seeding System Announcements & Banners...');
+        console.log('\n📢 7. Seeding System Announcements & Banners...');
         await client.query(
             `INSERT INTO announcements (title, content, is_active, priority)
              VALUES ('🚀 Selamat Datang di CRMHUB Omnichannel Platform V2',
@@ -418,8 +325,8 @@ async function seedDemoLive() {
 
         console.log('\n================================================================');
         console.log('🎉 [CRMHUB LIVE DEMO SEEDER COMPLETED SUCCESSFULLY]');
-        console.log('✨ All safe, standalone CRM modules are populated.');
-        console.log('🛡️  Inbox & User accounts left 100% clean & safe for live demo.');
+        console.log('✨ 100% Pure, rock-solid master data has been populated.');
+        console.log('🛡️  Zero-risk: No channel, gateway, or session dependencies.');
         console.log('================================================================\n');
 
         process.exit(0);
