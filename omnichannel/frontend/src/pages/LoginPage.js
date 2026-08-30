@@ -776,7 +776,7 @@ export default function LoginPage({ initialView = 'login' }) {
                         </div>
                         <div className="text-xs text-slate-400 font-mono flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                            <span>Multi-Session Baileys + Meta Cloud API</span>
+                            <span>Multi-Device WhatsApp & Meta Cloud API</span>
                         </div>
                     </div>
 
@@ -848,7 +848,7 @@ export default function LoginPage({ initialView = 'login' }) {
                         </div>
                         <div>
                             <p className="text-lg xl:text-xl font-bold text-white tracking-tight font-mono">Multi-Session</p>
-                            <p className="text-[11px] text-slate-400 mt-0.5">WhatsApp QR & Meta CoEx</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">WhatsApp QR & Cloud API</p>
                         </div>
                         <div>
                             <p className="text-lg xl:text-xl font-bold text-white tracking-tight font-mono">AES-256</p>
