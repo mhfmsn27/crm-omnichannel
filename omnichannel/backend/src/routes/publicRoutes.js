@@ -10,10 +10,18 @@ import { publicApiLimiter } from '../middleware/rateLimiter.js';
 import { publicApiAuth, validateChannelAccess } from '../middleware/publicApiAuth.js';
 import { robustUpload } from '../middleware/uploadMiddleware.js';
 
+import * as billingController from '../controllers/billingController.js';
+import * as saPlanController from '../controllers/sa/planController.js';
+
 const router = express.Router();
 
 // Apply public rate limiter
 router.use(publicApiLimiter);
+
+// --- Public Plans & Checkout ---
+router.get('/plans', billingController.getPublicPlans);
+router.get('/plans/:id', saPlanController.getPublicPlanById);
+router.get('/payment-channels', billingController.getPaymentChannels);
 
 // --- Public Settings & CMS ---
 router.get('/settings', saSettingController.getPublicSettings);

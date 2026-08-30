@@ -33,22 +33,18 @@ router.get('/plans/:id', saPlanController.getPlanById);
 router.post('/plans', saPlanController.createPlan);
 router.put('/plans/:id', saPlanController.updatePlan);
 router.delete('/plans/:id', saPlanController.deletePlan);
-router.get('/plans/:id/features', saPlanController.getPlanFeatures);
-router.put('/plans/:id/features', saPlanController.updatePlanFeatures);
 
 // --- Members ---
 router.get('/members', saMemberController.getMembers);
 router.post('/members', saMemberController.createMember);
 router.get('/members/:id', saMemberController.getMemberById);
-router.put('/members/:id', saMemberController.updateMember);
 router.delete('/members/:id', saMemberController.deleteMember);
 router.put('/members/:id/status', saMemberController.toggleStatus);
 router.get('/members/:id/reports', saMemberController.getMemberReports);
 router.get('/members/:id/channels', saMemberController.getMemberChannels);
 router.delete('/members/:id/channels/:type/:channelId', saMemberController.forceDeleteChannel);
-router.post('/members/:id/subscription', saMemberController.updateSubscription);
-router.get('/members/:id/usage', saMemberController.getUsageStats);
-router.post('/members/:id/login-as', saMemberController.loginAsMember);
+router.post('/members/:id/manual-override', saMemberController.manualOverride);
+router.post('/members/:id/webhook', saMemberController.updateWebhook);
 
 // --- Orders & Billing ---
 router.get('/orders', saOrderController.getOrders);
@@ -65,11 +61,13 @@ router.delete('/addons/:id', saAddonController.deleteAddon);
 router.get('/promo-codes', saPromoCodeController.getPromoCodes);
 router.post('/promo-codes', saPromoCodeController.createPromoCode);
 router.delete('/promo-codes/:id', saPromoCodeController.deletePromoCode);
+router.put('/promo-codes/:id/toggle', saPromoCodeController.togglePromoCode);
 
 // --- Payment Channels ---
-router.get('/payment-channels', saPaymentChannelController.getPaymentChannels);
-router.post('/payment-channels', saPaymentChannelController.savePaymentChannel);
-router.delete('/payment-channels/:id', saPaymentChannelController.deletePaymentChannel);
+router.get('/payment-channels', saPaymentChannelController.getChannels);
+router.post('/payment-channels', saPaymentChannelController.createChannel);
+router.put('/payment-channels/:id', saPaymentChannelController.updateChannel);
+router.delete('/payment-channels/:id', saPaymentChannelController.deleteChannel);
 
 // --- CMS Landing & Pages ---
 router.get('/cms/landing', cmsController.getLandingSections);
