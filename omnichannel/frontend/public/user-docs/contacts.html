@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -219,18 +219,37 @@
       </div>
 
       <!-- EXPORT -->
-      <h2 id="export">Export Kontak</h2>
+      <h2 id="export">Export Kontak (CSV)</h2>
       <p>Export seluruh database kontak Anda ke file CSV untuk backup, analisis di spreadsheet, atau integrasi ke sistem lain.</p>
       <ol class="steps">
         <li>Buka halaman <strong>Contacts</strong>.</li>
         <li>Gunakan filter untuk mempersempit kontak yang ingin di-export (opsional — biarkan tanpa filter untuk export semua).</li>
-        <li>Klik tombol <em>"Export"</em> (ikon unduh) di toolbar atas.</li>
-        <li>File CSV akan otomatis diunduh. Berisi semua field standar dan custom field yang Anda buat.</li>
+        <li>Klik tombol <em>"Export CSV"</em> di toolbar atas.</li>
+        <li>File CSV akan otomatis diunduh berisi data nama, nomor WA, email, tags, dan custom fields.</li>
+      </ol>
+
+      <!-- VCARD SYNC -->
+      <h2 id="vcard-sync">📱 2-Way Mobile vCard 3.0 (.vcf) Sync Stream</h2>
+      <p>Sinkronisasi kontak pelanggan CRMHUB langsung ke buku telepon smartphone Android &amp; iPhone tim sales Anda.</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">📇</span>
+          <div><h4>Format vCard 3.0 Standar</h4><p>File <code>.vcf</code> kompatibel dengan Google Contacts, Apple Contacts, dan buku telepon Android.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📞</span>
+          <div><h4>Identifikasi Penelepon</h4><p>Saat pelanggan menelepon nomor seluler sales biasa, nama dan perusahaan otomatis muncul di layar HP.</p></div>
+        </div>
+      </div>
+      <ol class="steps">
+        <li>Di halaman <strong>Contacts</strong>, klik tombol <strong>"Sync ke Smartphone (vCard .vcf)"</strong>.</li>
+        <li>Unduh file <code>crmhub_contacts.vcf</code> ke HP Anda.</li>
+        <li>Buka file di smartphone dan pilih <strong>"Impor ke Kontak / Google Account"</strong>. Seluruh kontak pelanggan kini tersimpan rapi di HP.</li>
       </ol>
 
       <div class="page-nav">
         <a href="broadcast.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Broadcast Campaign</div></a>
-        <a href="chatbot.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Chatbot &amp; Flow Builder</div></a>
+        <a href="pipeline.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Pipeline CRM &amp; Lead Scoring</div></a>
       </div>
     </article>
 
@@ -243,7 +262,8 @@
       <a href="#tambah-manual">Tambah Manual</a>
       <a href="#custom-field">Custom Field</a>
       <a href="#bulk-ops">Operasi Massal</a>
-      <a href="#export">Export Kontak</a>
+      <a href="#export">Export Kontak (CSV)</a>
+      <a href="#vcard-sync">Mobile vCard 3.0 Sync</a>
     </aside>
   </div>
 </div>

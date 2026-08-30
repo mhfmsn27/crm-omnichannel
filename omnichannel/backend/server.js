@@ -18,6 +18,7 @@ import { runMigrations as runSqlMigrations } from './src/utils/migrateRunner.js'
 // Middlewares
 import { authenticateToken } from './src/middleware/authMiddleware.js';
 import { generalLimiter, publicApiLimiter } from './src/middleware/rateLimiter.js';
+import { checkLicense } from './src/middleware/licenseMiddleware.js';
 
 // Services & Workers
 import { startAutoArchiver } from './src/services/autoArchiveService.js';
@@ -35,6 +36,7 @@ import * as redirectController from './src/controllers/redirectController.js';
 import * as affiliateController from './src/controllers/affiliateController.js';
 import * as divisionsController from './src/controllers/divisionsController.js';
 import * as healthController from './src/controllers/healthController.js';
+import * as licenseController from './src/controllers/licenseController.js';
 
 // Queues & Background Workers
 import { initBroadcastWorker } from './src/queues/broadcastWorker.js';
@@ -152,29 +154,10 @@ app.get('/u/:slug', publicApiLimiter, redirectController.handleRedirect);
 app.get('/ref/:code', publicApiLimiter, (req, res) => affiliateController.trackReferralClick(req, res));
 
 // --- PUBLIC LICENSE ENDPOINTS ---
-app.get('/api/license/check', async (req, res) => {
-    try {
-        const domain = licenseService.getDomainFromRequest(req);
-        const result = await licenseService.validateLicense(domain);
-        if (result.valid) {
-            res.json({ status: 'valid', domain: result.domain, licenseKey: result.licenseKey, cached: result.cached, message: 'License valid' });
-        } else {
-            res.status(403).json({ status: 'invalid', reason: result.reason, message: result.message || 'Domain tidak terdaftar' });
-        }
-    } catch (error) {
-        res.status(500).json({ status: 'error', message: 'License validation failed' });
-    }
-});
-
-app.post('/api/license/refresh', async (req, res) => {
-    try {
-        const domain = licenseService.getDomainFromRequest(req);
-        const result = await licenseService.refreshLicense(domain);
-        res.json({ status: 'refreshed', ...result });
-    } catch (error) {
-        res.status(500).json({ status: 'error', message: 'License refresh failed' });
-    }
-});
+app.get('/api/license/check', licenseController.checkLicense);
+app.post('/api/license/refresh', licenseController.refreshLicense);
+app.get('/api/license/status', licenseController.getStatus);
+app.get('/api/license/setup', licenseController.getSetupInfo);
 
 // --- AUTHENTICATION ROUTES ---
 app.use('/api/auth', authRoutes);
@@ -184,6 +167,7 @@ app.use('/api/sa', superAdminRoutes);
 
 // --- PROTECTED APPLICATION ROUTES (/api/app/*) ---
 const api = express.Router();
+api.use(checkLicense);
 api.use(authenticateToken);
 api.use(generalLimiter);
 

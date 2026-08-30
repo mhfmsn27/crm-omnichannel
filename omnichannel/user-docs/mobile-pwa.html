@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWA 2.0 & Mobile App — CRMHUB Dokumentasi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top-header">
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0 Enterprise</span></a>
+  <div class="header-spacer"></div>
+  <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <div class="main">
+    <article class="content">
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Mobile &amp; Native App<span>›</span>PWA 2.0 &amp; Mobile App</div>
+      <h1>📱 Progressive Web App (PWA 2.0) &amp; Capacitor Native</h1>
+      <p class="page-subtitle">Akses CRMHUB dari smartphone dengan pengalaman native: standalone full-screen, offline cache, homescreen shortcuts, getaran taktil, dan integrasi Android &amp; iOS.</p>
+
+      <!-- PWA OVERVIEW -->
+      <h2 id="pwa-install">1. Cara Install CRMHUB di Smartphone (PWA)</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">🤖</span>
+          <div><h4>Android (Chrome / Edge)</h4><p>Buka URL web CRMHUB di browser Chrome. Klik banner melayang <strong>"Install CRMHUB App"</strong> atau pilih menu titik tiga ➔ <em>"Tambahkan ke Layar Utama"</em>.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🍎</span>
+          <div><h4>iPhone / iPad (Safari)</h4><p>Buka URL di Safari, ketuk tombol <strong>Share (Bagikan)</strong> di bilah bawah, lalu pilih <strong>"Add to Home Screen (Tambah ke Layar Utama)"</strong>.</p></div>
+        </div>
+      </div>
+
+      <!-- FITUR MOBILE NATIVE -->
+      <h2 id="fitur-mobile">2. Keunggulan Fitur Mobile CRMHUB 2.0</h2>
+      <ul>
+        <li><strong>Tampilan Standalone</strong> — Berjalan tanpa address bar browser, terasa 100% seperti aplikasi native.</li>
+        <li><strong>Mobile Bottom Navigation Bar</strong> — Navigasi 5 tab bawah ramah ibu jari (Inbox, Kontak, Sales GPS, Faktur, TV Mode).</li>
+        <li><strong>Safe-Area Insets</strong> — Kompatibel penuh dengan poni kamera dan Dynamic Island iPhone (tidak tertutup notch).</li>
+        <li><strong>App Shortcuts Homescreen</strong> — Tekan dan tahan ikon aplikasi CRMHUB di homescreen HP untuk jalan pintas cepat.</li>
+        <li><strong>Getaran Taktil (Haptics Feedback)</strong> — Sensasi getar halus saat mengirim pesan atau beralih tab.</li>
+      </ul>
+
+      <!-- BUILD NATIVE CAPACITOR -->
+      <h2 id="capacitor">3. Panduan Build Native Android APK &amp; iOS IPA (Capacitor)</h2>
+      <p>Untuk developer/tim teknis yang ingin mengompilasi aplikasi menjadi file <code>.apk</code> / <code>.aab</code> (Google Play) atau <code>.ipa</code> (Apple App Store):</p>
+      <div class="code-block" style="background:#090d16;color:#e2e8f0;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin:14px 0;">
+        cd omnichannel/frontend<br><br>
+        # 1. Tambahkan platform Android &amp; iOS<br>
+        npx cap add android<br>
+        npx cap add ios<br><br>
+        # 2. Sinkronkan build produksi<br>
+        npm run build<br>
+        npx cap sync<br><br>
+        # 3. Buka di Android Studio / Xcode<br>
+        npx cap open android<br>
+        npx cap open ios
+      </div>
+
+      <div class="page-nav">
+        <a href="tools.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Tools &amp; WhatsApp Warmer</div></a>
+        <a href="team.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Manajemen Tim &amp; Kapasitas</div></a>
+      </div>
+    </article>
+    <aside class="toc">
+      <div class="toc-title">Di halaman ini</div>
+      <a href="#pwa-install">Install PWA di HP</a>
+      <a href="#fitur-mobile">Keunggulan Mobile 2.0</a>
+      <a href="#capacitor">Build Android &amp; iOS</a>
+    </aside>
+  </div>
+</div>
+<script src="nav.js"></script>
+<script>renderNav('mobile-pwa.html');</script>
+</body>
+</html>

@@ -156,23 +156,42 @@ export default function LicensePage() {
                 </div>
             </div>
 
-            {/* Domain Info */}
-            <div className="bg-white rounded-xl border p-6 shadow-sm">
-                <div className="flex items-center gap-4">
-                    <Globe className="w-10 h-10 text-indigo-600" />
-                    <div>
-                        <p className="text-sm text-gray-500">Domain</p>
-                        <p className="text-xl font-bold text-gray-900">{status.domain}</p>
+            {/* Domain & Client Info */}
+            <div className="bg-white rounded-xl border p-6 shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <Globe className="w-10 h-10 text-indigo-600 shrink-0" />
+                        <div>
+                            <p className="text-sm text-gray-500">Domain Terlisensi</p>
+                            <p className="text-xl font-bold text-gray-900">{status.domain}</p>
+                        </div>
                     </div>
+                    {status.rsaVerified && (
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-xs font-bold w-fit">
+                            <Shield className="w-3.5 h-3.5" />
+                            RSA-2048 Signature Verified
+                        </div>
+                    )}
                 </div>
 
+                {status.clientName && (
+                    <div className="pt-3 border-t flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Pemilik Lisensi:</span>
+                        <span className="font-semibold text-gray-800">{status.clientName}</span>
+                    </div>
+                )}
+
                 {status.licenseKey && (
-                    <div className="mt-4 pt-4 border-t flex items-center gap-4">
-                        <Key className="w-5 h-5 text-gray-400" />
-                        <div>
-                            <p className="text-sm text-gray-500">License Key</p>
-                            <p className="font-mono text-sm text-gray-700">{status.licenseKey}</p>
-                        </div>
+                    <div className="pt-3 border-t flex items-center justify-between text-sm">
+                        <span className="text-gray-500">License Key:</span>
+                        <span className="font-mono text-xs text-gray-700 bg-gray-100 px-2 py-0.5 rounded">{status.licenseKey}</span>
+                    </div>
+                )}
+
+                {status.grace_period && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+                        <span>Mode Toleransi Offline Aktif (Grace Period 7 Hari)</span>
                     </div>
                 )}
             </div>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -189,26 +189,39 @@
       <h3>Pipeline + Chatbot</h3>
       <p>Di Flow Builder, tambahkan node <strong>"Tambah ke Pipeline"</strong> untuk otomatis memasukkan kontak ke pipeline tertentu saat mengisi form atau memenuhi kondisi chatbot. Misalnya: saat pelanggan memilih "Ya, saya tertarik", kontak otomatis masuk ke pipeline "Penjualan" di tahap "Prospek Baru".</p>
 
-      <h2 id="laporan">Laporan Pipeline</h2>
-      <p>Pantau performa pipeline di <strong>Analytics → Pipeline Penjualan</strong>:</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Metrik</th><th>Arti</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Total Deal</strong></td><td>Jumlah deal aktif di semua tahap</td></tr>
-            <tr><td><strong>Total Nilai</strong></td><td>Estimasi nilai agregat semua deal aktif</td></tr>
-            <tr><td><strong>Tingkat Konversi</strong></td><td>Persentase deal yang mencapai tahap "Menang"</td></tr>
-            <tr><td><strong>Rata-rata Siklus Deal</strong></td><td>Waktu rata-rata dari tahap pertama ke penutupan</td></tr>
-            <tr><td><strong>Deal per Agent</strong></td><td>Distribusi deal berdasarkan agent penanggung jawab</td></tr>
-            <tr><td><strong>Deal Overdue</strong></td><td>Deal yang melewati tanggal target tanpa pergerakan</td></tr>
-          </tbody>
-        </table>
+      <!-- AI LEAD SCORING -->
+      <h2 id="ai-lead-scoring">🔥 Predictive AI Lead Scoring (0–100)</h2>
+      <p>Mesin kecerdasan buatan (AI) CRMHUB menganalisis pesan dan riwayat transaksi secara real-time untuk memberikan skor probabilitas closing pembelian prospek.</p>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">🔥</span>
+          <div><h4>Hot Deal (Skor 75–100)</h4><p>Pelanggan menunjukkan niat beli sangat tinggi (tanya harga, rekening, ketersediaan stok).</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">⚡</span>
+          <div><h4>Warm Lead (Skor 40–74)</h4><p>Pelanggan tertarik dan aktif bertanya fitur produk atau perbandingan spesifikasi.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">❄️</span>
+          <div><h4>Cold Lead (Skor 0–39)</h4><p>Prospek pasif atau baru pertama kali menyapa tanpa pertanyaan spesifik.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">💡</span>
+          <div><h4>AI Next Best Action</h4><p>Rekomendasi taktik negosiasi dan langkah persuasif berikutnya untuk agen.</p></div>
+        </div>
       </div>
-      <p>Lihat panduan lengkap di <a href="analytics.html#sales-pipeline">Laporan Pipeline Penjualan</a>.</p>
+
+      <h3>Cara Menggunakan AI Lead Scoring</h3>
+      <ol class="steps">
+        <li>Buka papan Kanban <strong>Pipeline</strong> atau panel info kontak di <strong>Unified Inbox</strong>.</li>
+        <li>Setiap deal menampilkan badge warna dan angka skor (contoh: <span class="badge badge-green">Hot 88/100</span>).</li>
+        <li>Klik kartu deal untuk membaca <strong>Rekomendasi AI Next Best Action</strong> (misal: <em>"Tawarkan voucher diskon 5% untuk langsung mendorong closing hari ini"</em>).</li>
+      </ol>
 
       <div class="page-nav">
-        <a href="billing.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Langganan &amp; Billing</div></a>
-        <a href="settings.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Pengaturan</div></a>
+        <a href="contacts.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Manajemen Kontak &amp; vCard</div></a>
+        <a href="sales-visits.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Sales GPS Field Tracker</div></a>
       </div>
     </article>
     <aside class="toc">
@@ -219,6 +232,7 @@
       <a href="#tambah-deal">Menambahkan Deal</a>
       <a href="#kanban">Papan Kanban</a>
       <a href="#detail-deal">Detail Deal</a>
+      <a href="#ai-lead-scoring">Predictive AI Lead Scoring</a>
       <a href="#integrasi">Integrasi</a>
       <a href="#laporan">Laporan Pipeline</a>
     </aside>

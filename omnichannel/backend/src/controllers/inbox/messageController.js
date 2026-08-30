@@ -10,6 +10,7 @@ import { sendLineMessage } from '../../services/channels/lineChannelService.js';
 import { sendShopeeMessage } from '../../services/channels/shopeeChannelService.js';
 import { sendTokopediaMessage } from '../../services/channels/tokopediaChannelService.js';
 import redisConnection from '../../config/redis.js';
+import * as licenseService from '../../services/licenseService.js';
 import crypto from 'crypto';
 
 export const getMessages = async (req, res) => {

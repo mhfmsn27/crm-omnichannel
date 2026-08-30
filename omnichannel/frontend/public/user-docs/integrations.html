@@ -1,14 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Integrasi Perangkat — CRMHUB Dokumentasi</title>
+<title>Integrasi 10+ Channel & Marketplace — CRMHUB Dokumentasi</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="top-header">
-  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0</span></a>
+  <a href="index.html" class="logo"><div class="logo-icon">C</div>CRMHUB<span class="logo-badge">v2.0 Enterprise</span></a>
   <div class="header-spacer"></div>
   <div class="header-search">🔍 Cari dokumentasi... <kbd>⌘K</kbd></div>
 </header>
@@ -16,157 +16,114 @@
   <nav class="sidebar" id="sidebar"></nav>
   <div class="main">
     <article class="content">
-      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Penggunaan<span>›</span>Integrasi Perangkat</div>
-      <h1>📱 Integrasi Perangkat &amp; Channel</h1>
-      <p class="page-subtitle">Hubungkan WhatsApp, Messenger, Instagram, Telegram, Webchat, dan lebih banyak lagi ke platform CRMHUB.</p>
+      <div class="breadcrumb"><a href="index.html">CRMHUB</a><span>›</span>Komunikasi<span>›</span>Integrasi 10+ Channel</div>
+      <h1>🛍️ Integrasi 10+ Channel &amp; Marketplace</h1>
+      <p class="page-subtitle">Hubungkan WhatsApp, Shopee, Tokopedia, TikTok Shop, Instagram, Messenger, LINE, Telegram, Email, dan Webchat ke dalam satu Unified Inbox.</p>
 
-      <p>Semua integrasi channel dikelola di menu <strong>Integrations</strong> di sidebar. Setelah terhubung, semua pesan dari channel tersebut masuk ke inbox CRMHUB secara terpusat.</p>
+      <p>Semua integrasi channel dikelola melalui menu <strong>Integrations</strong> di sidebar. Setelah terhubung, seluruh percakapan pelanggan akan disinkronkan secara real-time ke dalam <strong>Unified Inbox CRMHUB</strong>.</p>
+
+      <!-- SHOPEE CHAT -->
+      <h2 id="shopee">🛍️ Shopee Seller Chat Bridge (Open Platform V2)</h2>
+      <p>Balas chat pembeli toko Shopee Anda langsung dari Unified Inbox tanpa perlu bolak-balik membuka Shopee Seller Centre.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → Shopee Integration</strong> di CRMHUB.</li>
+        <li>Login ke <a href="https://open.shopee.com" target="_blank">Shopee Open Platform Console</a> dan buat App bertipe <em>"Customer Service / Chat"</em>.</li>
+        <li>Masukkan <strong>Partner ID</strong> dan <strong>Partner Key</strong> ke formulir pengaturan CRMHUB.</li>
+        <li>Klik <strong>"Hubungkan Toko Shopee (Authorize)"</strong> untuk menyetujui izin toko Anda.</li>
+        <li>Salin URL Webhook yang diberikan (<code>https://domain-anda.com/webhook/shopee</code>) dan tempelkan ke kolom Webhook URL di Shopee Open Platform.</li>
+        <li>Pesan dari customer Shopee akan langsung masuk ke Unified Inbox dengan badge logo Shopee oranye.</li>
+      </ol>
+
+      <!-- TOKOPEDIA CHAT -->
+      <h2 id="tokopedia">🟢 Tokopedia Seller Chat Bridge (GoTo Open API)</h2>
+      <p>Integrasi obrolan toko Tokopedia resmi via GoTo Open API OAuth 2.0.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → Tokopedia Integration</strong>.</li>
+        <li>Siapkan kredensial dari Developer Console Tokopedia: <strong>Client ID</strong>, <strong>Client Secret</strong>, dan <strong>Fulfillment Service ID (FS ID)</strong>.</li>
+        <li>Masukkan kredensial ke CRMHUB dan klik <strong>"Simpan &amp; Autentikasi"</strong>.</li>
+        <li>Daftarkan Webhook URL CRMHUB (<code>https://domain-anda.com/webhook/tokopedia</code>) pada pengaturan Webhook Tokopedia Seller Chat.</li>
+        <li>Chat pembeli Tokopedia akan langsung muncul di inbox dengan badge hijau Tokopedia.</li>
+      </ol>
+
+      <!-- TIKTOK SHOP -->
+      <h2 id="tiktok">🎵 TikTok Shop &amp; Direct Messaging (CS API)</h2>
+      <p>Kelola percakapan toko TikTok Shop dan Direct Message pelanggan TikTok dalam satu inbox terpadu.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → TikTok Shop</strong>.</li>
+        <li>Masukkan <strong>App Key</strong>, <strong>App Secret</strong>, dan <strong>Shop Cipher</strong> dari TikTok Shop Partner Center.</li>
+        <li>Daftarkan Webhook Callback: <code>https://domain-anda.com/webhook/tiktok</code> dengan signature verification HMAC-SHA256 aktif.</li>
+        <li>Selesai — seluruh chat toko TikTok otomatis tersinkronisasi.</li>
+      </ol>
+
+      <!-- LINE OA -->
+      <h2 id="line">💬 LINE Official Account (Messaging API)</h2>
+      <p>Hubungkan akun LINE Official Account (LINE OA) resmi perusahaan Anda.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → LINE Integration</strong>.</li>
+        <li>Buka <a href="https://developers.line.biz" target="_blank">LINE Developers Console</a> dan pilih Channel Messaging API Anda.</li>
+        <li>Salin <strong>Channel ID</strong>, <strong>Channel Secret</strong>, dan buat <strong>Long-Lived Channel Access Token</strong>.</li>
+        <li>Tempelkan ke CRMHUB dan simpan.</li>
+        <li>Salin Webhook URL CRMHUB (<code>https://domain-anda.com/webhook/line</code>) ke LINE Developers Console dan aktifkan opsi <em>"Use Webhook"</em>.</li>
+      </ol>
+
+      <!-- EMAIL 2-WAY -->
+      <h2 id="email">📧 Email Two-Way Inbox (SMTP &amp; IMAP / Resend)</h2>
+      <p>Membaca dan membalas email pelanggan layaknya percakapan chat interaktif.</p>
+      <ol class="steps">
+        <li>Buka <strong>Integrations → Email Integration</strong>.</li>
+        <li>Pilih penyedia: <strong>SMTP / IMAP Standar</strong> (cPanel/Google Workspace) atau <strong>Resend API</strong>.</li>
+        <li>Masukkan host, port (misal SMTP 465/587, IMAP 993), email, dan App Password.</li>
+        <li>Klik <strong>"Uji Koneksi &amp; Simpan"</strong>. Email masuk akan otomatis dibuatkan room percakapan di Unified Inbox.</li>
+      </ol>
 
       <!-- WHATSAPP QR -->
-      <h2 id="whatsapp-qr">WhatsApp via QR Scan</h2>
-      <p>Metode paling umum — hubungkan nomor WhatsApp personal maupun bisnis menggunakan QR Code, tanpa perlu API berbayar.</p>
+      <h2 id="whatsapp-qr">🟢 WhatsApp via QR Scan (Baileys Engine)</h2>
+      <p>Hubungkan nomor WhatsApp personal maupun bisnis menggunakan multi-device Baileys Gateway tanpa biaya langganan API Meta.</p>
       <ol class="steps">
         <li>Buka <strong>Integrations → WhatsApp Device</strong>.</li>
-        <li>Klik <em>"+ Tambah Perangkat"</em>.</li>
-        <li>Beri nama perangkat (contoh: "WA Marketing 1").</li>
-        <li>QR Code akan tampil di layar. Buka WhatsApp di ponsel Anda.</li>
-        <li>Di WhatsApp, buka <strong>Perangkat Tertaut → Tautkan Perangkat</strong>, lalu scan QR Code.</li>
-        <li>Status berubah menjadi <span class="badge badge-green">Terhubung</span>. Perangkat siap digunakan.</li>
-      </ol>
-      <div class="callout callout-warning">
-        <span class="callout-icon">⚠️</span>
-        <div class="callout-content">
-          <strong>Jaga Koneksi Stabil</strong>
-          <p>Pastikan ponsel yang di-scan selalu terhubung ke internet dan memiliki baterai cukup. Jika ponsel mati atau tidak ada internet selama beberapa hari, perangkat mungkin terputus dan perlu scan ulang.</p>
-        </div>
-      </div>
-
-      <!-- WHATSAPP CLOUD API -->
-      <h2 id="whatsapp-api">WhatsApp Cloud API (Resmi)</h2>
-      <p>Integrasi resmi melalui Meta Business API — lebih stabil, tidak bergantung pada ponsel, dan mendukung template pesan terverifikasi.</p>
-      <ol class="steps">
-        <li>Buka <strong>Integrations → WhatsApp API</strong>.</li>
-        <li>Siapkan akun Meta Business Manager dan nomor WhatsApp Business yang sudah diverifikasi.</li>
-        <li>Masukkan <strong>Phone Number ID</strong> dan <strong>Access Token</strong> dari Meta Developer Console.</li>
-        <li>Masukkan <strong>Webhook Verify Token</strong> dan salin URL Webhook yang ditampilkan ke Meta Developer Console.</li>
-        <li>Klik Simpan dan uji koneksi.</li>
-      </ol>
-      <div class="callout callout-info">
-        <span class="callout-icon">ℹ️</span>
-        <div class="callout-content">
-          <strong>Perbedaan QR Scan vs Cloud API</strong>
-          <p>QR Scan lebih mudah dipasang tapi bergantung pada koneksi ponsel. Cloud API memerlukan verifikasi bisnis Meta tapi lebih andal dan mendukung fitur enterprise seperti template pesan dan centang hijau.</p>
-        </div>
-      </div>
-
-      <!-- WHATSAPP COEX -->
-      <h2 id="whatsapp-coex">WhatsApp Co-Existence (Messenger Bawaan)</h2>
-      <p>Fitur Co-Existence menghubungkan WhatsApp yang sudah terpasang di perangkat Android/iOS yang sama dengan CRMHUB, memungkinkan pesan WhatsApp masuk ke inbox tanpa scan QR ulang.</p>
-      <ol class="steps">
-        <li>Buka <strong>Integrations → WhatsApp CoEx</strong>.</li>
-        <li>Ikuti panduan instalasi yang ditampilkan untuk menghubungkan aplikasi WhatsApp di perangkat yang sama.</li>
-        <li>Setelah terhubung, pesan WhatsApp dari nomor tersebut langsung masuk ke inbox CRMHUB.</li>
+        <li>Klik <em>"+ Tambah Perangkat"</em> dan beri nama (contoh: "CS Sales 1").</li>
+        <li>QR Code akan tampil di layar. Buka WhatsApp di smartphone Anda.</li>
+        <li>Pilih <strong>Perangkat Tertaut → Tautkan Perangkat</strong>, lalu scan QR Code.</li>
+        <li>Status otomatis berubah menjadi <span class="badge badge-green">Terhubung</span>.</li>
       </ol>
 
-      <!-- MESSENGER -->
-      <h2 id="messenger">Facebook Messenger</h2>
-      <p>Hubungkan halaman Facebook bisnis Anda agar pesan Messenger masuk ke inbox CRMHUB.</p>
-      <ol class="steps">
-        <li>Buka <strong>Integrations → Facebook Messenger</strong>.</li>
-        <li>Klik <em>"Hubungkan Facebook"</em> — Anda akan diarahkan ke halaman login Facebook.</li>
-        <li>Login dan pilih halaman Facebook yang ingin dihubungkan.</li>
-        <li>Izinkan akses yang diminta CRMHUB.</li>
-        <li>Halaman Facebook Anda sekarang terhubung. Pesan Messenger masuk ke inbox.</li>
-      </ol>
-
-      <!-- INSTAGRAM -->
-      <h2 id="instagram">Instagram Direct Message</h2>
-      <p>Terima dan balas DM Instagram langsung dari CRMHUB. Memerlukan akun Instagram yang terhubung ke halaman Facebook Business.</p>
-      <ol class="steps">
-        <li>Buka <strong>Integrations → Instagram</strong>.</li>
-        <li>Klik <em>"Hubungkan Instagram"</em>.</li>
-        <li>Login ke Facebook dan pilih akun Instagram yang terhubung ke Facebook Page Anda.</li>
-        <li>Izinkan akses yang diminta.</li>
-        <li>Selesai — DM Instagram masuk ke inbox CRMHUB.</li>
-      </ol>
-      <div class="callout callout-info">
-        <span class="callout-icon">ℹ️</span>
-        <div class="callout-content">
-          <strong>Syarat Instagram</strong>
-          <p>Akun Instagram harus bertipe <strong>Professional</strong> (Business atau Creator) dan terhubung ke Facebook Page. Instagram Personal tidak dapat diintegrasikan.</p>
-        </div>
-      </div>
-
-      <!-- TELEGRAM -->
-      <h2 id="telegram">Telegram Bot</h2>
-      <p>Hubungkan Telegram Bot untuk menerima dan membalas pesan Telegram dari inbox CRMHUB.</p>
-      <ol class="steps">
-        <li>Buka <strong>Integrations → Telegram</strong>.</li>
-        <li>Buat bot baru di Telegram dengan mengirim perintah <code>/newbot</code> ke <strong>@BotFather</strong>.</li>
-        <li>Salin <strong>Bot Token</strong> yang diberikan BotFather.</li>
-        <li>Paste token di kolom yang tersedia di CRMHUB dan klik Hubungkan.</li>
-        <li>Bot Telegram Anda sekarang terhubung ke inbox.</li>
-      </ol>
-
-      <!-- WEBCHAT -->
-      <h2 id="webchat">Webchat Widget</h2>
-      <p>Tambahkan tombol live chat ke website Anda agar pengunjung bisa langsung menghubungi tim CS tanpa meninggalkan halaman.</p>
+      <!-- WEBCHAT 2.0 -->
+      <h2 id="webchat">🌐 Webchat Widget 2.0</h2>
+      <p>Widget live chat modern untuk website dengan fitur <strong>Pre-Chat Lead Qualification Form</strong> dan tombol <strong>WhatsApp Handoff</strong>.</p>
       <ol class="steps">
         <li>Buka <strong>Integrations → Webchat Widget</strong>.</li>
-        <li>Klik <em>"+ Buat Widget"</em>.</li>
-        <li>Sesuaikan tampilan: warna, nama bisnis, avatar, dan pesan sambutan.</li>
-        <li>Simpan. Salin kode embed yang ditampilkan.</li>
-        <li>Paste kode embed ke halaman website Anda (sebelum tag <code>&lt;/body&gt;</code>).</li>
-        <li>Tombol chat akan muncul di sudut website. Pesan dari pengunjung masuk ke inbox CRMHUB.</li>
-      </ol>
-
-      <!-- ZAPIER -->
-      <h2 id="zapier">Zapier Integration</h2>
-      <p>Hubungkan CRMHUB dengan 5.000+ aplikasi menggunakan Zapier — tanpa coding, cukup drag-and-drop workflow.</p>
-      <p>Contoh integrasi yang bisa dibuat dengan Zapier:</p>
-      <ul>
-        <li>Kontak baru di CRMHUB → Tambahkan ke Google Sheets</li>
-        <li>Percakapan baru → Buat tiket di Trello atau Jira</li>
-        <li>Form di-submit → Kirim notifikasi WhatsApp otomatis</li>
-        <li>Deal di pipeline berubah stage → Update di CRM eksternal (Salesforce, HubSpot)</li>
-      </ul>
-      <ol class="steps">
-        <li>Buka <strong>Integrations → Zapier</strong>.</li>
-        <li>Klik <em>"Hubungkan ke Zapier"</em> — Anda diarahkan ke platform Zapier.</li>
-        <li>Login ke akun Zapier (atau daftar gratis) dan izinkan akses CRMHUB.</li>
-        <li>Buat Zap baru menggunakan CRMHUB sebagai trigger atau action.</li>
-        <li>Konfigurasikan workflow sesuai kebutuhan dan aktifkan Zap.</li>
+        <li>Sesuaikan tema warna korporat, pesan sambutan, form pengumpulan data prospek (Nama, WhatsApp, Email).</li>
+        <li>Salin kode embed JavaScript yang disediakan dan tempelkan ke website Anda sebelum tag <code>&lt;/body&gt;</code>.</li>
       </ol>
 
       <!-- STATUS & TROUBLESHOOT -->
-      <h2 id="status">Status Perangkat</h2>
+      <h2 id="status">Indikator Status Channel</h2>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Status</th><th>Arti</th><th>Tindakan</th></tr></thead>
+          <thead><tr><th>Status</th><th>Arti</th><th>Tindakan Sistem</th></tr></thead>
           <tbody>
-            <tr><td><span class="badge badge-green">Terhubung</span></td><td>Perangkat aktif dan menerima pesan</td><td>Tidak ada — berjalan normal</td></tr>
-            <tr><td><span class="badge" style="background:#fef3c7;color:#92400e">Menghubungkan</span></td><td>Proses koneksi sedang berlangsung</td><td>Tunggu 1–2 menit</td></tr>
-            <tr><td><span class="badge badge-red">Terputus</span></td><td>Koneksi terputus, pesan tidak diterima</td><td>Scan ulang QR atau periksa koneksi</td></tr>
+            <tr><td><span class="badge badge-green">Connected</span></td><td>Channel aktif dan siap menerima serta mengirim pesan</td><td>Beroperasi normal 100%</td></tr>
+            <tr><td><span class="badge" style="background:#fef3c7;color:#92400e">Syncing</span></td><td>Proses autentikasi / handshake webhook sedang berlangsung</td><td>Tunggu 5–30 detik</td></tr>
+            <tr><td><span class="badge badge-red">Disconnected</span></td><td>Sesi terputus atau token API kedaluwarsa</td><td>Klik Reconnect / Perbarui Token API</td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="page-nav">
-        <a href="dashboard.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Dashboard</div></a>
+        <a href="inbox.html" class="prev"><div class="nav-dir">← Sebelumnya</div><div class="nav-title">Inbox &amp; AI Copilot</div></a>
         <a href="broadcast.html" class="next"><div class="nav-dir">Selanjutnya →</div><div class="nav-title">Broadcast Campaign</div></a>
       </div>
     </article>
     <aside class="toc">
       <div class="toc-title">Di halaman ini</div>
+      <a href="#shopee">Shopee Seller Chat</a>
+      <a href="#tokopedia">Tokopedia Seller Chat</a>
+      <a href="#tiktok">TikTok Shop CS API</a>
+      <a href="#line">LINE Official Account</a>
+      <a href="#email">Email Two-Way Inbox</a>
       <a href="#whatsapp-qr">WhatsApp QR Scan</a>
-      <a href="#whatsapp-api">WhatsApp Cloud API</a>
-      <a href="#whatsapp-coex">WhatsApp Co-Existence</a>
-      <a href="#messenger">Facebook Messenger</a>
-      <a href="#instagram">Instagram DM</a>
-      <a href="#telegram">Telegram Bot</a>
-      <a href="#webchat">Webchat Widget</a>
-      <a href="#zapier">Zapier</a>
-      <a href="#status">Status Perangkat</a>
+      <a href="#webchat">Webchat Widget 2.0</a>
+      <a href="#status">Status Channel</a>
     </aside>
   </div>
 </div>

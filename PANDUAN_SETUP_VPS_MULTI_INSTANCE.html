@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Setup Multi-Instance CRMHUB V2 — VPS Domainesia & Domain Rumahweb</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0F172A;
+            --bg-secondary: #1E293B;
+            --bg-card: rgba(30, 41, 59, 0.85);
+            --bg-code: #090D16;
+            --accent-primary: #6366F1;
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --accent-green: #10B981;
+            --accent-amber: #F59E0B;
+            --accent-cyan: #06B6D4;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(99, 102, 241, 0.4);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.65;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Navigation */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            color: white;
+            font-weight: 800;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .brand-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.05));
+            border: 1px solid var(--border-highlight);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -15px var(--accent-glow);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #FFFFFF, #CBD5E1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin-bottom: 24px;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .tag.blue { border-color: rgba(99, 102, 241, 0.4); color: #A5B4FC; }
+        .tag.green { border-color: rgba(16, 185, 129, 0.4); color: #6EE7B7; }
+        .tag.amber { border-color: rgba(245, 158, 11, 0.4); color: #FCD34D; }
+
+        /* Comparison Architecture Table */
+        .arch-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 36px;
+        }
+
+        .arch-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge-old {
+            background: rgba(148, 163, 184, 0.15);
+            color: #CBD5E1;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-new {
+            background: rgba(99, 102, 241, 0.2);
+            color: #A5B4FC;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Step Section Cards */
+        .step-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 28px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .step-section:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .step-num {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .step-title-wrap h2 {
+            font-size: 19px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 4px;
+        }
+
+        .step-title-wrap p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Code Snippet Box with Copy Button */
+        .code-box {
+            position: relative;
+            background: var(--bg-code);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            margin: 14px 0;
+            overflow: hidden;
+        }
+
+        .code-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+        }
+
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            line-height: 1.6;
+            color: #E2E8F0;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #CBD5E1;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        /* Alert / Callout Boxes */
+        .alert {
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            margin: 16px 0;
+            font-size: 13px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .alert-info {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #C7D2FE;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #FDE68A;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #A7F3D0;
+        }
+
+        /* Checklist Component */
+        .checklist {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 2px solid var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-green);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* Floating Fast Jump Button */
+        .fast-jump {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .jump-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .jump-link:hover {
+            color: white;
+            background: var(--accent-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero { padding: 24px 18px; }
+            .hero h1 { font-size: 22px; }
+            .step-section { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-brand">
+            <span class="brand-badge">DEVOPS GUIDE</span>
+            <span class="brand-title">CRMHUB Omnichannel 2.0 Multi-Instance Setup</span>
+        </div>
+        <div>
+            <span class="tag green">● Zero-Conflict Architecture</span>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>🚀 Panduan Instalasi Multi-Instance CRMHUB V2 di VPS yang Sama</h1>
+            <p>
+                Panduan praktis langkah-demi-langkah menginstall aplikasi <strong>CRMHUB Omnichannel V2 Terbaru</strong> pada server VPS <strong>Domainesia</strong> yang telah berjalan versi lama, menggunakan domain baru dari <strong>Rumahweb (<code>crmhub.internatechtion.my.id</code>)</strong> secara 100% terisolasi (folder, database, services, port, dan aset terpisah tanpa mengganggu versi lama).
+            </p>
+            <div class="hero-tags">
+                <span class="tag blue">🌐 Domain Baru: crmhub.internatechtion.my.id (Rumahweb)</span>
+                <span class="tag green">🖥️ VPS Server: Domainesia Ubuntu (Single Host)</span>
+                <span class="tag amber">🔒 Domain Eksisting: crm.legalkreatif.my.id (Aman / Zero Downtime)</span>
+            </div>
+            <div class="fast-jump">
+                <span style="font-size: 11px; color: var(--text-muted); align-self: center;">Lompat Cepat:</span>
+                <a href="#step1" class="jump-link">1. DNS Rumahweb</a>
+                <a href="#step2" class="jump-link">2. Database Postgres</a>
+                <a href="#step3" class="jump-link">3. Folder & Source Code</a>
+                <a href="#step4" class="jump-link">4. Config .env</a>
+                <a href="#step5" class="jump-link">5. Build & Migrasi</a>
+                <a href="#step6" class="jump-link">6. PM2 Services</a>
+                <a href="#step7" class="jump-link">7. Nginx & SSL</a>
+                <a href="#step8" class="jump-link">8. Lisensi RSA-2048</a>
+            </div>
+        </section>
+
+        <!-- Matriks Perbedaan & Isolasi Multi-Instance -->
+        <section class="arch-card">
+            <h3>📊 Matriks Isolasi Multi-Instance (Versi Lama vs Versi Baru)</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter Komponen</th>
+                            <th>Versi Lama (Tetap Berjalan)</th>
+                            <th>Versi Baru (Yang Akan Dibuat)</th>
+                            <th>Status Isolasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Domain / Subdomain</strong></td>
+                            <td><code>crm.legalkreatif.my.id</code></td>
+                            <td><code class="badge-new">crmhub.internatechtion.my.id</code></td>
+                            <td>✅ 100% Terpisah (Nginx VirtualHost)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Direktori Source Code</strong></td>
+                            <td><code>/var/www/omnichannel</code></td>
+                            <td><code class="badge-new">/var/www/crmhub-v2/omnichannel</code></td>
+                            <td>✅ 100% Terpisah (Folder Independen)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database PostgreSQL</strong></td>
+                            <td><code>crmhub_db</code></td>
+                            <td><code class="badge-new">crmhub_v2_db</code> (User: <code>crmhub_user</code>)</td>
+                            <td>✅ 100% Terpisah (Zero Data Leak)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Redis Cache / Queue</strong></td>
+                            <td>Redis DB <code>0</code></td>
+                            <td><code class="badge-new">Redis DB 1 (redis://127.0.0.1:6379/1)</code></td>
+                            <td>✅ 100% Terpisah (Isolasi Antrean)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Port Backend Express</strong></td>
+                            <td>Port <code>8998</code></td>
+                            <td><code class="badge-new">Port 8999</code></td>
+                            <td>✅ Zero Port Conflict</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Port WA Gateway Service</strong></td>
+                            <td>Port <code>8000</code></td>
+                            <td><code class="badge-new">Port 8001</code></td>
+                            <td>✅ Zero Port Conflict</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nama Proses PM2</strong></td>
+                            <td><code>omni-backend</code>, <code>wa-gateway</code></td>
+                            <td><code class="badge-new">crmhub-v2-backend</code>, <code>crmhub-v2-wa-gateway</code></td>
+                            <td>✅ Manajemen Proses Mandiri</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- STEP 1 -->
+        <section class="step-section" id="step1">
+            <div class="step-header">
+                <div class="step-num">1</div>
+                <div class="step-title-wrap">
+                    <h2>Konfigurasi DNS di Rumahweb (Pointing ke VPS Domainesia)</h2>
+                    <p>Menghubungkan subdomain <code>crmhub.internatechtion.my.id</code> ke IP Publik Server VPS Domainesia Anda.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                ℹ️ <strong>Langkah di Dashboard Rumahweb Clientzone:</strong>
+            </div>
+
+            <ol style="margin-left: 20px; font-size: 13.5px; color: var(--text-secondary); space-y: 8px;">
+                <li>Login ke <strong>Clientzone Rumahweb</strong> (<code>https://clientzone.rumahweb.com</code>).</li>
+                <li>Masuk ke menu <strong>Domains ➔ List Domains ➔ Kelola Domain <code>internatechtion.my.id</code></strong>.</li>
+                <li>Pilih tab <strong>DNS Management</strong> (atau Zone Editor).</li>
+                <li>Klik tombol <strong>Add New Record</strong> dengan rincian:
+                    <ul style="margin: 8px 0 8px 20px; color: #F8FAFC;">
+                        <li><strong>Record Type</strong>: <code>A</code></li>
+                        <li><strong>Name / Subdomain</strong>: <code>crmhub</code></li>
+                        <li><strong>TTL</strong>: <code>14400</code> (atau <code>3600</code>)</li>
+                        <li><strong>RDATA / IP Address</strong>: <code>[IP_PUBLIK_VPS_DOMAINESIA]</code> (Contoh: <code>103.xxx.xxx.xxx</code>)</li>
+                    </ul>
+                </li>
+                <li>Klik <strong>Save Changes</strong>.</li>
+            </ol>
+
+            <p style="margin-top: 14px; font-size: 13px; color: var(--text-muted);">
+                Verifikasi propagasi DNS di terminal laptop/komputer Anda:
+            </p>
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>Terminal / CMD</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code>ping crmhub.internatechtion.my.id
+# Atau gunakan nslookup:
+nslookup crmhub.internatechtion.my.id</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 2 -->
+        <section class="step-section" id="step2">
+            <div class="step-header">
+                <div class="step-num">2</div>
+                <div class="step-title-wrap">
+                    <h2>Pembuatan Database & User PostgreSQL Terpisah</h2>
+                    <p>Membuat database baru <code>crmhub_v2_db</code> lengkap dengan ekstensi AI <code>pgvector</code> & <code>pg_trgm</code>.</p>
+                </div>
+            </div>
+
+            <p style="font-size: 13.5px; color: var(--text-secondary);">
+                Login ke SSH VPS Domainesia Anda menggunakan PuTTY / Terminal:
+            </p>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>Bash (SSH VPS)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code># 1. Masuk ke prompt PostgreSQL
+sudo -u postgres psql
+
+# 2. Buat user dan database baru untuk CRMHUB V2
+CREATE USER crmhub_user WITH PASSWORD 'PasswordKuatV2_123!';
+CREATE DATABASE crmhub_v2_db OWNER crmhub_user;
+GRANT ALL PRIVILEGES ON DATABASE crmhub_v2_db TO crmhub_user;
+
+# 3. Hubungkan ke database baru dan aktifkan ekstensi
+\c crmhub_v2_db
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+# 4. Berikan izin hak akses skema public
+GRANT ALL ON SCHEMA public TO crmhub_user;
+
+# 5. Keluar dari psql
+\q</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 3 -->
+        <section class="step-section" id="step3">
+            <div class="step-header">
+                <div class="step-num">3</div>
+                <div class="step-title-wrap">
+                    <h2>Setup Struktur Direktori & Ekstraksi Source Code V2</h2>
+                    <p>Menempatkan source code versi baru di folder <code>/var/www/crmhub-v2</code>.</p>
+                </div>
+            </div>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>Bash (SSH VPS)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code># 1. Buat folder induk untuk versi baru
+sudo mkdir -p /var/www/crmhub-v2
+sudo chown -R $USER:$USER /var/www/crmhub-v2
+
+# 2. Upload / Salin zip project CRMHUB OMNICHANNEL - UPGRADE ke VPS
+# Contoh jika menggunakan Git:
+cd /var/www/crmhub-v2
+git clone &lt;URL_GIT_REPOSITORY_ANDA&gt; .
+
+# Pastikan folder struktur tersedia:
+# /var/www/crmhub-v2/omnichannel/backend
+# /var/www/crmhub-v2/omnichannel/frontend
+# /var/www/crmhub-v2/wa-server/wa-gateway/wa-gateway-backend</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 4 -->
+        <section class="step-section" id="step4">
+            <div class="step-header">
+                <div class="step-num">4</div>
+                <div class="step-title-wrap">
+                    <h2>Konfigurasi Environment Variables (.env) Baru</h2>
+                    <p>Mengatur port `8999` untuk backend dan port `8001` untuk WA Gateway agar tidak bentrok dengan instance lama.</p>
+                </div>
+            </div>
+
+            <h4 style="font-size: 14px; color: #A5B4FC; margin-bottom: 8px;">A. File Backend <code>/var/www/crmhub-v2/omnichannel/backend/.env</code></h4>
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>omnichannel/backend/.env</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code>NODE_ENV=production
+PORT=8999
+DATABASE_URL=postgresql://crmhub_user:PasswordKuatV2_123!@localhost:5432/crmhub_v2_db
+REDIS_URL=redis://127.0.0.1:6379/1
+JWT_SECRET=crmhub_enterprise_secret_key_v2_9928374829103948271
+WA_GATEWAY_URL=http://localhost:8001
+WA_GATEWAY_API_KEY=crmhub_wa_gateway_key_v2_9988
+GEMINI_API_KEY=AIzaSy...your_gemini_api_key...
+LICENSE_SHEET_ID=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms
+ALLOW_ALL_LICENSE=false
+LICENSE_CACHE_TTL=21600
+LICENSE_OFFLINE_GRACE_PERIOD=604800</code></pre>
+            </div>
+
+            <h4 style="font-size: 14px; color: #A5B4FC; margin-top: 16px; margin-bottom: 8px;">B. File Frontend <code>/var/www/crmhub-v2/omnichannel/frontend/.env</code></h4>
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>omnichannel/frontend/.env</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code>VITE_API_URL=https://crmhub.internatechtion.my.id
+VITE_SOCKET_URL=https://crmhub.internatechtion.my.id</code></pre>
+            </div>
+
+            <h4 style="font-size: 14px; color: #A5B4FC; margin-top: 16px; margin-bottom: 8px;">C. File WA Gateway Backend <code>/var/www/crmhub-v2/wa-server/wa-gateway/wa-gateway-backend/.env</code></h4>
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>wa-gateway-backend/.env</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code>PORT=8001
+API_KEY=crmhub_wa_gateway_key_v2_9988
+WEBHOOK_URL=http://localhost:8999/webhook/whatsapp
+SESSIONS_PATH=./sessions_v2</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 5 -->
+        <section class="step-section" id="step5">
+            <div class="step-header">
+                <div class="step-num">5</div>
+                <div class="step-title-wrap">
+                    <h2>Install Dependensi, Migrasi Database, & Build Frontend</h2>
+                    <p>Menjalankan instalasi paket npm dan build bundle produksi frontend Vite.</p>
+                </div>
+            </div>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>Bash (SSH VPS)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code># 1. Install & Migrasi Backend V2
+cd /var/www/crmhub-v2/omnichannel/backend
+npm install --production=false
+node src/utils/migrateRunner.js
+node src/utils/seedRunner.js
+
+# 2. Build Frontend V2
+cd /var/www/crmhub-v2/omnichannel/frontend
+npm install
+npm run build
+
+# 3. Build WA Gateway Service V2
+cd /var/www/crmhub-v2/wa-server/wa-gateway/wa-gateway-backend
+npm install
+npm run build</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 6 -->
+        <section class="step-section" id="step6">
+            <div class="step-header">
+                <div class="step-num">6</div>
+                <div class="step-title-wrap">
+                    <h2>Menjalankan Services dengan PM2 Process Manager</h2>
+                    <p>Mendaftarkan 2 service baru ke PM2 dengan nama unik agar berdampingan aman dengan service lama.</p>
+                </div>
+            </div>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>Bash (SSH VPS)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code># 1. Jalankan Omnichannel Backend V2 (Port 8999)
+cd /var/www/crmhub-v2/omnichannel/backend
+pm2 start server.js --name "crmhub-v2-backend"
+
+# 2. Jalankan WA Gateway V2 (Port 8001)
+cd /var/www/crmhub-v2/wa-server/wa-gateway/wa-gateway-backend
+pm2 start dist/server.js --name "crmhub-v2-wa-gateway"
+
+# 3. Simpan daftar proses PM2 agar otomatis hidup saat server reboot
+pm2 save
+
+# 4. Periksa seluruh proses yang berjalan (Pastikan proses lama & baru sama-sama online)
+pm2 list</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 7 -->
+        <section class="step-section" id="step7">
+            <div class="step-header">
+                <div class="step-num">7</div>
+                <div class="step-title-wrap">
+                    <h2>Konfigurasi Nginx Reverse Proxy & SSL Let's Encrypt</h2>
+                    <p>Mengatur routing domain `crmhub.internatechtion.my.id` ke Port `8999` dan mengamankan HTTPS dengan Certbot.</p>
+                </div>
+            </div>
+
+            <p style="font-size: 13.5px; color: var(--text-secondary);">
+                Buat file konfigurasi Nginx baru: <code>sudo nano /etc/nginx/sites-available/crmhub.internatechtion.my.id</code>
+            </p>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>/etc/nginx/sites-available/crmhub.internatechtion.my.id</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code>server {
+    listen 80;
+    server_name crmhub.internatechtion.my.id;
+
+    client_max_body_size 50M;
+
+    # Frontend Single Page App (SPA)
+    location / {
+        root /var/www/crmhub-v2/omnichannel/frontend/dist;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # REST API Reverse Proxy ke Backend Port 8999
+    location /api/ {
+        proxy_pass http://127.0.0.1:8999;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # WebSocket Socket.IO Realtime Engine
+    location /socket.io/ {
+        proxy_pass http://127.0.0.1:8999;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Public Uploaded Assets
+    location /uploads/ {
+        proxy_pass http://127.0.0.1:8999;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Webhook Callbacks
+    location /webhook/ {
+        proxy_pass http://127.0.0.1:8999;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}</code></pre>
+            </div>
+
+            <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 14px;">
+                Aktifkan konfigurasi Nginx dan pasang Sertifikat SSL HTTPS:
+            </p>
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>Bash (SSH VPS)</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code># 1. Aktifkan symlink virtualhost
+sudo ln -s /etc/nginx/sites-available/crmhub.internatechtion.my.id /etc/nginx/sites-enabled/
+
+# 2. Uji sintaks Nginx (Pastikan output: syntax is ok & test is successful)
+sudo nginx -t
+
+# 3. Reload Nginx
+sudo systemctl reload nginx
+
+# 4. Pasang SSL Otomatis Let's Encrypt
+sudo certbot --nginx -d crmhub.internatechtion.my.id</code></pre>
+            </div>
+        </section>
+
+        <!-- STEP 8 -->
+        <section class="step-section" id="step8">
+            <div class="step-header">
+                <div class="step-num">8</div>
+                <div class="step-title-wrap">
+                    <h2>Mendaftarkan Lisensi RSA-2048 ke Google Sheets</h2>
+                    <p>Menghasilkan tanda tangan digital resmi untuk domain <code>crmhub.internatechtion.my.id</code>.</p>
+                </div>
+            </div>
+
+            <p style="font-size: 13.5px; color: var(--text-secondary);">
+                Jalankan script generator lisensi di terminal laptop Anda:
+            </p>
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>Bash / Terminal Laptop</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                </div>
+                <pre><code>node scripts/generate-license.js crmhub.internatechtion.my.id --client="Internatechtion Production"</code></pre>
+            </div>
+
+            <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 10px;">
+                Salin baris CSV yang dihasilkan dan tempelkan pada baris baru di <strong>Google Spreadsheet Lisensi Anda</strong>.
+            </p>
+        </section>
+
+        <!-- STEP 9 -->
+        <section class="step-section" id="step9">
+            <div class="step-header">
+                <div class="step-num">9</div>
+                <div class="step-title-wrap">
+                    <h2>Verifikasi Go-Live & Kredensial Login Default</h2>
+                    <p>Memastikan seluruh sistem live online dan siap digunakan oleh tim operasional.</p>
+                </div>
+            </div>
+
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="check-box">✓</div>
+                    <span>Buka browser dan akses: <strong><code>https://crmhub.internatechtion.my.id</code></strong></span>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box">✓</div>
+                    <span>Email Login Default: <strong><code>admin@crmhub.com</code></strong></span>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box">✓</div>
+                    <span>Password Default: <strong><code>Admin123!</code></strong></span>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-box">✓</div>
+                    <span>Pastikan domain lama (<strong><code>https://crm.legalkreatif.my.id</code></strong>) tetap dapat diakses normal tanpa gangguan.</span>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                🎉 <strong>Selamat!</strong> Sistem CRMHUB Omnichannel V2 Anda kini telah aktif online secara penuh dengan isolasi total pada server yang sama.
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        function copyCode(btn) {
+            const code = btn.closest('.code-box').querySelector('pre code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = 'Tersalin! ✓';
+                btn.style.background = '#10B981';
+                btn.style.borderColor = '#10B981';
+                btn.style.color = '#FFFFFF';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                    btn.style.color = '';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

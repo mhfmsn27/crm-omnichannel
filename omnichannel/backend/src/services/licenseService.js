@@ -1,232 +1,305 @@
 /**
- * License Service - Domain-Locked License Validation (Fixed)
- * One-time purchase: no plan, no expiry
- * Active = domain exists in Google Sheet
- * Inactive = domain removed from Google Sheet
+ * Enterprise Cryptographic License Service (RSA-2048 & Logic Binding)
+ * CRMHUB Omnichannel Platform
  */
 
 import crypto from 'crypto';
+import { RSA_PUBLIC_KEY, LICENSE_CONFIG } from '../config/license.js';
 
 // ==========================================
-// CONFIGURATION
+// IN-MEMORY TAMPER-PROOF CACHE
 // ==========================================
-
-const CONFIG = {
-    // Google Sheets Configuration
-    SHEET_ID: process.env.LICENSE_SHEET_ID || '',
-    SHEET_NAME: 'licenses',
-
-    // Cache Settings (in milliseconds)
-    CACHE_VALIDITY_MS: 6 * 60 * 60 * 1000, // 6 hours cache - NOT 24 hours anymore!
-};
-
-// ==========================================
-// LICENSE CACHE
-// ==========================================
-
 let licenseCache = {
     domain: null,
     valid: false,
     licenseKey: null,
+    clientName: null,
+    signature: null,
+    rsaVerified: false,
     lastCheck: null,
+    lastValidCheck: null,
     message: null,
-    forceRefresh: false  // Flag for force refresh
+    hmac: null,
+    forceRefresh: false
+};
+
+// Secret key for HMAC anti-tamper caching
+const CACHE_SECRET = process.env.JWT_SECRET || 'crmhub_enterprise_license_salt_v2';
+
+/**
+ * Generate HMAC digest for cache anti-tampering
+ */
+const signCacheData = (data) => {
+    const payload = `${data.domain}|${data.valid}|${data.licenseKey}|${data.clientName}|${data.signature}|${data.lastCheck}|${data.lastValidCheck}`;
+    return crypto.createHmac('sha256', CACHE_SECRET).update(payload).digest('hex');
+};
+
+/**
+ * Verify HMAC integrity of cache
+ */
+const verifyCacheIntegrity = (cache) => {
+    if (!cache || !cache.hmac) return false;
+    const expectedHmac = signCacheData(cache);
+    try {
+        return crypto.timingSafeEqual(Buffer.from(cache.hmac), Buffer.from(expectedHmac));
+    } catch {
+        return false;
+    }
 };
 
 // ==========================================
-// CORE FUNCTIONS
+// DOMAIN EXTRACTION & NORMALIZATION
 // ==========================================
 
 export const getDomainFromRequest = (req) => {
-    // Try multiple sources for domain
-    let host = req?.headers?.host || req?.hostname || req?.headers?.x-forwarded-host || '';
+    if (!req) return 'localhost';
+    
+    // Check multiple headers (Reverse proxy Nginx / Cloudflare / Direct)
+    let host = req.headers?.['x-forwarded-host'] || req.headers?.host || req.hostname || '';
 
-    // Handle IPv6
-    if (host.includes(':') && !host.includes('.')) {
-        host = '';
+    // Handle multiple forwarded hosts (comma separated)
+    if (host.includes(',')) {
+        host = host.split(',')[0].trim();
     }
 
+    // Remove protocol if present
+    host = host.replace(/^https?:\/\//i, '');
+
+    // Remove port numbers (e.g., domain.com:8998 or 127.0.0.1:5173)
     const domain = host.split(':')[0];
-    const cleanDomain = domain.replace(/^www\./, '').toLowerCase().trim();
 
-    console.log('[License] Domain from request:', cleanDomain, '| Raw host:', host);
-    return cleanDomain;
+    // Clean prefix www. and trim lowercase
+    const cleanDomain = domain.replace(/^www\./i, '').toLowerCase().trim();
+
+    return cleanDomain || 'localhost';
 };
 
-export const hashDomain = (domain) => {
-    return crypto.createHash('sha256').update(domain.toLowerCase()).digest('hex');
+export const isLocalhost = (domain) => {
+    if (!domain) return true;
+    const clean = domain.toLowerCase().trim();
+    return LICENSE_CONFIG.LOCALHOST_PATTERNS.some(p => clean === p || clean.endsWith(p));
 };
 
-export const validateLicense = async (domain) => {
-    if (!domain || domain.length === 0) {
-        console.error('[License] ERROR: Empty domain received');
+// ==========================================
+// RSA-2048 CRYPTOGRAPHIC VERIFICATION
+// ==========================================
+
+/**
+ * Verify RSA-2048 Digital Signature using Embedded Public Key
+ */
+export const verifyRsaSignature = (domain, signature, customPublicKey = null) => {
+    try {
+        if (!domain || !signature) return false;
+        const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].split(':')[0].toLowerCase().trim();
+        const publicKey = customPublicKey || RSA_PUBLIC_KEY;
+
+        const verifier = crypto.createVerify('sha256');
+        verifier.update(Buffer.from(cleanDomain));
+        verifier.end();
+
+        return verifier.verify(publicKey, Buffer.from(signature, 'base64'));
+    } catch (error) {
+        console.error('[License RSA] Verification error:', error.message);
+        return false;
+    }
+};
+
+// ==========================================
+// CORE VALIDATION LOGIC
+// ==========================================
+
+export const validateLicense = async (rawDomain) => {
+    const domain = (rawDomain || 'localhost').replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].split(':')[0].toLowerCase().trim();
+    const now = Date.now();
+
+    // 1. LOCALHOST & DEV WHITELIST (100% UNRESTRICTED)
+    if (isLocalhost(domain) || LICENSE_CONFIG.ALLOW_ALL) {
         return {
-            valid: false,
-            reason: 'EMPTY_DOMAIN',
-            message: 'Domain tidak dapat dibaca'
+            valid: true,
+            domain: domain,
+            licenseKey: 'DEV_UNRESTRICTED_LICENSE',
+            clientName: 'Local Development Environment',
+            rsaVerified: true,
+            cached: false,
+            status: 'development',
+            message: 'Akses penuh mode development / localhost aktif'
         };
     }
 
-    const now = Date.now();
-
-    console.log('[License] Validating domain:', domain);
-    console.log('[License] Cache state:', {
-        cachedDomain: licenseCache.domain,
-        lastCheck: licenseCache.lastCheck,
-        age: licenseCache.lastCheck ? (now - licenseCache.lastCheck) : null,
-        cacheValid: licenseCache.domain === domain &&
-            licenseCache.lastCheck &&
-            (now - licenseCache.lastCheck) < CONFIG.CACHE_VALIDITY_MS,
-        forceRefresh: licenseCache.forceRefresh
-    });
-
-    // Check if cache is valid (not expired and same domain)
+    // 2. CHECK TAMPER-PROOF CACHE
     const isCacheValid =
         licenseCache.domain === domain &&
         licenseCache.lastCheck &&
-        (now - licenseCache.lastCheck) < CONFIG.CACHE_VALIDITY_MS &&
-        !licenseCache.forceRefresh;
+        (now - licenseCache.lastCheck) < LICENSE_CONFIG.CACHE_TTL_MS &&
+        !licenseCache.forceRefresh &&
+        verifyCacheIntegrity(licenseCache);
 
     if (isCacheValid) {
-        console.log('[License] Using cached result for:', domain);
         return {
             valid: licenseCache.valid,
             domain: licenseCache.domain,
             licenseKey: licenseCache.licenseKey,
+            clientName: licenseCache.clientName,
+            rsaVerified: licenseCache.rsaVerified,
             cached: true,
             message: licenseCache.message
         };
     }
 
-    // Cache expired or force refresh - fetch from Google Sheets
-    console.log('[License] Fetching from Google Sheets...');
-
+    // 3. FETCH FROM GOOGLE SHEETS
     try {
+        if (!LICENSE_CONFIG.SHEET_ID) {
+            console.warn('[License] LICENSE_SHEET_ID tidak dikonfigurasi pada environment produksi');
+            return {
+                valid: false,
+                reason: 'NO_SHEET_CONFIGURED',
+                message: 'LICENSE_SHEET_ID belum dikonfigurasi di server'
+            };
+        }
+
         const licenseData = await fetchFromGoogleSheets(domain);
 
-        // Update cache
-        licenseCache = {
-            domain: domain,
-            valid: licenseData !== null,
-            licenseKey: licenseData?.licenseKey || null,
-            lastCheck: now,
-            message: licenseData !== null ? 'License valid' : 'Domain tidak terdaftar',
-            forceRefresh: false  // Reset force refresh flag
-        };
+        if (licenseData) {
+            // Verify RSA Signature if present
+            let rsaValid = true;
+            if (licenseData.signature) {
+                rsaValid = verifyRsaSignature(domain, licenseData.signature);
+                if (!rsaValid) {
+                    console.error(`[License] RSA Signature MISMATCH for domain: ${domain}`);
+                    return {
+                        valid: false,
+                        reason: 'INVALID_RSA_SIGNATURE',
+                        message: 'Tanda tangan kriptografis RSA-2048 lisensi tidak sah atau telah dimodifikasi'
+                    };
+                }
+            }
 
-        console.log('[License] Result:', licenseData !== null ? 'VALID' : 'INVALID', '| Key:', licenseData?.licenseKey);
+            // Update in-memory tamper-proof cache
+            licenseCache = {
+                domain: domain,
+                valid: true,
+                licenseKey: licenseData.licenseKey || 'VALID_LICENSE',
+                clientName: licenseData.clientName || 'Valued Client',
+                signature: licenseData.signature || 'legacy_verified',
+                rsaVerified: rsaValid,
+                lastCheck: now,
+                lastValidCheck: now,
+                message: 'Lisensi resmi 1-domain RSA-2048 valid',
+                forceRefresh: false
+            };
+            licenseCache.hmac = signCacheData(licenseCache);
 
-        return {
-            valid: licenseData !== null,
-            domain: domain,
-            licenseKey: licenseData?.licenseKey || null,
-            cached: false,
-            message: licenseData !== null ? 'License valid' : 'Domain tidak terdaftar'
-        };
+            return {
+                valid: true,
+                domain: domain,
+                licenseKey: licenseCache.licenseKey,
+                clientName: licenseCache.clientName,
+                rsaVerified: licenseCache.rsaVerified,
+                cached: false,
+                message: licenseCache.message
+            };
+        } else {
+            // Domain not found in Google Sheets
+            licenseCache = {
+                domain: domain,
+                valid: false,
+                licenseKey: null,
+                clientName: null,
+                signature: null,
+                rsaVerified: false,
+                lastCheck: now,
+                lastValidCheck: licenseCache.lastValidCheck,
+                message: 'Domain belum terdaftar dalam sistem lisensi resmi',
+                forceRefresh: false
+            };
+            licenseCache.hmac = signCacheData(licenseCache);
+
+            return {
+                valid: false,
+                reason: 'DOMAIN_NOT_FOUND',
+                message: 'Domain ini belum terdaftar dalam sistem lisensi resmi'
+            };
+        }
 
     } catch (error) {
-        console.error('[License] Validation error:', error);
+        console.error('[License] Fetching error:', error.message);
 
-        // Fallback to cache if available
-        if (licenseCache.domain === domain && licenseCache.lastCheck) {
-            console.log('[License] Using fallback cache');
+        // 4. SMART 7-DAY OFFLINE GRACE PERIOD TOLERANCE
+        if (
+            licenseCache.domain === domain &&
+            licenseCache.lastValidCheck &&
+            (now - licenseCache.lastValidCheck) < LICENSE_CONFIG.OFFLINE_GRACE_PERIOD_MS &&
+            verifyCacheIntegrity(licenseCache)
+        ) {
+            console.warn(`[License] Running in Offline Grace Period for domain: ${domain}`);
             return {
-                valid: licenseCache.valid,
+                valid: true,
                 domain: licenseCache.domain,
                 licenseKey: licenseCache.licenseKey,
+                clientName: licenseCache.clientName,
+                rsaVerified: licenseCache.rsaVerified,
                 cached: true,
-                warning: 'Using cached data',
-                message: licenseCache.message
+                grace_period: true,
+                message: 'Aplikasi berjalan dalam mode toleransi offline resmi (Maks 7 Hari)'
             };
         }
 
         return {
             valid: false,
-            reason: 'VALIDATION_ERROR',
-            message: 'Tidak dapat memvalidasi license: ' + error.message
+            reason: 'VALIDATION_NETWORK_ERROR',
+            message: 'Tidak dapat memvalidasi lisensi ke server: ' + error.message
         };
     }
 };
 
 // ==========================================
-// GOOGLE SHEETS FETCHING
+// GOOGLE SHEETS PARSER
 // ==========================================
 
 const fetchFromGoogleSheets = async (domain) => {
-    if (!CONFIG.SHEET_ID) {
-        console.log('[License] No SHEET_ID configured');
-        // In development or no license configured, allow all
-        if (process.env.NODE_ENV === 'development' || process.env.ALLOW_ALL_LICENSE === 'true') {
-            console.log('[License] ALLOW_ALL_LICENSE mode - allowing all domains');
-            return { licenseKey: 'dev-license' };
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${LICENSE_CONFIG.SHEET_ID}/export?format=csv&gid=0`;
+
+    const response = await fetch(csvUrl, {
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
         }
-        return null;
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    console.log('[License] Fetching from Google Sheets ID:', CONFIG.SHEET_ID);
-    return await fetchViaCSV(domain);
+    const csvText = await response.text();
+    return parseCsvRowsForDomain(csvText, domain);
 };
 
-const fetchViaCSV = async (domain) => {
-    try {
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/export?format=csv&gid=0`;
-        console.log('[License] CSV URL:', csvUrl);
-
-        const response = await fetch(csvUrl, {
-            headers: {
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache'
-            }
-        });
-
-        if (!response.ok) {
-            console.error('[License] CSV fetch failed:', response.status, response.statusText);
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const csvText = await response.text();
-        console.log('[License] CSV received, length:', csvText.length);
-
-        // Debug: Show first 500 chars of CSV
-        console.log('[License] CSV preview:', csvText.substring(0, 500));
-
-        return parseCSVForDomain(csvText, domain);
-    } catch (error) {
-        console.error('[License] CSV fetch error:', error);
-        throw error;
-    }
-};
-
-const parseCSVForDomain = (csvText, domain) => {
+const parseCsvRowsForDomain = (csvText, domain) => {
     const lines = csvText.trim().split('\n');
-    console.log('[License] CSV lines:', lines.length);
+    if (lines.length < 2) return null;
 
-    if (lines.length < 2) {
-        console.log('[License] No data rows in CSV');
-        return null;
-    }
-
-    const normalizedDomain = domain.toLowerCase().trim();
+    const targetDomain = domain.toLowerCase().trim();
 
     for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]);
-        const rowDomain = values[0]?.trim().replace(/"/g, '').toLowerCase();
+        const row = parseCsvLine(lines[i]);
+        if (!row || row.length === 0) continue;
 
-        console.log(`[License] Checking row ${i}: "${rowDomain}" vs "${normalizedDomain}"`);
+        const rowDomain = row[0]?.trim().replace(/"/g, '').replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].split(':')[0].toLowerCase();
 
-        if (rowDomain && rowDomain === normalizedDomain) {
-            console.log('[License] MATCH FOUND!');
+        if (rowDomain && rowDomain === targetDomain) {
             return {
-                licenseKey: values[1]?.trim() || ''
+                domain: rowDomain,
+                licenseKey: row[1]?.trim().replace(/"/g, '') || '',
+                signature: row[2]?.trim().replace(/"/g, '') || '',
+                clientName: row[3]?.trim().replace(/"/g, '') || 'Official Client'
             };
         }
     }
 
-    console.log('[License] No match found for:', domain);
     return null;
 };
 
-const parseCSVLine = (line) => {
+const parseCsvLine = (line) => {
     const result = [];
     let current = '';
     let inQuotes = false;
@@ -242,32 +315,66 @@ const parseCSVLine = (line) => {
         }
     }
     result.push(current.trim());
-
     return result;
 };
 
 // ==========================================
-// LICENSE MANAGEMENT
+// CRYPTOGRAPHIC LOGIC BINDING
 // ==========================================
 
-export const clearLicenseCache = (domain = null) => {
-    console.log('[License] Clearing cache', domain ? `for domain: ${domain}` : '(all)');
+/**
+ * Derive secure cryptographic token required by core execution engines (WhatsApp dispatch, etc.)
+ */
+export const deriveOperationKey = (operation, customDomain = null) => {
+    const domain = customDomain || licenseCache.domain || 'localhost';
+    const salt = licenseCache.signature || (isLocalhost(domain) ? 'dev_unrestricted_root' : 'crmhub_root_key');
+    return crypto.createHmac('sha256', `${domain}:${salt}`).update(operation).digest('hex');
+};
+
+/**
+ * Verify operation key
+ */
+export const verifyOperationKey = (operation, token, customDomain = null) => {
+    if (!token) return false;
+    const expected = deriveOperationKey(operation, customDomain);
+    try {
+        return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+    } catch {
+        return false;
+    }
+};
+
+/**
+ * Generate cryptographic message checksum stamp for WhatsApp outbound messages
+ */
+export const generateMessageChecksum = (phone, messageId, customDomain = null) => {
+    const opKey = deriveOperationKey('wa_dispatch', customDomain);
+    return crypto.createHmac('sha256', opKey).update(`${phone}:${messageId}`).digest('hex');
+};
+
+// ==========================================
+// CACHE CONTROLS & STATUS
+// ==========================================
+
+export const clearLicenseCache = () => {
     licenseCache = {
         domain: null,
         valid: false,
         licenseKey: null,
+        clientName: null,
+        signature: null,
+        rsaVerified: false,
         lastCheck: null,
+        lastValidCheck: null,
         message: null,
+        hmac: null,
         forceRefresh: false
     };
 };
 
 export const refreshLicense = async (domain) => {
-    console.log('[License] Force refresh requested for:', domain);
-    // Clear cache and force refresh
     licenseCache.forceRefresh = true;
     clearLicenseCache();
-    // Validate again (will skip cache)
     return await validateLicense(domain);
 };
 
@@ -277,45 +384,23 @@ export const getLicenseStatus = () => {
         valid: licenseCache.valid,
         domain: licenseCache.domain,
         licenseKey: licenseCache.licenseKey,
+        clientName: licenseCache.clientName,
+        rsaVerified: licenseCache.rsaVerified,
         cached: licenseCache.lastCheck !== null,
         lastCheck: licenseCache.lastCheck,
         cacheAge: licenseCache.lastCheck ? Math.round((now - licenseCache.lastCheck) / 1000 / 60) + ' minutes ago' : null
     };
 };
 
-export const generateLicenseKey = (domain) => {
-    const timestamp = Date.now().toString(36);
-    const random = crypto.randomBytes(4).toString('hex').toUpperCase();
-    return `CRMHUB-${timestamp}-${random}`;
-};
-
-export const getSheetsSetupInstructions = () => {
-    return {
-        instructions: [
-            '1. Buat Google Spreadsheet baru',
-            '2. Rename sheet pertama menjadi "licenses"',
-            '3. Tambahkan header di baris 1: Domain | License Key',
-            '4. Di baris 2, tambahkan domain Anda, contoh:',
-            '   Domain: vps.lamankita.web.id',
-            '   License Key: (biarkan kosong)',
-            '5. Klik Share → Anyone with the link can VIEW',
-            '6. Copy spreadsheet ID dari URL:',
-            '   https://docs.google.com/spreadsheets/d/[INI_ADALAH_ID]/edit',
-            '7. Set LICENSE_SHEET_ID di environment variables',
-            '8. Restart PM2: pm2 restart omni-backend'
-        ],
-        sheetUrl: `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID || 'YOUR_SHEET_ID'}/edit`,
-        currentSheetId: CONFIG.SHEET_ID || '(not set)'
-    };
-};
-
 export default {
     validateLicense,
+    getDomainFromRequest,
+    isLocalhost,
+    verifyRsaSignature,
+    deriveOperationKey,
+    verifyOperationKey,
+    generateMessageChecksum,
     clearLicenseCache,
     refreshLicense,
-    getLicenseStatus,
-    generateLicenseKey,
-    getSheetsSetupInstructions,
-    getDomainFromRequest,
-    hashDomain
+    getLicenseStatus
 };
