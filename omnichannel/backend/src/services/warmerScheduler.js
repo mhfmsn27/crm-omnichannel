@@ -134,3 +134,12 @@ export const needsReset = async (sessionId) => {
     // If never reset OR last reset was more than 24h ago, needs reset
     return !row.last_reset_at || row.needs_manual_reset;
 };
+
+export const startWarmerScheduler = startWarmerDailyReset;
+
+export default {
+    startWarmerDailyReset,
+    startWarmerScheduler,
+    manualResetCircle,
+    needsReset
+};

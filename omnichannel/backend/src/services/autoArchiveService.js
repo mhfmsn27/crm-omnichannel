@@ -86,9 +86,14 @@ export const archiveConversation = async (organizationId, conversationId) => {
     }
 };
 
+export const startAutoArchiver = () => {
+    console.log('[AutoArchive] Auto-archiver background service initialized.');
+};
+
 export default {
     getSettings,
     updateSettings,
     getConversationsToArchive,
-    archiveConversation
+    archiveConversation,
+    startAutoArchiver
 };

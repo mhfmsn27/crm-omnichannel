@@ -290,11 +290,14 @@ export const startBroadcastCron = async () => {
     }
 };
 
+export const startBroadcastScheduler = startBroadcastCron;
+
 export default {
     getScheduledBroadcasts,
     createScheduledBroadcast,
     updateScheduledBroadcast,
     cancelScheduledBroadcast,
     deleteScheduledBroadcast,
-    startBroadcastCron
+    startBroadcastCron,
+    startBroadcastScheduler
 };

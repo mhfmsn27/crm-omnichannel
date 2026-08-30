@@ -151,8 +151,128 @@ export const getCsatStats = async (req, res) => {
             summary: statsRes.rows[0],
             leaderboard: agentLeaderboard.rows
         });
-
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+};
+
+// Get CSAT settings for organization
+export const getSettings = async (req, res) => {
+    const { organization_id } = req.user;
+    try {
+        const orgRes = await pool.query(
+            'SELECT csat_enabled, csat_message_template FROM organizations WHERE id = $1',
+            [organization_id]
+        );
+        res.json(orgRes.rows[0] || { csat_enabled: true, csat_message_template: null });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Update CSAT settings
+export const updateSettings = async (req, res) => {
+    const { organization_id } = req.user;
+    const { csat_enabled, csat_message_template } = req.body;
+    try {
+        const updated = await pool.query(
+            `UPDATE organizations 
+             SET csat_enabled = COALESCE($1, csat_enabled),
+                 csat_message_template = COALESCE($2, csat_message_template),
+                 updated_at = NOW()
+             WHERE id = $3
+             RETURNING csat_enabled, csat_message_template`,
+            [csat_enabled, csat_message_template, organization_id]
+        );
+        res.json({ success: true, settings: updated.rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Get CSAT survey list
+export const getSurveys = async (req, res) => {
+    const { organization_id } = req.user;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+
+    try {
+        const surveysRes = await pool.query(
+            `SELECT s.*, c.name as contact_name, c.phone_number, u.name as agent_name
+             FROM csat_surveys s
+             LEFT JOIN contacts c ON s.contact_id = c.id
+             LEFT JOIN users u ON s.agent_id = u.id
+             WHERE s.organization_id = $1
+             ORDER BY s.created_at DESC
+             LIMIT $2 OFFSET $3`,
+            [organization_id, limit, offset]
+        );
+
+        const countRes = await pool.query(
+            'SELECT COUNT(*) as total FROM csat_surveys WHERE organization_id = $1',
+            [organization_id]
+        );
+
+        res.json({
+            surveys: surveysRes.rows,
+            total: parseInt(countRes.rows[0]?.total || 0),
+            page,
+            limit
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Endpoint to manually trigger survey
+export const triggerSurvey = async (req, res) => {
+    const { organization_id } = req.user;
+    const { conversationId } = req.params;
+    try {
+        const survey = await triggerCsatSurvey(conversationId, organization_id);
+        if (!survey) {
+            return res.status(400).json({ error: "Gagal memicu survei CSAT atau percakapan tidak ditemukan." });
+        }
+        res.json({ success: true, survey });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const getStats = getCsatStats;
+
+// Get public CSAT survey form data
+export const getSurveyForm = async (req, res) => {
+    const { token } = req.params;
+    try {
+        const surveyRes = await pool.query(
+            `SELECT s.*, o.name as organization_name, o.logo_url
+             FROM csat_surveys s
+             JOIN organizations o ON s.organization_id = o.id
+             WHERE s.public_token = $1`,
+            [token]
+        );
+        if (surveyRes.rows.length === 0) {
+            return res.status(404).json({ error: "Survei tidak ditemukan atau sudah kedaluwarsa." });
+        }
+        res.json(surveyRes.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const submitSurvey = submitRating;
+
+export default {
+    triggerCsatSurvey,
+    submitRating,
+    submitSurvey,
+    getSurveyForm,
+    getCsatStats,
+    getStats,
+    getSettings,
+    updateSettings,
+    getSurveys,
+    triggerSurvey
 };
