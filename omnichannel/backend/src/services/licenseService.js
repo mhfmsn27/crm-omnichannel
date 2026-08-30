@@ -161,11 +161,11 @@ export const validateLicense = async (rawDomain) => {
 
         if (licenseData) {
             // Verify RSA Signature if present
-            let rsaValid = true;
+            let rsaValid = false;
             if (licenseData.signature) {
                 rsaValid = verifyRsaSignature(domain, licenseData.signature);
-                if (!rsaValid) {
-                    console.error(`[License] RSA Signature MISMATCH for domain: ${domain}`);
+                if (!rsaValid && process.env.STRICT_RSA === 'true') {
+                    console.error(`[License] Strict RSA Signature MISMATCH for domain: ${domain}`);
                     return {
                         valid: false,
                         reason: 'INVALID_RSA_SIGNATURE',
@@ -178,13 +178,13 @@ export const validateLicense = async (rawDomain) => {
             licenseCache = {
                 domain: domain,
                 valid: true,
-                licenseKey: licenseData.licenseKey || 'VALID_LICENSE',
+                licenseKey: licenseData.licenseKey || 'CRMHUB-PRO-ACTIVE',
                 clientName: licenseData.clientName || 'Valued Client',
-                signature: licenseData.signature || 'legacy_verified',
+                signature: licenseData.signature || 'sheet_verified',
                 rsaVerified: rsaValid,
                 lastCheck: now,
                 lastValidCheck: now,
-                message: 'Lisensi resmi 1-domain RSA-2048 valid',
+                message: rsaValid ? 'Lisensi resmi 1-domain RSA-2048 valid' : 'Domain terverifikasi aktif di Google Sheets whitelist',
                 forceRefresh: false
             };
             licenseCache.hmac = signCacheData(licenseCache);
