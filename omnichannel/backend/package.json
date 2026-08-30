@@ -8,6 +8,7 @@
     "dev": "node --watch server.js",
     "db:migrate": "node src/utils/migrateRunner.js",
     "db:seed": "node src/utils/seedRunner.js",
+    "db:seed:demo": "node scripts/seed-demo-live.js",
     "db:setup": "node src/utils/migrateRunner.js && node src/utils/seedRunner.js"
   },
   "dependencies": {
