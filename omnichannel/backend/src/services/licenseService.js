@@ -108,8 +108,8 @@ export const verifyRsaSignature = (domain, signature, customPublicKey = null) =>
 // CORE VALIDATION LOGIC
 // ==========================================
 
-export const validateLicense = async (rawDomain) => {
-    const domain = (rawDomain || 'localhost').replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].split(':')[0].toLowerCase().trim();
+export const validateLicense = async (rawDomain, bypassCache = false) => {
+    const domain = (rawDomain || 'localhost').replace(/^https?:\/\//i, '').replace(/^www\./i, '').split('/')[0].split(':')[0].toLowerCase().trim();
     const now = Date.now();
 
     // 1. LOCALHOST & DEV WHITELIST (100% UNRESTRICTED)
@@ -126,9 +126,11 @@ export const validateLicense = async (rawDomain) => {
         };
     }
 
-    // 2. CHECK TAMPER-PROOF CACHE
+    // 2. CHECK TAMPER-PROOF CACHE (ONLY CACHE POSITIVE VALID RESULTS)
     const isCacheValid =
+        !bypassCache &&
         licenseCache.domain === domain &&
+        licenseCache.valid === true &&
         licenseCache.lastCheck &&
         (now - licenseCache.lastCheck) < LICENSE_CONFIG.CACHE_TTL_MS &&
         !licenseCache.forceRefresh &&

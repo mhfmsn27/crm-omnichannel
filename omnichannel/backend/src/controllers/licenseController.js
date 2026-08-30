@@ -10,7 +10,8 @@ import { LICENSE_CONFIG } from '../config/license.js';
 export const checkLicense = async (req, res) => {
     try {
         const domain = licenseService.getDomainFromRequest(req);
-        const result = await licenseService.validateLicense(domain);
+        const bypassCache = req.query?.nocache === '1' || req.query?.nocache === 'true' || req.query?.refresh === 'true';
+        const result = await licenseService.validateLicense(domain, bypassCache);
 
         if (result.valid) {
             res.json({

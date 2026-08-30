@@ -9,8 +9,8 @@ export default function LicenseBlockPage() {
     const checkLicense = async () => {
         setChecking(true);
         try {
-            // Use PUBLIC endpoint - no auth required
-            const res = await axios.get('/api/license/check');
+            // Use PUBLIC endpoint with cache-busting timestamp
+            const res = await axios.get(`/api/license/check?nocache=${Date.now()}`);
             setLicenseStatus(res.data);
         } catch (e) {
             console.error('[License Guard] Check failed:', e);
