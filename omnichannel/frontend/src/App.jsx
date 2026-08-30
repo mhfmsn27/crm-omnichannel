@@ -15,13 +15,17 @@ import LicenseBlock from './components/LicenseBlock';
 import { Loader2 } from 'lucide-react';
 
 // ================================
-// LAZY LOADING FALLBACK
+// LAZY LOADING FALLBACK (SMOOTH & NON-FLASHING)
 // ================================
 const PageLoader = () => (
-    <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-dark-bg">
-        <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-            <span className="text-sm text-gray-500 dark:text-gray-400">Memuat...</span>
+    <div className="w-full flex-1 flex flex-col items-center justify-center min-h-[50vh] py-12 transition-opacity duration-200">
+        {/* Top subtle progress bar */}
+        <div className="fixed top-0 left-0 right-0 h-0.5 bg-indigo-600/30 overflow-hidden z-[9999]">
+            <div className="h-full bg-indigo-600 w-full animate-pulse" />
+        </div>
+        <div className="flex flex-col items-center gap-2.5">
+            <Loader2 className="w-6 h-6 animate-spin text-indigo-600 dark:text-indigo-400 opacity-75" />
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-wide">Memuat halaman...</span>
         </div>
     </div>
 );

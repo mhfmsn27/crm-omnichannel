@@ -1,6 +1,11 @@
 import express from 'express';
 import * as saDashboardController from '../controllers/sa/dashboardController.js';
 import * as saMemberController from '../controllers/sa/memberController.js';
+import * as saPlanController from '../controllers/sa/planController.js';
+import * as saOrderController from '../controllers/sa/orderController.js';
+import * as saAddonController from '../controllers/sa/addonController.js';
+import * as saPromoCodeController from '../controllers/sa/promoCodeController.js';
+import * as saPaymentChannelController from '../controllers/sa/paymentChannelController.js';
 import * as saNotificationController from '../controllers/sa/notificationController.js';
 import * as saSettingController from '../controllers/sa/settingController.js';
 import * as saFeatureFlagController from '../controllers/sa/featureFlagController.js';
@@ -16,19 +21,55 @@ const router = express.Router();
 
 // Require superadmin role for all SA routes
 router.use(authenticateToken);
-router.use(requireRole(['superadmin']));
+router.use(requireRole(['superadmin', 'super_admin']));
 
 // --- Dashboard & Monitoring ---
 router.get('/dashboard', saDashboardController.getDashboardData);
 router.get('/queues/stats', healthController.getQueueStats);
 
+// --- Subscription Plans ---
+router.get('/plans', saPlanController.getPlans);
+router.get('/plans/:id', saPlanController.getPlanById);
+router.post('/plans', saPlanController.createPlan);
+router.put('/plans/:id', saPlanController.updatePlan);
+router.delete('/plans/:id', saPlanController.deletePlan);
+router.get('/plans/:id/features', saPlanController.getPlanFeatures);
+router.put('/plans/:id/features', saPlanController.updatePlanFeatures);
+
 // --- Members ---
 router.get('/members', saMemberController.getMembers);
 router.post('/members', saMemberController.createMember);
+router.get('/members/:id', saMemberController.getMemberById);
+router.put('/members/:id', saMemberController.updateMember);
+router.delete('/members/:id', saMemberController.deleteMember);
 router.put('/members/:id/status', saMemberController.toggleStatus);
 router.get('/members/:id/reports', saMemberController.getMemberReports);
 router.get('/members/:id/channels', saMemberController.getMemberChannels);
 router.delete('/members/:id/channels/:type/:channelId', saMemberController.forceDeleteChannel);
+router.post('/members/:id/subscription', saMemberController.updateSubscription);
+router.get('/members/:id/usage', saMemberController.getUsageStats);
+router.post('/members/:id/login-as', saMemberController.loginAsMember);
+
+// --- Orders & Billing ---
+router.get('/orders', saOrderController.getOrders);
+router.post('/orders/:id/approve', saOrderController.approveOrder);
+router.post('/orders/:id/reject', saOrderController.rejectOrder);
+
+// --- Add-ons ---
+router.get('/addons', saAddonController.getAddons);
+router.post('/addons', saAddonController.createAddon);
+router.put('/addons/:id', saAddonController.updateAddon);
+router.delete('/addons/:id', saAddonController.deleteAddon);
+
+// --- Promo Codes ---
+router.get('/promo-codes', saPromoCodeController.getPromoCodes);
+router.post('/promo-codes', saPromoCodeController.createPromoCode);
+router.delete('/promo-codes/:id', saPromoCodeController.deletePromoCode);
+
+// --- Payment Channels ---
+router.get('/payment-channels', saPaymentChannelController.getPaymentChannels);
+router.post('/payment-channels', saPaymentChannelController.savePaymentChannel);
+router.delete('/payment-channels/:id', saPaymentChannelController.deletePaymentChannel);
 
 // --- CMS Landing & Pages ---
 router.get('/cms/landing', cmsController.getLandingSections);

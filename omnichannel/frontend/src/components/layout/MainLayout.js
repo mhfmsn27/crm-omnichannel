@@ -28,20 +28,22 @@ export default function MainLayout({ children }) {
     // Logic to exclude Header on Inbox or any other specific full-screen pages
     const isInbox = location.pathname.startsWith('/inbox');
 
-    // Check Device Status
+    // Check Device Status (Member routes only)
     const checkDevices = useCallback(async () => {
+        if (location.pathname.startsWith('/admin')) return;
         try {
             const res = await axios.get('/api/app/devices');
             // Filter: Unofficial AND Disconnected (Case Insensitive)
-            const offline = res.data.filter(d =>
+            const list = Array.isArray(res.data) ? res.data : [];
+            const offline = list.filter(d =>
                 d.type !== 'official' &&
                 String(d.status).toLowerCase() === 'disconnected'
             );
             setDisconnectedDevices(offline);
         } catch (e) {
-            console.error("Failed to check devices");
+            // silent for uninitialized devices
         }
-    }, []);
+    }, [location.pathname]);
 
     useEffect(() => {
         checkDevices();
