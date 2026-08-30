@@ -231,8 +231,9 @@ const PORT = process.env.PORT || 8998;
 
 try {
     divisionsController.ensureDivisionsTable();
+    ticketController.ensureTicketAndSlaSchema();
 } catch (e) {
-    console.error('[Startup] Divisions table migration error:', e.message);
+    console.error('[Startup] Table self-healing migration error:', e.message);
 }
 
 server.listen(PORT, () => {

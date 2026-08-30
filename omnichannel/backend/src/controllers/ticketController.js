@@ -1,6 +1,72 @@
 import pool from '../config/db.js';
 
 // ============================================================
+// AUTO SCHEMA SELF-HEALING FOR TICKETS, SLA, AND SCHEDULER
+// ============================================================
+export const ensureTicketAndSlaSchema = async () => {
+    try {
+        await pool.query(`
+            CREATE SEQUENCE IF NOT EXISTS ticket_seq START WITH 1001;
+
+            CREATE TABLE IF NOT EXISTS sla_policies (
+                id SERIAL PRIMARY KEY,
+                organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
+                priority VARCHAR(50) NOT NULL,
+                frt_minutes INT DEFAULT 60,
+                resolution_minutes INT DEFAULT 480,
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(organization_id, priority)
+            );
+
+            CREATE TABLE IF NOT EXISTS sla_breach_logs (
+                id SERIAL PRIMARY KEY,
+                organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
+                conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
+                breach_type VARCHAR(50) NOT NULL,
+                breached_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS sla_deadline_at TIMESTAMPTZ;
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS sla_breached BOOLEAN DEFAULT false;
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS first_reply_at TIMESTAMPTZ;
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS ticket_number VARCHAR(100);
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS priority VARCHAR(50) DEFAULT 'medium';
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS csat_rating INT;
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS csat_status VARCHAR(50);
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS csat_token VARCHAR(255);
+
+            CREATE TABLE IF NOT EXISTS scheduled_messages (
+                id SERIAL PRIMARY KEY,
+                organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
+                conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
+                contact_id INT REFERENCES contacts(id) ON DELETE CASCADE,
+                content TEXT NOT NULL,
+                scheduled_at TIMESTAMPTZ NOT NULL,
+                scheduled_by INT REFERENCES users(id) ON DELETE SET NULL,
+                status VARCHAR(50) DEFAULT 'pending',
+                sent_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            ALTER TABLE messages ADD COLUMN IF NOT EXISTS retry_count INT DEFAULT 0;
+            ALTER TABLE flow_sessions ADD COLUMN IF NOT EXISTS resume_at TIMESTAMPTZ;
+            ALTER TABLE flow_sessions ADD COLUMN IF NOT EXISTS current_node_id VARCHAR(255);
+            ALTER TABLE flow_sessions ADD COLUMN IF NOT EXISTS variables JSONB DEFAULT '{}'::jsonb;
+            ALTER TABLE flow_sessions ADD COLUMN IF NOT EXISTS whatsapp_session_id INT;
+        `);
+        console.log('[SLA] Auto-schema self-healing verified cleanly.');
+    } catch (e) {
+        console.warn("[SLA] Schema auto-migration warning:", e.message);
+    }
+};
+
+// Run auto-migration on load
+ensureTicketAndSlaSchema();
+
+// ============================================================
 // TICKET NUMBER GENERATION
 // ============================================================
 export const generateTicketNumber = async () => {
