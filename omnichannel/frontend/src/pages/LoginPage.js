@@ -6,7 +6,7 @@ import axios from 'axios';
 import { 
     Eye, EyeOff, Lock, Mail, User, Building, Loader2, 
     ArrowRight, Phone, ChevronLeft, ShieldCheck, CheckCircle2,
-    MessageSquare, Smartphone, Zap, Bot, Globe
+    MessageSquare, Smartphone, Zap, Bot, Globe, Check, AlertCircle
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getApiUrl } from '../config/api';
@@ -30,17 +30,23 @@ const FormInput = ({
     onTogglePassword, 
     autoComplete, 
     maxLength,
-    required = true
+    required = true,
+    hint
 }) => (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 text-left">
         <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 tracking-wide select-none">
                 {label || (name === 'orgName' ? 'Nama Perusahaan / Bisnis' : name)}
             </label>
+            {hint && (
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 font-normal">
+                    {hint}
+                </span>
+            )}
         </div>
-        <div className="relative">
+        <div className="relative group">
             {Icon && (
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-slate-800 dark:group-focus-within:text-indigo-400 transition-colors">
                     <Icon className="w-4 h-4" />
                 </div>
             )}
@@ -60,7 +66,8 @@ const FormInput = ({
                     type="button"
                     tabIndex={-1}
                     onClick={onTogglePassword}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
+                    title={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                 >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -68,6 +75,39 @@ const FormInput = ({
         </div>
     </div>
 );
+
+// Password Strength Meter
+const PasswordStrength = ({ password }) => {
+    if (!password) return null;
+    let score = 0;
+    if (password.length >= 6) score += 1;
+    if (password.length >= 8) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+    const levels = [
+        { label: 'Sangat Lemah', color: 'bg-rose-500', width: 'w-1/5' },
+        { label: 'Lemah', color: 'bg-amber-500', width: 'w-2/5' },
+        { label: 'Cukup', color: 'bg-amber-500', width: 'w-3/5' },
+        { label: 'Kuat', color: 'bg-emerald-500', width: 'w-4/5' },
+        { label: 'Sangat Kuat', color: 'bg-emerald-500', width: 'w-full' }
+    ];
+
+    const current = levels[Math.min(score, 4)] || levels[0];
+
+    return (
+        <div className="space-y-1 pt-1">
+            <div className="h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className={`h-full ${current.color} ${current.width} transition-all duration-300 rounded-full`} />
+            </div>
+            <div className="flex justify-between items-center text-[10px] text-slate-400">
+                <span>Kekuatan Kata Sandi</span>
+                <span className="font-semibold text-slate-600 dark:text-slate-300">{current.label}</span>
+            </div>
+        </div>
+    );
+};
 
 export default function LoginPage({ initialView = 'login' }) {
     const { login, setAuthData } = useAuth();
@@ -78,6 +118,7 @@ export default function LoginPage({ initialView = 'login' }) {
     const [view, setView] = useState(initialView); // 'login' | 'register' | 'forgot' | 'reset'
     const [loading, setLoading] = useState(false);
     const [rememberMe, setRememberMe] = useState(true);
+    const [activeMockChannel, setActiveMockChannel] = useState(0);
 
     // Form States
     const [formData, setFormData] = useState({
@@ -110,6 +151,14 @@ export default function LoginPage({ initialView = 'login' }) {
             if (viewParam !== 'reset') setView('reset');
         }
     }, [location.search]);
+
+    // Rotate active mock channel preview every 4 seconds
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveMockChannel(prev => (prev + 1) % 3);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleChange = (e) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -229,22 +278,22 @@ export default function LoginPage({ initialView = 'login' }) {
     };
 
     const slideVariants = {
-        enter: { opacity: 0, y: 8 },
+        enter: { opacity: 0, y: 10 },
         center: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: -8 }
+        exit: { opacity: 0, y: -10 }
     };
 
     const getHeaderInfo = () => {
         switch (view) {
             case 'register':
                 return {
-                    title: 'Daftar Akun Baru',
-                    subtitle: 'Mulai kelola komunikasi bisnis & omnichannel dalam hitungan menit.'
+                    title: 'Daftar Akun Organisasi',
+                    subtitle: 'Mulai kelola komunikasi bisnis & multi-channel dalam hitungan menit.'
                 };
             case 'forgot':
                 return {
                     title: 'Pemulihan Kata Sandi',
-                    subtitle: 'Masukkan email Anda untuk menerima instruksi reset password.'
+                    subtitle: 'Masukkan email Anda untuk menerima instruksi tautan reset password.'
                 };
             case 'reset':
                 return {
@@ -262,23 +311,53 @@ export default function LoginPage({ initialView = 'login' }) {
 
     const header = getHeaderInfo();
 
+    const mockStreams = [
+        {
+            channel: 'WA',
+            badge: 'WhatsApp Official',
+            bgBadge: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+            sender: 'PT Maju Makmur (+62 812-3456-7890)',
+            text: 'Invoice #INV-2026-08 telah terbayar lunas.',
+            tag: 'Auto-Resolved',
+            tagColor: 'bg-emerald-950 text-emerald-300 border-emerald-800'
+        },
+        {
+            channel: 'IG',
+            badge: 'Instagram DM',
+            bgBadge: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
+            sender: '@retail_partner',
+            text: 'Apakah ada promo langganan tahunan untuk 10 agen?',
+            tag: 'Agent Budi',
+            tagColor: 'bg-indigo-950 text-indigo-300 border-indigo-800'
+        },
+        {
+            channel: 'AI',
+            badge: 'AI Copilot Assistant',
+            bgBadge: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
+            sender: 'AI Smart Reply Engine',
+            text: 'Draft balasan otomatis disiapkan dengan akurasi 98%.',
+            tag: 'Ready to Dispatch',
+            tagColor: 'bg-slate-800 text-slate-300 border-slate-600'
+        }
+    ];
+
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col justify-center selection:bg-slate-900 selection:text-white">
-            <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12">
+        <div className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 flex flex-col justify-center selection:bg-slate-900 selection:text-white antialiased">
+            <div className="min-h-[100dvh] grid grid-cols-1 lg:grid-cols-12">
 
                 {/* ========================================================= */}
                 {/* LEFT PANEL: AUTHENTICATION FORM (5 Cols LG)               */}
                 {/* ========================================================= */}
-                <div className="lg:col-span-5 flex flex-col justify-between bg-white dark:bg-slate-900 px-6 py-8 sm:px-12 md:px-16 lg:px-14 xl:px-16 border-r border-slate-200/80 dark:border-slate-800/80 shadow-sm z-10">
+                <div className="lg:col-span-5 flex flex-col justify-between bg-white dark:bg-slate-900 p-6 sm:p-10 md:p-12 lg:p-14 xl:p-16 border-r border-slate-200/80 dark:border-slate-800/80 shadow-sm z-10 overflow-y-auto">
                     
-                    {/* Top Branding */}
-                    <div className="flex items-center justify-between">
+                    {/* Top Branding & Status Pill */}
+                    <div className="flex items-center justify-between pb-4">
                         <div className="flex items-center gap-3">
                             {config.app_logo ? (
                                 <img 
                                     src={getApiUrl(config.app_logo)} 
                                     alt={config.app_name || "Logo"} 
-                                    className="h-9 w-auto max-w-[160px] object-contain" 
+                                    className="h-8 sm:h-9 w-auto max-w-[160px] object-contain" 
                                 />
                             ) : (
                                 <div className="flex items-center gap-2.5">
@@ -292,19 +371,48 @@ export default function LoginPage({ initialView = 'login' }) {
                             )}
                         </div>
                         
-                        <div className="flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1 rounded-full font-medium">
+                        <div className="flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1 rounded-full font-medium shadow-xs">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                             <span>v2.0 Online</span>
                         </div>
                     </div>
 
                     {/* Form Center Container */}
-                    <div className="my-auto py-8 w-full max-w-md mx-auto">
+                    <div className="my-auto py-6 w-full max-w-md mx-auto">
+
+                        {/* Interactive Tab Switcher for Login / Register */}
+                        {(view === 'login' || view === 'register') && (
+                            <div className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl mb-6 border border-slate-200/60 dark:border-slate-700/60">
+                                <button
+                                    type="button"
+                                    onClick={() => setView('login')}
+                                    className={`relative py-2 text-xs font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                                        view === 'login' 
+                                            ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs' 
+                                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                                    }`}
+                                >
+                                    <span>Masuk ke Akun</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setView('register')}
+                                    className={`relative py-2 text-xs font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                                        view === 'register' 
+                                            ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs' 
+                                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                                    }`}
+                                >
+                                    <span>Daftar Organisasi</span>
+                                </button>
+                            </div>
+                        )}
+
                         <div className="mb-6">
-                            <h1 className="text-2xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
+                            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
                                 {header.title}
                             </h1>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                                 {header.subtitle}
                             </p>
                         </div>
@@ -385,11 +493,11 @@ export default function LoginPage({ initialView = 'login' }) {
 
                                     {/* Social Auth (Google & Facebook) */}
                                     {(GOOGLE_CLIENT_ID || FACEBOOK_APP_ID) && (
-                                        <div className="pt-3">
+                                        <div className="pt-2">
                                             <div className="relative flex items-center justify-center my-3">
                                                 <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-                                                <span className="bg-white dark:bg-slate-900 px-3 text-xs text-slate-400 font-medium uppercase tracking-wider absolute">
-                                                    Atau
+                                                <span className="bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 font-medium uppercase tracking-wider absolute">
+                                                    Atau masuk dengan
                                                 </span>
                                             </div>
 
@@ -398,7 +506,7 @@ export default function LoginPage({ initialView = 'login' }) {
                                                     <button
                                                         type="button"
                                                         onClick={handleGoogleLogin}
-                                                        className="w-full flex items-center justify-center gap-2.5 py-2 px-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm"
+                                                        className="w-full flex items-center justify-center gap-2 py-2 px-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-xs"
                                                     >
                                                         <svg className="w-4 h-4" viewBox="0 0 24 24">
                                                             <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/>
@@ -414,7 +522,7 @@ export default function LoginPage({ initialView = 'login' }) {
                                                     <button
                                                         type="button"
                                                         onClick={handleFacebookLogin}
-                                                        className="w-full flex items-center justify-center gap-2.5 py-2 px-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm"
+                                                        className="w-full flex items-center justify-center gap-2 py-2 px-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-xs"
                                                     >
                                                         <svg className="w-4 h-4 fill-[#1877F2]" viewBox="0 0 24 24">
                                                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -425,20 +533,6 @@ export default function LoginPage({ initialView = 'login' }) {
                                             </div>
                                         </div>
                                     )}
-
-                                    {/* Register prompt (if enabled in policy) */}
-                                    <div className="text-center pt-2">
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Belum memiliki akun organisasi?{' '}
-                                            <button 
-                                                type="button" 
-                                                onClick={() => setView('register')} 
-                                                className="text-slate-900 dark:text-indigo-400 font-semibold hover:underline"
-                                            >
-                                                Daftar Sekarang
-                                            </button>
-                                        </p>
-                                    </div>
                                 </motion.div>
                             )}
 
@@ -500,19 +594,23 @@ export default function LoginPage({ initialView = 'login' }) {
                                         />
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <FormInput 
-                                                label="Kata Sandi"
-                                                icon={Lock} 
-                                                type="password" 
-                                                name="password" 
-                                                placeholder="Min. 6 karakter" 
-                                                value={formData.password} 
-                                                onChange={handleChange} 
-                                                isPassword={true} 
-                                                showPassword={showPass.reg} 
-                                                onTogglePassword={() => setShowPass(prev => ({ ...prev, reg: !prev.reg }))} 
-                                                autoComplete="new-password" 
-                                            />
+                                            <div className="space-y-1">
+                                                <FormInput 
+                                                    label="Kata Sandi"
+                                                    icon={Lock} 
+                                                    type="password" 
+                                                    name="password" 
+                                                    placeholder="Min. 6 karakter" 
+                                                    value={formData.password} 
+                                                    onChange={handleChange} 
+                                                    isPassword={true} 
+                                                    showPassword={showPass.reg} 
+                                                    onTogglePassword={() => setShowPass(prev => ({ ...prev, reg: !prev.reg }))} 
+                                                    autoComplete="new-password" 
+                                                />
+                                                <PasswordStrength password={formData.password} />
+                                            </div>
+
                                             <FormInput 
                                                 label="Ulangi Kata Sandi"
                                                 icon={Lock} 
@@ -531,24 +629,11 @@ export default function LoginPage({ initialView = 'login' }) {
                                         <button 
                                             type="submit" 
                                             disabled={loading} 
-                                            className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-150 shadow-sm flex items-center justify-center gap-2 disabled:opacity-60 active:scale-[0.99] mt-2"
+                                            className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-all duration-150 shadow-sm flex items-center justify-center gap-2 disabled:opacity-60 active:scale-[0.99] mt-3"
                                         >
                                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Buat Akun Organisasi'}
                                         </button>
                                     </form>
-
-                                    <div className="text-center pt-1">
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Sudah memiliki akun?{' '}
-                                            <button 
-                                                type="button" 
-                                                onClick={() => setView('login')} 
-                                                className="text-slate-900 dark:text-indigo-400 font-semibold hover:underline"
-                                            >
-                                                Masuk Disini
-                                            </button>
-                                        </p>
-                                    </div>
                                 </motion.div>
                             )}
 
@@ -672,9 +757,9 @@ export default function LoginPage({ initialView = 'login' }) {
                 {/* ========================================================= */}
                 {/* RIGHT PANEL: ENTERPRISE SHOWCASE & METRICS (7 Cols LG)   */}
                 {/* ========================================================= */}
-                <div className="hidden lg:flex lg:col-span-7 bg-slate-900 dark:bg-slate-950 text-white relative overflow-hidden flex-col justify-between p-12 xl:p-16 border-l border-slate-800">
+                <div className="hidden lg:flex lg:col-span-7 bg-slate-900 dark:bg-slate-950 text-white relative overflow-hidden flex-col justify-between p-10 xl:p-14 border-l border-slate-800 select-none">
                     
-                    {/* Subtle Architectural Grid Background (Zero flashy gradients) */}
+                    {/* Subtle Architectural Matrix Background */}
                     <div 
                         className="absolute inset-0 opacity-20 pointer-events-none"
                         style={{
@@ -685,105 +770,89 @@ export default function LoginPage({ initialView = 'login' }) {
 
                     {/* Top Status Header */}
                     <div className="relative z-10 flex items-center justify-between">
-                        <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-slate-800/80 border border-slate-700/60 text-xs font-mono text-slate-300">
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800/80 border border-slate-700/60 text-xs font-mono text-slate-300 shadow-xs">
                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                             <span>Omnichannel Node Gateway: Active</span>
                         </div>
-                        <div className="text-xs text-slate-400 font-mono">
-                            Multi-Session Baileys + Meta Cloud API
+                        <div className="text-xs text-slate-400 font-mono flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                            <span>Multi-Session Baileys + Meta Cloud API</span>
                         </div>
                     </div>
 
-                    {/* Middle: Feature Showcase with Live Preview Mockup */}
-                    <div className="relative z-10 my-auto py-8 max-w-xl">
-                        <div className="space-y-4">
+                    {/* Middle: Feature Showcase with Interactive Live Preview Mockup */}
+                    <div className="relative z-10 my-auto py-6 max-w-xl">
+                        <div className="space-y-3.5">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-500/10 border border-indigo-400/20 text-indigo-300 text-xs font-semibold tracking-wide uppercase">
                                 <Zap className="w-3.5 h-3.5" />
                                 <span>Platform Komunikasi Terpadu</span>
                             </div>
 
-                            <h2 className="text-3xl xl:text-4xl font-bold tracking-tight text-white leading-tight">
+                            <h2 className="text-2xl xl:text-3xl font-bold tracking-tight text-white leading-tight">
                                 Satukan Seluruh Interaksi Pelanggan dalam Satu Dasbor.
                             </h2>
 
-                            <p className="text-sm xl:text-base text-slate-400 leading-relaxed max-w-lg">
+                            <p className="text-xs xl:text-sm text-slate-400 leading-relaxed max-w-lg">
                                 Kelola percakapan WhatsApp, Instagram, Telegram, dan Email secara real-time dengan bantuan AI Copilot dan pembagian tim otomatis.
                             </p>
                         </div>
 
                         {/* Interactive UI Live Stream Mockup */}
-                        <div className="mt-8 rounded-xl border border-slate-800 bg-slate-900/90 shadow-2xl p-4 backdrop-blur-sm space-y-3">
-                            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 text-xs text-slate-400">
+                        <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/90 shadow-2xl p-4 backdrop-blur-sm space-y-2.5">
+                            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5 text-xs text-slate-400">
                                 <span className="font-semibold text-slate-300 flex items-center gap-1.5">
                                     <MessageSquare className="w-3.5 h-3.5 text-indigo-400" />
                                     Aktivitas Pesan Masuk Terkini
                                 </span>
-                                <span className="text-[11px] font-mono text-emerald-400">Realtime Sync (85ms)</span>
-                            </div>
-
-                            {/* Stream Item 1: WhatsApp */}
-                            <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40 text-xs">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-7 h-7 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                                        WA
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-slate-200">PT Maju Makmur (+62 812-3456-7890)</p>
-                                        <p className="text-[11px] text-slate-400 truncate max-w-[260px]">Invoice #INV-2026-08 telah terbayar lunas.</p>
-                                    </div>
-                                </div>
-                                <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded">
-                                    Auto-Resolved
+                                <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                                    Realtime Sync (85ms)
                                 </span>
                             </div>
 
-                            {/* Stream Item 2: Instagram */}
-                            <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40 text-xs">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-7 h-7 rounded-md bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold">
-                                        IG
+                            {/* Stream Items with Interactive Selection */}
+                            {mockStreams.map((item, idx) => (
+                                <div 
+                                    key={idx}
+                                    onClick={() => setActiveMockChannel(idx)}
+                                    className={`flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer transition-all duration-200 ${
+                                        activeMockChannel === idx
+                                            ? 'bg-slate-800 border-indigo-500/50 shadow-sm translate-x-1'
+                                            : 'bg-slate-800/40 border-slate-700/30 hover:bg-slate-800/70 hover:border-slate-700'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-7 h-7 rounded-md flex items-center justify-center font-bold text-xs border ${item.bgBadge}`}>
+                                            {item.channel}
+                                        </div>
+                                        <div>
+                                            <p className="font-medium text-slate-200 text-xs">{item.sender}</p>
+                                            <p className="text-[11px] text-slate-400 truncate max-w-[240px] xl:max-w-[280px]">
+                                                {item.text}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-medium text-slate-200">@retail_partner</p>
-                                        <p className="text-[11px] text-slate-400 truncate max-w-[260px]">Apakah ada promo langganan tahunan untuk 10 agen?</p>
-                                    </div>
+                                    <span className={`text-[10px] border px-2 py-0.5 rounded font-mono ${item.tagColor}`}>
+                                        {item.tag}
+                                    </span>
                                 </div>
-                                <span className="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-800 px-2 py-0.5 rounded">
-                                    Agent Budi
-                                </span>
-                            </div>
-
-                            {/* Stream Item 3: AI Copilot */}
-                            <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40 text-xs">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-7 h-7 rounded-md bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
-                                        AI
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-slate-200">AI Copilot Smart Reply</p>
-                                        <p className="text-[11px] text-slate-400 truncate max-w-[260px]">Draft balasan otomatis disiapkan dengan akurasi 98%.</p>
-                                    </div>
-                                </div>
-                                <span className="text-[10px] bg-slate-800 text-slate-300 border border-slate-600 px-2 py-0.5 rounded flex items-center gap-1">
-                                    <Bot className="w-2.5 h-2.5" /> Ready
-                                </span>
-                            </div>
+                            ))}
                         </div>
                     </div>
 
                     {/* Bottom Formal Metrics Bar */}
-                    <div className="relative z-10 border-t border-slate-800 pt-6 grid grid-cols-3 gap-6">
+                    <div className="relative z-10 border-t border-slate-800 pt-5 grid grid-cols-3 gap-4">
                         <div>
-                            <p className="text-xl font-bold text-white tracking-tight">99.9%</p>
-                            <p className="text-xs text-slate-400 mt-0.5">Uptime Availability SLA</p>
+                            <p className="text-lg xl:text-xl font-bold text-white tracking-tight font-mono">99.9%</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">Uptime Availability SLA</p>
                         </div>
                         <div>
-                            <p className="text-xl font-bold text-white tracking-tight">Multi-Session</p>
-                            <p className="text-xs text-slate-400 mt-0.5">WhatsApp QR & Official CoEx</p>
+                            <p className="text-lg xl:text-xl font-bold text-white tracking-tight font-mono">Multi-Session</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">WhatsApp QR & Meta CoEx</p>
                         </div>
                         <div>
-                            <p className="text-xl font-bold text-white tracking-tight">AES-256</p>
-                            <p className="text-xs text-slate-400 mt-0.5">Enkripsi Data Terisolasi</p>
+                            <p className="text-lg xl:text-xl font-bold text-white tracking-tight font-mono">AES-256</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">Enkripsi Data Terisolasi</p>
                         </div>
                     </div>
 
