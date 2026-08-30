@@ -260,9 +260,20 @@ const HeadManager = () => {
 axios.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && (error.response.status === 402 || error.response.status === 403)) {
+        const isLicenseError = error.response && (
+            error.response.status === 402 ||
+            (error.response.status === 403 && (
+                error.response.data?.status === 'license_invalid' ||
+                error.response.data?.reason === 'DOMAIN_NOT_FOUND' ||
+                error.response.data?.reason === 'INVALID_RSA_SIGNATURE' ||
+                error.response.data?.reason === 'NO_SHEET_CONFIGURED' ||
+                error.response.data?.reason === 'UNAUTHORIZED_DOMAIN'
+            ))
+        );
+
+        if (isLicenseError) {
             const event = new CustomEvent('LICENSE_REQUIRED', {
-                detail: { status: error.response.status }
+                detail: { status: error.response.status, message: error.response.data?.message }
             });
             window.dispatchEvent(event);
         }
