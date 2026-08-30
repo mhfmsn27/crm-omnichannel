@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Migration 024: Core System Resilience Patch
 -- Ensures scheduled_messages, message retries, flow delay resume_at, 
--- auto_archive_settings, and csat_surveys are fully populated.
+-- auto_archive_settings, csat_surveys, SLA policies, and sequences are fully populated.
 -- ============================================================================
 
 -- 1. Table: scheduled_messages
@@ -66,3 +66,51 @@ CREATE TABLE IF NOT EXISTS csat_surveys (
 );
 CREATE INDEX IF NOT EXISTS idx_csat_surveys_org ON csat_surveys (organization_id);
 CREATE INDEX IF NOT EXISTS idx_csat_surveys_token ON csat_surveys (public_token);
+
+-- 6. Ticket sequence & SLA policies
+CREATE SEQUENCE IF NOT EXISTS ticket_seq START WITH 1001;
+
+CREATE TABLE IF NOT EXISTS sla_policies (
+    id SERIAL PRIMARY KEY,
+    organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
+    priority VARCHAR(50) NOT NULL,
+    frt_minutes INT DEFAULT 60,
+    resolution_minutes INT DEFAULT 480,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(organization_id, priority)
+);
+
+CREATE TABLE IF NOT EXISTS sla_breach_logs (
+    id SERIAL PRIMARY KEY,
+    organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
+    conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
+    breach_type VARCHAR(50) NOT NULL,
+    breached_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. SLA & Ticket columns on conversations
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS sla_deadline_at TIMESTAMPTZ;
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS sla_breached BOOLEAN DEFAULT false;
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS first_reply_at TIMESTAMPTZ;
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS ticket_number VARCHAR(100);
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS priority VARCHAR(50) DEFAULT 'medium';
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS csat_rating INT;
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS csat_status VARCHAR(50);
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS csat_token VARCHAR(255);
+
+CREATE INDEX IF NOT EXISTS idx_conversations_sla ON conversations (sla_deadline_at) WHERE sla_deadline_at IS NOT NULL;
+
+-- 8. Table: agent_notes
+CREATE TABLE IF NOT EXISTS agent_notes (
+    id SERIAL PRIMARY KEY,
+    organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
+    conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
+    created_by INT REFERENCES users(id) ON DELETE SET NULL,
+    note TEXT NOT NULL,
+    note_type VARCHAR(50) DEFAULT 'general',
+    is_internal BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
