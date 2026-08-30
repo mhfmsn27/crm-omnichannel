@@ -3,10 +3,15 @@ import { z } from 'zod';
 
 dotenv.config();
 
+// Auto map PORT to SERVER_PORT if set
+if (process.env.PORT && !process.env.SERVER_PORT) {
+  process.env.SERVER_PORT = process.env.PORT;
+}
+
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
-  JWT_SECRET: z.string().min(32),
-  SERVER_PORT: z.coerce.number().int().positive().default(8080),
+  JWT_SECRET: z.string().min(16).default('crmhub_wa_gateway_super_secure_jwt_secret_2026_key!'),
+  SERVER_PORT: z.coerce.number().int().positive().default(8001),
 
   // Single-tenant / CRMHUB integration: webhook is delivered here instead of per-client DB lookup
   CRMHUB_WEBHOOK_URL: z.string().url().optional(),

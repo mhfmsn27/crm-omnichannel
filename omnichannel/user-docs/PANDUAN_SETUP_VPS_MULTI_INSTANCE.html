@@ -670,10 +670,13 @@ VITE_SOCKET_URL=https://crmhub.internatechtion.my.id</code></pre>
                     <span>wa-gateway-backend/.env</span>
                     <button class="copy-btn" onclick="copyCode(this)">Salin</button>
                 </div>
-                <pre><code>PORT=8001
+                <pre><code>SERVER_PORT=8001
+PORT=8001
+DATABASE_URL=postgresql://crmhub_interna:Crmhub_interna2026!@localhost:5432/crmhub_interna_db
+JWT_SECRET=crmhub_wa_gateway_jwt_secret_super_secure_2026_key!
+CRMHUB_WEBHOOK_URL=http://localhost:8999/webhook/whatsapp
 API_KEY=crmhub_wa_gateway_key_v2_9988
-WEBHOOK_URL=http://localhost:8999/webhook/whatsapp
-SESSIONS_PATH=./sessions_v2</code></pre>
+NODE_ENV=production</code></pre>
             </div>
         </section>
 

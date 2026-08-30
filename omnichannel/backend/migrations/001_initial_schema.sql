@@ -1948,3 +1948,50 @@ CREATE TABLE IF NOT EXISTS messages_archive (
 );
 CREATE INDEX IF NOT EXISTS idx_messages_archive_conv ON messages_archive(conversation_id);
 
+-- 11. WA Gateway Dedicated Tables (Multi-Instance / Microservice Support)
+CREATE TABLE IF NOT EXISTS clients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    webhook_url TEXT,
+    api_key VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS admins (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS sessions (
+    id VARCHAR(255) PRIMARY KEY,
+    client_id VARCHAR(255) NOT NULL,
+    name VARCHAR(255),
+    sync_full_history BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS baileys_sessions (
+    client_id VARCHAR(255) NOT NULL,
+    session_key VARCHAR(255) NOT NULL,
+    session_data JSONB,
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (client_id, session_key)
+);
+
+CREATE TABLE IF NOT EXISTS wa_message_store (
+    id VARCHAR(255) PRIMARY KEY,
+    session_id VARCHAR(255) NOT NULL,
+    remote_jid VARCHAR(255) NOT NULL,
+    from_me BOOLEAN DEFAULT FALSE,
+    message_json JSONB,
+    status VARCHAR(50) DEFAULT 'received',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+INSERT INTO clients (name, webhook_url, api_key)
+VALUES ('CRMHUB', 'http://localhost:8999/webhook/whatsapp', 'crmhub_wa_gateway_key_v2_9988')
+ON CONFLICT (api_key) DO UPDATE SET webhook_url = EXCLUDED.webhook_url;
+
+
