@@ -278,6 +278,7 @@ function AppRoutes() {
     return (
         <>
             <HeadManager />
+            <LicenseBlock />
             <Suspense fallback={<PageLoader />}>
                 <Routes>
                     {/* PUBLIC */}

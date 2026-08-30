@@ -160,7 +160,7 @@ app.get('/api/license/status', licenseController.getStatus);
 app.get('/api/license/setup', licenseController.getSetupInfo);
 
 // --- AUTHENTICATION ROUTES ---
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', checkLicense, authRoutes);
 
 // --- SUPER ADMIN ROUTES ---
 app.use('/api/sa', superAdminRoutes);
