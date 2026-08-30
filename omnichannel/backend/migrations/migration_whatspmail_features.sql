@@ -165,10 +165,25 @@ CREATE INDEX IF NOT EXISTS idx_templates_type ON message_templates(template_type
 -- WHATSAPP TEMPLATES (IMPROVED)
 -- ==========================================
 
-ALTER TABLE whatsapp_templates ADD COLUMN IF NOT EXISTS category VARCHAR(50);
-ALTER TABLE whatsapp_templates ADD COLUMN IF NOT EXISTS usage_count INTEGER DEFAULT 0;
-ALTER TABLE whatsapp_templates ADD COLUMN IF NOT EXISTS success_rate DECIMAL(5,2) DEFAULT 0;
-ALTER TABLE whatsapp_templates ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ;
+CREATE TABLE IF NOT EXISTS whatsapp_templates (
+    id SERIAL PRIMARY KEY,
+    organization_id BIGINT REFERENCES organizations(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    category VARCHAR(50),
+    language VARCHAR(20) DEFAULT 'id',
+    content TEXT,
+    components JSONB DEFAULT '[]',
+    status VARCHAR(50) DEFAULT 'APPROVED',
+    usage_count INTEGER DEFAULT 0,
+    success_rate DECIMAL(5,2) DEFAULT 0,
+    last_used_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE meta_templates ADD COLUMN IF NOT EXISTS usage_count INTEGER DEFAULT 0;
+ALTER TABLE meta_templates ADD COLUMN IF NOT EXISTS success_rate DECIMAL(5,2) DEFAULT 0;
+ALTER TABLE meta_templates ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ;
 
 -- ==========================================
 -- CHAT AUTO-ARCHIVE SETTINGS

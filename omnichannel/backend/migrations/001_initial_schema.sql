@@ -260,7 +260,7 @@ CREATE TABLE knowledge_base_qa (
     embedding vector(768),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-CREATE INDEX ON knowledge_base_qa USING hnsw (embedding vector_cosine_ops);
+CREATE INDEX IF NOT EXISTS idx_kb_qa_embedding ON knowledge_base_qa USING hnsw (embedding vector_cosine_ops);
 
 CREATE TABLE knowledge_base_assets (
     id BIGSERIAL PRIMARY KEY,
@@ -275,7 +275,7 @@ CREATE TABLE knowledge_base_assets (
     embedding vector(768),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-CREATE INDEX ON knowledge_base_assets USING hnsw (embedding vector_cosine_ops);
+CREATE INDEX IF NOT EXISTS idx_kb_assets_embedding ON knowledge_base_assets USING hnsw (embedding vector_cosine_ops);
 
 -- ==========================================
 -- 8. BILLING & SUBSCRIPTIONS
@@ -889,8 +889,8 @@ CREATE TABLE number_check_items (
 );
 
 -- Indexing for performance
-CREATE INDEX idx_check_items_batch ON number_check_items(batch_id);
-CREATE INDEX idx_check_items_status ON number_check_items(status);
+CREATE INDEX IF NOT EXISTS idx_check_items_batch ON number_check_items(batch_id);
+CREATE INDEX IF NOT EXISTS idx_check_items_status ON number_check_items(status);
 
 
 -- ==========================================
