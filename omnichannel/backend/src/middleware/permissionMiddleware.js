@@ -3,8 +3,9 @@ export const checkPermission = (requiredPerm) => {
     const user = req.user;
     if (!user) return res.sendStatus(401);
 
-    // super_admin and admin_member always bypass
-    if (user.role === 'admin_member' || user.role === 'super_admin') {
+    // super_admin and admin_member always bypass permission checks
+    const userRole = (user.role || '').toLowerCase().replace(/_/g, '');
+    if (userRole === 'adminmember' || userRole === 'superadmin' || userRole === 'owner') {
       return next();
     }
 
