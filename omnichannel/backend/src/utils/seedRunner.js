@@ -97,8 +97,8 @@ export const runSeeds = async () => {
         if (userCheck.rows.length === 0) {
             const hashedPassword = await bcrypt.hash('Admin1234!', 10);
             await client.query(
-                `INSERT INTO users (organization_id, name, email, password, role, is_active)
-                 VALUES ($1, 'Super Admin', $2, $3, 'superadmin', true)`,
+                `INSERT INTO users (organization_id, name, email, password_hash, role)
+                 VALUES ($1, 'Super Admin', $2, $3, 'super_admin')`,
                 [orgId, adminEmail, hashedPassword]
             );
             console.log(`  ✅ Super Admin user created: ${adminEmail} (Password: Admin1234!)`);
@@ -107,16 +107,16 @@ export const runSeeds = async () => {
         }
 
         // -------------------------------------------------------------
-        // 3. Seed Default Tags & Categories
+        // 3. Seed Default Labels & Categories
         // -------------------------------------------------------------
-        console.log('  🏷️  Seeding default tags & categories...');
-        const defaultTags = ['VIP Customer', 'Prospek Panas', 'Komplain', 'Follow Up', 'Pembayaran Pending'];
-        for (const tag of defaultTags) {
+        console.log('  🏷️  Seeding default labels & categories...');
+        const defaultLabels = ['VIP Customer', 'Prospek Panas', 'Komplain', 'Follow Up', 'Pembayaran Pending'];
+        for (const label of defaultLabels) {
             await client.query(
-                `INSERT INTO tags (organization_id, name, color)
+                `INSERT INTO labels (organization_id, name, color)
                  VALUES ($1, $2, '#4f46e5')
                  ON CONFLICT (organization_id, name) DO NOTHING`,
-                [orgId, tag]
+                [orgId, label]
             ).catch(() => {});
         }
 

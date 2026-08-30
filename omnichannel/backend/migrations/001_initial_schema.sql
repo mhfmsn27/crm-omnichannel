@@ -17,6 +17,8 @@ CREATE TABLE plans (
     price_monthly_promo DECIMAL(12, 2) DEFAULT NULL,
     price_yearly DECIMAL(12, 2) NOT NULL DEFAULT 0,
     price_yearly_promo DECIMAL(12, 2) DEFAULT NULL,
+    trial_days INTEGER DEFAULT 0,
+    is_trial_allowed BOOLEAN DEFAULT false,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -39,6 +41,7 @@ CREATE TABLE organizations (
     webhook_url TEXT,
     is_active BOOLEAN DEFAULT true,
     gemini_api_key TEXT, -- Moved here for Organization-wide API Key
+    has_used_trial BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -299,6 +302,8 @@ CREATE TABLE subscriptions (
     organization_id BIGINT REFERENCES organizations(id) ON DELETE CASCADE,
     plan_id INTEGER REFERENCES plans(id) ON DELETE SET NULL,
     status VARCHAR(20) DEFAULT 'active',
+    is_trial BOOLEAN DEFAULT false,
+    trial_ends_at TIMESTAMPTZ,
     expires_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -721,7 +726,39 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     amount DECIMAL(12, 2) DEFAULT 0
 );
 
--- 4. Update Broadcast Recipients to support Custom Variables (Dynamic Fields)
+-- 4. Product Categories & Products Catalog
+CREATE TABLE IF NOT EXISTS product_categories (
+    id SERIAL PRIMARY KEY,
+    organization_id BIGINT REFERENCES organizations(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    color VARCHAR(20) DEFAULT '#6366f1',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    id SERIAL PRIMARY KEY,
+    organization_id BIGINT REFERENCES organizations(id) ON DELETE CASCADE,
+    category_id INTEGER REFERENCES product_categories(id) ON DELETE SET NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    sku VARCHAR(100),
+    price DECIMAL(15, 2) NOT NULL DEFAULT 0,
+    cost_price DECIMAL(15, 2) DEFAULT 0,
+    unit VARCHAR(50) DEFAULT 'pcs',
+    image_url TEXT,
+    stock INTEGER,
+    notes TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_products_org ON products(organization_id);
+CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
+CREATE INDEX IF NOT EXISTS idx_product_categories_org ON product_categories(organization_id);
+
+-- 5. Update Broadcast Recipients to support Custom Variables (Dynamic Fields)
 ALTER TABLE broadcast_recipients ADD COLUMN IF NOT EXISTS custom_vars JSONB DEFAULT '{}'::jsonb;
 
 
@@ -1821,3 +1858,93 @@ CREATE TABLE IF NOT EXISTS user_fcm_tokens (
     last_used_at TIMESTAMPTZ DEFAULT NOW ()
 );
 CREATE INDEX IF NOT EXISTS idx_fcm_user_id ON user_fcm_tokens (user_id);
+
+-- 7. Org Webhooks & Dispatch Logs
+CREATE TABLE IF NOT EXISTS org_webhooks (
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGINT REFERENCES organizations(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    url TEXT NOT NULL,
+    secret VARCHAR(64) NOT NULL,
+    events TEXT[] DEFAULT '{}',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_org_webhooks_org ON org_webhooks(organization_id);
+
+CREATE TABLE IF NOT EXISTS org_webhook_logs (
+    id BIGSERIAL PRIMARY KEY,
+    webhook_id BIGINT REFERENCES org_webhooks(id) ON DELETE CASCADE,
+    event VARCHAR(100) NOT NULL,
+    status VARCHAR(20) DEFAULT 'success',
+    status_code INTEGER,
+    response_ms INTEGER,
+    error_message TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_org_webhook_logs_webhook ON org_webhook_logs(webhook_id, created_at DESC);
+
+-- 8. Email Logs
+CREATE TABLE IF NOT EXISTS email_logs (
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGINT REFERENCES organizations(id) ON DELETE CASCADE,
+    to_email VARCHAR(255) NOT NULL,
+    subject VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'sent',
+    error_message TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_email_logs_org ON email_logs(organization_id, created_at DESC);
+
+-- 9. AI Chat & Suggestion Logs
+CREATE TABLE IF NOT EXISTS ai_chat_logs (
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGINT REFERENCES organizations(id) ON DELETE CASCADE,
+    contact_id BIGINT REFERENCES contacts(id) ON DELETE SET NULL,
+    bot_config_id BIGINT REFERENCES chatbot_settings(id) ON DELETE SET NULL,
+    user_message TEXT,
+    ai_response TEXT,
+    is_fallback BOOLEAN DEFAULT false,
+    confidence_score DECIMAL(5,2) DEFAULT 1.00,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_ai_chat_logs_org ON ai_chat_logs(organization_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS ai_suggestion_logs (
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGINT REFERENCES organizations(id) ON DELETE CASCADE,
+    conversation_id BIGINT REFERENCES conversations(id) ON DELETE CASCADE,
+    suggested_reply TEXT,
+    accepted BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_ai_suggestion_logs_conv ON ai_suggestion_logs(conversation_id);
+
+-- 10. Messages Archive
+CREATE TABLE IF NOT EXISTS messages_archive (
+    id BIGINT PRIMARY KEY,
+    conversation_id BIGINT,
+    organization_id BIGINT,
+    from_me BOOLEAN DEFAULT false,
+    type VARCHAR(20) DEFAULT 'text',
+    content TEXT,
+    media_url TEXT,
+    status VARCHAR(20) DEFAULT 'sent',
+    wa_message_id VARCHAR(100),
+    quoted_message TEXT,
+    is_internal BOOLEAN DEFAULT false,
+    reactions JSONB DEFAULT '[]'::jsonb,
+    is_forwarded BOOLEAN DEFAULT false,
+    sentiment VARCHAR(20),
+    sentiment_score FLOAT,
+    is_starred BOOLEAN DEFAULT FALSE,
+    is_edited BOOLEAN DEFAULT FALSE,
+    edited_at TIMESTAMPTZ,
+    is_pinned BOOLEAN DEFAULT FALSE,
+    sender VARCHAR(255),
+    archived_at TIMESTAMPTZ DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_messages_archive_conv ON messages_archive(conversation_id);
+
