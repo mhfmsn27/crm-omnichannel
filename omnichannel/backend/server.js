@@ -194,6 +194,7 @@ api.use('/app/instagram', instagramRoutes);
 api.use('/app/telegram', telegramRoutes);
 api.use('/app/meta', metaRoutes);
 api.get('/app/dashboard', dashboardController.getDashboardData);
+api.get('/dashboard', dashboardController.getDashboardData);
 api.use('/app/broadcasts', broadcastRoutes);
 api.use('/app/broadcast', broadcastRoutes); // Backward compatibility
 api.use('/app/upselling', upsellingRoutes);
