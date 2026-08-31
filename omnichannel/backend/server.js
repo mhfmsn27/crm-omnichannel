@@ -67,7 +67,10 @@ import messengerRoutes from './src/routes/messengerRoutes.js';
 import instagramRoutes from './src/routes/instagramRoutes.js';
 import telegramRoutes from './src/routes/telegramRoutes.js';
 import flowRoutes from './src/routes/flowRoutes.js';
+import metaRoutes from './src/routes/metaRoutes.js';
+import * as dashboardController from './src/controllers/dashboardController.js';
 import { ensureAiColumns } from './src/controllers/chatbotController.js';
+import { ensureUserTeamColumns } from './src/controllers/teamController.js';
 
 // --- INITIALIZATION ---
 dotenv.config();
@@ -187,6 +190,8 @@ api.use('/app/auto-label', autoLabelRoutes);
 api.use('/app/messenger', messengerRoutes);
 api.use('/app/instagram', instagramRoutes);
 api.use('/app/telegram', telegramRoutes);
+api.use('/app/meta', metaRoutes);
+api.get('/app/dashboard', dashboardController.getDashboardData);
 api.use('/app/broadcasts', broadcastRoutes);
 api.use('/app/broadcast', broadcastRoutes); // Backward compatibility
 api.use('/app/chatbot', chatbotRoutes);
@@ -246,6 +251,7 @@ try {
     divisionsController.ensureDivisionsTable();
     ticketController.ensureTicketAndSlaSchema();
     ensureAiColumns();
+    ensureUserTeamColumns();
 } catch (e) {
     console.error('[Startup] Table self-healing migration error:', e.message);
 }

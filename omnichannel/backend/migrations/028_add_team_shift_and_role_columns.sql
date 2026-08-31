@@ -1,0 +1,8 @@
+-- Migration 028: Add Shift and Role Columns to Users Table
+ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_start TIME;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_end TIME;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS handled_channels JSONB DEFAULT '[]';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS division VARCHAR(100);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_role_id INT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS assigned_devices JSONB DEFAULT '[]';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role_level VARCHAR(50) DEFAULT 'agent';

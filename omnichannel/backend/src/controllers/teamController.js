@@ -3,6 +3,24 @@ import bcrypt from 'bcrypt';
 import { checkFeatureAccess } from '../services/featureGateService.js';
 import { invalidateUserTokens } from '../services/tokenService.js';
 
+// Self-healing schema for shift and role columns in users table
+export const ensureUserTeamColumns = async () => {
+    try {
+        await pool.query(`
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_start TIME;
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_end TIME;
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS handled_channels JSONB DEFAULT '[]';
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS division VARCHAR(100);
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_role_id INT;
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS assigned_devices JSONB DEFAULT '[]';
+            ALTER TABLE users ADD COLUMN IF NOT EXISTS role_level VARCHAR(50) DEFAULT 'agent';
+        `);
+    } catch (e) {
+        console.error('[TeamController] ensureUserTeamColumns error:', e.message);
+    }
+};
+ensureUserTeamColumns().catch(() => {});
+
 // NEW: GET /api/app/team/stats
 export const getTeamStats = async (req, res) => {
     const { organization_id } = req.user;
@@ -23,17 +41,40 @@ export const getTeamStats = async (req, res) => {
 export const getTeam = async (req, res) => {
     const { organization_id } = req.user;
     try {
-        // Added assigned_devices to query
-        const result = await pool.query(
-            `SELECT u.id, u.name, u.email, u.role, u.role_level, u.permissions, u.assigned_devices, u.handled_channels,
-                    u.profile_pic_url, u.division, u.custom_role_id, u.shift_start, u.shift_end, u.created_at,
-                    cr.name AS custom_role_name, cr.color AS custom_role_color
-             FROM users u
-             LEFT JOIN custom_roles cr ON cr.id = u.custom_role_id
-             WHERE u.organization_id = $1
-             ORDER BY u.created_at ASC`,
-            [organization_id]
-        );
+        await ensureUserTeamColumns();
+        let result;
+        try {
+            result = await pool.query(
+                `SELECT u.id, u.name, u.email, u.role, u.role_level, u.permissions, u.assigned_devices, u.handled_channels,
+                        u.profile_pic_url, u.division, u.custom_role_id, u.shift_start, u.shift_end, u.created_at,
+                        cr.name AS custom_role_name, cr.color AS custom_role_color
+                 FROM users u
+                 LEFT JOIN custom_roles cr ON cr.id = u.custom_role_id
+                 WHERE u.organization_id = $1
+                 ORDER BY u.created_at ASC`,
+                [organization_id]
+            );
+        } catch (colErr) {
+            await pool.query(`
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_start TIME;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_end TIME;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS handled_channels JSONB DEFAULT '[]';
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS division VARCHAR(100);
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_role_id INT;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS assigned_devices JSONB DEFAULT '[]';
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS role_level VARCHAR(50) DEFAULT 'agent';
+            `);
+            result = await pool.query(
+                `SELECT u.id, u.name, u.email, u.role, u.role_level, u.permissions, u.assigned_devices, u.handled_channels,
+                        u.profile_pic_url, u.division, u.custom_role_id, u.shift_start, u.shift_end, u.created_at,
+                        cr.name AS custom_role_name, cr.color AS custom_role_color
+                 FROM users u
+                 LEFT JOIN custom_roles cr ON cr.id = u.custom_role_id
+                 WHERE u.organization_id = $1
+                 ORDER BY u.created_at ASC`,
+                [organization_id]
+            );
+        }
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
