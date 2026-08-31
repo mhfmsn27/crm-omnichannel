@@ -21,6 +21,7 @@ router.use(webhookLimiter);
 
 // WhatsApp Gateway
 router.post('/wa-gateway', verifyWebhookSignature('wa-gateway'), webhookController.handleWAWebhook);
+router.post('/whatsapp', verifyWebhookSignature('wa-gateway'), webhookController.handleWAWebhook);
 
 // Payment Gateways
 router.post('/xendit/payment', verifyXenditWebhook, xenditCallbackController.handleXenditCallback);
