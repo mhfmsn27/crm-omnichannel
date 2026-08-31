@@ -7,6 +7,16 @@ import { invalidateUserTokens } from '../services/tokenService.js';
 export const ensureUserTeamColumns = async () => {
     try {
         await pool.query(`
+            CREATE TABLE IF NOT EXISTS custom_roles (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                color VARCHAR(50) DEFAULT '#6366f1',
+                permissions JSONB DEFAULT '[]',
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
             ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_start TIME;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_end TIME;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS handled_channels JSONB DEFAULT '[]';
@@ -42,9 +52,8 @@ export const getTeam = async (req, res) => {
     const { organization_id } = req.user;
     try {
         await ensureUserTeamColumns();
-        let result;
         try {
-            result = await pool.query(
+            const result = await pool.query(
                 `SELECT u.id, u.name, u.email, u.role, u.role_level, u.permissions, u.assigned_devices, u.handled_channels,
                         u.profile_pic_url, u.division, u.custom_role_id, u.shift_start, u.shift_end, u.created_at,
                         cr.name AS custom_role_name, cr.color AS custom_role_color
@@ -54,28 +63,32 @@ export const getTeam = async (req, res) => {
                  ORDER BY u.created_at ASC`,
                 [organization_id]
             );
-        } catch (colErr) {
-            await pool.query(`
-                ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_start TIME;
-                ALTER TABLE users ADD COLUMN IF NOT EXISTS shift_end TIME;
-                ALTER TABLE users ADD COLUMN IF NOT EXISTS handled_channels JSONB DEFAULT '[]';
-                ALTER TABLE users ADD COLUMN IF NOT EXISTS division VARCHAR(100);
-                ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_role_id INT;
-                ALTER TABLE users ADD COLUMN IF NOT EXISTS assigned_devices JSONB DEFAULT '[]';
-                ALTER TABLE users ADD COLUMN IF NOT EXISTS role_level VARCHAR(50) DEFAULT 'agent';
-            `);
-            result = await pool.query(
-                `SELECT u.id, u.name, u.email, u.role, u.role_level, u.permissions, u.assigned_devices, u.handled_channels,
-                        u.profile_pic_url, u.division, u.custom_role_id, u.shift_start, u.shift_end, u.created_at,
-                        cr.name AS custom_role_name, cr.color AS custom_role_color
+            return res.json(result.rows);
+        } catch (queryErr) {
+            // Attempt to ensure tables again
+            await ensureUserTeamColumns();
+            // Fallback to basic user query without custom columns if DB is in transition
+            const basicResult = await pool.query(
+                `SELECT u.id, u.name, u.email, u.role, u.permissions, u.created_at
                  FROM users u
-                 LEFT JOIN custom_roles cr ON cr.id = u.custom_role_id
                  WHERE u.organization_id = $1
                  ORDER BY u.created_at ASC`,
                 [organization_id]
             );
+            const enriched = basicResult.rows.map(r => ({
+                ...r,
+                role_level: r.role || 'agent',
+                assigned_devices: [],
+                handled_channels: [],
+                division: null,
+                custom_role_id: null,
+                shift_start: null,
+                shift_end: null,
+                custom_role_name: null,
+                custom_role_color: null
+            }));
+            return res.json(enriched);
         }
-        res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

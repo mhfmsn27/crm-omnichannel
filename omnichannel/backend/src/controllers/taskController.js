@@ -1,5 +1,30 @@
 import pool from '../config/db.js';
 
+// --- SELF-HEALING DATABASE SCHEMA ---
+export const ensureTasksTable = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS tasks (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                priority VARCHAR(50) DEFAULT 'normal',
+                status VARCHAR(50) DEFAULT 'open',
+                due_at TIMESTAMPTZ,
+                assigned_to INT REFERENCES users(id) ON DELETE SET NULL,
+                created_by INT REFERENCES users(id) ON DELETE SET NULL,
+                contact_id INT REFERENCES contacts(id) ON DELETE SET NULL,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+        `);
+    } catch (e) {
+        console.error('[TaskController] ensureTasksTable error:', e.message);
+    }
+};
+ensureTasksTable().catch(() => {});
+
 const STATUS_ORDER = ['open', 'in_progress', 'done', 'cancelled'];
 
 export const getTasks = async (req, res) => {
@@ -8,6 +33,7 @@ export const getTasks = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
+        await ensureTasksTable();
         let where = `t.organization_id = $1`;
         const params = [organization_id];
         let i = 2;
