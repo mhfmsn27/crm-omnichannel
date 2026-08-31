@@ -61,6 +61,8 @@ import superAdminRoutes from './src/routes/superAdminRoutes.js';
 import webhookRoutes from './src/routes/webhookRoutes.js';
 import publicRoutes from './src/routes/publicRoutes.js';
 import systemHealthRoutes from './src/routes/systemHealthRoutes.js';
+import labelRoutes from './src/routes/labelRoutes.js';
+import autoLabelRoutes from './src/routes/autoLabelRoutes.js';
 
 // --- INITIALIZATION ---
 dotenv.config();
@@ -174,6 +176,9 @@ api.use(generalLimiter);
 // Mount Modular App Routers
 api.use('/app/inbox', inboxRoutes);
 api.use('/app/contacts', contactRoutes);
+api.use('/app/labels', labelRoutes);
+api.use('/app/auto-labels', autoLabelRoutes);
+api.use('/app/auto-label', autoLabelRoutes);
 api.use('/app/broadcasts', broadcastRoutes);
 api.use('/app/broadcast', broadcastRoutes); // Backward compatibility
 api.use('/app/chatbot', chatbotRoutes);
