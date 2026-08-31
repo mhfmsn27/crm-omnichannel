@@ -82,7 +82,7 @@ export const getPublicPage = async (req, res) => {
     const { slug } = req.params;
     try {
         let result = await pool.query(
-            "SELECT * FROM public_pages WHERE slug = $1 AND is_published = true",
+            "SELECT * FROM public_pages WHERE slug = $1",
             [slug]
         );
         
@@ -118,8 +118,30 @@ export const getPublicPage = async (req, res) => {
             }
             return res.status(404).json({ error: "Page not found" });
         }
-        res.json(result.rows[0]);
+
+        const page = result.rows[0];
+        // If it's a default tutorial but unpublished, auto-publish it
+        if (!page.is_published && DEFAULT_TUTORIALS[slug]) {
+            await pool.query("UPDATE public_pages SET is_published = true WHERE slug = $1", [slug]);
+            page.is_published = true;
+        } else if (!page.is_published) {
+            return res.status(404).json({ error: "Page not found" });
+        }
+
+        res.json(page);
     } catch (err) {
+        if (DEFAULT_TUTORIALS[slug]) {
+            const def = DEFAULT_TUTORIALS[slug];
+            return res.json({
+                slug,
+                title: def.title,
+                content: def.content,
+                meta_description: def.meta_description,
+                is_published: true,
+                page_type: def.page_type,
+                target_menu: def.target_menu
+            });
+        }
         res.status(500).json({ error: err.message });
     }
 };
