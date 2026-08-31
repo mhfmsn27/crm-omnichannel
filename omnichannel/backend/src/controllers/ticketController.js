@@ -83,6 +83,7 @@ export const generateTicketNumber = async () => {
 export const getSLAPolicies = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureTicketAndSlaSchema();
         const result = await pool.query(
             'SELECT * FROM sla_policies WHERE organization_id=$1 ORDER BY id ASC',
             [organization_id]
@@ -116,6 +117,7 @@ export const updateSLAPolicies = async (req, res) => {
 
     const client = await pool.connect();
     try {
+        await ensureTicketAndSlaSchema();
         await client.query('BEGIN');
         for (const p of policies) {
             const { priority, frt_minutes, resolution_minutes, is_active } = p;
@@ -147,6 +149,7 @@ export const updateConversationPriority = async (req, res) => {
     if (!valid.includes(priority)) return res.status(400).json({ error: 'Invalid priority' });
 
     try {
+        await ensureTicketAndSlaSchema();
         // Recalculate SLA deadline based on new priority
         const policyRes = await pool.query(
             'SELECT frt_minutes FROM sla_policies WHERE organization_id=$1 AND priority=$2 AND is_active=true',
@@ -178,6 +181,7 @@ export const updateConversationPriority = async (req, res) => {
 // ============================================================
 export const initTicket = async (orgId, conversationId, priority = 'medium') => {
     try {
+        await ensureTicketAndSlaSchema();
         const ticketNumber = await generateTicketNumber();
 
         // Get SLA policy for this priority
@@ -212,6 +216,7 @@ export const getTickets = async (req, res) => {
     const { status, priority, sla_breached, page = 1, limit = 30, search } = req.query;
 
     try {
+        await ensureTicketAndSlaSchema();
         const conditions = ['c.organization_id = $1'];
         const params = [organization_id];
         let idx = 2;
@@ -260,6 +265,7 @@ export const getTickets = async (req, res) => {
 export const getTicketStats = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureTicketAndSlaSchema();
         const result = await pool.query(
             `SELECT
                 COUNT(*) FILTER (WHERE status = 'open') AS open,
