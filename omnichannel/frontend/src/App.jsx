@@ -436,10 +436,24 @@ function AppRoutes() {
                         <Route path="settings" element={<LazyBroadcastSettingsPage />} />
                     </Route>
 
-                    <Route path="/pipeline" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineListPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipeline/editor" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
+                    {/* Pipelines CRM Routes (Support both /pipelines and /pipeline) */}
+                    <Route path="/pipelines" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineListPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipelines/create" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipelines/editor" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipelines/editor/:id" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipelines/:id" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineBoardPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipelines/:id/board" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineBoardPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipelines/:id/edit" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
+
+                    <Route path="/pipeline" element={<Navigate to="/pipelines" replace />} />
+                    <Route path="/pipeline/create" element={<Navigate to="/pipelines/create" replace />} />
+                    <Route path="/pipeline/editor" element={<Navigate to="/pipelines/editor" replace />} />
                     <Route path="/pipeline/editor/:id" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
                     <Route path="/pipeline/:id" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineBoardPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipeline/:id/board" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineBoardPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipeline/:id/edit" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
+
+                    <Route path="/followup" element={<Navigate to="/tools/follow-up" replace />} />
 
                     <Route path="/tickets" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyTicketListPage /></MainLayout></PrivateRoute>} />
                     <Route path="/leads" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyLeadListPage /></MainLayout></PrivateRoute>} />
