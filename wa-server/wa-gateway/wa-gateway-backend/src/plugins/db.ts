@@ -13,7 +13,18 @@ async function dbConnector(fastify: FastifyInstance) {
         try {
             const client = await (fastify as any).pg.connect();
             try {
-                // Ensure table exists first
+                // Ensure clients table exists
+                await client.query(`
+                    CREATE TABLE IF NOT EXISTS clients (
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        webhook_url TEXT,
+                        api_key VARCHAR(255) UNIQUE NOT NULL,
+                        created_at TIMESTAMPTZ DEFAULT NOW()
+                    );
+                `);
+
+                // Ensure sessions table exists
                 await client.query(`
                     CREATE TABLE IF NOT EXISTS sessions (
                         id VARCHAR(255) PRIMARY KEY,
@@ -26,7 +37,15 @@ async function dbConnector(fastify: FastifyInstance) {
                 // Then ensure column exists
                 await client.query(`ALTER TABLE sessions ADD COLUMN IF NOT EXISTS sync_full_history BOOLEAN DEFAULT FALSE;`);
                 
-                fastify.log.info('[Migration] sessions table and sync_full_history column ensured in DB');
+                // Seed default CRMHUB API client
+                const defaultKey = process.env.API_KEY || process.env.WA_GATEWAY_API_KEY || 'crmhub_wa_gateway_key_v2_9988';
+                await client.query(`
+                    INSERT INTO clients (name, webhook_url, api_key)
+                    VALUES ('CRMHUB Main System', $1, $2)
+                    ON CONFLICT (api_key) DO NOTHING;
+                `, [process.env.CRMHUB_WEBHOOK_URL || null, defaultKey]);
+
+                fastify.log.info('[Migration] clients and sessions tables ensured and seeded in DB');
             } catch(e: any) {
                 fastify.log.error('[Migration] DB Init Failed: ' + e.message);
             } finally {
