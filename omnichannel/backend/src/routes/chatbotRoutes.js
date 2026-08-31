@@ -2,7 +2,7 @@ import express from 'express';
 import * as chatbotController from '../controllers/chatbotController.js';
 import * as chatbotReportController from '../controllers/reports/chatbotReportController.js';
 import * as chatbotTrainingController from '../controllers/chatbotTrainingController.js';
-import * as flowController from '../controllers/flowController.js';
+import flowRoutes from './flowRoutes.js';
 import aiToolsRoutes from './aiToolsRoutes.js';
 import aiLogsRoutes from './aiLogsRoutes.js';
 import aiTestRoutes from './aiTestRoutes.js';
@@ -57,10 +57,6 @@ router.use('/logs', aiLogsRoutes);
 router.use('/simulate', aiTestRoutes);
 
 // --- Visual Flows ---
-router.get('/flows', checkPlanFeature('feat_flowbuilder'), flowController.getFlows);
-router.get('/flows/:id', checkPlanFeature('feat_flowbuilder'), flowController.getFlowById);
-router.post('/flows', checkPlanFeature('feat_flowbuilder'), flowController.createFlow);
-router.put('/flows/:id', checkPlanFeature('feat_flowbuilder'), flowController.updateFlow);
-router.delete('/flows/:id', checkPlanFeature('feat_flowbuilder'), flowController.deleteFlow);
+router.use('/flows', flowRoutes);
 
 export default router;

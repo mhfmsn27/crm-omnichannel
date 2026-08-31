@@ -66,6 +66,7 @@ import autoLabelRoutes from './src/routes/autoLabelRoutes.js';
 import messengerRoutes from './src/routes/messengerRoutes.js';
 import instagramRoutes from './src/routes/instagramRoutes.js';
 import telegramRoutes from './src/routes/telegramRoutes.js';
+import flowRoutes from './src/routes/flowRoutes.js';
 import { ensureAiColumns } from './src/controllers/chatbotController.js';
 
 // --- INITIALIZATION ---
@@ -189,7 +190,7 @@ api.use('/app/telegram', telegramRoutes);
 api.use('/app/broadcasts', broadcastRoutes);
 api.use('/app/broadcast', broadcastRoutes); // Backward compatibility
 api.use('/app/chatbot', chatbotRoutes);
-api.use('/app/flows', chatbotRoutes); // Flowbuilder subpath
+api.use('/app/flows', flowRoutes);
 api.use('/app/crm', crmRoutes);
 api.use('/app/pipelines', crmRoutes);
 api.use('/app/tasks', crmRoutes);
