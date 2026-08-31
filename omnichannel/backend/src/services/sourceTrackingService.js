@@ -6,6 +6,63 @@
 import pool from '../config/db.js';
 import crypto from 'crypto';
 
+// --- SELF-HEALING TRACKING & ATTRIBUTION SCHEMA ---
+export const ensureTrackingTables = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS short_links (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                user_id INT REFERENCES users(id) ON DELETE SET NULL,
+                slug VARCHAR(100) UNIQUE NOT NULL,
+                target_url TEXT NOT NULL,
+                utm_source VARCHAR(100),
+                utm_medium VARCHAR(100),
+                utm_campaign VARCHAR(100),
+                utm_content VARCHAR(100),
+                utm_term VARCHAR(100),
+                rotator_group_id INT,
+                click_count INT DEFAULT 0,
+                is_active BOOLEAN DEFAULT true,
+                expires_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS short_link_clicks (
+                id SERIAL PRIMARY KEY,
+                short_link_id INT REFERENCES short_links(id) ON DELETE CASCADE,
+                organization_id INT NOT NULL,
+                ip_address VARCHAR(45),
+                user_agent TEXT,
+                referrer TEXT,
+                visitor_id VARCHAR(255),
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS visitor_sessions (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                visitor_id VARCHAR(255) NOT NULL,
+                first_touch_source VARCHAR(100),
+                first_touch_medium VARCHAR(100),
+                first_touch_campaign VARCHAR(100),
+                first_touch_content VARCHAR(100),
+                first_touch_term VARCHAR(100),
+                last_touch_source VARCHAR(100),
+                last_touch_medium VARCHAR(100),
+                last_touch_campaign VARCHAR(100),
+                contact_id INT REFERENCES contacts(id) ON DELETE SET NULL,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+        `);
+    } catch (e) {
+        console.error('[SourceTracking] ensureTrackingTables error:', e.message);
+    }
+};
+ensureTrackingTables().catch(() => {});
+
 /**
  * Generate unique slug for short link
  */

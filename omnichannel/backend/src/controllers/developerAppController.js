@@ -3,6 +3,48 @@ import crypto from 'crypto';
 import axios from 'axios';
 import { checkFeatureAccess } from '../services/featureGateService.js';
 
+// --- SELF-HEALING DEVELOPER SCHEMA ---
+export const ensureDeveloperTables = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS developer_apps (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                api_key VARCHAR(255) UNIQUE NOT NULL,
+                secret_key VARCHAR(255),
+                webhook_url TEXT,
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS developer_app_channels (
+                id SERIAL PRIMARY KEY,
+                developer_app_id INT REFERENCES developer_apps(id) ON DELETE CASCADE,
+                channel_type VARCHAR(50) NOT NULL,
+                channel_id VARCHAR(255) NOT NULL,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS developer_api_logs (
+                id SERIAL PRIMARY KEY,
+                developer_app_id INT REFERENCES developer_apps(id) ON DELETE CASCADE,
+                method VARCHAR(10) NOT NULL,
+                endpoint VARCHAR(255) NOT NULL,
+                status_code INT NOT NULL,
+                payload JSONB,
+                response JSONB,
+                ip_address VARCHAR(45),
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+        `);
+    } catch (e) {
+        console.error('[DeveloperAppController] ensureDeveloperTables error:', e.message);
+    }
+};
+ensureDeveloperTables().catch(() => {});
+
 // Generate Secure Keys
 const generateKey = (len = 32) => crypto.randomBytes(len).toString('hex');
 
@@ -10,6 +52,7 @@ const generateKey = (len = 32) => crypto.randomBytes(len).toString('hex');
 export const getStats = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureDeveloperTables();
         const access = await checkFeatureAccess(organization_id, 'api_public');
         res.json({
             allowed: access.allowed,
@@ -229,6 +272,7 @@ export const getLogs = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
+        await ensureDeveloperTables();
         let query = `
             SELECT l.*, da.name as app_name 
             FROM developer_api_logs l

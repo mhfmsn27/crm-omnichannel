@@ -5,6 +5,46 @@
 
 import pool from '../config/db.js';
 
+// --- SELF-HEALING CUSTOMER JOURNEY SCHEMA ---
+export const ensureJourneyTables = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS customer_journeys (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                contact_id INT NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+                first_touch_at TIMESTAMPTZ DEFAULT NOW(),
+                last_touch_at TIMESTAMPTZ DEFAULT NOW(),
+                touchpoint_count INT DEFAULT 0,
+                status VARCHAR(50) DEFAULT 'active',
+                current_stage VARCHAR(50) DEFAULT 'awareness',
+                conversion_value NUMERIC(15,2) DEFAULT 0,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(organization_id, contact_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS journey_touchpoints (
+                id SERIAL PRIMARY KEY,
+                journey_id INT NOT NULL REFERENCES customer_journeys(id) ON DELETE CASCADE,
+                organization_id INT NOT NULL,
+                touchpoint_type VARCHAR(50) NOT NULL,
+                touchpoint_channel VARCHAR(50) NOT NULL,
+                interaction_type VARCHAR(50) NOT NULL,
+                content_preview TEXT,
+                utm_source VARCHAR(100),
+                utm_medium VARCHAR(100),
+                utm_campaign VARCHAR(100),
+                metadata JSONB DEFAULT '{}'::jsonb,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+        `);
+    } catch (e) {
+        console.error('[JourneyService] ensureJourneyTables error:', e.message);
+    }
+};
+ensureJourneyTables().catch(() => {});
+
 /**
  * Get or create journey for a contact
  */

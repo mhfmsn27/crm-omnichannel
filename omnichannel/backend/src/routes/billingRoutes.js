@@ -11,6 +11,7 @@ const router = express.Router();
 router.get('/invoices', checkSystemFlag('fin_invoice'), invoiceController.getInvoices);
 router.get('/invoices/stats', checkSystemFlag('fin_invoice'), invoiceController.getStats);
 router.get('/invoices/kpi', checkSystemFlag('fin_invoice'), invoiceController.getSalesKpi);
+router.get('/kpi', checkSystemFlag('fin_invoice'), invoiceController.getSalesKpi);
 router.get('/invoices/:id', checkSystemFlag('fin_invoice'), invoiceController.getInvoiceDetail);
 router.post('/invoices', checkSystemFlag('fin_invoice'), invoiceController.createInvoice);
 router.post('/invoices/quick-link', checkSystemFlag('fin_invoice'), invoiceController.createQuickLink);

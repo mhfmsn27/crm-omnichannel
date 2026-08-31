@@ -111,3 +111,6 @@ export const getRealtimeMetrics = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getChannelAnalytics = getChannelPerformance;
+export const getRealtimeAnalytics = getRealtimeMetrics;

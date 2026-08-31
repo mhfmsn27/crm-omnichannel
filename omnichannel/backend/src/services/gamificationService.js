@@ -5,6 +5,59 @@
 
 import pool from '../config/db.js';
 
+// --- SELF-HEALING GAMIFICATION SCHEMA ---
+export const ensureGamificationTables = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS gamification_settings (
+                id SERIAL PRIMARY KEY,
+                organization_id INT UNIQUE NOT NULL,
+                is_active BOOLEAN DEFAULT true,
+                points_per_message INT DEFAULT 1,
+                points_per_closed_conversation INT DEFAULT 10,
+                points_per_five_star_csat INT DEFAULT 20,
+                points_per_sale INT DEFAULT 50,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS agent_points (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                points INT NOT NULL,
+                reason VARCHAR(255) NOT NULL,
+                reference_id VARCHAR(100),
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS agent_badges (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                badge_type VARCHAR(100) NOT NULL,
+                badge_name VARCHAR(255) NOT NULL,
+                earned_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS agent_streaks (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                current_streak INT DEFAULT 0,
+                longest_streak INT DEFAULT 0,
+                last_active_date DATE DEFAULT CURRENT_DATE,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(organization_id, user_id)
+            );
+        `);
+    } catch (e) {
+        console.error('[GamificationService] ensureGamificationTables error:', e.message);
+    }
+};
+ensureGamificationTables().catch(() => {});
+
 /**
  * Get or create gamification settings for organization
  */

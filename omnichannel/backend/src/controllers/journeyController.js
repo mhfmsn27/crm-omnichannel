@@ -101,3 +101,16 @@ export const getJourneyAnalytics = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getLeadScore = async (req, res) => {
+    const { organization_id } = req.user;
+    const { contactId } = req.params;
+
+    try {
+        const score = await journeyService.calculateLeadScore(organization_id, parseInt(contactId));
+        res.json({ score });
+    } catch (error) {
+        console.error('[Journey] Lead Score error:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
