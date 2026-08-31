@@ -6,8 +6,23 @@ import OpenAI from 'openai';
 import { checkFeatureAccess } from '../services/featureGateService.js';
 import { AI_SKILL_PRESETS } from '../services/aiSkillPresets.js';
 
+// Self-healing schema for AI Provider columns in organizations table
+export const ensureAiColumns = async () => {
+    try {
+        await pool.query(`
+            ALTER TABLE organizations ADD COLUMN IF NOT EXISTS openai_api_key TEXT;
+            ALTER TABLE organizations ADD COLUMN IF NOT EXISTS openrouter_api_key TEXT;
+            ALTER TABLE organizations ADD COLUMN IF NOT EXISTS ai_provider VARCHAR(50) DEFAULT 'gemini';
+        `);
+    } catch (e) {
+        console.error('[Chatbot] ensureAiColumns error:', e.message);
+    }
+};
+ensureAiColumns().catch(() => {});
+
 // Get Gemini key (used for embeddings regardless of chat provider)
 const getOrgKey = async (organization_id) => {
+    await ensureAiColumns();
     const res = await pool.query('SELECT gemini_api_key FROM organizations WHERE id = $1', [organization_id]);
     if (res.rows.length === 0) return null;
     return res.rows[0].gemini_api_key;
@@ -15,6 +30,7 @@ const getOrgKey = async (organization_id) => {
 
 // Get full AI config for the organization
 const getOrgAIConfig = async (organization_id) => {
+    await ensureAiColumns();
     const res = await pool.query(
         'SELECT gemini_api_key, openai_api_key, openrouter_api_key, ai_provider FROM organizations WHERE id = $1',
         [organization_id]
@@ -32,6 +48,7 @@ const getOrgAIConfig = async (organization_id) => {
 export const getApiKey = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureAiColumns();
         const access = await checkFeatureAccess(organization_id, 'feat_chatbot');
         if (!access.allowed) return res.status(403).json({ error: access.message, locked: true });
 
