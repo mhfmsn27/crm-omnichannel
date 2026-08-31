@@ -315,7 +315,7 @@ export const transcribeAudio = async (req, res) => {
 
         // Get API key from organization
         const orgRes = await pool.query(
-            `SELECT gemini_api_key, openai_api_key FROM organizations WHERE id = $1`,
+            `SELECT gemini_api_key FROM organizations WHERE id = $1`,
             [organization_id]
         );
         const apiKey = orgRes.rows[0]?.gemini_api_key;
@@ -417,7 +417,7 @@ export const translateMessage = async (req, res) => {
 
     try {
         const orgRes = await pool.query(
-            `SELECT gemini_api_key, openai_api_key FROM organizations WHERE id = $1`,
+            `SELECT gemini_api_key FROM organizations WHERE id = $1`,
             [organization_id]
         );
         const apiKey = orgRes.rows[0]?.gemini_api_key;

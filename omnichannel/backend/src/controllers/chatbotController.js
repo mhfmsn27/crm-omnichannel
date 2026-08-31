@@ -52,10 +52,24 @@ export const getApiKey = async (req, res) => {
         const access = await checkFeatureAccess(organization_id, 'feat_chatbot');
         if (!access.allowed) return res.status(403).json({ error: access.message, locked: true });
 
-        const result = await pool.query(
-            'SELECT gemini_api_key, openai_api_key, openrouter_api_key, ai_provider FROM organizations WHERE id = $1',
-            [organization_id]
-        );
+        let result;
+        try {
+            result = await pool.query(
+                'SELECT gemini_api_key, openai_api_key, openrouter_api_key, ai_provider FROM organizations WHERE id = $1',
+                [organization_id]
+            );
+        } catch (colErr) {
+            await pool.query(`
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS openai_api_key TEXT;
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS openrouter_api_key TEXT;
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS ai_provider VARCHAR(50) DEFAULT 'gemini';
+            `);
+            result = await pool.query(
+                'SELECT gemini_api_key, openai_api_key, openrouter_api_key, ai_provider FROM organizations WHERE id = $1',
+                [organization_id]
+            );
+        }
+
         res.json({
             // Legacy field kept for backward compat
             api_key: result.rows[0]?.gemini_api_key || '',
@@ -75,6 +89,7 @@ export const updateApiKey = async (req, res) => {
     const geminiKey = req.body.gemini_api_key ?? req.body.api_key ?? undefined;
     const { openai_api_key, openrouter_api_key, ai_provider } = req.body;
     try {
+        await ensureAiColumns();
         const access = await checkFeatureAccess(organization_id, 'feat_chatbot');
         if (!access.allowed) return res.status(403).json({ error: access.message, locked: true });
 
@@ -90,10 +105,22 @@ export const updateApiKey = async (req, res) => {
         if (fields.length === 0) return res.status(400).json({ error: 'No fields to update' });
 
         values.push(organization_id);
-        await pool.query(
-            `UPDATE organizations SET ${fields.join(', ')} WHERE id = $${idx}`,
-            values
-        );
+        try {
+            await pool.query(
+                `UPDATE organizations SET ${fields.join(', ')} WHERE id = $${idx}`,
+                values
+            );
+        } catch (colErr) {
+            await pool.query(`
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS openai_api_key TEXT;
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS openrouter_api_key TEXT;
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS ai_provider VARCHAR(50) DEFAULT 'gemini';
+            `);
+            await pool.query(
+                `UPDATE organizations SET ${fields.join(', ')} WHERE id = $${idx}`,
+                values
+            );
+        }
         res.json({ message: 'AI configuration updated' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -104,9 +131,20 @@ export const updateApiKey = async (req, res) => {
 export const getSettings = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureAiColumns();
         const access = await checkFeatureAccess(organization_id, 'feat_chatbot');
 
-        const orgRes = await pool.query('SELECT gemini_api_key, openai_api_key, openrouter_api_key, ai_provider FROM organizations WHERE id = $1', [organization_id]);
+        let orgRes;
+        try {
+            orgRes = await pool.query('SELECT gemini_api_key, openai_api_key, openrouter_api_key, ai_provider FROM organizations WHERE id = $1', [organization_id]);
+        } catch (colErr) {
+            await pool.query(`
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS openai_api_key TEXT;
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS openrouter_api_key TEXT;
+                ALTER TABLE organizations ADD COLUMN IF NOT EXISTS ai_provider VARCHAR(50) DEFAULT 'gemini';
+            `);
+            orgRes = await pool.query('SELECT gemini_api_key, openai_api_key, openrouter_api_key, ai_provider FROM organizations WHERE id = $1', [organization_id]);
+        }
         // Find Global Bot (session_id IS NULL)
         let botRes = await pool.query('SELECT * FROM chatbot_settings WHERE organization_id = $1 AND session_id IS NULL', [organization_id]);
 
@@ -146,6 +184,7 @@ export const updateSettings = async (req, res) => {
     const { is_active, system_prompt, escalation_keywords, gemini_api_key, openai_api_key, openrouter_api_key, ai_provider, queue_mode_enabled } = req.body;
 
     try {
+        await ensureAiColumns();
         // 1. Update AI provider config
         const orgFields = [];
         const orgValues = [];
