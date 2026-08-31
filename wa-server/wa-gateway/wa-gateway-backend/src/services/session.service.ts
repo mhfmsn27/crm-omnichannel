@@ -20,7 +20,7 @@ export async function createSession(db: Pool | PoolClient, clientId: string, nam
         `INSERT INTO sessions (id, client_id, name, sync_full_history) VALUES ($1, $2, $3, $4)
          ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, sync_full_history = EXCLUDED.sync_full_history
          RETURNING *`,
-        [sessionId, clientId, name || sessionId, syncFullHistory]
+        [sessionId, String(clientId), name || sessionId, syncFullHistory]
     );
     return result.rows[0] as Session;
 }
@@ -32,7 +32,7 @@ export async function createSession(db: Pool | PoolClient, clientId: string, nam
 export async function getSessionsByClientId(db: Pool | PoolClient, clientId: string): Promise<Session[]> {
     const result = await db.query(
         'SELECT * FROM sessions WHERE client_id = $1 ORDER BY created_at DESC',
-        [clientId]
+        [String(clientId)]
     );
     return result.rows as Session[];
 }
@@ -44,7 +44,7 @@ export async function getSessionsByClientId(db: Pool | PoolClient, clientId: str
 export async function deleteSession(db: Pool | PoolClient, clientId: string, sessionId: string): Promise<{ id: string } | null> {
     const result = await db.query(
         'DELETE FROM sessions WHERE id = $1 AND client_id = $2 RETURNING id',
-        [sessionId, clientId]
+        [sessionId, String(clientId)]
     );
     if ((result.rowCount ?? 0) === 0) {
         return null;
@@ -60,7 +60,7 @@ export async function deleteSession(db: Pool | PoolClient, clientId: string, ses
 export async function verifySessionOwnership(db: Pool | PoolClient, clientId: string, sessionId: string): Promise<boolean> {
     const result = await db.query(
       'SELECT id FROM sessions WHERE id = $1 AND client_id = $2 LIMIT 1',
-      [sessionId, clientId]
+      [sessionId, String(clientId)]
     );
     return (result.rowCount ?? 0) > 0;
 }
