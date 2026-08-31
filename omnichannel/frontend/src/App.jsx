@@ -470,6 +470,7 @@ function AppRoutes() {
                         <Route path="roles" element={<LazyRolesPage />} />
                         <Route path="divisions" element={<LazyDivisionsPage />} />
                         <Route path="inbox" element={<LazyInboxManagement />} />
+                        <Route path="inboxes" element={<LazyInboxManagement />} />
                         <Route path="quick-replies" element={<LazyQuickReplySettings />} />
                         <Route path="sla" element={<LazySLASettingsPage />} />
                         <Route path="custom-fields" element={<LazyCustomFieldsSettings />} />
@@ -477,13 +478,17 @@ function AppRoutes() {
                         <Route path="auto-reply" element={<LazyAutoReplyManager />} />
                         <Route path="auto-label" element={<LazyAutoLabelManager />} />
                         <Route path="rules" element={<LazyWorkflowRulesSettings />} />
+                        <Route path="workflow-rules" element={<LazyWorkflowRulesSettings />} />
                         <Route path="webhooks" element={<LazyWebhookSettingsPage />} />
+                        <Route path="webhook" element={<LazyWebhookSettingsPage />} />
                         <Route path="ecommerce" element={<LazyEcommercePage />} />
                         <Route path="license" element={<LazyLicensePage />} />
                         <Route path="auto-archive" element={<LazyAutoArchiveSettings />} />
                         <Route path="email" element={<LazyEmailSettingsPage />} />
                         <Route path="device-data" element={<LazyDeviceDataSettingsPage />} />
                         <Route path="system-health" element={<LazySystemHealthPage />} />
+                        <Route path="billing" element={<LazyBillingSettings />} />
+                        <Route path="multi-language" element={<LazyMultiLanguagePage />} />
                     </Route>
 
                     <Route path="/account" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazyAccountLayout /></MainLayout></PrivateRoute>}>

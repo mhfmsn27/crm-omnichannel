@@ -3,8 +3,37 @@
  */
 import pool from '../config/db.js';
 
+let schemaInitialized = false;
+export const ensureSchema = async () => {
+    if (schemaInitialized) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS auto_archive_settings (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT UNIQUE NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                auto_archive_enabled BOOLEAN DEFAULT FALSE,
+                archive_after_days INTEGER DEFAULT 30,
+                archive_resolved_only BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS chat_archive_logs (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                conversation_id BIGINT NOT NULL,
+                archived_at TIMESTAMPTZ DEFAULT NOW()
+            );
+        `);
+        schemaInitialized = true;
+    } catch (e) {
+        console.warn('[AutoArchive] ensureSchema warning:', e.message);
+    }
+};
+
 export const getSettings = async (organizationId) => {
     try {
+        await ensureSchema();
         const result = await pool.query(
             'SELECT * FROM auto_archive_settings WHERE organization_id = $1',
             [organizationId]
@@ -29,6 +58,7 @@ export const updateSettings = async (organizationId, data) => {
     const { auto_archive_enabled, archive_after_days, archive_resolved_only } = data;
 
     try {
+        await ensureSchema();
         const result = await pool.query(`
             UPDATE auto_archive_settings SET
                 auto_archive_enabled = COALESCE($2, auto_archive_enabled),
@@ -68,6 +98,7 @@ export const getConversationsToArchive = async (options = {}) => {
 
 export const archiveConversation = async (organizationId, conversationId) => {
     try {
+        await ensureSchema();
         await pool.query(`
             INSERT INTO chat_archive_logs (organization_id, conversation_id, archived_at)
             VALUES ($1, $2, NOW())

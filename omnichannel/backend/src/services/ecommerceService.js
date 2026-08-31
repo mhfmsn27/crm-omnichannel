@@ -5,11 +5,90 @@
 
 import pool from '../config/db.js';
 
+let schemaInitialized = false;
+export const ensureSchema = async () => {
+    if (schemaInitialized) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS ecommerce_connections (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                platform VARCHAR(50) NOT NULL,
+                store_name VARCHAR(255),
+                store_id VARCHAR(100),
+                api_key TEXT,
+                api_secret TEXT,
+                api_url TEXT,
+                webhook_url TEXT,
+                webhook_secret TEXT,
+                auto_sync_products BOOLEAN DEFAULT FALSE,
+                auto_sync_orders BOOLEAN DEFAULT FALSE,
+                sync_interval_minutes INTEGER DEFAULT 30,
+                last_sync_at TIMESTAMPTZ,
+                is_active BOOLEAN DEFAULT FALSE,
+                connection_status VARCHAR(20) DEFAULT 'disconnected',
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_ecom_org ON ecommerce_connections(organization_id);
+            CREATE INDEX IF NOT EXISTS idx_ecom_platform ON ecommerce_connections(platform);
+
+            CREATE TABLE IF NOT EXISTS ecommerce_products (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                connection_id BIGINT NOT NULL REFERENCES ecommerce_connections(id) ON DELETE CASCADE,
+                external_product_id VARCHAR(100) NOT NULL,
+                external_variant_ids JSONB DEFAULT '[]',
+                name VARCHAR(255),
+                description TEXT,
+                price DECIMAL(15,2),
+                stock INTEGER DEFAULT 0,
+                status VARCHAR(20) DEFAULT 'active',
+                images JSONB DEFAULT '[]',
+                categories JSONB DEFAULT '[]',
+                synced_at TIMESTAMPTZ DEFAULT NOW(),
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(connection_id, external_product_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS ecommerce_orders (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                connection_id BIGINT NOT NULL REFERENCES ecommerce_connections(id) ON DELETE CASCADE,
+                external_order_id VARCHAR(100) NOT NULL,
+                external_status VARCHAR(50),
+                customer_name VARCHAR(255),
+                customer_phone VARCHAR(50),
+                customer_address TEXT,
+                items JSONB DEFAULT '[]',
+                subtotal DECIMAL(15,2) DEFAULT 0,
+                shipping_cost DECIMAL(15,2) DEFAULT 0,
+                total_amount DECIMAL(15,2) DEFAULT 0,
+                shipping_method VARCHAR(100),
+                tracking_number VARCHAR(100),
+                contact_id BIGINT REFERENCES contacts(id) ON DELETE SET NULL,
+                conversation_id BIGINT REFERENCES conversations(id) ON DELETE SET NULL,
+                sync_status VARCHAR(50) DEFAULT 'synced',
+                order_time TIMESTAMPTZ DEFAULT NOW(),
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(connection_id, external_order_id)
+            );
+        `);
+        schemaInitialized = true;
+    } catch (e) {
+        console.warn('[Ecommerce] ensureSchema warning:', e.message);
+    }
+};
+
 /**
  * Get e-commerce connections for organization
  */
 export const getConnections = async (organizationId) => {
     try {
+        await ensureSchema();
         const result = await pool.query(
             'SELECT * FROM ecommerce_connections WHERE organization_id = $1 ORDER BY created_at DESC',
             [organizationId]
@@ -32,6 +111,7 @@ export const saveConnection = async (organizationId, connectionData) => {
     } = connectionData;
 
     try {
+        await ensureSchema();
         if (id) {
             // Update existing
             const result = await pool.query(
@@ -131,6 +211,7 @@ export const getProducts = async (organizationId, connectionId, options = {}) =>
     const { search, status = 'active' } = options;
 
     try {
+        await ensureSchema();
         let query = `
             SELECT ep.*, ec.store_name, ec.platform
             FROM ecommerce_products ep
@@ -175,6 +256,7 @@ export const getOrders = async (organizationId, options = {}) => {
     const { connectionId, status, search } = options;
 
     try {
+        await ensureSchema();
         let query = `
             SELECT eo.*, ec.store_name, ec.platform,
                    c.name as contact_name, c.phone_number as contact_phone
@@ -290,6 +372,7 @@ export const getProductCatalog = async (organizationId, options = {}) => {
     const { connectionId, limit = 20 } = options;
 
     try {
+        await ensureSchema();
         let query = `
             SELECT ep.*, ec.platform
             FROM ecommerce_products ep
@@ -391,6 +474,7 @@ export const getAvailablePlatforms = () => {
  */
 export const getOrderStats = async (organizationId) => {
     try {
+        await ensureSchema();
         const statsRes = await pool.query(`
             SELECT
                 COUNT(*) FILTER (WHERE sync_status = 'synced') as synced_orders,

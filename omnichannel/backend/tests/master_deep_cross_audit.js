@@ -164,6 +164,65 @@ async function runAudit() {
     pass(`Frontend API URLs: ${verifiedEndpointCount}/${foundEndpoints.size} endpoints map to standard API namespaces`);
 
     // -------------------------------------------------------------
+    // 5. Verify Settings Modules & Self-Healing Schemas
+    // -------------------------------------------------------------
+    console.log('\n--- 5. Verifying Settings Modules & Self-Healing Schemas ---');
+    try {
+        const autoLabel = await import('../src/services/autoLabelService.js');
+        if (typeof autoLabel.ensureSchema === 'function' && typeof autoLabel.getRules === 'function') {
+            pass('AutoLabelService exports ensureSchema, getRules, getStats');
+        } else {
+            fail('AutoLabelService missing required functions');
+        }
+    } catch (e) {
+        fail(`AutoLabelService verification failed: ${e.message}`);
+    }
+
+    try {
+        const ecommerce = await import('../src/services/ecommerceService.js');
+        if (typeof ecommerce.ensureSchema === 'function' && typeof ecommerce.getConnections === 'function' && typeof ecommerce.getAvailablePlatforms === 'function') {
+            pass('EcommerceService exports ensureSchema, getConnections, getAvailablePlatforms');
+        } else {
+            fail('EcommerceService missing required functions');
+        }
+    } catch (e) {
+        fail(`EcommerceService verification failed: ${e.message}`);
+    }
+
+    try {
+        const autoArchive = await import('../src/services/autoArchiveService.js');
+        if (typeof autoArchive.ensureSchema === 'function' && typeof autoArchive.getSettings === 'function') {
+            pass('AutoArchiveService exports ensureSchema, getSettings');
+        } else {
+            fail('AutoArchiveService missing required functions');
+        }
+    } catch (e) {
+        fail(`AutoArchiveService verification failed: ${e.message}`);
+    }
+
+    try {
+        const orgWebhook = await import('../src/controllers/orgWebhookController.js');
+        if (typeof orgWebhook.ensureSchema === 'function' && typeof orgWebhook.getWebhooks === 'function' && typeof orgWebhook.getEventCatalog === 'function') {
+            pass('OrgWebhookController exports ensureSchema, getWebhooks, getEventCatalog');
+        } else {
+            fail('OrgWebhookController missing required functions');
+        }
+    } catch (e) {
+        fail(`OrgWebhookController verification failed: ${e.message}`);
+    }
+
+    try {
+        const license = await import('../src/controllers/licenseController.js');
+        if (typeof license.getStatus === 'function' && typeof license.checkLicense === 'function') {
+            pass('LicenseController exports getStatus, checkLicense, refreshLicense');
+        } else {
+            fail('LicenseController missing required functions');
+        }
+    } catch (e) {
+        fail(`LicenseController verification failed: ${e.message}`);
+    }
+
+    // -------------------------------------------------------------
     // SUMMARY
     // -------------------------------------------------------------
     console.log('\n================================================================');

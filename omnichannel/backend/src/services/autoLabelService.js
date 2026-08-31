@@ -5,6 +5,50 @@
 
 import pool from '../config/db.js';
 
+let schemaInitialized = false;
+export const ensureSchema = async () => {
+    if (schemaInitialized) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS auto_label_rules (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                name VARCHAR(255) NOT NULL,
+                description TEXT,
+                source_channel VARCHAR(50),
+                rule_type VARCHAR(50) NOT NULL DEFAULT 'source',
+                keyword_pattern TEXT,
+                keyword_match_type VARCHAR(50) DEFAULT 'contains',
+                case_sensitive BOOLEAN DEFAULT FALSE,
+                message_scope VARCHAR(50) DEFAULT 'any',
+                label_id BIGINT NOT NULL REFERENCES labels(id) ON DELETE CASCADE,
+                priority INTEGER DEFAULT 0,
+                is_active BOOLEAN DEFAULT TRUE,
+                auto_remove BOOLEAN DEFAULT FALSE,
+                match_count INTEGER DEFAULT 0,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS auto_label_logs (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                contact_id BIGINT,
+                conversation_id BIGINT,
+                rule_id BIGINT REFERENCES auto_label_rules(id) ON DELETE SET NULL,
+                label_id BIGINT REFERENCES labels(id) ON DELETE CASCADE,
+                source_channel VARCHAR(50),
+                matched_text TEXT,
+                action VARCHAR(50) DEFAULT 'applied',
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+        `);
+        schemaInitialized = true;
+    } catch (e) {
+        console.warn('[AutoLabel] ensureSchema warning:', e.message);
+    }
+};
+
 /**
  * Process incoming message and apply auto-labels
  * Called from webhook handlers when a new message arrives
@@ -21,6 +65,7 @@ export const processAndApplyAutoLabels = async (organizationId, contactId, conve
     const appliedLabels = [];
 
     try {
+        await ensureSchema();
         // 1. Get all active rules for this organization, ordered by priority
         const rulesRes = await pool.query(
             `SELECT * FROM auto_label_rules
@@ -268,6 +313,7 @@ export const isContactFirstMessage = async (organizationId, contactId) => {
  */
 export const getRules = async (organizationId) => {
     try {
+        await ensureSchema();
         const res = await pool.query(
             `SELECT alr.*, l.name as label_name, l.color as label_color,
                     (SELECT COUNT(*) FROM contact_labels cl WHERE cl.label_id = l.id) as label_usage_count
@@ -304,6 +350,7 @@ export const createRule = async (organizationId, ruleData) => {
     } = ruleData;
 
     try {
+        await ensureSchema();
         // Validate required fields
         if (!name) throw new Error('Rule name is required');
         if (!label_id) throw new Error('Label ID is required');
@@ -367,6 +414,7 @@ export const updateRule = async (organizationId, ruleId, ruleData) => {
     } = ruleData;
 
     try {
+        await ensureSchema();
         // Verify ownership
         const ruleCheck = await pool.query(
             'SELECT id FROM auto_label_rules WHERE id = $1 AND organization_id = $2',
@@ -424,6 +472,7 @@ export const updateRule = async (organizationId, ruleId, ruleData) => {
  */
 export const deleteRule = async (organizationId, ruleId) => {
     try {
+        await ensureSchema();
         const res = await pool.query(
             'DELETE FROM auto_label_rules WHERE id = $1 AND organization_id = $2 RETURNING id',
             [ruleId, organizationId]
@@ -447,6 +496,7 @@ export const getLogs = async (organizationId, options = {}) => {
     const { limit = 100, offset = 0, contact_id, action } = options;
 
     try {
+        await ensureSchema();
         let query = `
             SELECT a.*, l.name as label_name, l.color as label_color, alr.name as rule_name
             FROM auto_label_logs a
@@ -485,6 +535,7 @@ export const getLogs = async (organizationId, options = {}) => {
  */
 export const getStats = async (organizationId) => {
     try {
+        await ensureSchema();
         const statsRes = await pool.query(
             `SELECT
                  COUNT(*) as total_rules,

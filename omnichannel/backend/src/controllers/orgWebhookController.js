@@ -2,10 +2,49 @@ import pool from '../config/db.js';
 import crypto from 'crypto';
 import axios from 'axios';
 
+let schemaInitialized = false;
+export const ensureSchema = async () => {
+    if (schemaInitialized) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS org_webhooks (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                name VARCHAR(255) NOT NULL,
+                url TEXT NOT NULL,
+                secret VARCHAR(255),
+                events JSONB DEFAULT '[]',
+                is_active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_org_webhooks_org ON org_webhooks(organization_id);
+
+            CREATE TABLE IF NOT EXISTS org_webhook_logs (
+                id SERIAL PRIMARY KEY,
+                webhook_id BIGINT REFERENCES org_webhooks(id) ON DELETE CASCADE,
+                event VARCHAR(100),
+                status VARCHAR(50),
+                status_code INTEGER,
+                response_ms INTEGER,
+                error_message TEXT,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_org_webhook_logs_wh ON org_webhook_logs(webhook_id, created_at DESC);
+        `);
+        schemaInitialized = true;
+    } catch (e) {
+        console.warn('[OrgWebhook] ensureSchema warning:', e.message);
+    }
+};
+
 // GET /api/app/webhooks
 export const getWebhooks = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureSchema();
         const result = await pool.query(
             `SELECT id, name, url, events, is_active, created_at FROM org_webhooks
              WHERE organization_id = $1 ORDER BY created_at DESC`,
@@ -25,6 +64,7 @@ export const createWebhook = async (req, res) => {
     if (!name || !url) return res.status(400).json({ error: 'name and url are required' });
 
     try {
+        await ensureSchema();
         const secret = crypto.randomBytes(20).toString('hex');
         const result = await pool.query(
             `INSERT INTO org_webhooks (organization_id, name, url, secret, events)
@@ -44,6 +84,7 @@ export const updateWebhook = async (req, res) => {
     const { name, url, events, is_active } = req.body;
 
     try {
+        await ensureSchema();
         const result = await pool.query(
             `UPDATE org_webhooks SET name=$1, url=$2, events=$3, is_active=$4
              WHERE id=$5 AND organization_id=$6 RETURNING *`,
@@ -61,6 +102,7 @@ export const deleteWebhook = async (req, res) => {
     const { organization_id } = req.user;
     const { id } = req.params;
     try {
+        await ensureSchema();
         await pool.query(
             'DELETE FROM org_webhooks WHERE id=$1 AND organization_id=$2',
             [id, organization_id]
@@ -76,6 +118,7 @@ export const testWebhook = async (req, res) => {
     const { organization_id } = req.user;
     const { id } = req.params;
     try {
+        await ensureSchema();
         const webhookRes = await pool.query(
             'SELECT * FROM org_webhooks WHERE id=$1 AND organization_id=$2',
             [id, organization_id]
@@ -207,6 +250,7 @@ export const getWebhookLogs = async (req, res) => {
     const { organization_id } = req.user;
     const { id } = req.params;
     try {
+        await ensureSchema();
         const check = await pool.query(
             'SELECT id FROM org_webhooks WHERE id=$1 AND organization_id=$2',
             [id, organization_id]

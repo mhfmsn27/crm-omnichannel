@@ -10,6 +10,14 @@ router.put('/rules/:id', autoLabelController.updateRule);
 router.delete('/rules/:id', autoLabelController.deleteRule);
 router.patch('/rules/:id/toggle', autoLabelController.toggleRule);
 router.post('/rules/:id/toggle', autoLabelController.toggleRule);
+
+// Root path aliases
+router.get('/', autoLabelController.getRules);
+router.post('/', autoLabelController.createRule);
+router.put('/:id', autoLabelController.updateRule);
+router.delete('/:id', autoLabelController.deleteRule);
+router.patch('/:id/toggle', autoLabelController.toggleRule);
+
 router.get('/stats', autoLabelController.getStats);
 router.get('/logs', autoLabelController.getLogs);
 router.get('/channels', autoLabelController.getChannels);

@@ -24,6 +24,10 @@ import * as emailController from '../controllers/emailController.js';
 import * as autoArchiveController from '../controllers/autoArchiveController.js';
 import * as inboxIsolationController from '../controllers/inboxIsolationController.js';
 import * as settingsController from '../controllers/settingsController.js';
+import * as orgWebhookController from '../controllers/orgWebhookController.js';
+import * as inboxSettingsController from '../controllers/inboxSettingsController.js';
+import * as licenseController from '../controllers/licenseController.js';
+import * as channelIntegrationController from '../controllers/channelIntegrationController.js';
 import { robustUpload } from '../middleware/uploadMiddleware.js';
 import { requireRole } from '../middleware/roleMiddleware.js';
 
@@ -73,6 +77,8 @@ router.get('/conversations/:id/scheduled-messages', scheduledMessageController.g
 
 // --- E-Commerce & Integrations ---
 router.get('/ecommerce/connections', ecommerceController.getConnections);
+router.post('/ecommerce/connections', ecommerceController.saveConnection);
+router.put('/ecommerce/connections/:id', ecommerceController.saveConnection);
 router.post('/ecommerce/connect', ecommerceController.saveConnection);
 router.delete('/ecommerce/connections/:id', ecommerceController.deleteConnection);
 router.post('/ecommerce/connections/:id/test', ecommerceController.testConnection);
@@ -83,6 +89,15 @@ router.get('/ecommerce/catalog', ecommerceController.getCatalog);
 router.post('/ecommerce/sync/:connectionId', ecommerceController.syncProducts);
 router.get('/ecommerce/platforms', ecommerceController.getPlatforms);
 router.get('/ecommerce/stats', ecommerceController.getOrderStats);
+
+// --- Outgoing Webhooks ---
+router.get('/webhooks', orgWebhookController.getWebhooks);
+router.post('/webhooks', orgWebhookController.createWebhook);
+router.get('/webhooks/event-catalog', orgWebhookController.getEventCatalog);
+router.get('/webhooks/:id/logs', orgWebhookController.getWebhookLogs);
+router.post('/webhooks/:id/test', orgWebhookController.testWebhook);
+router.put('/webhooks/:id', orgWebhookController.updateWebhook);
+router.delete('/webhooks/:id', orgWebhookController.deleteWebhook);
 
 // --- Message Archival ---
 router.get('/archive/stats', messageArchiveController.getStats);
@@ -161,6 +176,10 @@ router.delete('/inboxes/:id', inboxIsolationController.deleteInbox);
 router.post('/inboxes/:id/users', inboxIsolationController.assignUsersToInbox);
 router.get('/inboxes/:id/users', inboxIsolationController.getInboxUsers);
 
+// Assignment Settings (also mounted at /inbox/settings/assignment)
+router.get('/settings/assignment', inboxSettingsController.getAssignmentSettings);
+router.put('/settings/assignment', inboxSettingsController.updateAssignmentSettings);
+
 router.get('/settings/working-hours', workingHoursController.getWorkingHours);
 router.put('/settings/working-hours', workingHoursController.updateWorkingHours);
 
@@ -174,6 +193,12 @@ router.get('/email/logs', emailController.getEmailLogs);
 router.get('/settings/auto-archive', autoArchiveController.getSettings);
 router.put('/settings/auto-archive', autoArchiveController.updateSettings);
 router.post('/auto-archive/run', autoArchiveController.runAutoArchive);
+
+// --- License Endpoints ---
+router.get('/license/status', licenseController.getStatus);
+router.get('/license/check', licenseController.checkLicense);
+router.post('/license/refresh', licenseController.refreshLicense);
+router.get('/license/setup', licenseController.getSetupInfo);
 
 // --- Tools & Auto Replies ---
 router.get('/tools/stats', toolController.getToolStats);
@@ -221,7 +246,6 @@ router.post('/wa-templates/:id/use', waTemplateController.useTemplate);
 router.get('/wa-templates/categories', waTemplateController.getCategories);
 
 // --- Channel Integrations (Email, TikTok, LINE) ---
-import * as channelIntegrationController from '../controllers/channelIntegrationController.js';
 router.get('/integrations/channels', channelIntegrationController.getChannelIntegrations);
 router.post('/integrations/channels', channelIntegrationController.saveChannelIntegration);
 router.post('/integrations/channels/:id/test', channelIntegrationController.testChannelConnection);
