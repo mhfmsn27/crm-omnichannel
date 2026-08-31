@@ -1,4 +1,5 @@
 import { Pool, PoolClient } from 'pg';
+import { randomUUID } from 'crypto';
 
 interface Session {
     id: string;
@@ -12,23 +13,14 @@ interface Session {
  * Membuat entri sesi baru di database yang terkait dengan seorang klien.
  * @returns Objek sesi yang baru dibuat.
  */
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export async function createSession(db: Pool | PoolClient, clientId: string, name: string, syncFullHistory: boolean = false): Promise<Session> {
-    if (UUID_REGEX.test(name)) {
-        // CRMHUB integration: use the incoming UUID name as the session id so
-        // subsequent /sessions/:id/start|delete|status calls resolve correctly.
-        const result = await db.query(
-            `INSERT INTO sessions (id, client_id, name, sync_full_history) VALUES ($1, $2, $3, $4)
-             ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, sync_full_history = EXCLUDED.sync_full_history
-             RETURNING *`,
-            [name, clientId, name, syncFullHistory]
-        );
-        return result.rows[0] as Session;
-    }
+    const sessionId = (name && name.trim()) ? name.trim() : randomUUID();
+
     const result = await db.query(
-        'INSERT INTO sessions (client_id, name, sync_full_history) VALUES ($1, $2, $3) RETURNING *',
-        [clientId, name, syncFullHistory]
+        `INSERT INTO sessions (id, client_id, name, sync_full_history) VALUES ($1, $2, $3, $4)
+         ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, sync_full_history = EXCLUDED.sync_full_history
+         RETURNING *`,
+        [sessionId, clientId, name || sessionId, syncFullHistory]
     );
     return result.rows[0] as Session;
 }
