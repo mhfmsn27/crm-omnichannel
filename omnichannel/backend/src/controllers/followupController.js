@@ -1,11 +1,45 @@
 import pool from '../config/db.js';
 
+// --- SELF-HEALING DATABASE MIGRATION ---
+export const ensureFollowupTables = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS followup_sequences (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                steps JSONB NOT NULL DEFAULT '[]',
+                is_active BOOLEAN DEFAULT true,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS followup_instances (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL,
+                sequence_id INT NOT NULL REFERENCES followup_sequences(id) ON DELETE CASCADE,
+                conversation_id INT,
+                contact_id INT,
+                current_step INT DEFAULT 0,
+                status VARCHAR(50) DEFAULT 'running',
+                next_run_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+        `);
+    } catch (e) {
+        console.error('[FollowUpController] ensureFollowupTables error:', e.message);
+    }
+};
+ensureFollowupTables().catch(() => {});
+
 // --- SEQUENCES (TEMPLATES) ---
 
 // GET /api/app/followups/sequences
 export const getSequences = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureFollowupTables();
         const result = await pool.query(
             'SELECT * FROM followup_sequences WHERE organization_id = $1 ORDER BY created_at DESC',
             [organization_id]
