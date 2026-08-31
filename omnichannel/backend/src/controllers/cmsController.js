@@ -20,19 +20,104 @@ export const getPublicLanding = async (req, res) => {
     }
 };
 
+const DEFAULT_TUTORIALS = {
+    'tutorial-chatbot': {
+        title: 'Panduan Lengkap & Tutorial Modul Chatbot AI',
+        meta_description: 'Pelajari cara mudah mengatur asisten AI, menghubungkan API Key, mengunggah Knowledge Base, dan mendesain Visual Flow interaktif.',
+        page_type: 'tutorial',
+        target_menu: 'chatbot',
+        content: JSON.stringify({
+            video_urls: [],
+            items: [
+                {
+                    title: '1. Pengenalan AI Chatbot & Customer Service Assistant',
+                    body: 'Fitur Chatbot AI di CRMHub memungkinkan Anda menjawab pesan pelanggan secara otomatis 24/7 di semua channel (WhatsApp, Instagram, Telegram, Messenger, Webchat).\n\nChatbot mendukung model AI mutakhir termasuk Google Gemini, OpenAI (GPT-4o), dan OpenRouter.'
+                },
+                {
+                    title: '2. Menghubungkan API Key AI (Gemini / OpenAI / OpenRouter)',
+                    body: '1. Buka menu Chatbot → API Setting.\n2. Pilih AI Provider yang Anda gunakan (Google Gemini, OpenAI, atau OpenRouter).\n3. Tempelkan API Key Anda dan klik Simpan Pengaturan.\n4. Sistem akan otomatis memverifikasi kunci API Anda.'
+                },
+                {
+                    title: '3. Menyiapkan Basis Pengetahuan (Knowledge Base)',
+                    body: '1. Buka menu Chatbot → Knowledge Base.\n2. Tambahkan FAQ Tanya-Jawab produk, harga, dan ketentuan layanan Anda.\n3. Anda juga dapat mengunggah file PDF / Brosur untuk dianalisis oleh AI.\n4. AI akan menjawab pertanyaan pelanggan secara akurat berdasarkan dokumen tersebut.'
+                },
+                {
+                    title: '4. Mengatur Alur Percakapan Interaktif (Visual Flow Builder)',
+                    body: '1. Buka menu Chatbot → Visual Flow.\n2. Buat alur percakapan interaktif berbasis kata kunci pemicu (trigger keyword).\n3. Rancang tombol pilihan, menu interaktif, hingga eskalasi ke staf manusia (Live Agent Transfer).'
+                },
+                {
+                    title: '5. Mengaktifkan Chatbot pada Saluran Komunikasi',
+                    body: '1. Buka menu Integrasi / Device.\n2. Aktifkan saklar AI Assistant pada perangkat WhatsApp, Halaman Facebook, Akun Instagram, atau Bot Telegram Anda.\n3. Chatbot kini aktif melayani pelanggan secara otomatis!'
+                }
+            ]
+        })
+    },
+    'tutorial-broadcast': {
+        title: 'Panduan Lengkap & Tutorial Modul Broadcast',
+        meta_description: 'Pelajari cara mengirimkan pesan massal ke ribuan kontak pelanggan secara terjadwal dan aman dengan fitur anti-banned cerdas.',
+        page_type: 'tutorial',
+        target_menu: 'broadcast',
+        content: JSON.stringify({
+            video_urls: [],
+            items: [
+                {
+                    title: '1. Pengenalan Modul Broadcast & Kampanye Massal',
+                    body: 'Modul Broadcast memungkinkan pengiriman pesan massal ke ribuan kontak pelanggan secara terjadwal dan aman dengan fitur anti-banned cerdas, rotasi nomor, dan jeda pengiriman.'
+                },
+                {
+                    title: '2. Mempersiapkan Daftar Kontak & Label Target',
+                    body: '1. Pastikan kontak target sudah memiliki tag / label yang sesuai di menu Contacts.\n2. Anda juga dapat mengimpor file Excel / CSV kontak baru dengan mudah di menu Contacts.'
+                },
+                {
+                    title: '3. Membuat & Menjadwalkan Kampanye Broadcast',
+                    body: '1. Buka menu Broadcast → Create Campaign.\n2. Tulis pesan dengan personalisasi nama dinamis {name}.\n3. Pilih perangkat pengirim, jadwal pengiriman, dan jeda delay aman.\n4. Klik Mulai Kampanye untuk mengirim pesan.'
+                }
+            ]
+        })
+    }
+};
+
 // GET /api/public/pages/:slug
 export const getPublicPage = async (req, res) => {
     const { slug } = req.params;
     try {
-        // We need to fetch page_type and target_menu as well now, assuming DB has them
-        // Fallback to 'static' if not present in result (handled in frontend)
-        // Note: If columns missing in DB, this query might fail unless we select *
-        const result = await pool.query(
+        let result = await pool.query(
             "SELECT * FROM public_pages WHERE slug = $1 AND is_published = true",
             [slug]
         );
         
-        if (result.rows.length === 0) return res.status(404).json({ error: "Page not found" });
+        if (result.rows.length === 0) {
+            // Check if it is a known default tutorial page
+            if (DEFAULT_TUTORIALS[slug]) {
+                const def = DEFAULT_TUTORIALS[slug];
+                try {
+                    const inserted = await pool.query(
+                        `INSERT INTO public_pages (slug, title, content, meta_description, is_published, page_type, target_menu)
+                         VALUES ($1, $2, $3, $4, true, $5, $6)
+                         ON CONFLICT (slug) DO UPDATE SET
+                            title = EXCLUDED.title,
+                            content = EXCLUDED.content,
+                            meta_description = EXCLUDED.meta_description,
+                            is_published = true,
+                            updated_at = NOW()
+                         RETURNING *`,
+                        [slug, def.title, def.content, def.meta_description, def.page_type, def.target_menu]
+                    );
+                    return res.json(inserted.rows[0]);
+                } catch (insertErr) {
+                    return res.json({
+                        slug,
+                        title: def.title,
+                        content: def.content,
+                        meta_description: def.meta_description,
+                        is_published: true,
+                        page_type: def.page_type,
+                        target_menu: def.target_menu
+                    });
+                }
+            }
+            return res.status(404).json({ error: "Page not found" });
+        }
         res.json(result.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
