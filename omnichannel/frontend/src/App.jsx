@@ -427,6 +427,8 @@ function AppRoutes() {
                         <Route path="create" element={<LazyCreateCampaign />} />
                         <Route path="reports" element={<LazyBroadcastReports />} />
                         <Route path="templates" element={<LazyMessageTemplates />} />
+                        <Route path="meta-templates" element={<LazyTemplateManager />} />
+                        <Route path="rotators" element={<LazyRotatorManager />} />
                         <Route path="rotator" element={<LazyRotatorManager />} />
                         <Route path="upselling" element={<LazyUpsellingPage />} />
                         <Route path="upselling/create" element={<LazyCreateUpselling />} />
