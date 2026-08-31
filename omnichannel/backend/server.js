@@ -68,6 +68,8 @@ import instagramRoutes from './src/routes/instagramRoutes.js';
 import telegramRoutes from './src/routes/telegramRoutes.js';
 import flowRoutes from './src/routes/flowRoutes.js';
 import metaRoutes from './src/routes/metaRoutes.js';
+import upsellingRoutes from './src/routes/upsellingRoutes.js';
+import rotatorRoutes from './src/routes/rotatorRoutes.js';
 import * as dashboardController from './src/controllers/dashboardController.js';
 import { ensureAiColumns } from './src/controllers/chatbotController.js';
 import { ensureUserTeamColumns } from './src/controllers/teamController.js';
@@ -194,6 +196,8 @@ api.use('/app/meta', metaRoutes);
 api.get('/app/dashboard', dashboardController.getDashboardData);
 api.use('/app/broadcasts', broadcastRoutes);
 api.use('/app/broadcast', broadcastRoutes); // Backward compatibility
+api.use('/app/upselling', upsellingRoutes);
+api.use('/app/rotators', rotatorRoutes);
 api.use('/app/chatbot', chatbotRoutes);
 api.use('/app/flows', flowRoutes);
 api.use('/app/crm', crmRoutes);
