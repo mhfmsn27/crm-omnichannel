@@ -55,11 +55,21 @@ const getChannelIcon = (channel, deviceType) => {
         return deviceType === 'official' ? '/icons/whatsapp-official.svg' : '/icons/whatsapp-unofficial.svg';
     }
     switch (channel) {
+        case 'wa-api':
+        case 'wa_api':
+        case 'official': return '/icons/whatsapp-official.svg';
+        case 'wa-coex':
+        case 'wa_coex': return '/icons/whatsapp-official.svg';
         case 'messenger': return '/icons/messenger.svg';
         case 'instagram': return '/icons/instagram.svg';
         case 'telegram': return '/icons/telegram.svg';
         case 'webchat': return '/icons/webchat.svg';
-        default: return '/icons/device.svg';
+        case 'email': return '/icons/email.svg';
+        case 'tiktok': return '/icons/tiktok.svg';
+        case 'shopee': return '/icons/shopee.svg';
+        case 'tokopedia': return '/icons/tokopedia.svg';
+        case 'line': return '/icons/line.svg';
+        default: return '/icons/whatsapp-unofficial.svg';
     }
 };
 
@@ -457,12 +467,19 @@ export default function InboxPage() {
                                         value={filterChannel}
                                         onChange={e => { setFilterChannel(e.target.value); setFilterDevice(''); }}
                                     >
-                                        <option value="all">All Channels</option>
-                                        <option value="whatsapp">WhatsApp</option>
+                                        <option value="all">Semua Saluran (All)</option>
+                                        <option value="whatsapp">WhatsApp (QR Scan)</option>
+                                        <option value="wa-api">WhatsApp API (Official)</option>
+                                        <option value="wa-coex">WhatsApp CoEx</option>
+                                        <option value="email">Email Inbox</option>
+                                        <option value="messenger">Meta Messenger</option>
+                                        <option value="instagram">Instagram DM</option>
+                                        <option value="tiktok">TikTok Shop & DM</option>
+                                        <option value="shopee">Shopee Chat</option>
+                                        <option value="tokopedia">Tokopedia Chat</option>
+                                        <option value="line">LINE Official</option>
                                         <option value="telegram">Telegram</option>
-                                        <option value="messenger">Messenger</option>
-                                        <option value="instagram">Instagram</option>
-                                        <option value="webchat">Webchat</option>
+                                        <option value="webchat">Webchat Widget</option>
                                     </select>
                                     <ChevronDown className="absolute right-2 top-2 w-3 h-3 text-gray-400 pointer-events-none" />
                                 </div>

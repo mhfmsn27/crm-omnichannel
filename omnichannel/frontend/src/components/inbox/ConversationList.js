@@ -21,13 +21,21 @@ const getChannelIcon = (channel, deviceType) => {
         return deviceType === 'official' ? '/icons/whatsapp-official.svg' : '/icons/whatsapp-unofficial.svg';
     }
     switch (channel) {
+        case 'wa-api':
+        case 'wa_api':
+        case 'official': return '/icons/whatsapp-official.svg';
+        case 'wa-coex':
+        case 'wa_coex': return '/icons/whatsapp-official.svg';
         case 'messenger': return '/icons/messenger.svg';
         case 'instagram': return '/icons/instagram.svg';
         case 'telegram': return '/icons/telegram.svg';
         case 'webchat': return '/icons/webchat.svg';
         case 'email': return '/icons/email.svg';
+        case 'tiktok': return '/icons/tiktok.svg';
         case 'shopee': return '/icons/shopee.svg';
-        default: return '/icons/device.svg';
+        case 'tokopedia': return '/icons/tokopedia.svg';
+        case 'line': return '/icons/line.svg';
+        default: return '/icons/whatsapp-unofficial.svg';
     }
 };
 

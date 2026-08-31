@@ -390,11 +390,18 @@ export const getConversations = async (req, res) => {
 
       CASE 
         WHEN c.channel = 'whatsapp' THEN ws.name
-        WHEN c.channel = 'messenger' THEN mp.page_name
-        WHEN c.channel = 'instagram' THEN ia.username
-        WHEN c.channel = 'telegram' THEN tb.first_name
+        WHEN c.channel = 'wa-api' OR c.channel = 'wa_api' THEN COALESCE(ws.name, 'WhatsApp Official API')
+        WHEN c.channel = 'wa-coex' OR c.channel = 'wa_coex' THEN COALESCE(ws.name, 'WhatsApp CoEx')
+        WHEN c.channel = 'messenger' THEN COALESCE(mp.page_name, 'Meta Messenger')
+        WHEN c.channel = 'instagram' THEN COALESCE(ia.username, 'Instagram DM')
+        WHEN c.channel = 'telegram' THEN COALESCE(tb.first_name, 'Telegram')
         WHEN c.channel = 'webchat' THEN COALESCE(wc.name, 'Web Widget')
-        ELSE 'Unknown'
+        WHEN c.channel = 'email' THEN 'Email Inbox'
+        WHEN c.channel = 'tiktok' THEN 'TikTok Shop & DM'
+        WHEN c.channel = 'shopee' THEN 'Shopee Chat'
+        WHEN c.channel = 'tokopedia' THEN 'Tokopedia Chat'
+        WHEN c.channel = 'line' THEN 'LINE Official'
+        ELSE COALESCE(ws.name, 'Omnichannel')
       END as device_name,
 
       COALESCE(ws.session_id, mp.page_id, ia.ig_id, tb.bot_token, wc.widget_uid::text) as gateway_session_id,
@@ -502,11 +509,18 @@ export const getConversationDetail = async (req, res) => {
 
       CASE 
         WHEN c.channel = 'whatsapp' THEN ws.name
-        WHEN c.channel = 'messenger' THEN mp.page_name
-        WHEN c.channel = 'instagram' THEN ia.username
-        WHEN c.channel = 'telegram' THEN tb.first_name
+        WHEN c.channel = 'wa-api' OR c.channel = 'wa_api' THEN COALESCE(ws.name, 'WhatsApp Official API')
+        WHEN c.channel = 'wa-coex' OR c.channel = 'wa_coex' THEN COALESCE(ws.name, 'WhatsApp CoEx')
+        WHEN c.channel = 'messenger' THEN COALESCE(mp.page_name, 'Meta Messenger')
+        WHEN c.channel = 'instagram' THEN COALESCE(ia.username, 'Instagram DM')
+        WHEN c.channel = 'telegram' THEN COALESCE(tb.first_name, 'Telegram')
         WHEN c.channel = 'webchat' THEN COALESCE(wc.name, 'Web Widget')
-        ELSE 'Unknown'
+        WHEN c.channel = 'email' THEN 'Email Inbox'
+        WHEN c.channel = 'tiktok' THEN 'TikTok Shop & DM'
+        WHEN c.channel = 'shopee' THEN 'Shopee Chat'
+        WHEN c.channel = 'tokopedia' THEN 'Tokopedia Chat'
+        WHEN c.channel = 'line' THEN 'LINE Official'
+        ELSE COALESCE(ws.name, 'Omnichannel')
       END as device_name,
 
       COALESCE(ws.session_id, mp.page_id, ia.ig_id, tb.bot_token, wc.widget_uid::text) as gateway_session_id,
