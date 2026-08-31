@@ -278,7 +278,7 @@ export default function Sidebar({ isExpanded, onToggle }) {
     if (!isFeatureDisabled('mod_chatbot')) {
       menus.splice(5, 0, { label: t('nav.chatbot', 'Chatbot'), path: '/chatbot', icon: Bot });
     }
-    if (isFeatureDisabled('api_public')) {
+    if (!isFeatureDisabled('api_public')) {
       menus.push({ label: t('nav.api', 'API'), path: '/developer', icon: Code });
     }
   } else {

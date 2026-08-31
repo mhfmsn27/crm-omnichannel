@@ -5,6 +5,36 @@
 
 import pool from '../config/db.js';
 
+let schemaInitialized = false;
+export const ensureSchema = async () => {
+    if (schemaInitialized) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS message_templates (
+                id SERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                name VARCHAR(255) NOT NULL,
+                template_type VARCHAR(50) DEFAULT 'text',
+                title VARCHAR(255),
+                description TEXT,
+                image_url TEXT,
+                buttons JSONB DEFAULT '[]',
+                cta_url TEXT,
+                cta_text VARCHAR(100),
+                is_active BOOLEAN DEFAULT TRUE,
+                created_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_message_templates_org ON message_templates(organization_id);
+        `);
+        schemaInitialized = true;
+    } catch (e) {
+        console.warn('[MessageTemplates] ensureSchema warning:', e.message);
+    }
+};
+
 // Template types
 const TEMPLATE_TYPES = [
     { value: 'text', label: 'Text Only' },
@@ -17,6 +47,7 @@ const TEMPLATE_TYPES = [
 export const getTemplateTypes = () => TEMPLATE_TYPES;
 
 export const getTemplates = async (organizationId, type = null) => {
+    await ensureSchema();
     let query = `
         SELECT
             mt.*,
@@ -39,6 +70,7 @@ export const getTemplates = async (organizationId, type = null) => {
 };
 
 export const createTemplate = async (organizationId, userId, data) => {
+    await ensureSchema();
     const {
         name,
         template_type,
@@ -74,6 +106,7 @@ export const createTemplate = async (organizationId, userId, data) => {
 };
 
 export const updateTemplate = async (organizationId, id, data) => {
+    await ensureSchema();
     const {
         name,
         title,
@@ -144,6 +177,7 @@ export const updateTemplate = async (organizationId, id, data) => {
 };
 
 export const deleteTemplate = async (organizationId, id) => {
+    await ensureSchema();
     const query = `
         DELETE FROM message_templates
         WHERE organization_id = $1 AND id = $2
@@ -152,6 +186,7 @@ export const deleteTemplate = async (organizationId, id) => {
 };
 
 export const getTemplateById = async (organizationId, id) => {
+    await ensureSchema();
     const query = `
         SELECT
             mt.*,

@@ -28,6 +28,9 @@ import * as orgWebhookController from '../controllers/orgWebhookController.js';
 import * as inboxSettingsController from '../controllers/inboxSettingsController.js';
 import * as licenseController from '../controllers/licenseController.js';
 import * as channelIntegrationController from '../controllers/channelIntegrationController.js';
+import * as queueController from '../controllers/queueController.js';
+import * as affiliateController from '../controllers/affiliateController.js';
+import * as messageTemplatesController from '../controllers/messageTemplatesController.js';
 import { robustUpload } from '../middleware/uploadMiddleware.js';
 import { requireRole } from '../middleware/roleMiddleware.js';
 
@@ -250,5 +253,23 @@ router.get('/integrations/channels', channelIntegrationController.getChannelInte
 router.post('/integrations/channels', channelIntegrationController.saveChannelIntegration);
 router.post('/integrations/channels/:id/test', channelIntegrationController.testChannelConnection);
 router.delete('/integrations/channels/:id', channelIntegrationController.deleteChannelIntegration);
+
+// --- Queue Endpoints ---
+router.post('/queue/pickup', queueController.pickupQueue);
+router.get('/queue/status', queueController.getQueueStatus);
+router.get('/queue/check/:contactId', queueController.checkPosition);
+
+// --- Affiliate Endpoints ---
+router.get('/affiliate/stats', affiliateController.getPartnerStats);
+router.get('/affiliate/commissions', affiliateController.getCommissionHistory);
+router.get('/affiliate/payouts', affiliateController.getPayoutHistory);
+router.post('/affiliate/request-payout', affiliateController.requestPayout);
+
+// --- Message Templates Endpoints ---
+router.get('/templates', messageTemplatesController.getTemplates);
+router.post('/templates', messageTemplatesController.createTemplate);
+router.put('/templates/:id', messageTemplatesController.updateTemplate);
+router.delete('/templates/:id', messageTemplatesController.deleteTemplate);
+router.get('/templates/types', messageTemplatesController.getTemplateTypes);
 
 export default router;

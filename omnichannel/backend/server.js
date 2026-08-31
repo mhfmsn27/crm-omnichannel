@@ -176,6 +176,7 @@ app.use('/api/public', publicRoutes);
 app.get('/r/:slug', publicApiLimiter, redirectController.handleRedirect);
 app.get('/u/:slug', publicApiLimiter, redirectController.handleRedirect);
 app.get('/ref/:code', publicApiLimiter, (req, res) => affiliateController.trackReferralClick(req, res));
+app.get('/api/ref/:code', publicApiLimiter, (req, res) => affiliateController.trackReferralClick(req, res));
 
 // --- PUBLIC LICENSE ENDPOINTS ---
 app.get('/api/license/check', licenseController.checkLicense);

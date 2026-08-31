@@ -407,7 +407,9 @@ function AppRoutes() {
                         <Route index element={<Navigate to="whatsapp" replace />} />
                         <Route path="whatsapp" element={<LazyWhatsAppDevicePage />} />
                         <Route path="whatsapp-api" element={<LazyWhatsAppAPIPage />} />
+                        <Route path="wa-api" element={<LazyWhatsAppAPIPage />} />
                         <Route path="whatsapp-coex" element={<LazyWhatsAppCoExPage />} />
+                        <Route path="wa-coex" element={<LazyWhatsAppCoExPage />} />
                         <Route path="email" element={<LazyEmailIntegration />} />
                         <Route path="messenger" element={<LazyMessengerIntegration />} />
                         <Route path="instagram" element={<LazyInstagramIntegration />} />
@@ -420,6 +422,10 @@ function AppRoutes() {
                         <Route path="zapier" element={<LazyZapierPage />} />
                         <Route path="templates" element={<LazyTemplateManager />} />
                         <Route path="device-health" element={<LazyDeviceHealthPage />} />
+                        <Route path="ecommerce" element={<LazyEcommercePage />} />
+                        <Route path="ongkir" element={<LazyOngkirSettingsPage />} />
+                        <Route path="webhooks" element={<LazyWebhookSettingsPage />} />
+                        <Route path="webhook" element={<LazyWebhookSettingsPage />} />
                     </Route>
 
                     <Route path="/broadcast" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_broadcast"><MainLayout><LazyBroadcastLayout /></MainLayout></PrivateRoute>}>
