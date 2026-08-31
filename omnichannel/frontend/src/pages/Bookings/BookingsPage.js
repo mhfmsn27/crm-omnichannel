@@ -26,10 +26,9 @@ export default function BookingsPage() {
             setBookings(res.data);
             
             // Also fetch contacts for the dropdown
-            const contactRes = await axios.get(getApiUrl('/api/app/inbox/contacts?limit=100'));
-            if (contactRes.data && contactRes.data.contacts) {
-                setContacts(contactRes.data.contacts);
-            }
+            const contactRes = await axios.get(getApiUrl('/api/app/contacts?limit=100'));
+            const contactList = contactRes.data?.data || contactRes.data?.contacts || (Array.isArray(contactRes.data) ? contactRes.data : []);
+            setContacts(contactList);
         } catch (e) {
             toast.error('Gagal memuat jadwal booking');
         } finally {

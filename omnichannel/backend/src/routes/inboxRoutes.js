@@ -9,6 +9,7 @@ import * as followupController from '../controllers/followupController.js';
 import * as ticketController from '../controllers/ticketController.js';
 import * as inboxSettingsController from '../controllers/inboxSettingsController.js';
 import * as inboxIsolationController from '../controllers/inboxIsolationController.js';
+import * as contactController from '../controllers/contactController.js';
 import { robustUpload } from '../middleware/uploadMiddleware.js';
 import { requireActiveSubscription } from '../middleware/planMiddleware.js';
 import { checkSystemFlag } from '../services/systemGateService.js';
@@ -60,7 +61,8 @@ router.post('/messages/:id/pin', inboxController.togglePinMessage);
 router.post('/messages/:id/retry', inboxController.retryMessage);
 router.get('/starred', inboxController.getStarredMessages);
 
-// --- Contact Blocking in Inbox ---
+// --- Contacts in Inbox ---
+router.get('/contacts', contactController.getContacts);
 router.post('/contacts/:id/block', inboxController.toggleBlockContact);
 
 // --- Typing Indicator ---
