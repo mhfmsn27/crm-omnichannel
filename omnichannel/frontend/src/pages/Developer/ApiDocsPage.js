@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { 
-    Code, Copy, Check, Terminal, Globe, Smartphone, Send, Facebook, Instagram, 
+    Code, Copy, Check, Terminal, Globe, Smartphone, Send, Instagram, 
     Shield, AlertTriangle, Server, Activity, Lock, ChevronRight, Box 
 } from 'lucide-react';
+import { WhatsAppIcon, TelegramIcon, MessengerIcon, InstagramIcon as IgIcon } from '../../components/common/ChannelIcons';
 
 const SECTIONS = [
     { id: 'intro', label: 'Introduction', icon: BookIcon },
@@ -247,10 +248,10 @@ print(response.text)`;
                                     onClick={() => setSelectedChannel(ch)}
                                     className={`px-4 py-2 rounded-full border text-sm font-bold flex items-center gap-2 transition-all ${selectedChannel === ch ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
                                 >
-                                    {ch === 'whatsapp' && <Smartphone className="w-4 h-4" />}
-                                    {ch === 'telegram' && <Send className="w-4 h-4" />}
-                                    {ch === 'messenger' && <Facebook className="w-4 h-4" />}
-                                    {ch === 'instagram' && <Instagram className="w-4 h-4" />}
+                                    {ch === 'whatsapp' && <WhatsAppIcon className="w-4 h-4" />}
+                                    {ch === 'telegram' && <TelegramIcon className="w-4 h-4" />}
+                                    {ch === 'messenger' && <MessengerIcon className="w-4 h-4" />}
+                                    {ch === 'instagram' && <IgIcon className="w-4 h-4" />}
                                     {ch.charAt(0).toUpperCase() + ch.slice(1)}
                                 </button>
                             ))}

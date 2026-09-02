@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, AlertTriangle, ShieldCheck, Globe, Calendar, Link as LinkIcon, Trash2, Smartphone, Facebook, Instagram, Send, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertTriangle, ShieldCheck, Globe, Calendar, Link as LinkIcon, Trash2, Smartphone, Instagram, Send, MessageCircle } from 'lucide-react';
+import ChannelIcon from '../../components/common/ChannelIcons';
 import { toast } from 'react-hot-toast';
 
 export default function MemberDetail() {
@@ -96,13 +97,7 @@ export default function MemberDetail() {
     };
 
     const getChannelIcon = (type) => {
-        switch (type) {
-            case 'whatsapp': return <Smartphone className="w-4 h-4 text-green-600" />;
-            case 'messenger': return <Facebook className="w-4 h-4 text-blue-600" />;
-            case 'instagram': return <Instagram className="w-4 h-4 text-pink-600" />;
-            case 'telegram': return <Send className="w-4 h-4 text-sky-500" />;
-            default: return <MessageCircle className="w-4 h-4 text-gray-500" />;
-        }
+        return <ChannelIcon type={type} className="w-4 h-4" />;
     };
 
     if (loading || !member) return <div className="p-8 text-center">Loading Member Data...</div>;

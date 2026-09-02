@@ -72,7 +72,7 @@ export const id = {
         cms: 'Konten CMS',
         system: 'Sistem',
         tools: 'Tools',
-        invoicing: 'Tagihan',
+        invoicing: 'Tagihan / Invoice',
     },
 
     // Dashboard

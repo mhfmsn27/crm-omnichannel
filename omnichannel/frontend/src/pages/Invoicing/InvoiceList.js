@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
     FileText, Download, Send, Edit, Search, CheckCircle, XCircle, 
-    Smartphone, X, Trash2, QrCode, ArrowRight, DollarSign, 
+    Smartphone, X, Trash2, QrCode, ArrowRight, Receipt, CreditCard, 
     Bell, RefreshCw, Layers, ShieldCheck, CheckCircle2, Clock 
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -315,7 +315,7 @@ export default function InvoiceList() {
                 <div>
                     <h2 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
                         <div className="p-2 bg-indigo-600 text-white rounded-2xl shadow-md">
-                            <FileText className="w-6 h-6" />
+                            <Receipt className="w-6 h-6" />
                         </div>
                         Faktur Penjualan & Penawaran (SPO)
                     </h2>
@@ -462,7 +462,7 @@ export default function InvoiceList() {
                                                                 className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 rounded-lg font-bold text-[11px] flex items-center gap-1"
                                                                 title="Catat Pembayaran DP / Sebagian"
                                                             >
-                                                                <DollarSign className="w-3.5 h-3.5" /> Catat Bayar
+                                                                <CreditCard className="w-3.5 h-3.5" /> Catat Bayar
                                                             </button>
                                                             <button
                                                                 onClick={() => handleSendDunningReminder(inv.id)}

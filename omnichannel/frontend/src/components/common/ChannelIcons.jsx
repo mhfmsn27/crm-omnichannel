@@ -52,17 +52,20 @@ export const EmailIcon = ({ className = "w-4 h-4", ...props }) => (
 
 // 5. Meta Messenger Icon
 export const MessengerIcon = ({ className = "w-4 h-4", ...props }) => (
-    <svg viewBox="0 0 24 24" className={className} fill="none" {...props}>
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
         <defs>
-            <linearGradient id="msgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00B2FF" />
-                <stop offset="50%" stopColor="#006AFF" />
-                <stop offset="100%" stopColor="#9B00E8" />
+            <linearGradient id="metaMsgGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#0099FF" />
+                <stop offset="60%" stopColor="#A033FF" />
+                <stop offset="100%" stopColor="#FF5280" />
             </linearGradient>
         </defs>
-        <circle cx="12" cy="12" r="11" fill="url(#msgGrad)" />
         <path
-            d="M6.5 13.5l4-3.8 2.2 2.2 4.3-3.9-4.2 3.9-2.1-2.2-4.2 3.8z"
+            d="M12 2C6.477 2 2 6.145 2 11.258c0 2.915 1.455 5.518 3.737 7.158V22l3.433-1.884c.898.249 1.854.384 2.83.384 5.523 0 10-4.145 10-9.258C22 6.145 17.523 2 12 2z"
+            fill="url(#metaMsgGrad)"
+        />
+        <path
+            d="M6.8 13.8l3.9-4.1 2.3 2.2 4.2-4.1-3.9 4.1-2.3-2.2-4.2 4.1z"
             fill="#FFFFFF"
         />
     </svg>

@@ -72,7 +72,7 @@ export const en = {
         cms: 'CMS Content',
         system: 'System',
         tools: 'Tools',
-        invoicing: 'Invoicing',
+        invoicing: 'Invoices & Billing',
     },
 
     // Dashboard

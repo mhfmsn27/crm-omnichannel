@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Facebook, Plus, CheckCircle, RefreshCw, Zap, Lock, HelpCircle, X, AlertTriangle } from 'lucide-react';
+import { Plus, CheckCircle, RefreshCw, Zap, Lock, HelpCircle, X, AlertTriangle } from 'lucide-react';
+import { MessengerIcon } from '../../components/common/ChannelIcons';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../../config/api';
@@ -230,8 +231,8 @@ export default function MessengerIntegration() {
         <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
             <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
                 <div>
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <Facebook className="w-8 h-8 text-blue-600" /> Facebook Messenger
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <MessengerIcon className="w-8 h-8 shrink-0 shadow-xs rounded-full" /> Meta Messenger
                     </h2>
                     <p className="text-sm text-gray-500 dark:text-slate-400">Connect using App ID: {config.meta?.messenger_app_id || 'Not Set'}</p>
                 </div>

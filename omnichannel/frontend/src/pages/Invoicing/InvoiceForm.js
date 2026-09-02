@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
     Save, Plus, Trash2, ArrowLeft, Search, X, User, 
-    FileText, DollarSign, Building, Percent, Repeat, CheckCircle2 
+    FileText, CreditCard, Building, Percent, Repeat, CheckCircle2 
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import Button from '../../components/common/Button';
@@ -327,7 +327,7 @@ export default function InvoiceForm({ embedded = false }) {
                 {/* Section: Payment Type & Down Payment (DP) */}
                 <div className="p-4 rounded-2xl bg-gray-50/80 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700 space-y-3">
                     <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-emerald-600" />
+                        <CreditCard className="w-4 h-4 text-emerald-600" />
                         <h4 className="text-xs font-black text-gray-900 dark:text-white">Skema Pembayaran & Uang Muka (DP)</h4>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

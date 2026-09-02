@@ -5,7 +5,7 @@ import {
   MessageSquare, Megaphone, QrCode, Bot,
   LogOut, BarChart2, LayoutTemplate,
   Wrench, Code, Columns, Ticket, CheckSquare,
-  Menu, ChevronLeft, ChevronRight, Settings2, FileText, Repeat2, DollarSign, ChevronDown, Inbox, Calendar
+  Menu, ChevronLeft, ChevronRight, Settings2, FileText, Repeat2, Receipt, ChevronDown, Inbox, Calendar
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -266,7 +266,7 @@ export default function Sidebar({ isExpanded, onToggle }) {
       { label: t('nav.products', 'Produk'), path: '/products', icon: Package, section: 'CRM & Bisnis' },
       { label: t('nav.tasks', 'Tasks'), path: '/tasks', icon: CheckSquare, section: 'CRM & Bisnis' },
       { label: t('nav.tickets', 'Tickets'), path: '/tickets', icon: Ticket, section: 'CRM & Bisnis' },
-      { label: t('nav.invoicing', 'Invoicing'), path: '/invoicing', icon: DollarSign, section: 'CRM & Bisnis' },
+      { label: t('nav.invoicing', 'Tagihan / Invoice'), path: '/invoicing', icon: Receipt, section: 'CRM & Bisnis' },
       { label: t('nav.reports', 'Laporan'), path: '/reports', icon: BarChart2, section: 'CRM & Bisnis' },
       { 
         label: t('nav.tools', 'Tools'), 
@@ -330,7 +330,7 @@ export default function Sidebar({ isExpanded, onToggle }) {
       extras.push({ label: t('nav.tickets', 'Tickets'), path: '/tickets', icon: Ticket, section: 'CRM & Bisnis' });
     }
     if (hasPerm(user, 'manage_invoice')) {
-      extras.push({ label: t('nav.invoicing', 'Invoicing'), path: '/invoicing', icon: DollarSign, section: 'CRM & Bisnis' });
+      extras.push({ label: t('nav.invoicing', 'Tagihan / Invoice'), path: '/invoicing', icon: Receipt, section: 'CRM & Bisnis' });
     }
     menus.splice(menus.length - 1, 0, ...extras);
   }
