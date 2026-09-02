@@ -33,9 +33,7 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
     <>
       {active && showLabel && !hasSub && (
         <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 rounded-r-full ${
-          isClassic 
-            ? 'bg-gradient-to-b from-[#00A884] to-[#00897B] shadow-[0_0_8px_rgba(0,168,132,0.6)]' 
-            : 'bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.6)]'
+          currentPresetConfig?.indicatorClass || 'bg-gradient-to-b from-orange-500 to-amber-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]'
         }`} />
       )}
       <div className={`flex items-center ${showLabel ? 'gap-3' : 'justify-center w-full'}`}>
@@ -46,16 +44,16 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
         <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${isSubExpanded ? 'rotate-180' : ''}`} />
       )}
       {!showLabel && (
-        <div className="absolute left-14 z-[100] px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-md shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0 flex items-center hidden md:flex">
-          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+        <div className="absolute left-14 z-[100] px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-xl whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0 flex items-center hidden md:flex">
+          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
           <span className="relative z-10">{label}</span>
         </div>
       )}
     </>
   );
 
-  const activeClasses = currentPresetConfig?.activeMenuClass || 'bg-white/95 text-[#00A884] shadow-md font-bold';
-  const inactiveClasses = currentPresetConfig?.inactiveMenuClass || 'text-white/75 hover:bg-white/15 hover:text-white';
+  const activeClasses = currentPresetConfig?.activeMenuClass || 'bg-orange-50/90 text-orange-600 shadow-xs font-bold border border-orange-200/80';
+  const inactiveClasses = currentPresetConfig?.inactiveMenuClass || 'text-slate-600 hover:bg-slate-100/90 hover:text-slate-900';
 
   const baseClasses = `group relative flex items-center w-full cursor-pointer transition-all duration-200 rounded-xl hover:scale-[1.01] active:scale-95
     ${showLabel ? 'px-3 py-2.5 justify-between' : 'justify-center p-2.5'}
@@ -83,8 +81,8 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
                    onClick={onClick}
                    className={`flex items-center w-full px-3 py-2 text-xs rounded-lg transition-colors
                      ${locationPath === sub.path 
-                        ? (isClassic ? 'bg-white/20 text-white font-bold' : 'bg-slate-800 text-sky-300 font-bold border border-slate-700') 
-                        : 'text-white/70 hover:bg-white/10 hover:text-white'
+                        ? (currentPresetConfig?.activeSubmenuClass || 'bg-orange-50 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 font-bold border border-orange-200/60 dark:border-orange-900/50') 
+                        : (currentPresetConfig?.inactiveSubmenuClass || 'text-slate-500 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100')
                      }`}
                 >
                    {sub.label}
@@ -384,20 +382,28 @@ export default function Sidebar({ isExpanded, onToggle }) {
         {/* Logo + App Name */}
         <div className={`mb-4 flex-shrink-0 flex items-center gap-3 px-3 min-w-0`}>
           {config.app_logo ? (
-            <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center bg-white shadow-sm flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center bg-white shadow-xs border border-gray-100 dark:border-slate-800 flex-shrink-0">
               <img src={getApiUrl(config.app_logo)} alt="Logo" className="w-full h-full object-contain" />
             </div>
           ) : (
-            <div className={`w-9 h-9 ${currentPresetConfig?.id === 'classic' ? 'bg-white text-[#00A884]' : 'bg-blue-600 text-white'} rounded-xl flex items-center justify-center font-bold text-lg shadow-sm flex-shrink-0`}>
-              {config.app_name ? config.app_name.charAt(0) : 'R'}
+            <div className={`w-9 h-9 ${
+              currentPresetConfig?.id === 'light'
+                ? 'bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-orange-500/20'
+                : currentPresetConfig?.id === 'classic'
+                ? 'bg-white text-[#00A884]'
+                : 'bg-blue-600 text-white'
+            } rounded-xl flex items-center justify-center font-bold text-lg shadow-sm flex-shrink-0`}>
+              {config.app_name ? config.app_name.charAt(0) : 'C'}
             </div>
           )}
           {showLabel && (
             <div className="min-w-0 overflow-hidden">
-              <span className="text-white font-bold text-sm truncate block leading-tight">
+              <span className={`${currentPresetConfig?.brandTextClass || 'text-slate-900 dark:text-white'} font-bold text-sm truncate block leading-tight`}>
                 {config.app_name || 'CRMHub'}
               </span>
-              <span className="text-white/50 text-[10px] block">Omnichannel</span>
+              <span className={`${currentPresetConfig?.brandSubtextClass || 'text-slate-400 dark:text-slate-500'} text-[10px] font-semibold block tracking-wider uppercase`}>
+                Omnichannel
+              </span>
             </div>
           )}
         </div>
@@ -412,16 +418,22 @@ export default function Sidebar({ isExpanded, onToggle }) {
                 onClick={() => setShowInboxDropdown(!showInboxDropdown)}
                 className={`group relative flex items-center w-full cursor-pointer transition-all duration-200 rounded-xl
                   ${showInboxDropdown || location.pathname.startsWith('/inbox')
-                    ? (currentPresetConfig?.id === 'classic' ? 'bg-white text-[#00A884] shadow-sm font-semibold' : 'bg-slate-800 text-sky-400 font-semibold border border-slate-700')
-                    : 'text-white/75 hover:bg-white/10 hover:text-white'
+                    ? (currentPresetConfig?.id === 'light'
+                        ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 font-bold border border-orange-200/80 dark:border-orange-900/60 shadow-xs'
+                        : currentPresetConfig?.id === 'classic'
+                        ? 'bg-white text-[#00A884] shadow-sm font-semibold'
+                        : 'bg-slate-800 text-sky-400 font-semibold border border-slate-700')
+                    : (currentPresetConfig?.id === 'light'
+                        ? 'text-slate-600 dark:text-slate-300 hover:bg-slate-100/90 dark:hover:bg-slate-800/70 hover:text-slate-900 dark:hover:text-white'
+                        : 'text-white/75 hover:bg-white/10 hover:text-white')
                   }
                   ${showLabel ? 'px-3 py-2.5 gap-3' : 'justify-center p-2.5'}
                 `}
               >
                 {showInboxDropdown || location.pathname.startsWith('/inbox') ? (
-                  <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 ${currentPresetConfig?.id === 'classic' ? 'bg-[#00A884]' : 'bg-sky-400'} rounded-r-full`} />
+                  <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-r-full ${currentPresetConfig?.indicatorClass || 'bg-orange-500'}`} />
                 ) : null}
-                <Inbox className="w-5 h-5 flex-shrink-0" style={{ color: selectedInbox?.color || (currentPresetConfig?.id === 'classic' ? '#00A884' : '#38BDF8') }} />
+                <Inbox className="w-5 h-5 flex-shrink-0" style={{ color: selectedInbox?.color || (currentPresetConfig?.id === 'light' ? '#F97316' : currentPresetConfig?.id === 'classic' ? '#00A884' : '#38BDF8') }} />
                 {showLabel ? (
                   <>
                     <span className="text-sm font-medium truncate flex-1 text-left">
@@ -430,8 +442,8 @@ export default function Sidebar({ isExpanded, onToggle }) {
                     <ChevronDown className={`w-4 h-4 transition-transform ${showInboxDropdown ? 'rotate-180' : ''}`} />
                   </>
                 ) : (
-                  <div className="absolute left-14 z-[100] px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-md shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 hidden md:flex">
-                    <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                  <div className="absolute left-14 z-[100] px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-xl whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 hidden md:flex">
+                    <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
                     <span className="relative z-10">{selectedInbox ? selectedInbox.name : 'All Inboxes'}</span>
                   </div>
                 )}
@@ -439,11 +451,11 @@ export default function Sidebar({ isExpanded, onToggle }) {
 
               {/* Inbox Dropdown */}
               {showInboxDropdown && showLabel && (
-                <div className="absolute left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-[100] max-h-64 overflow-y-auto">
+                <div className="absolute left-0 right-0 mt-1 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-gray-100 dark:border-slate-800 overflow-hidden z-[100] max-h-64 overflow-y-auto">
                   <button
                     onClick={() => handleInboxSelect(null)}
-                    className={`w-full flex items-center gap-2 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left
-                      ${!selectedInbox ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'}
+                    className={`w-full flex items-center gap-2 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors text-left
+                      ${!selectedInbox ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 font-bold' : 'text-gray-700 dark:text-slate-300'}
                     `}
                   >
                     <Inbox className="w-4 h-4 text-gray-400" />
@@ -453,13 +465,13 @@ export default function Sidebar({ isExpanded, onToggle }) {
                     <button
                       key={inbox.id}
                       onClick={() => handleInboxSelect(inbox)}
-                      className={`w-full flex items-center gap-2 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left
-                        ${selectedInbox?.id === inbox.id ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'}
+                      className={`w-full flex items-center gap-2 px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors text-left
+                        ${selectedInbox?.id === inbox.id ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 font-bold' : 'text-gray-700 dark:text-slate-300'}
                       `}
                     >
                       <div
                         className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: inbox.color || '#6366f1' }}
+                        style={{ backgroundColor: inbox.color || '#F97316' }}
                       />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium truncate">{inbox.name}</div>
@@ -498,14 +510,14 @@ export default function Sidebar({ isExpanded, onToggle }) {
         </div>
 
         {/* Footer: Logout */}
-        <div className={`mt-2 pt-2 border-t border-white/20 flex-shrink-0 pb-safe md:pb-2 flex flex-col gap-0.5 ${showLabel ? 'px-2' : 'px-1'}`}>
+        <div className={`mt-2 pt-2 border-t ${currentPresetConfig?.footerBorderClass || 'border-gray-200/80 dark:border-slate-800'} flex-shrink-0 pb-safe md:pb-2 flex flex-col gap-0.5 ${showLabel ? 'px-2' : 'px-1'}`}>
 
           {/* Logout */}
           <div
             onClick={logout}
             onMouseEnter={!showLabel ? (e) => handleHover('Logout', e.currentTarget.getBoundingClientRect().top) : undefined}
             onMouseLeave={!showLabel ? () => handleHover(null) : undefined}
-            className={`flex items-center w-full p-2.5 text-white/60 hover:text-white cursor-pointer hover:bg-white/10 rounded-xl transition-colors
+            className={`flex items-center w-full p-2.5 ${currentPresetConfig?.footerTextClass || 'text-slate-500 hover:text-rose-600 hover:bg-rose-50/80 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:bg-rose-950/30'} cursor-pointer rounded-xl transition-colors
               ${showLabel ? 'gap-3 px-3' : 'justify-center'}`}
           >
             <LogOut className="w-4 h-4 flex-shrink-0" />
