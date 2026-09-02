@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import axios from 'axios';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useConfig } from './context/ConfigContext';
 import { SocketProvider } from './context/SocketContext';
@@ -20,11 +20,11 @@ import { Loader2 } from 'lucide-react';
 const PageLoader = () => (
     <div className="w-full flex-1 flex flex-col items-center justify-center min-h-[50vh] py-12 transition-opacity duration-200">
         {/* Top subtle progress bar */}
-        <div className="fixed top-0 left-0 right-0 h-0.5 bg-indigo-600/30 overflow-hidden z-[9999]">
-            <div className="h-full bg-indigo-600 w-full animate-pulse" />
+        <div className="fixed top-0 left-0 right-0 h-0.5 bg-[#008069]/30 overflow-hidden z-[9999]">
+            <div className="h-full bg-[#008069] w-full animate-pulse" />
         </div>
         <div className="flex flex-col items-center gap-2.5">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-600 dark:text-indigo-400 opacity-75" />
+            <Loader2 className="w-6 h-6 animate-spin text-[#008069] opacity-75" />
             <span className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-wide">Memuat halaman...</span>
         </div>
     </div>
@@ -241,7 +241,7 @@ const PrivateRoute = ({ children, allowedRoles, requiredPerm }) => {
         return <Navigate to="/dashboard" replace />;
     }
 
-    return children;
+    return children ? children : <Outlet />;
 };
 
 const HeadManager = () => {
@@ -294,24 +294,24 @@ function AppRoutes() {
         <>
             <HeadManager />
             <LicenseBlock />
-            <Suspense fallback={<PageLoader />}>
-                <Routes>
-                    {/* PUBLIC */}
-                    <Route path="/" element={user ? <Navigate to="/dashboard" /> : <LoginPage initialView="login" />} />
-                    <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage initialView="login" />} />
-                    <Route path="/auth/facebook/callback" element={<FacebookCallback />} />
-                    <Route path="/auth/google/callback" element={<GoogleCallback />} />
+            <Routes>
+                {/* PUBLIC STANDALONE */}
+                <Route path="/" element={user ? <Navigate to="/dashboard" /> : <LoginPage initialView="login" />} />
+                <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage initialView="login" />} />
+                <Route path="/auth/facebook/callback" element={<FacebookCallback />} />
+                <Route path="/auth/google/callback" element={<GoogleCallback />} />
 
-                    <Route path="/landing" element={<LazyLandingPage />} />
-                    <Route path="/p/:slug" element={<LazyStaticPage />} />
-                    <Route path="/p/invoice/:token" element={<LazyPublicInvoiceView />} />
-                    <Route path="/rating/:token" element={<LazyRatingPage />} />
-                    <Route path="/ref/:code" element={<LazyReferralHandler />} />
+                <Route path="/landing" element={<LazyLandingPage />} />
+                <Route path="/p/:slug" element={<LazyStaticPage />} />
+                <Route path="/p/invoice/:token" element={<LazyPublicInvoiceView />} />
+                <Route path="/rating/:token" element={<LazyRatingPage />} />
+                <Route path="/ref/:code" element={<LazyReferralHandler />} />
 
-                    {/* SUPER ADMIN */}
-                    <Route path="/admin/dashboard" element={<PrivateRoute allowedRoles={['super_admin']}><MainLayout><LazySADashboardPage /></MainLayout></PrivateRoute>} />
+                {/* SUPER ADMIN (PERSISTENT MAINLAYOUT) */}
+                <Route element={<PrivateRoute allowedRoles={['super_admin']}><MainLayout /></PrivateRoute>}>
+                    <Route path="/admin/dashboard" element={<LazySADashboardPage />} />
 
-                    <Route path="/admin/cms" element={<PrivateRoute allowedRoles={['super_admin']}><MainLayout><LazyCmsLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/admin/cms" element={<LazyCmsLayout />}>
                         <Route index element={<Navigate to="landing" replace />} />
                         <Route path="landing" element={<LazyLandingPageEditor />} />
                         <Route path="pages" element={<LazyPageList />} />
@@ -322,22 +322,24 @@ function AppRoutes() {
                         <Route path="tutorials/:id" element={<LazyTutorialEditor />} />
                     </Route>
 
-                    <Route path="/admin/members" element={<PrivateRoute allowedRoles={['super_admin']}><MainLayout><LazyMemberList /></MainLayout></PrivateRoute>} />
-                    <Route path="/admin/members/:id" element={<PrivateRoute allowedRoles={['super_admin']}><MainLayout><LazyMemberDetail /></MainLayout></PrivateRoute>} />
-                    <Route path="/admin/system" element={<PrivateRoute allowedRoles={['super_admin']}><MainLayout><LazySASettingsPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/admin/members" element={<LazyMemberList />} />
+                    <Route path="/admin/members/:id" element={<LazyMemberDetail />} />
+                    <Route path="/admin/system" element={<LazySASettingsPage />} />
+                </Route>
 
-                    {/* ADMIN MEMBER & AGENT */}
-                    <Route path="/dashboard" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazyDashboardPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/inbox" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazyInboxPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/bookings" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazyBookingsPage /></MainLayout></PrivateRoute>} />
+                {/* ADMIN MEMBER & AGENT (PERSISTENT MAINLAYOUT) */}
+                <Route element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout /></PrivateRoute>}>
+                    <Route path="/dashboard" element={<LazyDashboardPage />} />
+                    <Route path="/inbox" element={<LazyInboxPage />} />
+                    <Route path="/bookings" element={<LazyBookingsPage />} />
 
-                    <Route path="/developer" element={<PrivateRoute allowedRoles={['admin_member']}><MainLayout><LazyDeveloperLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/developer" element={<PrivateRoute allowedRoles={['admin_member']}><LazyDeveloperLayout /></PrivateRoute>}>
                         <Route index element={<Navigate to="apps" replace />} />
                         <Route path="apps" element={<LazyAppListPage />} />
                         <Route path="docs" element={<LazyApiDocsPage />} />
                     </Route>
 
-                    <Route path="/reports" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazyReportsLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/reports" element={<LazyReportsLayout />}>
                         <Route index element={<Navigate to="general" replace />} />
                         <Route path="general" element={<LazyGeneralReport />} />
                         <Route path="csat" element={<LazyCSATReportPage />} />
@@ -357,12 +359,9 @@ function AppRoutes() {
                         <Route path="api-logs" element={<LazyLogApiReport />} />
                     </Route>
 
-                    {/* Standalone Fullscreen Wallboard for TV screens */}
-                    <Route path="/wallboard" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><LazyLiveWallboardPage /></PrivateRoute>} />
-
                     <Route path="/analytics" element={<Navigate to="/reports/general" replace />} />
 
-                    <Route path="/invoicing" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_invoice"><MainLayout><LazyInvoiceLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/invoicing" element={<PrivateRoute requiredPerm="manage_invoice"><LazyInvoiceLayout /></PrivateRoute>}>
                         <Route index element={<Navigate to="list" replace />} />
                         <Route path="list" element={<LazyInvoiceListPage />} />
                         <Route path="create" element={<LazyInvoiceCreatePage />} />
@@ -371,7 +370,7 @@ function AppRoutes() {
                         <Route path="settings" element={<LazyInvoiceSettings />} />
                     </Route>
 
-                    <Route path="/chatbot" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_chatbot"><MainLayout><LazyChatbotLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/chatbot" element={<PrivateRoute requiredPerm="manage_chatbot"><LazyChatbotLayout /></PrivateRoute>}>
                         <Route index element={<Navigate to="list" replace />} />
                         <Route path="list" element={<LazyBotListPage />} />
                         <Route path="ai-agent/:id" element={<LazyAIAgentSetupPage />} />
@@ -385,14 +384,14 @@ function AppRoutes() {
                         <Route path="multi-language" element={<PrivateRoute allowedRoles={['admin_member']}><LazyMultiLanguagePage /></PrivateRoute>} />
                     </Route>
 
-                    <Route path="/contacts" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazyContactsLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/contacts" element={<LazyContactsLayout />}>
                         <Route index element={<Navigate to="list" replace />} />
                         <Route path="list" element={<LazyContactListPage />} />
                         <Route path=":id" element={<LazyContactDetailPage />} />
                         <Route path="labels" element={<LazyLabelManagementPage />} />
                     </Route>
 
-                    <Route path="/tools" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="use_tools"><MainLayout><LazyToolsLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/tools" element={<PrivateRoute requiredPerm="use_tools"><LazyToolsLayout /></PrivateRoute>}>
                         <Route index element={<Navigate to="check-number" replace />} />
                         <Route path="check-number" element={<LazyCheckNumberTool />} />
                         <Route path="group-extractor" element={<LazyGroupExtractorTool />} />
@@ -403,7 +402,7 @@ function AppRoutes() {
                         <Route path="tutorial" element={<LazyToolsTutorial />} />
                     </Route>
 
-                    <Route path="/integrations" element={<PrivateRoute allowedRoles={['admin_member']}><MainLayout><LazyIntegrationsLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/integrations" element={<PrivateRoute allowedRoles={['admin_member']}><LazyIntegrationsLayout /></PrivateRoute>}>
                         <Route index element={<Navigate to="whatsapp" replace />} />
                         <Route path="whatsapp" element={<LazyWhatsAppDevicePage />} />
                         <Route path="whatsapp-api" element={<LazyWhatsAppAPIPage />} />
@@ -428,7 +427,7 @@ function AppRoutes() {
                         <Route path="webhook" element={<LazyWebhookSettingsPage />} />
                     </Route>
 
-                    <Route path="/broadcast" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_broadcast"><MainLayout><LazyBroadcastLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/broadcast" element={<PrivateRoute requiredPerm="manage_broadcast"><LazyBroadcastLayout /></PrivateRoute>}>
                         <Route index element={<Navigate to="create" replace />} />
                         <Route path="create" element={<LazyCreateCampaign />} />
                         <Route path="reports" element={<LazyBroadcastReports />} />
@@ -442,32 +441,32 @@ function AppRoutes() {
                         <Route path="settings" element={<LazyBroadcastSettingsPage />} />
                     </Route>
 
-                    {/* Pipelines CRM Routes (Support both /pipelines and /pipeline) */}
-                    <Route path="/pipelines" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineListPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipelines/create" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipelines/editor" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipelines/editor/:id" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipelines/:id" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineBoardPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipelines/:id/board" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineBoardPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipelines/:id/edit" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
+                    {/* Pipelines CRM Routes */}
+                    <Route path="/pipelines" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineListPage /></PrivateRoute>} />
+                    <Route path="/pipelines/create" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipelines/editor" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipelines/editor/:id" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipelines/:id" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineBoardPage /></PrivateRoute>} />
+                    <Route path="/pipelines/:id/board" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineBoardPage /></PrivateRoute>} />
+                    <Route path="/pipelines/:id/edit" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
 
                     <Route path="/pipeline" element={<Navigate to="/pipelines" replace />} />
                     <Route path="/pipeline/create" element={<Navigate to="/pipelines/create" replace />} />
                     <Route path="/pipeline/editor" element={<Navigate to="/pipelines/editor" replace />} />
-                    <Route path="/pipeline/editor/:id" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipeline/:id" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineBoardPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipeline/:id/board" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineBoardPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/pipeline/:id/edit" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyPipelineEditorPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/pipeline/editor/:id" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipeline/:id" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineBoardPage /></PrivateRoute>} />
+                    <Route path="/pipeline/:id/board" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineBoardPage /></PrivateRoute>} />
+                    <Route path="/pipeline/:id/edit" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
 
                     <Route path="/followup" element={<Navigate to="/tools/follow-up" replace />} />
 
-                    <Route path="/tickets" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyTicketListPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/leads" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyLeadListPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/products" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyProductListPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/tasks" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazyTaskListPage /></MainLayout></PrivateRoute>} />
-                    <Route path="/sales-visits" element={<PrivateRoute allowedRoles={['admin_member', 'agent']} requiredPerm="manage_crm"><MainLayout><LazySalesVisitPage /></MainLayout></PrivateRoute>} />
+                    <Route path="/tickets" element={<PrivateRoute requiredPerm="manage_crm"><LazyTicketListPage /></PrivateRoute>} />
+                    <Route path="/leads" element={<PrivateRoute requiredPerm="manage_crm"><LazyLeadListPage /></PrivateRoute>} />
+                    <Route path="/products" element={<PrivateRoute requiredPerm="manage_crm"><LazyProductListPage /></PrivateRoute>} />
+                    <Route path="/tasks" element={<PrivateRoute requiredPerm="manage_crm"><LazyTaskListPage /></PrivateRoute>} />
+                    <Route path="/sales-visits" element={<PrivateRoute requiredPerm="manage_crm"><LazySalesVisitPage /></PrivateRoute>} />
 
-                    <Route path="/settings" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazySettingsLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/settings" element={<LazySettingsLayout />}>
                         <Route index element={<Navigate to="team" replace />} />
                         <Route path="ongkir" element={<LazyOngkirSettingsPage />} />
                         <Route path="assignment" element={<LazyAssignmentSettingsPage />} />
@@ -497,17 +496,20 @@ function AppRoutes() {
                         <Route path="multi-language" element={<LazyMultiLanguagePage />} />
                     </Route>
 
-                    <Route path="/account" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout><LazyAccountLayout /></MainLayout></PrivateRoute>}>
+                    <Route path="/account" element={<LazyAccountLayout />}>
                         <Route index element={<Navigate to="profile" replace />} />
                         <Route path="profile" element={<LazyAccountProfilePage />} />
                         <Route path="quick-replies" element={<LazyAccountQuickReplies />} />
                         <Route path="language" element={<LazyAccountLanguagePage />} />
                     </Route>
+                </Route>
 
-                    {/* FALLBACK */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-            </Suspense>
+                {/* Standalone Fullscreen Wallboard for TV screens */}
+                <Route path="/wallboard" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><LazyLiveWallboardPage /></PrivateRoute>} />
+
+                {/* FALLBACK */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
             <PwaInstallBanner />
             <MobileBottomNav />
         </>

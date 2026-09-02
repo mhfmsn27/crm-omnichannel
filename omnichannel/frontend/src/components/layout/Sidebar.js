@@ -25,6 +25,76 @@ const hasPerm = (user, perm) => {
   return perms.includes(perm);
 };
 
+// Dynamic route prefetch helper to eliminate initial chunk load delay
+const prefetchRoute = (path) => {
+  if (!path) return;
+  const rootPath = '/' + path.split('/')[1];
+  switch (rootPath) {
+    case '/dashboard':
+      import('../../pages/DashboardPage');
+      break;
+    case '/inbox':
+      import('../../pages/InboxPage');
+      break;
+    case '/contacts':
+      import('../../pages/Contacts/ContactsLayout');
+      import('../../pages/Contacts/ContactListPage');
+      break;
+    case '/bookings':
+      import('../../pages/Bookings/BookingsPage');
+      break;
+    case '/broadcast':
+      import('../../pages/Broadcast/BroadcastLayout');
+      import('../../pages/Broadcast/CreateCampaign');
+      break;
+    case '/chatbot':
+      import('../../pages/Chatbot/ChatbotLayout');
+      import('../../pages/Chatbot/BotListPage');
+      break;
+    case '/pipelines':
+    case '/pipeline':
+      import('../../pages/Pipeline/PipelineListPage');
+      break;
+    case '/products':
+      import('../../pages/Products/ProductListPage');
+      break;
+    case '/tasks':
+      import('../../pages/Tasks/TaskListPage');
+      break;
+    case '/tickets':
+      import('../../pages/Tickets/TicketListPage');
+      break;
+    case '/invoicing':
+      import('../../pages/Invoicing/InvoiceLayout');
+      import('../../pages/Invoicing/InvoiceList');
+      break;
+    case '/reports':
+    case '/analytics':
+      import('../../pages/Reports/ReportsLayout');
+      import('../../pages/Reports/GeneralReport');
+      break;
+    case '/tools':
+      import('../../pages/Tools/ToolsLayout');
+      break;
+    case '/integrations':
+      import('../../pages/Integrations/IntegrationsLayout');
+      import('../../pages/Integrations/WhatsAppDevicePage');
+      break;
+    case '/settings':
+      import('../../pages/Settings/SettingsLayout');
+      import('../../pages/Settings/TeamSettings');
+      break;
+    case '/developer':
+      import('../../pages/Developer/DeveloperLayout');
+      break;
+    case '/account':
+      import('../../pages/Account/AccountLayout');
+      break;
+    default:
+      break;
+  }
+};
+
 const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems, isSubExpanded, onToggleSub, locationPath, currentPresetConfig }) => {
   const hasSub = subItems && subItems.length > 0;
   const isClassic = currentPresetConfig?.id === 'classic';
@@ -82,7 +152,12 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
           {content}
         </button>
       ) : (
-        <Link to={to} onClick={onClick} className={baseClasses}>
+        <Link 
+          to={to} 
+          onClick={onClick} 
+          onMouseEnter={() => prefetchRoute(to)}
+          className={baseClasses}
+        >
           {content}
         </Link>
       )}
@@ -95,6 +170,7 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
                    key={idx}
                    to={sub.path}
                    onClick={onClick}
+                   onMouseEnter={() => prefetchRoute(sub.path)}
                    className={`flex items-center w-full px-3 py-1.5 text-xs rounded-lg transition-all duration-200 hover:translate-x-1.5
                      ${locationPath === sub.path 
                         ? (currentPresetConfig?.activeSubmenuClass || 'bg-[#E7F7F2] dark:bg-[#008069]/25 text-[#008069] dark:text-[#25D366] font-bold border border-[#A2E2CD]/80') 

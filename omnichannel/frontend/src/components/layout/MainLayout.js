@@ -1,11 +1,25 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import React, { useEffect, useState, useCallback, Suspense } from 'react';
+import { useLocation, Link, Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import axios from 'axios';
-import { WifiOff } from 'lucide-react';
+import { WifiOff, Loader2 } from 'lucide-react';
 import { useSocket } from '../../context/SocketContext';
-import { HeaderProvider } from '../../context/HeaderContext'; // Import Provider
+import { HeaderProvider } from '../../context/HeaderContext';
+
+// Non-disruptive smooth loader for internal page transitions
+const ContentLoader = () => (
+    <div className="w-full flex-1 flex flex-col items-center justify-center min-h-[40vh] py-12 animate-in fade-in duration-150">
+        {/* Top subtle progress bar */}
+        <div className="fixed top-0 left-0 right-0 h-0.5 bg-[#008069]/30 overflow-hidden z-[9999]">
+            <div className="h-full bg-[#008069] w-full animate-pulse" />
+        </div>
+        <div className="flex flex-col items-center gap-2.5">
+            <Loader2 className="w-6 h-6 animate-spin text-[#008069] opacity-80" />
+            <span className="text-xs font-medium text-slate-400 dark:text-slate-500 tracking-wide">Memuat halaman...</span>
+        </div>
+    </div>
+);
 
 export default function MainLayout({ children }) {
     const location = useLocation();
@@ -33,7 +47,6 @@ export default function MainLayout({ children }) {
         if (location.pathname.startsWith('/admin')) return;
         try {
             const res = await axios.get('/api/app/devices');
-            // Filter: Unofficial AND Disconnected (Case Insensitive)
             const list = Array.isArray(res.data) ? res.data : [];
             const offline = list.filter(d =>
                 d.type !== 'official' &&
@@ -53,7 +66,6 @@ export default function MainLayout({ children }) {
     useEffect(() => {
         if (!socket || !socket.on) return;
 
-        // Re-check on connection to ensure sync
         socket.on('connect', () => {
             checkDevices();
         });
@@ -75,8 +87,8 @@ export default function MainLayout({ children }) {
             <div className="flex min-h-screen bg-gray-50 dark:bg-[#0f172a] text-gray-800 dark:text-slate-50 transition-colors duration-200">
                 <Sidebar isExpanded={isSidebarExpanded} onToggle={toggleSidebar} />
 
-                {/* Margin follows sidebar width: w-56 (expanded) or w-16 (collapsed) */}
-                <div className={`flex-1 flex flex-col ml-0 transition-all duration-300 min-w-0 ${isSidebarExpanded ? 'md:ml-56' : 'md:ml-16'}`}>
+                {/* Margin follows sidebar width: w-60 (expanded) or w-16 (collapsed) */}
+                <div className={`flex-1 flex flex-col ml-0 transition-all duration-300 min-w-0 ${isSidebarExpanded ? 'md:ml-60' : 'md:ml-16'}`}>
                     
                     {/* Sticky Container for Alert & Header */}
                     {!isInbox && (
@@ -109,7 +121,9 @@ export default function MainLayout({ children }) {
                     )}
                     
                     <div className={`flex-1 relative ${isInbox ? '' : 'pb-16 md:pb-0'}`}>
-                        {children}
+                        <Suspense fallback={<ContentLoader />}>
+                            {children || <Outlet />}
+                        </Suspense>
                     </div>
                 </div>
             </div>
