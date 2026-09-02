@@ -37,16 +37,26 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
         }`} />
       )}
       <div className={`flex items-center ${showLabel ? 'gap-3 min-w-0 flex-1' : 'justify-center w-full'}`}>
-        <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-colors ${
+        <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-all duration-200 ${
           active 
-            ? (isClassic ? 'text-white' : 'text-[#008069] dark:text-[#25D366]') 
-            : (isClassic ? 'text-white/75' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-white')
+            ? (isClassic ? 'text-white scale-105' : 'text-[#008069] dark:text-[#25D366] scale-105') 
+            : (isClassic ? 'text-white/75 group-hover:text-white group-hover:scale-110' : 'text-slate-500 dark:text-slate-400 group-hover:text-[#008069] dark:group-hover:text-[#25D366] group-hover:scale-110')
         }`} />
-        {showLabel && <span className="text-[13px] font-medium truncate">{label}</span>}
+        {showLabel && (
+          <span className={`text-[13px] transition-all duration-200 truncate ${
+            active 
+              ? 'font-bold' 
+              : 'font-medium group-hover:font-semibold group-hover:text-[#008069] dark:group-hover:text-[#25D366]'
+          }`}>
+            {label}
+          </span>
+        )}
       </div>
       {showLabel && hasSub && (
-        <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${
-          isSubExpanded ? 'rotate-180 text-[#008069]' : 'text-slate-400'
+        <ChevronDown className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${
+          isSubExpanded 
+            ? 'rotate-180 text-[#008069] dark:text-[#25D366]' 
+            : 'text-slate-400 group-hover:text-[#008069] dark:group-hover:text-[#25D366]'
         }`} />
       )}
       {!showLabel && (
@@ -59,10 +69,10 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
   );
 
   const activeClasses = currentPresetConfig?.activeMenuClass || 'bg-[#E7F7F2] text-[#008069] shadow-2xs font-bold border border-[#A2E2CD]';
-  const inactiveClasses = currentPresetConfig?.inactiveMenuClass || 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-200/60 border border-transparent';
+  const inactiveClasses = currentPresetConfig?.inactiveMenuClass || 'text-slate-600 dark:text-slate-300 hover:bg-[#E7F7F2]/70 dark:hover:bg-[#008069]/15 hover:text-[#008069] dark:hover:text-[#25D366] hover:border-[#A2E2CD]/70 dark:hover:border-[#008069]/30 border border-transparent';
 
-  const baseClasses = `group relative flex items-center w-full cursor-pointer transition-all duration-150 rounded-xl
-    ${showLabel ? 'px-3 py-2.5 justify-between' : 'justify-center p-2.5'}
+  const baseClasses = `group relative flex items-center w-full cursor-pointer transition-all duration-200 ease-out rounded-xl
+    ${showLabel ? 'px-3 py-2.5 justify-between hover:translate-x-1.5' : 'justify-center p-2.5 hover:scale-105'}
     ${active || isSubExpanded ? activeClasses : inactiveClasses}`;
 
   return (
@@ -85,10 +95,10 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
                    key={idx}
                    to={sub.path}
                    onClick={onClick}
-                   className={`flex items-center w-full px-3 py-1.5 text-xs rounded-lg transition-colors
+                   className={`flex items-center w-full px-3 py-1.5 text-xs rounded-lg transition-all duration-200 hover:translate-x-1.5
                      ${locationPath === sub.path 
                         ? (currentPresetConfig?.activeSubmenuClass || 'bg-[#E7F7F2] dark:bg-[#008069]/25 text-[#008069] dark:text-[#25D366] font-bold border border-[#A2E2CD]/80') 
-                        : (currentPresetConfig?.inactiveSubmenuClass || 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100')
+                        : (currentPresetConfig?.inactiveSubmenuClass || 'text-slate-500 dark:text-slate-400 hover:bg-[#E7F7F2]/60 dark:hover:bg-[#008069]/15 hover:text-[#008069] dark:hover:text-[#25D366]')
                      }`}
                 >
                    {sub.label}
@@ -438,28 +448,28 @@ export default function Sidebar({ isExpanded, onToggle }) {
             <div ref={dropdownRef} className="relative mb-1">
               <button
                 onClick={() => setShowInboxDropdown(!showInboxDropdown)}
-                className={`group relative flex items-center w-full cursor-pointer transition-all duration-150 rounded-xl
+                className={`group relative flex items-center w-full cursor-pointer transition-all duration-200 ease-out rounded-xl
                   ${showInboxDropdown || location.pathname.startsWith('/inbox')
                     ? (currentPresetConfig?.id === 'classic' 
                         ? 'bg-white text-[#00A884] shadow-sm font-semibold' 
                         : 'bg-[#E7F7F2] dark:bg-[#008069]/20 text-[#008069] dark:text-[#25D366] font-bold border border-[#A2E2CD] dark:border-[#008069]/40 shadow-2xs')
                     : (currentPresetConfig?.id === 'classic'
                         ? 'text-white/75 hover:bg-white/10 hover:text-white'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/70 hover:text-slate-900 dark:hover:text-white border border-transparent')
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-[#E7F7F2]/70 dark:hover:bg-[#008069]/15 hover:text-[#008069] dark:hover:text-[#25D366] hover:border-[#A2E2CD]/70 dark:hover:border-[#008069]/30 border border-transparent hover:translate-x-1.5')
                   }
-                  ${showLabel ? 'px-3 py-2.5 gap-3' : 'justify-center p-2.5'}
+                  ${showLabel ? 'px-3 py-2.5 gap-3' : 'justify-center p-2.5 hover:scale-105'}
                 `}
               >
                 {showInboxDropdown || location.pathname.startsWith('/inbox') ? (
                   <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-r-full ${currentPresetConfig?.indicatorClass || 'bg-[#008069]'}`} />
                 ) : null}
-                <Inbox className="w-5 h-5 flex-shrink-0" style={{ color: selectedInbox?.color || (currentPresetConfig?.id === 'classic' ? '#00A884' : '#008069') }} />
+                <Inbox className="w-5 h-5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: selectedInbox?.color || (currentPresetConfig?.id === 'classic' ? '#00A884' : '#008069') }} />
                 {showLabel ? (
                   <>
-                    <span className="text-[13px] font-medium truncate flex-1 text-left">
+                    <span className="text-[13px] font-medium group-hover:font-semibold truncate flex-1 text-left transition-colors">
                       {selectedInbox ? selectedInbox.name : 'Semua Kotak Masuk'}
                     </span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${showInboxDropdown ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showInboxDropdown ? 'rotate-180' : ''}`} />
                   </>
                 ) : (
                   <div className="absolute left-14 z-[100] px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-xl whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 hidden md:flex">
@@ -557,13 +567,13 @@ export default function Sidebar({ isExpanded, onToggle }) {
 
           {/* User Mini Profile Card (when expanded) */}
           {showLabel && user && (
-            <div className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl ${
+            <div className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 ${
               currentPresetConfig?.id === 'classic' 
                 ? 'bg-white/10 text-white' 
-                : 'bg-slate-50/70 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800'
+                : 'bg-slate-50/70 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 hover:border-[#A2E2CD]/60 hover:bg-[#E7F7F2]/30'
             }`}>
               <div className={`w-7 h-7 rounded-lg ${
-                currentPresetConfig?.id === 'classic' ? 'bg-white text-[#00A884]' : 'bg-[#008069] text-white'
+                currentPresetConfig?.id === 'classic' ? 'bg-white text-[#00A884]' : 'bg-[#008069] text-white shadow-2xs'
               } flex items-center justify-center font-bold text-xs flex-shrink-0`}>
                 {(user.name || user.email || 'U').charAt(0).toUpperCase()}
               </div>
@@ -587,10 +597,10 @@ export default function Sidebar({ isExpanded, onToggle }) {
             onClick={logout}
             onMouseEnter={!showLabel ? (e) => handleHover('Logout', e.currentTarget.getBoundingClientRect().top) : undefined}
             onMouseLeave={!showLabel ? () => handleHover(null) : undefined}
-            className={`flex items-center w-full p-2 ${currentPresetConfig?.footerTextClass || 'text-slate-500 hover:text-rose-600 hover:bg-rose-50/80 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:bg-rose-950/30'} cursor-pointer rounded-xl transition-colors border border-transparent hover:border-rose-200/50
-              ${showLabel ? 'gap-3 px-3' : 'justify-center'}`}
+            className={`group flex items-center w-full p-2 ${currentPresetConfig?.footerTextClass || 'text-slate-500 hover:text-rose-600 hover:bg-rose-50/80 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:bg-rose-950/30'} cursor-pointer rounded-xl transition-all duration-200 ease-out border border-transparent hover:border-rose-200/50 hover:translate-x-1.5
+              ${showLabel ? 'gap-3 px-3' : 'justify-center hover:scale-105'}`}
           >
-            <LogOut className="w-4 h-4 flex-shrink-0" />
+            <LogOut className="w-4 h-4 flex-shrink-0 transition-transform duration-200 group-hover:-translate-x-0.5" />
             {showLabel && <span className="text-xs font-semibold">Keluar / Logout</span>}
           </div>
         </div>
