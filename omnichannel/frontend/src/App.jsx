@@ -214,10 +214,7 @@ const hasPerm = (user, perm) => {
     if (user.role === 'admin_member' || user.role === 'super_admin') return true;
 
     const perms = Array.isArray(user.permissions) ? user.permissions : [];
-    if (user.role === 'agent' && user.role_level >= 10 && perms.includes(perm)) {
-        return true;
-    }
-    return false;
+    return perms.includes(perm);
 };
 
 const PrivateRoute = ({ children, allowedRoles, requiredPerm }) => {

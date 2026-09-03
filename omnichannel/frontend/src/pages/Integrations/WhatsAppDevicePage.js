@@ -851,6 +851,41 @@ export default function WhatsAppDevicePage() {
         };
     }, [socket, isConnected, scanningSessionId]);
 
+    // Polling fallback for QR code if WebSocket/Webhook delayed
+    useEffect(() => {
+        if (!isQrModalOpen || !scanningSessionId) return;
+
+        let isMounted = true;
+        const checkQr = async () => {
+            try {
+                const res = await axios.get(`/api/app/devices/${scanningSessionId}/qr`);
+                if (!isMounted) return;
+                if (res.data?.qr) {
+                    setCurrentQr(res.data.qr);
+                }
+                if (res.data?.status === 'CONNECTED' || res.data?.status === 'connected') {
+                    setIsQrModalOpen(false);
+                    setScanningSessionId(null);
+                    setCurrentQr(null);
+                    fetchDevices();
+                    fetchStats();
+                    toast.success('Device Connected!');
+                }
+            } catch (e) { }
+        };
+
+        // Fetch immediately
+        checkQr();
+
+        // Interval every 2.5 seconds
+        const interval = setInterval(checkQr, 2500);
+
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
+    }, [isQrModalOpen, scanningSessionId]);
+
     // --- HANDLERS ---
     const handleAddDevice = async ({ name, isWarmerOnly, syncFullHistory, syncContacts }) => {
         setLoading(true);
