@@ -4,6 +4,7 @@ import * as customFieldController from '../controllers/customFieldController.js'
 import * as labelController from '../controllers/labelController.js';
 import * as autoLabelController from '../controllers/autoLabelController.js';
 import * as shortLinkController from '../controllers/shortLinkController.js';
+import * as analysisController from '../controllers/analysisController.js';
 import { robustUpload } from '../middleware/uploadMiddleware.js';
 
 const router = express.Router();
@@ -18,6 +19,8 @@ router.get('/:contactId/field-values', customFieldController.getContactFieldValu
 router.post('/:contactId/field-values', customFieldController.saveContactFieldValues);
 
 // --- Specific Contact Query Routes (Must precede /:id) ---
+router.get('/leads', analysisController.getLeads);
+router.get('/search', contactController.getContacts);
 router.get('/device-counts', contactController.getContactCountsByDevice);
 router.get('/segment-count', contactController.getContactSegmentCount);
 router.get('/by-device', contactController.getContactsByDevice);
@@ -37,6 +40,10 @@ router.post('/bulk-delete', contactController.bulkDelete);
 router.post('/bulk-label', contactController.bulkAssignLabel);
 router.post('/import', robustUpload, contactController.importContacts);
 router.get('/unsubscribe-logs', contactController.getUnsubscribeLogs);
+
+// --- Lead Actions ---
+router.post('/:id/qualify', analysisController.requalifyContact);
+router.patch('/:id/lead-status', analysisController.updateLeadStatus);
 
 // --- Contact CRUD ---
 router.get('/', contactController.getContacts);

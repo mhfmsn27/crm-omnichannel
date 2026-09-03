@@ -109,12 +109,23 @@ export const createSession = async (sessionName, syncFullHistory = false) => {
 export const startSession = async (sessionId) => {
   const endpoint = `${GATEWAY_URL}/sessions/${sessionId}/start`;
   try {
-    await axios.post(endpoint, { webhookUrl: WEBHOOK_URL }, { headers: getHeaders(), timeout: TIMEOUT });
-    return true;
+    const res = await axios.post(endpoint, { webhookUrl: WEBHOOK_URL }, { headers: getHeaders(), timeout: TIMEOUT });
+    return res.data || { status: 'STARTED' };
   } catch (error) {
     const status = error.response?.status;
-    if (status === 404 || status === 403) return false;
-    return false;
+    if (status === 404 || status === 403) return null;
+    return null;
+  }
+};
+
+// 2.5 Get Session Status (including live QR code if NEED_QR)
+export const getSessionStatus = async (sessionId) => {
+  const endpoint = `${GATEWAY_URL}/sessions/${sessionId}/status`;
+  try {
+    const res = await axios.get(endpoint, { headers: getHeaders(), timeout: 10000 });
+    return res.data;
+  } catch (error) {
+    return null;
   }
 };
 

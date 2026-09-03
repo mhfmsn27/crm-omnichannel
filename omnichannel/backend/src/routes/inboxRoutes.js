@@ -10,6 +10,7 @@ import * as ticketController from '../controllers/ticketController.js';
 import * as inboxSettingsController from '../controllers/inboxSettingsController.js';
 import * as inboxIsolationController from '../controllers/inboxIsolationController.js';
 import * as contactController from '../controllers/contactController.js';
+import * as analysisController from '../controllers/analysisController.js';
 import { robustUpload } from '../middleware/uploadMiddleware.js';
 import { requireActiveSubscription } from '../middleware/planMiddleware.js';
 import { checkSystemFlag } from '../services/systemGateService.js';
@@ -21,6 +22,7 @@ router.use(checkSystemFlag('mod_inbox'));
 
 // --- Conversations CRUD & Listing ---
 router.get('/conversations', inboxController.getConversations);
+router.get('/conversations/urgent', analysisController.getUrgentConversations);
 router.get('/count', inboxController.getUnreadCount);
 router.post('/conversations', requireActiveSubscription, inboxController.createConversation);
 router.post('/conversations/bulk-action', inboxController.bulkActionConversations);
@@ -51,6 +53,7 @@ router.post('/conversations/:id/mute', inboxController.toggleMuteConversation);
 router.delete('/conversations/:id/messages', inboxController.clearChat);
 router.delete('/conversations/:id', inboxController.deleteConversation);
 router.post('/conversations/:id/labels', inboxController.updateLabels);
+router.patch('/conversations/:id/urgency', analysisController.setUrgency);
 router.get('/conversations/:id/media', inboxController.getMediaGallery);
 
 // --- Message Level Actions ---

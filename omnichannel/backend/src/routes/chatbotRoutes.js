@@ -31,6 +31,7 @@ router.post('/kb/qa', checkSystemFlag('mod_chatbot'), chatbotController.addQA);
 router.delete('/kb/qa/:id', checkSystemFlag('mod_chatbot'), chatbotController.deleteQA);
 router.post('/kb/upload', checkSystemFlag('mod_chatbot'), robustUpload, chatbotController.uploadAsset);
 router.delete('/kb/assets/:id', checkSystemFlag('mod_chatbot'), chatbotController.deleteAsset);
+router.delete('/assets/:id', checkSystemFlag('mod_chatbot'), chatbotController.deleteAsset);
 router.post('/knowledge/generate-from-chat', checkSystemFlag('mod_chatbot'), chatbotController.generateQAFromChat);
 router.post('/knowledge/save-generated', checkSystemFlag('mod_chatbot'), chatbotController.saveGeneratedQA);
 

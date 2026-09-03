@@ -25,6 +25,8 @@ router.put('/stages/:id', pipelineController.updateStage);
 router.delete('/stages/:id', pipelineController.deleteStage);
 
 // --- Conversation Pipeline / Deal Actions ---
+router.get('/deals', pipelineController.getContactDeals);
+router.get('/tickets', ticketController.getTickets);
 router.post('/conversations/:conversationId/pipeline', pipelineController.setConversationStage);
 router.patch('/conversations/:conversationId/deal', pipelineController.updateDealDetails);
 

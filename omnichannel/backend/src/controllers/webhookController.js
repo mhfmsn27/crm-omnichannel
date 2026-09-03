@@ -524,6 +524,74 @@ export const handleWAWebhook = async (req, res) => {
             return;
         }
 
+        // Message revoke / unsend
+        if (messageObj.protocolMessage && (messageObj.protocolMessage.type === 0 || messageObj.protocolMessage.type === 'REVOKE')) {
+            const targetMessageId = messageObj.protocolMessage.key?.id;
+            if (targetMessageId) {
+                try {
+                    const sessionRes = await pool.query('SELECT organization_id FROM whatsapp_sessions WHERE session_id = $1 LIMIT 1', [sessionId]);
+                    if (sessionRes.rows.length > 0) {
+                        const orgId = sessionRes.rows[0].organization_id;
+                        const resMsg = await pool.query(`UPDATE messages SET content = '[Pesan ini telah ditarik]', type = 'revoked' WHERE wa_message_id = $1 RETURNING conversation_id`, [targetMessageId]);
+                        if (resMsg.rows.length > 0) {
+                            const { conversation_id } = resMsg.rows[0];
+                            if (req.io) req.io.to(`org_${orgId}`).emit('message_revoked', { wa_message_id: targetMessageId, conversation_id });
+                        }
+                    }
+                } catch (e) {
+                    console.error('[Webhook] Revoke Error:', e.message);
+                }
+            }
+            if (!res.headersSent) res.sendStatus(200);
+            return;
+        }
+
+        // Emoji reactions
+        if (messageObj.reactionMessage) {
+            const targetMessageId = messageObj.reactionMessage.key?.id;
+            const emoji = messageObj.reactionMessage.text || '';
+            const senderId = from || body.data?.key?.remoteJid || '';
+
+            if (targetMessageId) {
+                try {
+                    const sessionRes = await pool.query('SELECT organization_id FROM whatsapp_sessions WHERE session_id = $1 LIMIT 1', [sessionId]);
+                    if (sessionRes.rows.length > 0) {
+                        const orgId = sessionRes.rows[0].organization_id;
+                        const resMsg = await pool.query('SELECT id, conversation_id, reactions FROM messages WHERE wa_message_id = $1', [targetMessageId]);
+                        if (resMsg.rows.length > 0) {
+                            const msgId = resMsg.rows[0].id;
+                            const conversation_id = resMsg.rows[0].conversation_id;
+                            let reactions = resMsg.rows[0].reactions || [];
+                            if (typeof reactions === 'string') {
+                                try { reactions = JSON.parse(reactions); } catch (e) { reactions = []; }
+                            }
+                            if (!Array.isArray(reactions)) reactions = [];
+
+                            reactions = reactions.filter(r => r.from !== senderId);
+
+                            if (emoji) {
+                                reactions.push({ emoji, from: senderId, time: new Date().toISOString() });
+                            }
+
+                            await pool.query('UPDATE messages SET reactions = $1 WHERE id = $2', [JSON.stringify(reactions), msgId]);
+
+                            if (req.io) {
+                                req.io.to(`org_${orgId}`).emit('message_reaction', {
+                                    message_id: msgId,
+                                    conversation_id,
+                                    reactions
+                                });
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('[Webhook] Reaction Error:', e.message);
+                }
+            }
+            if (!res.headersSent) res.sendStatus(200);
+            return;
+        }
+
         const contextInfo = messageObj.extendedTextMessage?.contextInfo
             || messageObj.imageMessage?.contextInfo
             || messageObj.videoMessage?.contextInfo

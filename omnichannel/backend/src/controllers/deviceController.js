@@ -4,6 +4,8 @@ import redisConnection from '../config/redis.js';
 import { checkFeatureAccess } from '../services/featureGateService.js';
 import { resolveLidMappings } from './webhookController.js';
 import { isHideDeviceDataEnabled } from '../utils/organizationSettings.js';
+import { latestQrCache } from './webhook/webhookEventHandlers.js';
+import { uuidRegex } from '../utils/validators.js';
 
 // --- DEVICES ---
 
@@ -213,8 +215,18 @@ export const addDevice = async (req, res) => {
         deviceResult = dbRes.rows[0];
         await client.query('COMMIT');
 
-        // 4. Start Session (Non-blocking)
-        waService.startSession(gatewaySessionId).catch(e => console.warn("Auto-start warning:", e.message));
+        // 4. Start Session (Non-blocking but listen for immediate QR)
+        waService.startSession(gatewaySessionId).then((statusData) => {
+            if (statusData?.qr) {
+                latestQrCache.set(gatewaySessionId, statusData.qr);
+                if (req.io) {
+                    req.io.to(`org_${organization_id}`).emit('qr_received', {
+                        sessionId: gatewaySessionId,
+                        qr: statusData.qr
+                    });
+                }
+            }
+        }).catch(e => console.warn("Auto-start warning:", e.message));
 
         res.status(201).json(deviceResult);
 
@@ -224,6 +236,44 @@ export const addDevice = async (req, res) => {
         res.status(500).json({ error: err.message });
     } finally {
         client.release();
+    }
+};
+
+// GET /api/app/devices/:id/qr — Live QR Code fetcher & fallback polling
+export const getDeviceQrCode = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+
+    try {
+        let session_id = id;
+        if (!uuidRegex.test(id)) {
+            const devRes = await pool.query('SELECT session_id FROM whatsapp_sessions WHERE id = $1 AND organization_id = $2', [id, organization_id]);
+            if (devRes.rows.length === 0) return res.status(404).json({ error: 'Device not found' });
+            session_id = devRes.rows[0].session_id;
+        }
+
+        // 1. Check in-memory cache
+        let qr = latestQrCache.get(session_id);
+        if (qr) {
+            return res.json({ sessionId: session_id, qr, status: 'NEED_QR' });
+        }
+
+        // 2. Fetch live status directly from Gateway
+        const gwStatus = await waService.getSessionStatus(session_id);
+        if (gwStatus) {
+            if (gwStatus.qr) {
+                latestQrCache.set(session_id, gwStatus.qr);
+            }
+            return res.json({
+                sessionId: session_id,
+                qr: gwStatus.qr || null,
+                status: gwStatus.status
+            });
+        }
+
+        return res.json({ sessionId: session_id, qr: null, status: 'INITIALIZING' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
 
@@ -402,9 +452,18 @@ export const retryDevice = async (req, res) => {
         await redisConnection.del(`groups_full_data:${newSessionId}`);
         await redisConnection.del(`groups_list:${newSessionId}`);
 
-        // 5. START new session (Non-blocking for fast response)
-        // QR will appear via Socket event when ready
-        waService.startSession(newSessionId).catch(e => console.warn("[Retry] Auto-start warning:", e.message));
+        // 5. START new session (Non-blocking but listen for immediate QR)
+        waService.startSession(newSessionId).then((statusData) => {
+            if (statusData?.qr) {
+                latestQrCache.set(newSessionId, statusData.qr);
+                if (req.io) {
+                    req.io.to(`org_${organization_id}`).emit('qr_received', {
+                        sessionId: newSessionId,
+                        qr: statusData.qr
+                    });
+                }
+            }
+        }).catch(e => console.warn("[Retry] Auto-start warning:", e.message));
 
         res.json({
             message: 'Retry initiated (Session Reset)',

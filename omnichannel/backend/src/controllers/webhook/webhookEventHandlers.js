@@ -4,12 +4,15 @@ import redisConnection from '../../config/redis.js';
 import { dispatchToApps, dispatchOrgEvent } from '../../services/webhookDispatcher.js';
 import { sendDeviceDisconnectedEmail } from '../../services/emailService.js';
 
+export const latestQrCache = new Map();
+
 export const handleQrUpdate = async (req, res, sessionId, qrCode) => {
     try {
         if (!qrCode) {
             if (res && !res.headersSent) res.sendStatus(200);
             return;
         }
+        latestQrCache.set(sessionId, qrCode);
         const sessionRes = await pool.query('SELECT organization_id FROM whatsapp_sessions WHERE session_id = $1', [sessionId]);
         if (sessionRes.rows.length > 0) {
             const { organization_id } = sessionRes.rows[0];

@@ -37,9 +37,20 @@ import { requireRole } from '../middleware/roleMiddleware.js';
 const router = express.Router();
 
 // --- Devices & Channels ---
-router.get('/devices', deviceController.getDevices);
+router.get('/devices/health/stats', deviceController.getDeviceHealthStats);
+router.get('/devices/health/optimal-times', deviceController.getOptimalTimes);
+router.get('/devices/health', deviceController.getDeviceHealth);
 router.get('/devices/stats', deviceController.getDeviceStats);
+router.get('/devices', deviceController.getDevices);
 router.post('/devices', deviceController.addDevice);
+router.get('/devices/:id/qr', deviceController.getDeviceQrCode);
+router.get('/devices/:id/report', deviceController.getDeviceReport);
+router.post('/devices/:id/retry', deviceController.retryDevice);
+router.post('/devices/:id/test', deviceController.sendTestMessage);
+router.post('/devices/:id/test-message', deviceController.sendTestMessage);
+router.post('/devices/:id/resolve-lids', deviceController.resolveAllLidContacts);
+router.get('/devices/:id/count-lids', deviceController.countLidContacts);
+router.put('/devices/:id', deviceController.updateDevice);
 router.delete('/devices/:id', deviceController.deleteDevice);
 
 // --- Webchat Config ---

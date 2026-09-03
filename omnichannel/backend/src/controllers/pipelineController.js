@@ -419,3 +419,27 @@ export const exportPipelineData = async (req, res) => {
         res.status(500).json({ error: "Failed to export CSV" });
     }
 };
+
+// GET /api/app/crm/deals?contact_id=... — Deals for Customer 360 Drawer
+export const getContactDeals = async (req, res) => {
+    const { organization_id } = req.user;
+    const { contact_id } = req.query;
+
+    try {
+        if (!contact_id) return res.json({ data: [] });
+
+        const result = await pool.query(`
+            SELECT c.id, c.pipeline_id, c.pipeline_stage_id, c.value, c.stage_changed_at,
+                   p.name as pipeline_name, ps.name as stage_name, ps.color as stage_color
+            FROM conversations c
+            JOIN pipelines p ON c.pipeline_id = p.id
+            JOIN pipeline_stages ps ON c.pipeline_stage_id = ps.id
+            WHERE c.organization_id = $1 AND c.contact_id = $2
+            ORDER BY c.stage_changed_at DESC NULLS LAST
+        `, [organization_id, contact_id]);
+
+        res.json({ data: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};

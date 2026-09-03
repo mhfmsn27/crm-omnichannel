@@ -223,6 +223,8 @@ api.use('/app/tickets', ticketRoutes);
 api.use('/app/analytics', analyticsRoutes);
 api.use('/app/journeys', journeyRoutes);
 api.use('/app/attribution', attributionRoutes);
+api.use('/app/short-links', attributionRoutes);
+api.use('/app/tracking', attributionRoutes);
 api.use('/app/gamification', gamificationRoutes);
 api.use('/app/csat', csatRoutes);
 api.use('/app/reports', reportRoutes);

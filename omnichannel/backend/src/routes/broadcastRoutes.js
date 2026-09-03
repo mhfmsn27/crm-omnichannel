@@ -26,13 +26,23 @@ router.post('/campaigns/:id/recipients/:recipientId/retry', checkSystemFlag('mod
 router.get('/settings', checkSystemFlag('mod_broadcast'), broadcastController.getBroadcastSettings);
 router.put('/settings', checkSystemFlag('mod_broadcast'), broadcastController.updateBroadcastSettings);
 router.post('/settings/telegram/test', checkSystemFlag('mod_broadcast'), broadcastController.testTelegramNotification);
+router.post('/settings/test-telegram', checkSystemFlag('mod_broadcast'), broadcastController.testTelegramNotification);
 router.post('/settings/email/test', checkSystemFlag('mod_broadcast'), broadcastController.testEmailNotification);
+router.post('/settings/test-email', checkSystemFlag('mod_broadcast'), broadcastController.testEmailNotification);
 
 // --- Scheduled Broadcasts ---
 router.get('/scheduled', checkSystemFlag('mod_broadcast'), broadcastScheduleController.getScheduled);
 router.post('/scheduled', checkSystemFlag('mod_broadcast'), broadcastScheduleController.createScheduled);
 router.put('/scheduled/:id', checkSystemFlag('mod_broadcast'), broadcastScheduleController.updateScheduled);
 router.put('/scheduled/:id/cancel', checkSystemFlag('mod_broadcast'), broadcastScheduleController.cancelScheduled);
+router.get('/', checkSystemFlag('mod_broadcast'), (req, res, next) => {
+    if (req.query.status === 'scheduled') {
+        return broadcastScheduleController.getScheduled(req, res, next);
+    }
+    return broadcastController.getCampaigns(req, res, next);
+});
+router.post('/', checkSystemFlag('mod_broadcast'), broadcastScheduleController.createScheduled);
+router.put('/:id/cancel', checkSystemFlag('mod_broadcast'), broadcastScheduleController.cancelScheduled);
 
 // --- Warmer Circle ---
 router.get('/warmer', warmerController.getWarmers);

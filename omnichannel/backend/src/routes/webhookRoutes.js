@@ -1,5 +1,8 @@
 import express from 'express';
 import * as webhookController from '../controllers/webhookController.js';
+import * as dokuController from '../controllers/dokuController.js';
+import * as tripayController from '../controllers/tripayController.js';
+import * as xenditController from '../controllers/xenditController.js';
 import * as xenditCallbackController from '../controllers/xenditCallbackController.js';
 import * as invoiceWebhookController from '../controllers/invoiceWebhookController.js';
 import * as metaWebhookController from '../controllers/metaWebhookController.js';
@@ -24,6 +27,9 @@ router.post('/wa-gateway', verifyWebhookSignature('wa-gateway'), webhookControll
 router.post('/whatsapp', verifyWebhookSignature('wa-gateway'), webhookController.handleWAWebhook);
 
 // Payment Gateways
+router.post('/doku', dokuController.handleDokuWebhook);
+router.post('/tripay', tripayController.handleWebhook);
+router.post('/xendit', xenditController.handleWebhook);
 router.post('/xendit/payment', verifyXenditWebhook, xenditCallbackController.handleXenditCallback);
 router.post('/invoice-payment/:gateway_type', invoiceWebhookController.handleInvoicePaymentWebhook);
 

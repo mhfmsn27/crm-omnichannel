@@ -19,6 +19,7 @@ router.get('/conversations', advancedAnalyticsController.getConversationAnalytic
 router.get('/response-time', advancedAnalyticsController.getResponseTimeAnalytics);
 router.get('/csat', advancedAnalyticsController.getCsatAnalytics);
 router.get('/channels', advancedAnalyticsController.getChannelAnalytics);
+router.get('/peak-hours', advancedAnalyticsController.getPeakHours);
 router.get('/realtime', advancedAnalyticsController.getRealtimeAnalytics);
 
 // Default analytics
