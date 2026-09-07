@@ -5,8 +5,8 @@ import {
     MessageSquare, Package, HelpCircle, BookOpen, Sparkles, Check, X, AlertCircle, RefreshCw
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Modal, { ModalFooter } from '../components/common/Modal';
-import Button from '../components/common/Button';
+import Modal, { ModalFooter } from '../../components/common/Modal';
+import Button from '../../components/common/Button';
 
 const DATA_TYPES = [
     { value: 'product', label: 'Produk', icon: Package, color: 'blue' },

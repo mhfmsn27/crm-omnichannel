@@ -122,5 +122,3 @@ export function TableLoader({ rows = 5, columns = 4 }) {
         </div>
     );
 }
-
-export default PageLoader;

@@ -28,6 +28,7 @@ export default function LicenseGate({ children }) {
                     <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent animate-spin rounded-full mx-auto mb-4"></div>
                     <p className="text-gray-500">Memeriksa lisensi...</p>
                 </div>
+            </div>
         );
     }
 
@@ -56,7 +57,7 @@ export default function LicenseGate({ children }) {
                         <div className="bg-gray-50 rounded-xl p-4 text-left mb-6">
                             <p className="text-sm text-gray-500 mb-2">Informasi:</p>
                             <ul className="text-sm text-gray-600 space-y-1">
-                                <li>Domain: <code className="bg-gray-200 px-2 py-0.5 rounded">{window.location.host}</li>
+                                <li>Domain: <code className="bg-gray-200 px-2 py-0.5 rounded">{window.location.host}</code></li>
                                 <li>Status: <span className="text-red-600 font-medium">Belum terdaftar</span></li>
                             </ul>
                         </div>

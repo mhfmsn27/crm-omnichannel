@@ -52,6 +52,7 @@ export default function Header() {
     const [notifications, setNotifications] = useState([]);
     const [loadingNotifications, setLoadingNotifications] = useState(false);
     const notificationRef = useRef(null);
+    const dropdownRef = useRef(null);
 
     const [isOnline, setIsOnline] = useState(user?.is_online || false);
     const [canInstallPwa, setCanInstallPwa] = useState(false);

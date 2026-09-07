@@ -89,7 +89,7 @@ export function StepConnector({ completed }) {
 export default function Stepper({ currentStep, onStepClick, steps = [] }) {
     return (
         <nav aria-label="Progress" className="flex items-center">
-            {steps.map((step, index => {
+            {steps.map((step, index) => {
                 const stepNum = index + 1;
                 const isActive = currentStep === stepNum;
                 const isCompleted = currentStep > stepNum;
@@ -100,7 +100,7 @@ export default function Stepper({ currentStep, onStepClick, steps = [] }) {
                             title={step.title}
                             isActive={isActive}
                             isCompleted={isCompleted}
-                            onClick={() => onStepClick?.(stepNum)
+                            onClick={() => onStepClick?.(stepNum)}
                             disabled={stepNum > currentStep}
                         />
                         {index < steps.length - 1 && (

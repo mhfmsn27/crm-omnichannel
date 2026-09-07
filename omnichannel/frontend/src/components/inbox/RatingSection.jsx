@@ -1,4 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
+import axios from 'axios';
 import { ChevronDown, ChevronUp, Star } from 'lucide-react';
 
 /**

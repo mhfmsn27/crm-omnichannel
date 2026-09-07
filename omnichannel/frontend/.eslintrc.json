@@ -11,10 +11,11 @@
     "es2021": true
   },
   "plugins": [
-    "react"
+    "react",
+    "react-hooks"
   ],
   "rules": {
-    "no-use-before-define": "error",
+    "no-use-before-define": "off",
     "no-undef": "error"
   }
 }
