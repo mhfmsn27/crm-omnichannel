@@ -1,37 +1,97 @@
 import pool from '../config/db.js';
 import { invalidateRoleTokens } from '../services/tokenService.js';
 
-// Master list of all available permissions (used by frontend and validation)
+// Master list of all available permissions across all menus and submenus
 export const ALL_PERMISSIONS = [
-    // Inbox
-    { id: 'view_all_chats',       label: 'Lihat Semua Chat',          group: 'Inbox',      description: 'Dapat melihat semua percakapan di inbox' },
-    { id: 'receive_new_leads',    label: 'Terima Leads Baru',         group: 'Inbox',      description: 'Otomatis menerima assign chat/leads baru yang masuk' },
-    { id: 'assign_conversations',  label: 'Assign Percakapan',         group: 'Inbox',      description: 'Mengalihkan chat ke agent lain' },
-    { id: 'delete_messages',       label: 'Hapus Pesan',               group: 'Inbox',      description: 'Menghapus pesan di dalam percakapan' },
-    { id: 'manage_labels',         label: 'Kelola Label',              group: 'Inbox',      description: 'Buat, edit, dan hapus label percakapan' },
-    // Kontak
-    { id: 'manage_contacts',       label: 'Kelola Kontak',             group: 'Kontak',     description: 'Buat, edit, dan hapus kontak' },
-    { id: 'export_data',           label: 'Export Data',               group: 'Kontak',     description: 'Export kontak dan data ke file CSV/Excel' },
-    // Broadcast
-    { id: 'manage_broadcast',      label: 'Akses Broadcast',           group: 'Broadcast',  description: 'Buat dan kirim kampanye broadcast' },
-    // Chatbot
-    { id: 'manage_chatbot',        label: 'Konfigurasi Chatbot',       group: 'Chatbot',    description: 'Atur bot, alur, dan knowledge base' },
-    // CRM
-    { id: 'manage_pipeline',       label: 'Kelola Pipeline',           group: 'CRM',        description: 'Akses dan kelola pipeline penjualan' },
-    { id: 'manage_invoice',        label: 'Kelola Invoice',            group: 'CRM',        description: 'Buat dan kelola invoice/tagihan pelanggan' },
-    // Produk
-    { id: 'manage_products',       label: 'Kelola Produk',             group: 'Produk',     description: 'Akses dan kelola katalog produk' },
-    // Tools & Otomasi
-    { id: 'use_tools',             label: 'Akses Tools',               group: 'Tools',      description: 'Gunakan number checker, group extractor, dan GMaps scraper' },
-    { id: 'manage_followup',       label: 'Kelola Follow-up',          group: 'Tools',      description: 'Buat dan kelola urutan follow-up otomatis' },
-    // Tugas & Tiket
-    { id: 'manage_tasks',          label: 'Kelola Tasks',              group: 'Tugas',      description: 'Akses dan kelola daftar tugas tim' },
-    { id: 'manage_tickets',        label: 'Kelola Tiket/SLA',          group: 'Tugas',      description: 'Akses sistem tiket dan kebijakan SLA' },
-    // Laporan
-    { id: 'view_reports',          label: 'Lihat Laporan',             group: 'Laporan',    description: 'Akses halaman laporan dan statistik' },
-    // Tim
-    { id: 'manage_team',           label: 'Kelola Tim / User',         group: 'Pengaturan', description: 'Akses halaman Manage User untuk menambah, edit, dan hapus anggota tim' },
+    // 1. Kotak Masuk (Inbox)
+    { id: 'view_all_chats',       label: 'Lihat Semua Chat',          group: 'Kotak Masuk (Inbox)', description: 'Dapat melihat semua percakapan di inbox' },
+    { id: 'receive_new_leads',    label: 'Terima Leads Baru',         group: 'Kotak Masuk (Inbox)', description: 'Otomatis menerima assign chat/leads baru yang masuk' },
+    { id: 'assign_conversations',  label: 'Assign Percakapan',         group: 'Kotak Masuk (Inbox)', description: 'Mengalihkan chat ke agen lain' },
+    { id: 'delete_messages',       label: 'Hapus Pesan',               group: 'Kotak Masuk (Inbox)', description: 'Menghapus pesan di dalam percakapan' },
+    { id: 'manage_labels',         label: 'Kelola Label Kontak/Chat',  group: 'Kotak Masuk (Inbox)', description: 'Buat, edit, dan hapus label percakapan dan kontak' },
+
+    // 2. Kontak & Leads
+    { id: 'manage_contacts',       label: 'Kelola Kontak',             group: 'Kontak & Leads',      description: 'Akses, buat, edit, dan hapus data kontak' },
+    { id: 'manage_leads',          label: 'Kelola Leads & Scoring',    group: 'Kontak & Leads',      description: 'Akses halaman prospek lead dan status prospek' },
+    { id: 'import_contacts',       label: 'Import Kontak Excel/CSV',   group: 'Kontak & Leads',      description: 'Import kontak massal dari file Excel atau CSV' },
+    { id: 'export_data',           label: 'Export Data Kontak',        group: 'Kontak & Leads',      description: 'Export kontak dan data ke file CSV/Excel' },
+
+    // 3. Bookings
+    { id: 'manage_bookings',       label: 'Kelola Jadwal Bookings',    group: 'Bookings & Jadwal',   description: 'Akses kalender dan reservasi/booking' },
+
+    // 4. Saluran & Integrasi
+    { id: 'manage_integrations',   label: 'Kelola Saluran Chat',       group: 'Integrasi Saluran',   description: 'Hubungkan WhatsApp, Email, Instagram, Messenger, Webchat' },
+    { id: 'manage_webhooks',       label: 'Kelola Webhook & API Keys', group: 'Integrasi Saluran',   description: 'Konfigurasi webhook event dan akses token API' },
+
+    // 5. Broadcast & Kampanye
+    { id: 'manage_broadcast',      label: 'Buat & Kirim Broadcast',    group: 'Broadcast',           description: 'Buat dan luncurkan kampanye pesan siaran' },
+    { id: 'broadcast_schedule',    label: 'Atur Jadwal Broadcast',     group: 'Broadcast',           description: 'Akses menu jadwal broadcast terencana' },
+    { id: 'broadcast_reports',     label: 'Laporan Riwayat Broadcast', group: 'Broadcast',           description: 'Lihat status pengiriman dan analitik broadcast' },
+    { id: 'manage_templates',      label: 'Kelola Template Pesan',     group: 'Broadcast',           description: 'Kelola template pesan broadcast & Meta templates' },
+    { id: 'manage_rotator',        label: 'Kelola Rotator CS Link',    group: 'Broadcast',           description: 'Kelola tautan rotator WhatsApp CS' },
+
+    // 6. Chatbot & Otomasi AI
+    { id: 'manage_chatbot',        label: 'Konfigurasi Bot & Alur',    group: 'Chatbot & AI',        description: 'Kelola bot, visual flow builder, dan respon otomatis' },
+    { id: 'chatbot_training',      label: 'AI Training & Knowledge',   group: 'Chatbot & AI',        description: 'Latih model AI, Global Knowledge Base, dan Multi-Bahasa' },
+
+    // 7. CRM & Bisnis
+    { id: 'manage_pipeline',       label: 'Kelola Pipeline Deals',     group: 'CRM & Bisnis',        description: 'Akses Kanban board penjualan dan deal tahapan' },
+    { id: 'manage_sales_visits',   label: 'Kunjungan Sales (GPS)',     group: 'CRM & Bisnis',        description: 'Check-in lokasi GPS dan laporan foto kunjungan klien' },
+    { id: 'manage_products',       label: 'Katalog Produk & Harga',    group: 'CRM & Bisnis',        description: 'Akses dan kelola produk, varian, dan inventori' },
+    { id: 'manage_tasks',          label: 'Kelola Tasks & To-Do',      group: 'CRM & Bisnis',        description: 'Akses dan penugasan daftar tugas kerja' },
+    { id: 'manage_tickets',        label: 'Sistem Tiket Bantuan & SLA',group: 'CRM & Bisnis',        description: 'Akses tiket keluhan pelanggan dan pengaturan SLA' },
+
+    // 8. Tagihan & Invoicing
+    { id: 'manage_invoice',        label: 'Kelola Tagihan & Faktur',   group: 'Tagihan / Invoicing', description: 'Buat faktur penjualan, kelola status bayar dan pengingat' },
+    { id: 'bulk_invoice',          label: 'Import Tagihan Massal',     group: 'Tagihan / Invoicing', description: 'Akses import tagihan massal via template Excel' },
+    { id: 'recurring_invoice',     label: 'Faktur Berlangganan',       group: 'Tagihan / Invoicing', description: 'Atur tagihan berulang berkala (recurring)' },
+
+    // 9. Laporan & Analitik
+    { id: 'view_reports',          label: 'Overview Laporan Ringkasan',group: 'Laporan & Analitik',  description: 'Lihat ringkasan performa dan overview umum' },
+    { id: 'view_analytics',        label: 'Advanced Analytics',        group: 'Laporan & Analitik',  description: 'Akses atribusi lanjutan, sales funnel, dan performa agen' },
+    { id: 'view_csat',             label: 'Laporan Survei CSAT',       group: 'Laporan & Analitik',  description: 'Akses skor kepuasan pelanggan dan feedback' },
+    { id: 'view_wallboard',        label: 'Live Wallboard TV Monitor', group: 'Laporan & Analitik',  description: 'Tampilan real-time metrik layar besar TV' },
+    { id: 'view_gamification',     label: 'Leaderboard & Gamifikasi',  group: 'Laporan & Analitik',  description: 'Lihat peringkat agen, badge, dan poin gamifikasi' },
+
+    // 10. Tools & Alat Bantu
+    { id: 'use_tools',             label: 'Akses Validator & Tools WA',group: 'Tools & Otomasi',    description: 'Akses number checker, group extractor, dan Google Maps scraper' },
+    { id: 'use_warmer',            label: 'WhatsApp Warmer Circle',    group: 'Tools & Otomasi',    description: 'Akses pemanasan akun nomor WhatsApp otomatis' },
+    { id: 'manage_followup',       label: 'Auto Follow-Up Otomatis',   group: 'Tools & Otomasi',    description: 'Buat urutan pesan follow-up otomatis' },
+    { id: 'manage_chatform',       label: 'Interactive Chat Form',     group: 'Tools & Otomasi',    description: 'Buat dan kelola formulir interaktif di chat' },
+
+    // 11. Pengaturan & Sistem
+    { id: 'manage_team',           label: 'Kelola Tim & Anggota',      group: 'Pengaturan',          description: 'Tambah, edit, dan atur anggota tim pengguna' },
+    { id: 'manage_roles',          label: 'Kelola Role & Hak Akses',   group: 'Pengaturan',          description: 'Akses dan konfigurasi hak akses role RBAC' },
+    { id: 'manage_settings',       label: 'Konfigurasi Workspace',     group: 'Pengaturan',          description: 'Atur jam operasional, custom fields, divisi, dan lisensi' },
+    { id: 'manage_system_health',  label: 'Server Health & Backup',    group: 'Pengaturan',          description: 'Pantau status server, database, dan cadangan data' },
+    { id: 'manage_api',            label: 'Akses Developer API',       group: 'Pengaturan',          description: 'Akses dokumentasi dan kunci API developer' },
 ];
+
+// Fallback mapping for backward-compatibility with older role definitions in database
+export const PERMISSION_FALLBACKS = {
+    manage_leads: ['manage_contacts'],
+    import_contacts: ['manage_contacts'],
+    export_data: ['manage_contacts'],
+    broadcast_schedule: ['manage_broadcast'],
+    broadcast_reports: ['manage_broadcast'],
+    manage_templates: ['manage_broadcast'],
+    manage_rotator: ['manage_broadcast'],
+    manage_sales_visits: ['manage_pipeline', 'manage_crm'],
+    bulk_invoice: ['manage_invoice'],
+    recurring_invoice: ['manage_invoice'],
+    view_analytics: ['view_reports'],
+    view_csat: ['view_reports'],
+    view_wallboard: ['view_reports'],
+    view_gamification: ['view_reports'],
+    use_warmer: ['use_tools'],
+    manage_chatform: ['use_tools'],
+    chatbot_training: ['manage_chatbot'],
+    manage_webhooks: ['manage_integrations'],
+    manage_roles: ['manage_team'],
+    manage_settings: ['manage_team'],
+    manage_system_health: ['manage_team'],
+    manage_api: ['manage_team'],
+};
 
 // GET /api/app/roles/permissions — return master permission list
 export const getPermissions = (req, res) => {

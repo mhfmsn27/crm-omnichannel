@@ -22,7 +22,14 @@ export const getFlowById = async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM chat_flows WHERE id = $1 AND organization_id = $2', [id, organization_id]);
         if (result.rows.length === 0) return res.status(404).json({ error: "Flow not found" });
-        res.json(result.rows[0]);
+        const flow = result.rows[0];
+        if (typeof flow.nodes === 'string') {
+            try { flow.nodes = JSON.parse(flow.nodes); } catch (e) {}
+        }
+        if (typeof flow.edges === 'string') {
+            try { flow.edges = JSON.parse(flow.edges); } catch (e) {}
+        }
+        res.json(flow);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
