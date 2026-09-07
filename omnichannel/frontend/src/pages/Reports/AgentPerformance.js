@@ -1,4 +1,4 @@
-﻿
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format, subDays } from 'date-fns';
@@ -131,28 +131,28 @@ export default function AgentPerformance() {
     if (loading) return <div className="flex h-full items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-indigo-600" /></div>;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50 space-y-6">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50 space-y-4 sm:space-y-6">
 
             {/* 1. FILTERS HEADER */}
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                <div className="flex gap-3 w-full md:w-auto">
+            <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 sm:gap-4 bg-white p-3.5 sm:p-4 rounded-xl shadow-sm border border-gray-200">
+                <div className="flex flex-col sm:flex-row gap-2.5 w-full md:w-auto">
                     {/* Agent Select */}
-                    <div className="relative min-w-[200px]">
+                    <div className="relative w-full sm:w-auto sm:min-w-[180px]">
                         <select
-                            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 pr-8"
+                            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 sm:p-2.5 pr-8"
                             value={selectedAgent}
                             onChange={(e) => setSelectedAgent(e.target.value)}
                         >
                             <option value="all">Semua Agen</option>
                             {agents.map(a => <option key={a.id} value={a.id}>{a.agent_name}</option>)}
                         </select>
-                        <ChevronDown className="absolute right-3 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+                        <ChevronDown className="absolute right-3 top-2.5 sm:top-3 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
 
                     {/* Channel Select */}
-                    <div className="relative min-w-[160px]">
+                    <div className="relative w-full sm:w-auto sm:min-w-[150px]">
                         <select
-                            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 pr-8"
+                            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 sm:p-2.5 pr-8"
                             value={selectedChannel}
                             onChange={(e) => setSelectedChannel(e.target.value)}
                         >
@@ -160,16 +160,16 @@ export default function AgentPerformance() {
                             <option value="whatsapp">WhatsApp</option>
                             <option value="telegram">Telegram</option>
                         </select>
-                        <ChevronDown className="absolute right-3 top-3 w-4 h-4 text-gray-400 pointer-events-none" />
+                        <ChevronDown className="absolute right-3 top-2.5 sm:top-3 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex items-center justify-between sm:justify-start gap-2 w-full md:w-auto">
                     <DateRangeFilter startDate={startDate} endDate={endDate} onChange={(s, e) => { setStartDate(s); setEndDate(e); }} />
                     <button
                         onClick={handleExport}
                         disabled={downloading}
-                        className="p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 disabled:opacity-50"
+                        className="p-2 sm:p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 disabled:opacity-50 shrink-0"
                         title="Export to Excel"
                     >
                         {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -178,10 +178,10 @@ export default function AgentPerformance() {
             </div>
 
             {/* 2. SUMMARY CARDS & PIE CHART */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
 
                 {/* Left: 6 Grid Metrics */}
-                <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                     <MetricCard
                         title="Total Percakapan"
                         value={totalChats}
@@ -363,8 +363,8 @@ export default function AgentPerformance() {
                 {agents.length === 0 ? (
                     <div className="p-12 text-center text-gray-400">No agent data available for this period.</div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm">
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full text-left text-sm min-w-[700px]">
                             <thead className="bg-gray-50 border-b border-gray-100">
                                 <tr>
                                     <th className="px-4 py-3 font-bold text-gray-500 text-xs uppercase">Agen</th>

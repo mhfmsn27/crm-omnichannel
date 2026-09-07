@@ -126,15 +126,16 @@ export default function ChatFormList() {
 
     return (
         <PaywallGuard feature="feat_chatform" title="Conversational Form Locked" description="Upgrade to collect structured data from your customers directly in WhatsApp using interactive forms.">
-            <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
-                <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+            <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
                     <div>
                         <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                            <FileText className="w-8 h-8 text-indigo-600" /> Conversational Form
+                            <FileText className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-600 shrink-0" /> 
+                            <span>Conversational Form</span>
                         </h2>
                         <p className="text-sm text-gray-500">Collect data automatically inside WhatsApp chat.</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full sm:w-auto justify-end">
                         <button
                             onClick={() => setIsInfoOpen(true)}
                             className="px-3 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 flex items-center gap-2 font-medium shadow-sm transition-colors"
@@ -142,7 +143,7 @@ export default function ChatFormList() {
                         >
                             <Info className="w-5 h-5" />
                         </button>
-                        <button onClick={() => { setSelectedForm(null); setView('editor'); }} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2 shadow-sm transition-colors">
+                        <button onClick={() => { setSelectedForm(null); setView('editor'); }} className="flex-1 sm:flex-none justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2 shadow-sm transition-colors">
                             <Plus className="w-4 h-4" /> Create Form
                         </button>
                     </div>

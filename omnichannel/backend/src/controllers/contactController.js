@@ -3,6 +3,7 @@ import XLSX from 'xlsx';
 import fs from 'fs';
 import * as waService from '../services/waGatewayService.js';
 import { formatPhone62 } from '../utils/phoneHelper.js';
+import { ensureCustomFieldsSchema } from './customFieldController.js';
 
 // --- CRUD ENDPOINTS ---
 
@@ -636,14 +637,20 @@ export const importContacts = async (req, res) => {
         let failedCount = 0;
         const errors = [];
 
+        await ensureCustomFieldsSchema();
         await client.query('BEGIN');
 
         const labelsRes = await client.query('SELECT id, name FROM labels WHERE organization_id = $1', [organization_id]);
         const labelMap = new Map(labelsRes.rows.map(l => [l.name.toLowerCase(), l.id]));
 
         // Fetch existing custom fields
-        const fieldsRes = await client.query('SELECT id, field_key, field_label FROM contact_custom_fields WHERE organization_id = $1', [organization_id]);
-        const fieldMap = new Map(fieldsRes.rows.map(f => [f.field_label.toLowerCase(), f.field_key]));
+        let fieldMap = new Map();
+        try {
+            const fieldsRes = await client.query('SELECT id, field_key, field_label FROM contact_custom_fields WHERE organization_id = $1', [organization_id]);
+            fieldMap = new Map(fieldsRes.rows.map(f => [f.field_label.toLowerCase(), f.field_key]));
+        } catch (fErr) {
+            console.warn('[ContactImport] Custom fields not yet initialized:', fErr.message);
+        }
 
         const rows = data.slice(0, 2000);
         const standardKeys = ['phone', 'mobile', 'no wa', 'name', 'nama', 'email', 'labels'];

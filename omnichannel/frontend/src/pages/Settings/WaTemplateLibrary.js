@@ -39,9 +39,11 @@ export default function WaTemplateLibrary() {
     const fetchTemplates = async () => {
         try {
             const res = await axios.get('/api/app/wa-templates');
-            setTemplates(res.data || []);
+            setTemplates(Array.isArray(res.data) ? res.data : []);
         } catch (e) {
-            toast.error('Failed to load templates');
+            console.error('Failed to load templates:', e);
+            setTemplates([]);
+            toast.error('Gagal memuat template WhatsApp');
         } finally {
             setLoading(false);
         }
@@ -128,10 +130,10 @@ export default function WaTemplateLibrary() {
     };
 
     // Filter templates
-    const filteredTemplates = templates.filter(t => {
+    const filteredTemplates = (Array.isArray(templates) ? templates : []).filter(t => {
         const matchSearch = !searchQuery ||
-            t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            t.content.toLowerCase().includes(searchQuery.toLowerCase());
+            (t.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (t.content || '').toLowerCase().includes(searchQuery.toLowerCase());
         const matchCategory = !selectedCategory || t.category === selectedCategory;
         return matchSearch && matchCategory;
     });
@@ -141,7 +143,7 @@ export default function WaTemplateLibrary() {
     if (loading) return <div className="p-8 text-center text-gray-400">Memuat...</div>;
 
     return (
-        <div className="p-6 md:p-8 max-w-5xl">
+        <div className="p-4 sm:p-6 md:p-8 max-w-5xl pb-24 md:pb-8">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">WhatsApp Template Library</h2>

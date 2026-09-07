@@ -1,17 +1,52 @@
 
 import pool from '../config/db.js';
 
+let flowSchemaChecked = false;
+
+// Self-healing schema for chat_flows
+export const ensureFlowSchema = async () => {
+    if (flowSchemaChecked) return;
+    try {
+        await pool.query(`
+            ALTER TABLE chat_flows ADD COLUMN IF NOT EXISTS trigger_type VARCHAR(50) DEFAULT 'exact';
+            ALTER TABLE chat_flows ALTER COLUMN trigger_keyword DROP NOT NULL;
+            CREATE INDEX IF NOT EXISTS idx_chat_flows_trigger ON chat_flows (organization_id, is_active, trigger_type);
+        `);
+        flowSchemaChecked = true;
+    } catch (e) {
+        console.error('[FlowController] ensureFlowSchema error:', e.message);
+    }
+};
+
+// Eager initialization on controller load
+ensureFlowSchema().catch(() => {});
+
 // GET /api/app/flows
 export const getFlows = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureFlowSchema();
         const result = await pool.query(
             'SELECT id, name, trigger_keyword, trigger_type, is_active, created_at FROM chat_flows WHERE organization_id = $1 ORDER BY created_at DESC',
             [organization_id]
         );
         res.json(result.rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('[FlowController] getFlows query error:', err.message);
+        // Resilient fallback: If trigger_type is still missing, query without it and provide default
+        try {
+            const fallback = await pool.query(
+                'SELECT id, name, trigger_keyword, is_active, created_at FROM chat_flows WHERE organization_id = $1 ORDER BY created_at DESC',
+                [organization_id]
+            );
+            const rows = fallback.rows.map(r => ({
+                ...r,
+                trigger_type: 'exact'
+            }));
+            return res.json(rows);
+        } catch (fallbackErr) {
+            res.status(500).json({ error: err.message });
+        }
     }
 };
 
@@ -20,9 +55,11 @@ export const getFlowById = async (req, res) => {
     const { id } = req.params;
     const { organization_id } = req.user;
     try {
+        await ensureFlowSchema();
         const result = await pool.query('SELECT * FROM chat_flows WHERE id = $1 AND organization_id = $2', [id, organization_id]);
         if (result.rows.length === 0) return res.status(404).json({ error: "Flow not found" });
         const flow = result.rows[0];
+        if (!flow.trigger_type) flow.trigger_type = 'exact';
         if (typeof flow.nodes === 'string') {
             try { flow.nodes = JSON.parse(flow.nodes); } catch (e) {}
         }
@@ -41,6 +78,7 @@ export const createFlow = async (req, res) => {
     const { name, trigger_keyword, trigger_type, nodes, edges } = req.body;
 
     try {
+        await ensureFlowSchema();
         const result = await pool.query(
             `INSERT INTO chat_flows (organization_id, name, trigger_keyword, trigger_type, nodes, edges, is_active)
              VALUES ($1, $2, $3, $4, $5, $6, true) RETURNING *`,
@@ -60,6 +98,7 @@ export const updateFlow = async (req, res) => {
     const { name, trigger_keyword, trigger_type, nodes, edges, is_active } = req.body;
 
     try {
+        await ensureFlowSchema();
         // Use COALESCE to allow partial updates (e.g. just toggling is_active)
         const result = await pool.query(
             `UPDATE chat_flows SET 

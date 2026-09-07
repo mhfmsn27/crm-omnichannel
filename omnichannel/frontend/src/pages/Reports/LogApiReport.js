@@ -139,19 +139,19 @@ export default function LogApiReport() {
     };
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50/50">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50/50">
             {/* Header & Filters */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
                 <div>
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Activity className="w-6 h-6 text-indigo-600" /> API Access Logs
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 shrink-0" /> API Access Logs
                     </h2>
-                    <p className="text-sm text-gray-500">Real-time monitoring of your Developer API usage.</p>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5">Real-time monitoring of your Developer API usage.</p>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto">
                     <select 
-                        className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="bg-white border border-gray-300 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 outline-none flex-1 sm:flex-initial"
                         value={methodFilter}
                         onChange={e => setMethodFilter(e.target.value)}
                     >
@@ -163,7 +163,7 @@ export default function LogApiReport() {
                     </select>
 
                     <select 
-                        className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="bg-white border border-gray-300 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 outline-none flex-1 sm:flex-initial"
                         value={statusFilter}
                         onChange={e => setStatusFilter(e.target.value)}
                     >
@@ -172,8 +172,8 @@ export default function LogApiReport() {
                         <option value="error">Errors (4xx/5xx)</option>
                     </select>
 
-                    <button onClick={fetchLogs} className="p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600">
-                        <Search className="w-5 h-5" />
+                    <button onClick={fetchLogs} className="p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 shrink-0">
+                        <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                 </div>
             </div>

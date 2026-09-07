@@ -34,7 +34,7 @@ function TrainingCard({ item, onEdit, onDelete }) {
                         <span className="text-xs font-medium text-gray-500">{type.label}</span>
                     </div>
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <button onClick={() => onEdit(item)} className="p-1.5 hover:bg-gray-100 rounded-lg">
                         <Edit2 className="w-4 h-4 text-gray-500" />
                     </button>

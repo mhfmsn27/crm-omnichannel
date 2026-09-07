@@ -1,8 +1,8 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
     BarChart2, Users, Star, History, Megaphone, Bot, FileText, Activity, ArrowRight,
-    TrendingUp, Link2, GitBranch, Trophy, Zap, Target, Tv
+    TrendingUp, Link2, GitBranch, Trophy, Zap, Target, Tv, Layers
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { hasPerm } from '../../utils/rbac';
@@ -50,6 +50,7 @@ const SectionHeader = ({ icon: Icon, label, badge, isCollapsed }) => (
 
 export default function ReportsSubMenu({ isCollapsed }) {
     const { user } = useAuth();
+    const location = useLocation();
 
     // Section 1 items
     const s1_general = hasPerm(user, 'view_reports');
@@ -76,26 +77,91 @@ export default function ReportsSubMenu({ isCollapsed }) {
     // Section 5 items (System)
     const s5_api = hasPerm(user, 'manage_api');
 
+    // Auto-detect mobile active category
+    const detectCategory = (path) => {
+        if (path.includes('advanced-analytics') || path.includes('attribution') || path.includes('customer-journey') || path.includes('wallboard')) return 'advanced';
+        if (path.includes('sales-kpi') || path.includes('sales-pipeline') || path.includes('gamification') || path.includes('broadcast')) return 'sales';
+        if (path.includes('chatbot') || path.includes('chat-form')) return 'tools';
+        if (path.includes('api-logs')) return 'system';
+        return 'analitik';
+    };
+
+    const [mobileCategory, setMobileCategory] = useState(() => detectCategory(location.pathname));
+
+    useEffect(() => {
+        setMobileCategory(detectCategory(location.pathname));
+    }, [location.pathname]);
+
+    const categories = [
+        { id: 'all', label: 'Semua' },
+        ...(hasSection1 ? [{ id: 'analitik', label: 'Analitik' }] : []),
+        ...(hasSection2 ? [{ id: 'advanced', label: 'Advanced' }] : []),
+        ...(hasSection3 ? [{ id: 'sales', label: 'Sales' }] : []),
+        ...(hasSection4 ? [{ id: 'tools', label: 'Tools' }] : []),
+        ...(s5_api ? [{ id: 'system', label: 'System' }] : [])
+    ];
+
     return (
         <div className="flex flex-col w-full">
-            {/* MOBILE ONLY: Horizontal Scrollable Tab Bar */}
-            <div className="md:hidden flex flex-row overflow-x-auto no-scrollbar gap-1.5 py-1 px-1 pb-1.5 w-full">
-                {s1_general && <MenuItem to="general" icon={BarChart2} label="Overview" isCollapsed={false} />}
-                {s1_general && <MenuItem to="agent-performance" icon={Users} label="Performa Agen" isCollapsed={false} />}
-                {s1_general && <MenuItem to="sla-csat" icon={Star} label="SLA" isCollapsed={false} />}
-                {s1_csat && <MenuItem to="csat" icon={Star} label="CSAT" badge="PRO" isCollapsed={false} />}
-                {s1_general && <MenuItem to="responder-history" icon={History} label="Riwayat" isCollapsed={false} />}
-                {s2_analytics && <MenuItem to="advanced-analytics" icon={BarChart2} label="Dashboard" isCollapsed={false} />}
-                {s2_analytics && <MenuItem to="attribution" icon={Link2} label="Attribution" isCollapsed={false} />}
-                {s2_analytics && <MenuItem to="customer-journey" icon={GitBranch} label="Journey" isCollapsed={false} />}
-                {s2_wallboard && <MenuItem to="wallboard" icon={Tv} label="Wallboard" badge="LIVE" isCollapsed={false} />}
-                {s3_kpi && <MenuItem to="sales-kpi" icon={TrendingUp} label="Sales KPI" isCollapsed={false} />}
-                {s3_pipeline && <MenuItem to="sales-pipeline" icon={TrendingUp} label="Pipeline" isCollapsed={false} />}
-                {s3_gamification && <MenuItem to="gamification" icon={Trophy} label="Gamification" isCollapsed={false} />}
-                {s3_broadcast && <MenuItem to="broadcast" icon={Megaphone} label="Broadcast" isCollapsed={false} />}
-                {s4_chatbot && <MenuItem to="chatbot" icon={Bot} label="Chatbot" isCollapsed={false} />}
-                {s4_chatform && <MenuItem to="chat-form" icon={FileText} label="Chat Form" isCollapsed={false} />}
-                {s5_api && <MenuItem to="api-logs" icon={Activity} label="Log API" isCollapsed={false} />}
+            {/* MOBILE ONLY: Category Filter & Horizontal Scrollable Tab Bar */}
+            <div className="md:hidden flex flex-col gap-2 w-full mb-3">
+                {/* Category Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x px-0.5 py-0.5">
+                    {categories.map(cat => (
+                        <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => setMobileCategory(cat.id)}
+                            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                                mobileCategory === cat.id
+                                    ? 'bg-orange-500 text-white shadow-xs'
+                                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-700 hover:bg-gray-50'
+                            }`}
+                        >
+                            {cat.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Submenu Item Pills */}
+                <div className="flex flex-row overflow-x-auto no-scrollbar scroll-smooth touch-pan-x gap-1.5 py-1 px-1 pb-1.5 w-full">
+                    {(mobileCategory === 'all' || mobileCategory === 'analitik') && (
+                        <>
+                            {s1_general && <MenuItem to="general" icon={BarChart2} label="Overview" isCollapsed={false} />}
+                            {s1_general && <MenuItem to="agent-performance" icon={Users} label="Performa Agen" isCollapsed={false} />}
+                            {s1_general && <MenuItem to="sla-csat" icon={Star} label="SLA" isCollapsed={false} />}
+                            {s1_csat && <MenuItem to="csat" icon={Star} label="CSAT" badge="PRO" isCollapsed={false} />}
+                            {s1_general && <MenuItem to="responder-history" icon={History} label="Riwayat" isCollapsed={false} />}
+                        </>
+                    )}
+                    {(mobileCategory === 'all' || mobileCategory === 'advanced') && (
+                        <>
+                            {s2_analytics && <MenuItem to="advanced-analytics" icon={BarChart2} label="Dashboard" isCollapsed={false} />}
+                            {s2_analytics && <MenuItem to="attribution" icon={Link2} label="Attribution" isCollapsed={false} />}
+                            {s2_analytics && <MenuItem to="customer-journey" icon={GitBranch} label="Journey" isCollapsed={false} />}
+                            {s2_wallboard && <MenuItem to="wallboard" icon={Tv} label="Wallboard" badge="LIVE" isCollapsed={false} />}
+                        </>
+                    )}
+                    {(mobileCategory === 'all' || mobileCategory === 'sales') && (
+                        <>
+                            {s3_kpi && <MenuItem to="sales-kpi" icon={TrendingUp} label="Sales KPI" isCollapsed={false} />}
+                            {s3_pipeline && <MenuItem to="sales-pipeline" icon={TrendingUp} label="Pipeline" isCollapsed={false} />}
+                            {s3_gamification && <MenuItem to="gamification" icon={Trophy} label="Gamification" isCollapsed={false} />}
+                            {s3_broadcast && <MenuItem to="broadcast" icon={Megaphone} label="Broadcast" isCollapsed={false} />}
+                        </>
+                    )}
+                    {(mobileCategory === 'all' || mobileCategory === 'tools') && (
+                        <>
+                            {s4_chatbot && <MenuItem to="chatbot" icon={Bot} label="Chatbot" isCollapsed={false} />}
+                            {s4_chatform && <MenuItem to="chat-form" icon={FileText} label="Chat Form" isCollapsed={false} />}
+                        </>
+                    )}
+                    {(mobileCategory === 'all' || mobileCategory === 'system') && (
+                        <>
+                            {s5_api && <MenuItem to="api-logs" icon={Activity} label="Log API" isCollapsed={false} />}
+                        </>
+                    )}
+                </div>
             </div>
 
             {/* DESKTOP/TABLET ONLY: Vertical Grouped Sidebar */}

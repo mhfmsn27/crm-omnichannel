@@ -9,13 +9,13 @@ const formatIDR = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', cur
 
 function StatCard({ title, value, icon: Icon, color, bg }) {
     return (
-        <div className="bg-white rounded-xl p-6 border shadow-sm flex items-center gap-4">
-            <div className={`p-4 rounded-full ${bg} ${color}`}>
-                <Icon className="w-6 h-6" />
+        <div className="bg-white rounded-xl p-4 sm:p-6 border shadow-sm flex items-center gap-3 sm:gap-4">
+            <div className={`p-3 sm:p-4 rounded-full ${bg} ${color} shrink-0`}>
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div>
-                <p className="text-sm font-bold text-gray-500 uppercase">{title}</p>
-                <p className="text-2xl font-bold text-gray-900">{value}</p>
+            <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm font-bold text-gray-500 uppercase truncate">{title}</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{value}</p>
             </div>
         </div>
     );
@@ -48,10 +48,10 @@ export default function SalesKpiDashboard() {
     const grossProfit = revenue - cogs;
 
     return (
-        <div className="p-6 md:p-8 max-w-7xl mx-auto h-full overflow-y-auto custom-scrollbar">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">Sales KPI Dashboard</h1>
+        <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto h-full overflow-y-auto custom-scrollbar">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Sales KPI Dashboard</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-6 mb-6 sm:mb-8">
                 <StatCard 
                     title="Total Revenue" 
                     value={formatIDR(revenue)}

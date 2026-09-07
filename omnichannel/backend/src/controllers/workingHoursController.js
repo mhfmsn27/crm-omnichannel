@@ -1,11 +1,42 @@
 import pool from '../config/db.js';
 
+let schemaEnsured = false;
+export const ensureWorkingHoursSchema = async () => {
+    if (schemaEnsured) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS working_hours (
+                id SERIAL PRIMARY KEY,
+                organization_id INT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                day_of_week INT NOT NULL CHECK (day_of_week BETWEEN 0 AND 6),
+                start_time TIME NOT NULL DEFAULT '09:00',
+                end_time TIME NOT NULL DEFAULT '17:00',
+                is_active BOOLEAN DEFAULT true,
+                UNIQUE(organization_id, day_of_week)
+            );
+
+            CREATE TABLE IF NOT EXISTS working_hours_config (
+                organization_id INT PRIMARY KEY REFERENCES organizations(id) ON DELETE CASCADE,
+                timezone VARCHAR(50) DEFAULT 'Asia/Jakarta',
+                outside_mode VARCHAR(20) DEFAULT 'message',
+                offline_message TEXT DEFAULT 'Terima kasih telah menghubungi kami. Saat ini kami sedang tidak beroperasi. Kami akan segera membalas pesan Anda pada jam operasional berikutnya.'
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_working_hours_org ON working_hours(organization_id, day_of_week);
+        `);
+        schemaEnsured = true;
+    } catch (e) {
+        console.error('[WorkingHours] ensureWorkingHoursSchema error:', e.message);
+    }
+};
+
 const DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
 // GET /api/app/settings/working-hours
 export const getWorkingHours = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureWorkingHoursSchema();
         const [schedRes, cfgRes] = await Promise.all([
             pool.query(
                 'SELECT * FROM working_hours WHERE organization_id = $1 ORDER BY day_of_week ASC',
@@ -38,7 +69,20 @@ export const getWorkingHours = async (req, res) => {
 
         res.json({ schedule, config });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('[WorkingHours] getWorkingHours error:', err.message);
+        const schedule = Array.from({ length: 7 }, (_, i) => ({
+            day_of_week: i,
+            day_name: DAYS[i],
+            start_time: '09:00',
+            end_time: '17:00',
+            is_active: i >= 1 && i <= 5
+        }));
+        const config = {
+            timezone: 'Asia/Jakarta',
+            outside_mode: 'message',
+            offline_message: 'Terima kasih telah menghubungi kami. Saat ini kami sedang tidak beroperasi. Kami akan segera membalas pesan Anda pada jam operasional berikutnya.'
+        };
+        res.json({ schedule, config });
     }
 };
 
@@ -51,6 +95,7 @@ export const updateWorkingHours = async (req, res) => {
         return res.status(400).json({ error: 'schedule must be array of 7 days' });
     }
 
+    await ensureWorkingHoursSchema();
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
@@ -80,6 +125,7 @@ export const updateWorkingHours = async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         await client.query('ROLLBACK');
+        console.error('[WorkingHours] updateWorkingHours error:', err.message);
         res.status(500).json({ error: err.message });
     } finally {
         client.release();
@@ -91,6 +137,7 @@ export const updateWorkingHours = async (req, res) => {
 // ============================================================
 export const isWithinWorkingHours = async (orgId) => {
     try {
+        await ensureWorkingHoursSchema();
         const cfgRes = await pool.query(
             'SELECT timezone, outside_mode FROM working_hours_config WHERE organization_id = $1',
             [orgId]

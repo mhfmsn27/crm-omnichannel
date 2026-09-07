@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Mail, Save, TestTube, CheckCircle, AlertCircle, Loader2, Send, History, RefreshCw } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { usePageTitle } from '../../context/HeaderContext';
 
 export default function EmailSettingsPage() {
+    usePageTitle('PENGATURAN EMAIL');
     const [cfg, setCfg] = useState({
         smtp_host: '', smtp_port: 587, smtp_secure: false,
         smtp_user: '', smtp_pass: '', smtp_from_email: '', smtp_from_name: '', smtp_enabled: false
@@ -25,17 +27,22 @@ export default function EmailSettingsPage() {
     const fetchSettings = async () => {
         try {
             const res = await axios.get('/api/app/settings/email');
-            setCfg({
-                smtp_host: res.data.smtp_host || '',
-                smtp_port: res.data.smtp_port || 587,
-                smtp_secure: res.data.smtp_secure || false,
-                smtp_user: res.data.smtp_user || '',
-                smtp_pass: '', // never returned from API
-                smtp_from_email: res.data.smtp_from_email || '',
-                smtp_from_name: res.data.smtp_from_name || '',
-                smtp_enabled: res.data.smtp_enabled || false
-            });
-        } catch {}
+            if (res.data) {
+                setCfg({
+                    smtp_host: res.data.smtp_host || '',
+                    smtp_port: res.data.smtp_port || 587,
+                    smtp_secure: res.data.smtp_secure || false,
+                    smtp_user: res.data.smtp_user || '',
+                    smtp_pass: '', // never returned from API
+                    smtp_from_email: res.data.smtp_from_email || '',
+                    smtp_from_name: res.data.smtp_from_name || '',
+                    smtp_enabled: res.data.smtp_enabled || false
+                });
+            }
+        } catch (e) {
+            console.error('Failed to load email settings:', e);
+            toast.error('Gagal memuat pengaturan email');
+        }
     };
 
     const handleSave = async () => {
@@ -66,8 +73,12 @@ export default function EmailSettingsPage() {
         setLogsLoading(true);
         try {
             const res = await axios.get('/api/app/email/logs');
-            setLogs(res.data.logs);
-        } catch {} finally { setLogsLoading(false); }
+            setLogs(Array.isArray(res.data?.logs) ? res.data.logs : []);
+        } catch {
+            setLogs([]);
+        } finally {
+            setLogsLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -96,7 +107,7 @@ export default function EmailSettingsPage() {
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 md:p-8 space-y-6 pb-24 md:pb-8">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>

@@ -94,8 +94,8 @@ function PipelineFunnel({ pipelines }) {
                                                 <span>{dropOff}% drop-off</span>
                                             </div>
                                         )}
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-28 text-xs text-gray-600 dark:text-gray-300 truncate flex-shrink-0">{stage.name}</div>
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                            <div className="w-20 sm:w-28 text-[11px] sm:text-xs text-gray-600 dark:text-gray-300 truncate flex-shrink-0">{stage.name}</div>
                                             <div className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full h-7 overflow-hidden">
                                                 <div
                                                     className="h-full rounded-full flex items-center justify-end pr-3 transition-all duration-500"
@@ -150,23 +150,29 @@ export default function SalesPipelineReport() {
         try {
             const params = { startDate, endDate };
             const [statsRes, pipelinesRes] = await Promise.all([
-                axios.get('/api/app/reports/pipeline-stats', { params }),
-                axios.get('/api/app/pipelines'),
+                axios.get('/api/app/reports/pipeline-stats', { params }).catch(() => ({ data: [] })),
+                axios.get('/api/app/pipelines').catch(() => ({ data: [] })),
             ]);
-            setStats(statsRes.data);
+            setStats(Array.isArray(statsRes.data) ? statsRes.data : []);
 
             // Build stage data preserving pipeline order
             const stageData = [];
             const pipelineData = [];
-            for (const pipe of pipelinesRes.data) {
-                const boardRes = await axios.get(`/api/app/pipelines/${pipe.id}/board`);
+            const pipeList = Array.isArray(pipelinesRes.data) ? pipelinesRes.data : [];
+
+            for (const pipe of pipeList) {
+                const boardRes = await axios.get(`/api/app/pipelines/${pipe.id}/board`).catch(() => ({ data: [] }));
+                const stagesList = Array.isArray(boardRes.data) ? boardRes.data : [];
                 const pipeStages = [];
-                for (const stage of boardRes.data) {
+
+                for (const stage of stagesList) {
                     let totalValue = 0;
                     let totalWeighted = 0;
-                    stage.items.forEach(item => {
-                        const val = item.value || 0;
-                        const prob = item.deal_probability ?? 0;
+                    const items = Array.isArray(stage.items) ? stage.items : [];
+
+                    items.forEach(item => {
+                        const val = Number(item.value) || 0;
+                        const prob = item.deal_probability != null ? Number(item.deal_probability) : 100;
                         totalValue += val;
                         totalWeighted += val * (prob / 100);
                     });
@@ -175,7 +181,7 @@ export default function SalesPipelineReport() {
                         pipeline_name: pipe.name,
                         totalValue,
                         totalWeighted,
-                        deals: stage.items,
+                        deals: items,
                     };
                     stageData.push(enrichedStage);
                     pipeStages.push(enrichedStage);
@@ -183,14 +189,14 @@ export default function SalesPipelineReport() {
                 pipelineData.push({ id: pipe.id, name: pipe.name, stages: pipeStages });
             }
             setPipelines(pipelineData);
-            // For the stage breakdown table, sort by pipeline order (already correct)
             setStages(stageData);
 
             // Top 10 deals across all pipelines
-            const allDeals = stageData.flatMap(s => s.deals).filter(d => d.value > 0);
+            const allDeals = stageData.flatMap(s => s.deals || []).filter(d => (d?.value || 0) > 0);
             allDeals.sort((a, b) => (b.value || 0) - (a.value || 0));
             setTopDeals(allDeals.slice(0, 10));
         } catch (e) {
+            console.error('[SalesPipelineReport] Fetch error:', e);
             toast.error('Gagal memuat data pipeline');
         } finally {
             setLoading(false);
@@ -201,26 +207,26 @@ export default function SalesPipelineReport() {
 
     const totalPipelineValue = stages.reduce((s, st) => s + st.totalValue, 0);
     const totalWeightedValue = stages.reduce((s, st) => s + st.totalWeighted, 0);
-    const totalDeals = stages.reduce((s, st) => s + st.deals.length, 0);
-    const wonDeals = stages.reduce((s, st) => s + st.deals.filter(d => d.is_closed).length, 0);
+    const totalDeals = stages.reduce((s, st) => s + (st.deals?.length || 0), 0);
+    const wonDeals = stages.reduce((s, st) => s + (st.deals?.filter(d => d.is_closed)?.length || 0), 0);
     const conversionRate = totalDeals > 0 ? Math.round((wonDeals / totalDeals) * 100) : 0;
     const avgDealSize = wonDeals > 0 ? totalPipelineValue / wonDeals : 0;
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-3.5 sm:p-6 pb-20 md:pb-8 space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-indigo-500" />
+                    <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-indigo-500 shrink-0" />
                         Sales Pipeline Report
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Overview nilai pipeline, konversi, dan deal terbesar</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Overview nilai pipeline, konversi, dan deal terbesar</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="w-full md:w-auto flex items-center justify-between sm:justify-start gap-2">
                     <DateRangeFilter startDate={startDate} endDate={endDate}
                         onStartChange={setStartDate} onEndChange={setEndDate} />
-                    <button onClick={fetchData} className="p-2 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border">
+                    <button onClick={fetchData} className="p-2 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border shrink-0 border sm:border-0 border-gray-200">
                         <RefreshCw className="w-4 h-4" />
                     </button>
                 </div>

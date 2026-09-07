@@ -315,25 +315,25 @@ export default function GamificationPage() {
     }
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-3.5 sm:p-6 space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <Trophy className="w-5 h-5 text-yellow-500" />
+                    <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <Trophy className="w-5 h-5 text-yellow-500 shrink-0" />
                         Team Gamification
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                         Motivate your team with points, badges, and leaderboards
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <div className="flex bg-gray-100 rounded-lg p-1">
+                <div className="flex items-center justify-between w-full md:w-auto gap-2">
+                    <div className="flex bg-gray-100 rounded-lg p-0.5 sm:p-1">
                         {['daily', 'weekly', 'monthly'].map(p => (
                             <button
                                 key={p}
                                 onClick={() => setPeriod(p)}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                                     period === p ? 'bg-white shadow text-indigo-600' : 'text-gray-600 hover:text-gray-900'
                                 }`}
                             >
@@ -343,7 +343,8 @@ export default function GamificationPage() {
                     </div>
                     <button
                         onClick={fetchData}
-                        className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-100"
+                        className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-100 shrink-0 border sm:border-0 border-gray-200"
+                        title="Refresh"
                     >
                         <RefreshCw className="w-4 h-4" />
                     </button>

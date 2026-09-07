@@ -415,13 +415,13 @@ const AutoLabelManager = () => {
     }
 
     return (
-        <div className="p-4 sm:p-6">
+        <div className="p-3.5 sm:p-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-6">
                 <div>
                     <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <Tag className="w-6 h-6" />
-                        Auto-Label Rules
+                        <Tag className="w-6 h-6 text-indigo-600" />
+                        <span>Auto-Label Rules</span>
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
                         Automatically label contacts based on source or keywords
@@ -429,7 +429,7 @@ const AutoLabelManager = () => {
                 </div>
                 <button
                     onClick={() => { setEditingRule(null); setShowForm(true); }}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 flex items-center gap-2 self-start sm:self-auto"
+                    className="w-full sm:w-auto justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 flex items-center gap-2 shadow-sm"
                 >
                     <Plus className="w-4 h-4" />
                     Create Rule

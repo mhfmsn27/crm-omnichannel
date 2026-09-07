@@ -527,7 +527,6 @@ export default function Sidebar({ isExpanded, onToggle }) {
           { label: 'Auto Reply & Balas Cepat', path: '/settings/auto-reply', perm: 'manage_settings' },
           { label: 'Kebijakan SLA & CS', path: '/settings/sla', perm: 'manage_settings' },
           { label: 'Kotak Masuk Terpisah', path: '/settings/inboxes', perm: 'manage_settings' },
-          { label: 'Integrasi Ekstensi & API', path: '/settings/webhooks', perm: 'manage_webhooks' },
           { label: 'Lisensi Domain', path: '/settings/license', perm: 'manage_settings' },
         ]
       },

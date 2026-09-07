@@ -85,6 +85,15 @@ import reportRoutes from './src/routes/reportRoutes.js';
 import * as dashboardController from './src/controllers/dashboardController.js';
 import { ensureAiColumns } from './src/controllers/chatbotController.js';
 import { ensureUserTeamColumns } from './src/controllers/teamController.js';
+import { ensureFlowSchema } from './src/controllers/flowController.js';
+import { ensureWallboardSchema } from './src/controllers/wallboardController.js';
+import { ensurePipelineSchema } from './src/controllers/pipelineController.js';
+import { ensureCustomFieldsSchema } from './src/controllers/customFieldController.js';
+import { ensureWorkflowRulesSchema } from './src/controllers/workflowController.js';
+import { ensureWaTemplateSchema } from './src/controllers/waTemplateController.js';
+import { ensureAssignmentSchema } from './src/controllers/inboxSettingsController.js';
+import { ensureWorkingHoursSchema } from './src/controllers/workingHoursController.js';
+import { ensureEmailSchema } from './src/controllers/emailController.js';
 
 // --- INITIALIZATION ---
 dotenv.config();
@@ -280,6 +289,15 @@ try {
     ticketController.ensureTicketAndSlaSchema();
     ensureAiColumns();
     ensureUserTeamColumns();
+    ensureFlowSchema();
+    ensureWallboardSchema();
+    ensurePipelineSchema();
+    ensureCustomFieldsSchema();
+    ensureWorkflowRulesSchema();
+    ensureWaTemplateSchema();
+    ensureAssignmentSchema();
+    ensureWorkingHoursSchema();
+    ensureEmailSchema();
 } catch (e) {
     console.error('[Startup] Table self-healing migration error:', e.message);
 }

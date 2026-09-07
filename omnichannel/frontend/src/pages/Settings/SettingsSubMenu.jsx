@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-    Users, Zap, ArrowRight, Package,
-    UserCheck, Clock, Webhook, ShieldAlert, Mail, Tag,
-    ShoppingCart, Shield, Archive, Headphones, Bot, Link2, Settings2, Key, MessageSquare, Building2, Inbox, Type, LayoutTemplate, Workflow, Smartphone,
-    Search, ChevronDown, ChevronRight, Star, Crown, Activity
+    Users, Zap, ArrowRight,
+    UserCheck, Clock, ShieldAlert, Tag,
+    Shield, Archive, Headphones, Key, MessageSquare, Building2, Inbox, Type, LayoutTemplate, Workflow,
+    Search, ChevronDown, ChevronRight, Activity
 } from 'lucide-react';
 
 import { hasPerm } from '../../utils/rbac';
@@ -107,13 +107,10 @@ export default function SettingsSubMenu({ isCollapsed }) {
     const canManageTeam = hasPerm(user, 'manage_team');
     const canManageRoles = hasPerm(user, 'manage_roles');
     const canManageSystemHealth = hasPerm(user, 'manage_system_health');
-    const canManageChatbotTraining = hasPerm(user, 'chatbot_training');
     const canManageLabels = hasPerm(user, 'manage_labels');
     const canManageTemplates = hasPerm(user, 'manage_templates');
     const canAssign = hasPerm(user, 'assign_conversations');
     const canManageTickets = hasPerm(user, 'manage_tickets');
-    const canManageIntegrations = hasPerm(user, 'manage_integrations');
-    const canManageWebhooks = hasPerm(user, 'manage_webhooks');
 
     // All menu items organized by group with dynamic RBAC inclusion/exclusion
     const allItems = {
@@ -124,7 +121,6 @@ export default function SettingsSubMenu({ isCollapsed }) {
             ...(canManageRoles ? [{ to: "roles", icon: Key, label: "Role & Akses" }] : []),
             ...(canManageSettings ? [{ to: "divisions", icon: Building2, label: "Divisi" }] : []),
             ...(canManageSystemHealth ? [{ to: "system-health", icon: Activity, label: "Server Health & Backup", badge: "PRO" }] : []),
-            ...(canManageChatbotTraining ? [{ to: "multi-language", icon: Bot, label: "Multi-Bahasa & AI" }] : []),
             ...(canManageSettings ? [{ to: "license", icon: Shield, label: "Lisensi Domain", badge: "NEW" }] : []),
         ],
         automation: [
@@ -139,16 +135,6 @@ export default function SettingsSubMenu({ isCollapsed }) {
             ...(canAssign ? [{ to: "assignment", icon: UserCheck, label: "Auto Assignment" }] : []),
             ...(canManageSettings ? [{ to: "working-hours", icon: Clock, label: "Jam Operasional" }] : []),
             ...(canManageTickets ? [{ to: "sla", icon: ShieldAlert, label: "Kebijakan SLA" }] : []),
-            ...(canManageIntegrations ? [{ to: "device-data", icon: Smartphone, label: "Device Data" }] : []),
-        ],
-        integrationsApi: [
-            ...(canManageIntegrations ? [{ to: "email", icon: Mail, label: "Email SMTP & IMAP" }] : []),
-            ...(canManageWebhooks ? [{ to: "webhooks", icon: Webhook, label: "Webhook Outbound" }] : []),
-            ...(canManageIntegrations ? [{ to: "ecommerce", icon: ShoppingCart, label: "E-Commerce Sync" }] : []),
-            ...(canManageIntegrations ? [{ to: "ongkir", icon: Package, label: "Ongkir & Ekspedisi" }] : []),
-        ],
-        billing: [
-            ...(canManageSettings ? [{ to: "billing", icon: Settings2, label: "Paket & Billing" }] : []),
         ],
     };
 
@@ -176,9 +162,41 @@ export default function SettingsSubMenu({ isCollapsed }) {
         workspace: { title: "Workspace", icon: Users },
         automation: { title: "Automasi", icon: Zap },
         customerService: { title: "Customer Service", icon: Headphones },
-        integrationsApi: { title: "Integrasi & Ekstensi", icon: Webhook },
-        billing: { title: "Paket & Billing", icon: Settings2 },
     };
+
+    const location = useLocation();
+    const currentSubPath = location.pathname.replace('/settings', '').replace(/^\//, '');
+
+    const detectedCategory = useMemo(() => {
+        for (const [cat, items] of Object.entries(allItems)) {
+            if (items.some(i => i.to === currentSubPath)) {
+                return cat;
+            }
+        }
+        return 'all';
+    }, [currentSubPath, allItems]);
+
+    const [mobileCategory, setMobileCategory] = useState(detectedCategory);
+
+    useEffect(() => {
+        if (detectedCategory !== 'all') {
+            setMobileCategory(detectedCategory);
+        }
+    }, [detectedCategory]);
+
+    const CATEGORIES = [
+        { id: 'all', label: 'Semua' },
+        { id: 'workspace', label: 'Workspace' },
+        { id: 'automation', label: 'Automasi' },
+        { id: 'customerService', label: 'CS & Layanan' },
+    ];
+
+    const mobileItems = useMemo(() => {
+        if (mobileCategory === 'all') {
+            return Object.values(filteredItems).flat();
+        }
+        return filteredItems[mobileCategory] || [];
+    }, [mobileCategory, filteredItems]);
 
     // Check if we have any items in a group
     const hasItems = (groupKey) => {
@@ -215,11 +233,35 @@ export default function SettingsSubMenu({ isCollapsed }) {
 
     return (
         <div className="flex flex-col w-full h-full">
-            {/* MOBILE ONLY: Horizontal Scrollable Tab Bar */}
-            <div className="md:hidden flex flex-row overflow-x-auto no-scrollbar gap-1.5 py-1 px-1 pb-1.5 w-full">
-                {Object.values(filteredItems).flat().map(item => (
-                    <MenuItem key={item.to} {...item} isCollapsed={false} />
-                ))}
+            {/* MOBILE ONLY: Categorized Horizontal Tab Bar */}
+            <div className="md:hidden flex flex-col gap-1.5 w-full mb-1">
+                {/* Category Filter Pills */}
+                <div className="flex flex-row overflow-x-auto no-scrollbar scroll-smooth touch-pan-x gap-1 py-1 px-0.5">
+                    {CATEGORIES.map(cat => {
+                        const isActive = mobileCategory === cat.id;
+                        return (
+                            <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => setMobileCategory(cat.id)}
+                                className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-bold transition-colors ${
+                                    isActive
+                                        ? 'bg-orange-500 text-white shadow-xs'
+                                        : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border border-gray-200 dark:border-slate-700 hover:bg-gray-50'
+                                }`}
+                            >
+                                {cat.label}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Submenu Item Pills */}
+                <div className="flex flex-row overflow-x-auto no-scrollbar scroll-smooth touch-pan-x gap-1.5 py-1 px-0.5 pb-2 w-full">
+                    {mobileItems.map(item => (
+                        <MenuItem key={item.to} {...item} isCollapsed={false} />
+                    ))}
+                </div>
             </div>
 
             {/* DESKTOP/TABLET ONLY: Search & Collapsible Groups */}
@@ -263,32 +305,6 @@ export default function SettingsSubMenu({ isCollapsed }) {
                             defaultOpen={searchQuery.trim() || true}
                         >
                             {filteredItems.customerService?.map(item => (
-                                <MenuItem key={item.to} {...item} />
-                            ))}
-                        </CollapsibleGroup>
-                    )}
-
-                    {/* Integrations & API Group */}
-                    {hasItems('integrationsApi') && (
-                        <CollapsibleGroup
-                            title={groupConfig.integrationsApi.title}
-                            icon={groupConfig.integrationsApi.icon}
-                            defaultOpen={searchQuery.trim() || true}
-                        >
-                            {filteredItems.integrationsApi?.map(item => (
-                                <MenuItem key={item.to} {...item} />
-                            ))}
-                        </CollapsibleGroup>
-                    )}
-
-                    {/* Billing Group */}
-                    {hasItems('billing') && (
-                        <CollapsibleGroup
-                            title={groupConfig.billing.title}
-                            icon={groupConfig.billing.icon}
-                            defaultOpen={searchQuery.trim() || true}
-                        >
-                            {filteredItems.billing?.map(item => (
                                 <MenuItem key={item.to} {...item} />
                             ))}
                         </CollapsibleGroup>

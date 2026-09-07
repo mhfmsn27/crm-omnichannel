@@ -9,14 +9,25 @@ function FlowCard({ flow, onDelete }) {
         <div className="bg-white rounded-xl border p-5 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
                         <Zap className="w-5 h-5 text-indigo-600" />
                     </div>
                     <div>
                         <h3 className="font-bold text-gray-900">{flow.name}</h3>
-                        <span className="text-xs font-mono bg-gray-100 px-2 py-0.5 rounded mt-1 inline-block">
-                            {flow.trigger_keyword}
-                        </span>
+                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                            {flow.trigger_keyword ? (
+                                <span className="text-xs font-mono bg-gray-100 text-gray-700 px-2 py-0.5 rounded inline-block font-semibold">
+                                    {flow.trigger_keyword}
+                                </span>
+                            ) : (
+                                <span className="text-xs text-gray-400 italic">No keyword</span>
+                            )}
+                            {flow.trigger_type && (
+                                <span className="text-[10px] uppercase font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded">
+                                    {flow.trigger_type}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -31,13 +42,14 @@ function FlowCard({ flow, onDelete }) {
             <div className="flex items-center justify-between mt-4 pt-4 border-t">
                 <Link
                     to={`/chatbot/flows/${flow.id}`}
-                    className="flex items-center gap-1 text-sm text-indigo-600 hover:underline"
+                    className="flex items-center gap-1 text-sm text-indigo-600 hover:underline font-medium"
                 >
                     <Edit2 className="w-4 h-4" /> Edit Flow
                 </Link>
                 <button
                     onClick={() => onDelete(flow.id)}
-                    className="p-2 text-red-400 hover:bg-red-50 rounded-lg"
+                    className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Delete flow"
                 >
                     <Trash2 className="w-4 h-4" />
                 </button>
@@ -59,9 +71,11 @@ export default function FlowListPage() {
         setLoading(true);
         try {
             const res = await axios.get('/api/app/flows');
-            setFlows(res.data);
+            setFlows(Array.isArray(res.data) ? res.data : []);
         } catch (e) {
-            toast.error('Failed to load flows');
+            console.error('Failed to load flows:', e);
+            toast.error(e.response?.data?.error || 'Failed to load flows');
+            setFlows([]);
         } finally {
             setLoading(false);
         }

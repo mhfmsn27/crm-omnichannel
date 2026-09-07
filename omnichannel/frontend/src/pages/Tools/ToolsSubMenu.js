@@ -44,7 +44,7 @@ export default function ToolsSubMenu({ isCollapsed }) {
     return (
         <div className="flex flex-col w-full">
             {/* MOBILE ONLY: Horizontal Scrollable Tab Bar */}
-            <div className="md:hidden flex flex-row overflow-x-auto no-scrollbar gap-1.5 py-1 px-1 pb-1.5 w-full">
+            <div className="md:hidden flex flex-row overflow-x-auto no-scrollbar scroll-smooth touch-pan-x gap-1.5 py-1.5 px-0.5 pb-2 w-full -mx-0.5">
                 {canWarmer && <MenuItem to="warmer" icon={Flame} label="WA Warmer" isCollapsed={false} />}
                 {canTools && <MenuItem to="check-number" icon={ShieldCheck} label="Check Number" isCollapsed={false} />}
                 {canTools && <MenuItem to="group-extractor" icon={UserPlus} label="Group Extractor" isCollapsed={false} />}

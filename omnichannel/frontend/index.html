@@ -16,6 +16,71 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <title>CRMHUB Omnichannel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+      // Intercept and suppress known Chromium DevTools Live Metrics bug:
+      // "Uncaught TypeError: Cannot read properties of undefined (reading 'startTime') at et.reportAllChanges"
+      (function() {
+        var isDevToolsMetricBug = function(msg, stack, src) {
+          var m = (msg || '').toString();
+          var s = (stack || '').toString();
+          var f = (src || '').toString();
+          return (m.indexOf('reportAllChanges') !== -1 || s.indexOf('reportAllChanges') !== -1) ||
+                 ((m.indexOf("reading 'startTime'") !== -1 || m.indexOf('startTime') !== -1) &&
+                  (s.indexOf('timeout') !== -1 || f.indexOf('VM') !== -1 || !f || s.indexOf('anonymous') !== -1));
+        };
+
+        window.addEventListener('error', function(event) {
+          if (isDevToolsMetricBug(event.message, event.error && event.error.stack, event.filename)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          var reason = event.reason;
+          if (reason && isDevToolsMetricBug(reason.message || reason, reason.stack, '')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }
+        }, true);
+
+        var prevOnError = window.onerror;
+        window.onerror = function(message, source, lineno, colno, error) {
+          if (isDevToolsMetricBug(message, error && error.stack, source)) {
+            return true;
+          }
+          if (typeof prevOnError === 'function') {
+            return prevOnError.apply(this, arguments);
+          }
+          return false;
+        };
+
+        var prevConsoleError = console.error;
+        console.error = function() {
+          var args = Array.prototype.slice.call(arguments);
+          var str = args.map(function(a) {
+            return typeof a === 'string' ? a : (a && (a.stack || a.message || a.toString()) || '');
+          }).join(' ');
+          if (isDevToolsMetricBug(str, str, '')) {
+            return;
+          }
+          return prevConsoleError.apply(console, arguments);
+        };
+
+        var prevConsoleWarn = console.warn;
+        console.warn = function() {
+          var args = Array.prototype.slice.call(arguments);
+          var str = args.map(function(a) {
+            return typeof a === 'string' ? a : (a && (a.stack || a.message || a.toString()) || '');
+          }).join(' ');
+          if (isDevToolsMetricBug(str, str, '')) {
+            return;
+          }
+          return prevConsoleWarn.apply(console, arguments);
+        };
+      })();
+    </script>
   </head>
   <body class="bg-gray-50 dark:bg-slate-950 select-none md:select-auto">
     <div id="root"></div>

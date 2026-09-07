@@ -10,14 +10,14 @@ const MenuItem = ({ to, icon: Icon, label, isCollapsed }) => (
         to={to} 
         title={isCollapsed ? label : ''}
         className={({ isActive }) => 
-            `shrink-0 md:w-full mb-0 md:mb-2 px-3 py-2 md:py-2.5 rounded-xl border shadow-xs transition-all duration-200 flex items-center justify-between group whitespace-nowrap ${
+            `shrink-0 md:w-full mb-0 md:mb-2 px-3 py-2 md:py-2.5 rounded-xl border shadow-xs active:scale-95 transition-all duration-200 flex items-center justify-between group whitespace-nowrap touch-manipulation ${
                 isActive 
                 ? 'bg-orange-50 border-orange-500 text-orange-700 dark:bg-orange-950/30 dark:border-orange-500 dark:text-orange-300 font-bold' 
                 : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 dark:bg-[#1e293b] dark:border-slate-800 dark:text-gray-300 dark:hover:bg-slate-800 font-medium'
             }`
         }
     >
-        <div className={`flex items-center gap-2.5 ${isCollapsed ? 'md:justify-center' : ''}`}>
+        <div className={`flex items-center gap-2 ${isCollapsed ? 'md:justify-center' : ''}`}>
             <div className="bg-gray-100 p-1.5 rounded-lg text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600 transition-colors dark:bg-slate-800 dark:text-slate-400 shrink-0">
                 <Icon className="w-4 h-4" />
             </div>
@@ -37,7 +37,7 @@ export default function ChatbotLayout() {
   const canApi = hasPerm(user, 'manage_api');
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 min-h-screen bg-gray-50 dark:bg-[#0f172a] transition-colors duration-200">
+    <div className="p-3 sm:p-4 md:p-6 min-h-screen bg-gray-50 dark:bg-[#0f172a] transition-colors duration-200 pb-20 md:pb-6">
       <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 items-start">
         {/* Left Sidebar */}
         <aside className={`flex-shrink-0 transition-all duration-300 md:sticky md:top-6 ${isCollapsed ? 'w-full md:w-16' : 'w-full md:w-52'} relative`}>
@@ -50,7 +50,7 @@ export default function ChatbotLayout() {
                 {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
 
-           <div className="flex flex-row md:flex-col overflow-x-auto no-scrollbar gap-1.5 md:gap-0 pb-1.5 md:pb-0 px-1 w-full">
+           <div className="flex flex-row md:flex-col overflow-x-auto scroll-smooth scrollbar-none gap-1.5 md:gap-0 pb-1.5 md:pb-0 px-1 w-full touch-pan-x">
                 {canChatbot && <MenuItem to="list" icon={Bot} label="Manage Bots" isCollapsed={isCollapsed} />}
                 {canChatbot && <MenuItem to="flows" icon={GitBranch} label="Visual Flow" isCollapsed={isCollapsed} />}
                 {canTraining && <MenuItem to="training" icon={Brain} label="AI Training" isCollapsed={isCollapsed} />}

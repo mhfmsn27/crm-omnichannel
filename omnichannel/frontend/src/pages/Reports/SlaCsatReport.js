@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format, subDays } from 'date-fns';
 import { Loader2, Download, BarChart2, TrendingUp, Star, Users, Clock, AlertCircle, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
@@ -144,13 +144,13 @@ export default function SlaCsatReport() {
     if (loading) return <div className="flex h-full items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-indigo-600" /></div>;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50">
             {/* HEADER */}
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-                <h2 className="text-2xl font-bold text-gray-900">SLA & CSAT Analytics</h2>
-                <div className="flex gap-2">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">SLA & CSAT Analytics</h2>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
                     <select
-                        className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5"
+                        className="bg-white border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2 sm:p-2.5 w-full sm:w-auto"
                         value={selectedAgent}
                         onChange={(e) => setSelectedAgent(e.target.value)}
                     >
@@ -159,15 +159,17 @@ export default function SlaCsatReport() {
                             <option key={agent.id} value={agent.id}>{agent.name}</option>
                         ))}
                     </select>
-                    <DateRangeFilter startDate={startDate} endDate={endDate} onChange={(s, e) => { setStartDate(s); setEndDate(e); }} />
-                    <button
-                        onClick={handleExport}
-                        disabled={downloading}
-                        className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 disabled:opacity-50"
-                        title="Export Report"
-                    >
-                        {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                    </button>
+                    <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
+                        <DateRangeFilter startDate={startDate} endDate={endDate} onChange={(s, e) => { setStartDate(s); setEndDate(e); }} />
+                        <button
+                            onClick={handleExport}
+                            disabled={downloading}
+                            className="p-2 sm:p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 disabled:opacity-50 shrink-0"
+                            title="Export Report"
+                        >
+                            {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -215,7 +217,7 @@ export default function SlaCsatReport() {
                         <Download className="w-4 h-4 text-gray-400 cursor-pointer hover:text-gray-600" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
                         <div className="space-y-3">
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Total Responden</span>
@@ -378,8 +380,8 @@ export default function SlaCsatReport() {
                     <h3 className="font-bold text-gray-800 text-lg">Agen Berdasarkan SLA</h3>
                     <Download className="w-4 h-4 text-gray-400 cursor-pointer hover:text-gray-600" />
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
+                <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left text-sm min-w-[600px]">
                         <thead className="bg-gray-50 text-gray-500 font-medium text-xs uppercase">
                             <tr>
                                 <th className="px-6 py-3">Nama Agen</th>
@@ -433,8 +435,8 @@ export default function SlaCsatReport() {
                     <h3 className="font-bold text-gray-800 text-lg">Agen Berdasarkan CSAT</h3>
                     <Download className="w-4 h-4 text-gray-400 cursor-pointer hover:text-gray-600" />
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
+                <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left text-sm min-w-[600px]">
                         <thead className="bg-gray-50 text-gray-500 font-medium text-xs uppercase">
                             <tr>
                                 <th className="px-6 py-3">Nama Agen</th>

@@ -38,8 +38,9 @@ export default function CustomFieldsSettings() {
     const fetchFields = async () => {
         try {
             const res = await axios.get('/api/app/contacts/custom-fields');
-            setFields(res.data || []);
+            setFields(Array.isArray(res.data) ? res.data : []);
         } catch (e) {
+            setFields([]);
             toast.error('Failed to load custom fields');
         } finally {
             setLoading(false);
@@ -65,11 +66,15 @@ export default function CustomFieldsSettings() {
 
     const openEdit = (field) => {
         setEditingField(field);
+        let opts = field.field_options;
+        if (typeof opts === 'string') {
+            try { opts = JSON.parse(opts); } catch (e) {}
+        }
         setForm({
             field_key: field.field_key,
             field_label: field.field_label,
             field_type: field.field_type,
-            field_options: Array.isArray(field.field_options) ? field.field_options.join(', ') : '',
+            field_options: Array.isArray(opts) ? opts.join(', ') : (typeof opts === 'string' ? opts : ''),
             is_required: field.is_required || false,
         });
         setErrors({});
@@ -153,8 +158,8 @@ export default function CustomFieldsSettings() {
     if (loading) return <div className="p-8 text-center text-gray-400">Memuat...</div>;
 
     return (
-        <div className="p-6 md:p-8 max-w-3xl">
-            <div className="flex items-center justify-between mb-6">
+        <div className="p-3.5 sm:p-6 md:p-8 max-w-3xl pb-20 md:pb-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-6">
                 <div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">Custom Fields</h2>
                     <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
@@ -163,7 +168,7 @@ export default function CustomFieldsSettings() {
                 </div>
                 <button
                     onClick={openCreate}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 flex items-center gap-2"
+                    className="w-full sm:w-auto justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 flex items-center gap-2 shadow-sm"
                 >
                     <Plus className="w-4 h-4" /> Tambah Field
                 </button>

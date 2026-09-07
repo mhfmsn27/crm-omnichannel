@@ -6,12 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 
 const StepIndicator = ({ current, step, title }) => (
-    <div className="flex items-center flex-1 last:flex-none">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${current === step ? 'bg-indigo-600 text-white' : current > step ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
-            {current > step ? <Check className="w-4 h-4" /> : step}
+    <div className="flex items-center flex-1 last:flex-none min-w-0">
+        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 transition-colors ${current === step ? 'bg-indigo-600 text-white shadow-sm' : current > step ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
+            {current > step ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : step}
         </div>
-        <span className={`ml-2 text-sm font-medium ${current === step ? 'text-indigo-600' : current > step ? 'text-green-600' : 'text-gray-500'}`}>{title}</span>
-        {step < 3 && <div className={`flex-1 h-1 mx-4 rounded ${current > step ? 'bg-green-500' : 'bg-gray-200'}`}></div>}
+        <span className={`ml-1.5 sm:ml-2 text-[11px] sm:text-sm font-medium truncate ${current === step ? 'text-indigo-600 font-bold' : current > step ? 'text-green-600' : 'text-gray-500'}`}>{title}</span>
+        {step < 3 && <div className={`flex-1 h-0.5 sm:h-1 mx-1.5 sm:mx-4 rounded shrink-0 min-w-[12px] ${current > step ? 'bg-green-500' : 'bg-gray-200'}`}></div>}
     </div>
 );
 
@@ -140,11 +140,11 @@ export default function GroupExtractorTool() {
     const isLocked = false; // PERSONAL VERSION: Bypass Limit
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto relative">
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto relative">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
                 <div>
                     <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <UserPlus className="w-8 h-8 text-indigo-600" /> WhatsApp Group Extractor
+                        <UserPlus className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-600" /> WhatsApp Group Extractor
                     </h2>
                     <p className="text-sm text-gray-500">Scrape contacts from joined groups for lead generation.</p>
                 </div>
@@ -166,15 +166,15 @@ export default function GroupExtractorTool() {
                 </div>
             )}
 
-            <div className="max-w-4xl mx-auto mb-8">
-                <div className="flex justify-between items-center px-4 mb-6">
+            <div className="max-w-4xl mx-auto mb-6 sm:mb-8">
+                <div className="flex justify-between items-center px-1 sm:px-4 mb-4 sm:mb-6">
                     <StepIndicator current={step} step={1} title="Select Device" />
                     <StepIndicator current={step} step={2} title="Choose Group" />
                     <StepIndicator current={step} step={3} title="Save Data" />
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+            <div className="max-w-4xl mx-auto bg-white p-4 sm:p-8 rounded-xl border border-gray-200 shadow-sm">
 
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6 flex gap-3 items-start">
                     <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />

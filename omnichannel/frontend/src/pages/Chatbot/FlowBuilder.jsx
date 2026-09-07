@@ -36,7 +36,7 @@ function NodeWrapper({ id, type, children }) {
             {type !== 'start' && (
                 <button
                     onClick={onDelete}
-                    className="nodrag absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-50 hover:bg-red-600 shadow-sm"
+                    className="nodrag absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-50 hover:bg-red-600 shadow-sm"
                     title="Remove Node"
                 >
                     <X className="w-3 h-3" />
@@ -218,6 +218,7 @@ function FlowBuilder({ flowId: propFlowId, onClose }) {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [flowName, setFlowName] = useState('');
     const [triggerKeyword, setTriggerKeyword] = useState('');
+    const [triggerType, setTriggerType] = useState('exact');
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(!!flowId);
     const [selectedNode, setSelectedNode] = useState(null);
@@ -244,7 +245,8 @@ function FlowBuilder({ flowId: propFlowId, onClose }) {
             const res = await axios.get(`/api/app/flows/${flowId}`);
             const flow = res.data;
             setFlowName(flow.name);
-            setTriggerKeyword(flow.trigger_keyword);
+            setTriggerKeyword(flow.trigger_keyword || '');
+            setTriggerType(flow.trigger_type || 'exact');
             if (flow.nodes) {
                 setNodes(typeof flow.nodes === 'string' ? JSON.parse(flow.nodes) : flow.nodes);
             }
@@ -381,6 +383,7 @@ function FlowBuilder({ flowId: propFlowId, onClose }) {
             const payload = {
                 name: flowName,
                 trigger_keyword: triggerKeyword.toUpperCase(),
+                trigger_type: triggerType || 'exact',
                 nodes,
                 edges
             };
@@ -419,32 +422,41 @@ function FlowBuilder({ flowId: propFlowId, onClose }) {
     return (
         <div className="flex flex-col w-full" style={{ height: 'calc(100vh - 100px)' }}>
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b bg-white shrink-0">
-                <div className="flex items-center gap-4">
-                    <button onClick={() => navigate('/chatbot/flows')} className="p-2 hover:bg-gray-100 rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border-b bg-white shrink-0 gap-2 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+                    <button onClick={() => navigate('/chatbot/flows')} className="p-2 hover:bg-gray-100 rounded-lg shrink-0">
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <input
                         value={flowName}
                         onChange={(e) => setFlowName(e.target.value)}
                         placeholder="Flow name..."
-                        className="text-lg font-bold border-b border-transparent hover:border-gray-300 focus:border-indigo-500 outline-none bg-transparent"
+                        className="text-base sm:text-lg font-bold border-b border-transparent hover:border-gray-300 focus:border-indigo-500 outline-none bg-transparent min-w-0 flex-1"
                     />
                     <input
                         value={triggerKeyword}
                         onChange={(e) => setTriggerKeyword(e.target.value.toUpperCase())}
                         placeholder="KEYWORD"
-                        className="px-3 py-1 border rounded-lg text-sm font-mono bg-gray-50"
+                        className="px-2.5 py-1 border rounded-lg text-xs sm:text-sm font-mono bg-gray-50 shrink-0 w-24 sm:w-28 text-center"
                     />
+                    <select
+                        value={triggerType}
+                        onChange={(e) => setTriggerType(e.target.value)}
+                        className="px-2 py-1 border rounded-lg text-xs bg-gray-50 text-gray-700 font-medium focus:outline-none focus:border-indigo-500 shrink-0"
+                        title="Trigger Match Type"
+                    >
+                        <option value="exact">Exact Match</option>
+                        <option value="contains">Contains Word</option>
+                    </select>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={handleDelete} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                <div className="flex items-center justify-end gap-2 shrink-0">
+                    <button onClick={handleDelete} className="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Delete Flow">
                         <Trash2 className="w-5 h-5" />
                     </button>
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg flex items-center gap-2 disabled:opacity-50"
+                        className="px-3.5 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg flex items-center gap-2 text-xs sm:text-sm font-bold disabled:opacity-50 shadow-sm"
                     >
                         {saving ? 'Saving...' : <><Save className="w-4 h-4" /> Save Flow</>}
                     </button>
@@ -477,7 +489,7 @@ function FlowBuilder({ flowId: propFlowId, onClose }) {
                     <MiniMap />
                     
                     {/* Modern Horizontal Palette */}
-                    <Panel position="top-center" className="bg-white/95 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-gray-200 flex flex-row gap-2 m-4 transition-all max-w-[calc(100vw-50px)] overflow-x-auto custom-scrollbar items-center z-10">
+                    <Panel position="top-center" className="bg-white/95 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg border border-gray-200 flex flex-row gap-2 m-2 sm:m-4 transition-all max-w-[calc(100vw-24px)] sm:max-w-[calc(100vw-50px)] overflow-x-auto scrollbar-none items-center z-10 touch-pan-x">
                         <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2 flex items-center shrink-0">
                             <span>Nodes</span>
                         </div>
@@ -527,7 +539,7 @@ function FlowBuilder({ flowId: propFlowId, onClose }) {
 
                     {/* Node Properties Editor Panel */}
                     {selectedNode && (
-                        <Panel position="top-right" className="bg-white/95 backdrop-blur-md p-5 rounded-xl shadow-2xl border border-gray-200 w-80 m-4 flex flex-col gap-4 transition-all">
+                        <Panel position="top-right" className="fixed md:absolute bottom-0 left-0 right-0 md:bottom-auto md:left-auto md:top-auto md:right-auto w-full md:w-80 max-h-[75vh] md:max-h-[80vh] overflow-y-auto bg-white/98 backdrop-blur-md p-4 sm:p-5 rounded-t-2xl md:rounded-xl shadow-2xl border border-gray-200 m-0 md:m-4 flex flex-col gap-4 z-50 transition-all custom-scrollbar">
                             <div className="flex justify-between items-center border-b pb-3">
                                 <h3 className="font-bold text-gray-800 capitalize flex items-center gap-2">
                                     <Settings className="w-4 h-4 text-indigo-500"/> {selectedNode.type} Node

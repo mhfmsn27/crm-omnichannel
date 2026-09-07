@@ -9,7 +9,7 @@ export default function IntegrationsLayout() {
   usePageTitle('INTEGRATIONS');
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 min-h-screen bg-gray-50 dark:bg-[#0f172a] transition-colors duration-200">
+    <div className="p-3 sm:p-4 md:p-6 pb-20 md:pb-6 min-h-screen bg-gray-50 dark:bg-[#0f172a] transition-colors duration-200">
       <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 items-start">
         {/* Kolom Kiri: Navigasi Menu */}
         <aside className={`w-full transition-all duration-300 ${isCollapsed ? 'w-full md:w-16' : 'w-full md:w-52'} flex-shrink-0 md:sticky md:top-6 relative`}>

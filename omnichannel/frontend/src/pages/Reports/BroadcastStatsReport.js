@@ -145,26 +145,26 @@ export default function BroadcastStatsReport() {
         ];
 
         return (
-            <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50">
-                <div className="flex items-center justify-between mb-6">
-                    <button onClick={() => { setSelectedCampaign(null); setDetails(null); }} className="text-gray-600 hover:text-indigo-600 font-bold flex items-center gap-2">
+            <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50">
+                <div className="flex flex-wrap items-center justify-between mb-4 sm:mb-6 gap-3">
+                    <button onClick={() => { setSelectedCampaign(null); setDetails(null); }} className="text-gray-600 hover:text-indigo-600 font-bold flex items-center gap-2 text-sm">
                          ← Back to Overview
                     </button>
-                    <div className="flex gap-3">
-                         <button onClick={() => handleExport(selectedCampaign.id, selectedCampaign.name)} className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold flex items-center gap-2 shadow-sm hover:bg-green-700">
+                    <div className="flex gap-2">
+                         <button onClick={() => handleExport(selectedCampaign.id, selectedCampaign.name)} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-600 text-white rounded-lg font-bold flex items-center gap-2 shadow-sm hover:bg-green-700 text-xs sm:text-sm">
                              <Download className="w-4 h-4" /> Export Report
                          </button>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-900">{selectedCampaign.name}</h2>
+                <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">{selectedCampaign.name}</h2>
                     {getStatusBadge(displayStatus)}
                 </div>
-                <p className="text-gray-500 mb-8 text-sm">Created on {format(new Date(selectedCampaign.created_at), 'dd MMMM yyyy, HH:mm')}</p>
+                <p className="text-gray-500 mb-6 sm:mb-8 text-xs sm:text-sm">Created on {format(new Date(selectedCampaign.created_at), 'dd MMMM yyyy, HH:mm')}</p>
 
                 {/* Campaign Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6 mb-6 sm:mb-8">
                     <StatCard title="Total Recipients" value={selectedCampaign.total} icon={Users} color="bg-blue-500" />
                     <StatCard title="Success Rate" value={`${campaignStats[0].value > 0 ? Math.round((campaignStats[0].value / selectedCampaign.total) * 100) : 0}%`} subValue={`${campaignStats[0].value} delivered`} icon={CheckCircle} color="bg-green-500" />
                     <StatCard title="Failures" value={campaignStats[1].value} subValue="Errors or Invalid" icon={XCircle} color="bg-red-500" />
@@ -247,21 +247,21 @@ export default function BroadcastStatsReport() {
 
     // --- MAIN OVERVIEW ---
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50/50">
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto bg-gray-50/50">
+            <div className="flex flex-wrap justify-between items-center mb-6 md:mb-8 gap-3">
                 <div>
                     <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Megaphone className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Broadcast Analytics
+                        <Megaphone className="w-6 h-6 text-indigo-600 dark:text-indigo-400 shrink-0" /> Broadcast Analytics
                     </h2>
-                    <p className="text-sm text-gray-500">Performance metrics for your mass messaging campaigns.</p>
+                    <p className="text-xs sm:text-sm text-gray-500">Performance metrics for your mass messaging campaigns.</p>
                 </div>
-                <button onClick={fetchData} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 shadow-sm">
-                    <RefreshCw className="w-5 h-5" />
+                <button onClick={fetchData} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 shadow-sm" title="Refresh">
+                    <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6 mb-6 sm:mb-8">
                 <StatCard title="Total Campaigns" value={totalCampaigns} subValue="All time" icon={Megaphone} color="bg-blue-500" />
                 <StatCard title="Messages Sent" value={totalSent.toLocaleString()} subValue="Successfully delivered" icon={CheckCircle} color="bg-green-500" />
                 <StatCard title="Failed Messages" value={totalFailed.toLocaleString()} subValue="Errors or Invalid Numbers" icon={AlertTriangle} color="bg-red-500" />
@@ -269,7 +269,7 @@ export default function BroadcastStatsReport() {
             </div>
 
             {/* Chart */}
-            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8 h-[400px]">
+            <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-200 shadow-sm mb-6 sm:mb-8 h-[300px] sm:h-[400px]">
                 <h3 className="font-bold text-gray-700 mb-6">Recent Campaign Performance</h3>
                 <ResponsiveContainer width="100%" height="90%">
                     <BarChart data={chartData} barGap={0}>

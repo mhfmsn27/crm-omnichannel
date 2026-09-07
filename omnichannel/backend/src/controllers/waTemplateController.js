@@ -1,5 +1,32 @@
 import pool from '../config/db.js';
 
+let schemaEnsured = false;
+export const ensureWaTemplateSchema = async () => {
+    if (schemaEnsured) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS wa_template_library (
+                id BIGSERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                name VARCHAR(255) NOT NULL,
+                category VARCHAR(100),
+                content TEXT NOT NULL,
+                variables JSONB DEFAULT '[]'::jsonb,
+                use_count INTEGER DEFAULT 0,
+                created_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_wa_template_library_org ON wa_template_library(organization_id, category);
+            CREATE INDEX IF NOT EXISTS idx_wa_template_library_use ON wa_template_library(organization_id, use_count DESC);
+        `);
+        schemaEnsured = true;
+    } catch (e) {
+        console.error('[WaTemplate] ensureWaTemplateSchema error:', e.message);
+    }
+};
+
 // --- WhatsApp Template Library CRUD ---
 
 export const getTemplates = async (req, res) => {
@@ -7,6 +34,7 @@ export const getTemplates = async (req, res) => {
     const { category, search } = req.query;
 
     try {
+        await ensureWaTemplateSchema();
         let query = `
             SELECT t.*, u.name as created_by_name
             FROM wa_template_library t
@@ -31,9 +59,10 @@ export const getTemplates = async (req, res) => {
         query += ` ORDER BY t.use_count DESC, t.created_at DESC`;
 
         const result = await pool.query(query, params);
-        res.json(result.rows);
+        res.json(result.rows || []);
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        console.error('[WaTemplate] getTemplates error:', e.message);
+        res.json([]);
     }
 };
 
@@ -46,6 +75,7 @@ export const createTemplate = async (req, res) => {
     }
 
     try {
+        await ensureWaTemplateSchema();
         // Extract variables from content (e.g., {{name}}, {{order_id}})
         const variables = [];
         const varRegex = /\{\{([^}]+)\}\}/g;
@@ -74,6 +104,7 @@ export const updateTemplate = async (req, res) => {
     const { name, category, content } = req.body;
 
     try {
+        await ensureWaTemplateSchema();
         // Extract variables from content
         const variables = [];
         if (content) {
@@ -113,6 +144,7 @@ export const deleteTemplate = async (req, res) => {
     const { id } = req.params;
 
     try {
+        await ensureWaTemplateSchema();
         const result = await pool.query(
             `DELETE FROM wa_template_library WHERE id = $1 AND organization_id = $2 RETURNING id`,
             [id, organization_id]
@@ -133,6 +165,7 @@ export const useTemplate = async (req, res) => {
     const { id } = req.params;
 
     try {
+        await ensureWaTemplateSchema();
         const result = await pool.query(
             `UPDATE wa_template_library
              SET use_count = use_count + 1, updated_at = NOW()
@@ -155,6 +188,7 @@ export const getCategories = async (req, res) => {
     const { organization_id } = req.user;
 
     try {
+        await ensureWaTemplateSchema();
         const result = await pool.query(
             `SELECT category, COUNT(*) as count
              FROM wa_template_library
@@ -164,8 +198,9 @@ export const getCategories = async (req, res) => {
             [organization_id]
         );
 
-        res.json(result.rows);
+        res.json(result.rows || []);
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        console.error('[WaTemplate] getCategories error:', e.message);
+        res.json([]);
     }
 };

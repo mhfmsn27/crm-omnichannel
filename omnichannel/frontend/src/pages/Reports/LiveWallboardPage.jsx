@@ -46,37 +46,37 @@ export default function LiveWallboardPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0b0f19] text-white p-6 md:p-8 flex flex-col justify-between font-sans">
+        <div className="min-h-screen bg-[#0b0f19] text-white p-3.5 sm:p-6 md:p-8 pb-20 md:pb-8 flex flex-col justify-between font-sans">
             {/* Top Bar */}
-            <div className="flex justify-between items-center pb-6 border-b border-slate-800">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 sm:pb-6 border-b border-slate-800 gap-3 sm:gap-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-500/30 flex items-center justify-center animate-pulse">
-                        <Activity className="w-6 h-6 text-white" />
+                    <div className="p-2 sm:p-2.5 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-500/30 flex items-center justify-center animate-pulse shrink-0">
+                        <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-black tracking-wide text-white flex items-center gap-2">
-                            CRMHUB LIVE WALLBOARD <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-0.5 rounded-full border border-emerald-500/40">LIVE</span>
+                        <h1 className="text-lg sm:text-xl md:text-2xl font-black tracking-wide text-white flex flex-wrap items-center gap-2">
+                            CRMHUB LIVE WALLBOARD <span className="bg-emerald-500/20 text-emerald-400 text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 rounded-full border border-emerald-500/40">LIVE</span>
                         </h1>
-                        <p className="text-xs text-slate-400">Office Executive Operations Monitoring</p>
+                        <p className="text-[11px] sm:text-xs text-slate-400">Office Executive Operations Monitoring</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <div className="bg-slate-900 border border-slate-800 px-4 py-2 rounded-2xl text-lg font-mono font-bold text-indigo-400 shadow-inner">
+                <div className="flex items-center justify-between w-full sm:w-auto gap-3 sm:gap-4">
+                    <div className="bg-slate-900 border border-slate-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl text-sm sm:text-lg font-mono font-bold text-indigo-400 shadow-inner">
                         {timeStr} WIB
                     </div>
                     <button
                         onClick={toggleFullscreen}
-                        className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl transition-all border border-slate-700"
+                        className="p-2 sm:p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl transition-all border border-slate-700 shrink-0"
                         title="Toggle Fullscreen"
                     >
-                        {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                        {isFullscreen ? <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />}
                     </button>
                 </div>
             </div>
 
             {/* Main Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 my-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 my-4 sm:my-6">
                 {/* 1. Unassigned Queue */}
                 <div className="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 relative overflow-hidden shadow-xl">
                     <div className="flex justify-between items-start">

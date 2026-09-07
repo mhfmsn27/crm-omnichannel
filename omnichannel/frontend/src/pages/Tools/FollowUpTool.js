@@ -94,15 +94,16 @@ export default function FollowUpTool() {
     if (loading) return <div className="p-8">Loading...</div>;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
                 <div>
                     <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Clock className="w-8 h-8 text-indigo-600" /> Auto Follow-up
+                        <Clock className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-600 shrink-0" /> 
+                        <span>Auto Follow-up</span>
                     </h2>
                     <p className="text-sm text-gray-500">Manage automated reminder sequences for your leads.</p>
                 </div>
-                <button onClick={openCreate} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2">
+                <button onClick={openCreate} className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 flex items-center justify-center gap-2 shadow-sm transition-colors">
                     <Plus className="w-4 h-4" /> New Sequence
                 </button>
             </div>
@@ -174,21 +175,26 @@ export default function FollowUpTool() {
                             <div className="space-y-4">
                                 <label className="block text-sm font-bold text-gray-700">Timeline Steps</label>
                                 {form.steps.map((step, idx) => (
-                                    <div key={idx} className="flex gap-4 items-start bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                        <div className="w-8 h-8 bg-white rounded-full border flex items-center justify-center font-bold text-gray-500 shrink-0 shadow-sm">
-                                            {idx + 1}
+                                    <div key={idx} className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start bg-gray-50 p-3.5 sm:p-4 rounded-xl border border-gray-200 relative">
+                                        <div className="flex items-center justify-between w-full sm:w-auto">
+                                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full border flex items-center justify-center font-bold text-xs sm:text-sm text-gray-500 shrink-0 shadow-sm">
+                                                {idx + 1}
+                                            </div>
+                                            <button onClick={() => removeStep(idx)} className="sm:hidden text-red-400 hover:text-red-600 p-1">
+                                                <Trash2 className="w-4 h-4"/>
+                                            </button>
                                         </div>
-                                        <div className="flex-1 space-y-3">
+                                        <div className="flex-1 w-full space-y-3">
                                             <div>
                                                 <label className="text-xs font-bold text-gray-500 uppercase">Delay (Hours after previous step)</label>
-                                                <input type="number" className="w-full border p-2 rounded mt-1" value={step.delay_hours} onChange={e => updateStep(idx, 'delay_hours', e.target.value)} />
+                                                <input type="number" className="w-full border p-2 rounded-lg mt-1 text-sm" value={step.delay_hours} onChange={e => updateStep(idx, 'delay_hours', e.target.value)} />
                                             </div>
                                             <div>
                                                 <label className="text-xs font-bold text-gray-500 uppercase">Message</label>
-                                                <textarea className="w-full border p-2 rounded mt-1 h-20 text-sm" value={step.message} onChange={e => updateStep(idx, 'message', e.target.value)} placeholder="Hi {name}..." />
+                                                <textarea className="w-full border p-2 rounded-lg mt-1 h-20 text-sm" value={step.message} onChange={e => updateStep(idx, 'message', e.target.value)} placeholder="Hi {name}..." />
                                             </div>
                                         </div>
-                                        <button onClick={() => removeStep(idx)} className="text-red-400 hover:text-red-600 p-1"><Trash2 className="w-4 h-4"/></button>
+                                        <button onClick={() => removeStep(idx)} className="hidden sm:block text-red-400 hover:text-red-600 p-1.5 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
                                     </div>
                                 ))}
                                 <button onClick={addStep} className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 font-bold hover:bg-gray-50 hover:border-gray-400 transition-colors flex items-center justify-center gap-2">

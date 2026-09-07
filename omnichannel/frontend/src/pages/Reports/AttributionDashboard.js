@@ -34,19 +34,19 @@ function StatCard({ label, value, icon: Icon, color, sub, trend }) {
 
 function DateRangeFilter({ startDate, endDate, onStartChange, onEndChange }) {
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 w-full sm:w-auto">
             <input
                 type="date"
                 value={startDate}
                 onChange={(e) => onStartChange(e.target.value)}
-                className="border rounded-lg px-3 py-2 text-sm"
+                className="border rounded-lg px-2.5 py-1.5 text-xs sm:text-sm flex-1 sm:flex-initial min-w-[120px]"
             />
-            <span className="text-gray-400">-</span>
+            <span className="text-gray-400 text-xs">-</span>
             <input
                 type="date"
                 value={endDate}
                 onChange={(e) => onEndChange(e.target.value)}
-                className="border rounded-lg px-3 py-2 text-sm"
+                className="border rounded-lg px-2.5 py-1.5 text-xs sm:text-sm flex-1 sm:flex-initial min-w-[110px]"
             />
         </div>
     );
@@ -107,17 +107,17 @@ function TopLinksTable({ links }) {
             ) : (
                 <div className="space-y-3">
                     {links.map((link, idx) => (
-                        <div key={link.slug} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center gap-3">
-                                <span className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600">
+                        <div key={link.slug} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg gap-2.5">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <span className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600 shrink-0">
                                     {idx + 1}
                                 </span>
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <code className="text-sm font-medium bg-white px-2 py-0.5 rounded border">
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2 max-w-full">
+                                        <code className="text-xs sm:text-sm font-medium bg-white px-2 py-0.5 rounded border truncate max-w-[200px] sm:max-w-xs">
                                             {window.location.origin}/r/{link.slug}
                                         </code>
-                                        <button onClick={() => copyToClipboard(`${window.location.origin}/r/${link.slug}`)} className="text-gray-400 hover:text-indigo-600">
+                                        <button onClick={() => copyToClipboard(`${window.location.origin}/r/${link.slug}`)} className="text-gray-400 hover:text-indigo-600 shrink-0">
                                             <Copy className="w-3.5 h-3.5" />
                                         </button>
                                     </div>
@@ -126,14 +126,14 @@ function TopLinksTable({ links }) {
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-4 text-sm">
+                            <div className="flex items-center justify-around sm:justify-end gap-4 text-xs sm:text-sm border-t sm:border-t-0 pt-2 sm:pt-0">
                                 <div className="text-center">
                                     <span className="font-bold text-gray-900">{link.click_count}</span>
-                                    <p className="text-xs text-gray-400">clicks</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-400">clicks</p>
                                 </div>
                                 <div className="text-center">
                                     <span className="font-bold text-green-600">{link.conversions}</span>
-                                    <p className="text-xs text-gray-400">convs</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-400">convs</p>
                                 </div>
                                 <div className="text-center">
                                     <span className={`font-bold ${
@@ -141,7 +141,7 @@ function TopLinksTable({ links }) {
                                     }`}>
                                         {link.conversion_rate}%
                                     </span>
-                                    <p className="text-xs text-gray-400">rate</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-400">rate</p>
                                 </div>
                             </div>
                         </div>
@@ -189,22 +189,22 @@ export default function AttributionDashboard() {
     const conversionRate = totalClicks > 0 ? ((totalConversions / totalClicks) * 100).toFixed(2) : 0;
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-3.5 sm:p-6 space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <BarChart2 className="w-5 h-5 text-indigo-500" />
+                    <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <BarChart2 className="w-5 h-5 text-indigo-500 shrink-0" />
                         Source Attribution
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                         Track where your customers come from and measure campaign performance
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="w-full md:w-auto flex items-center justify-between sm:justify-start gap-2">
                     <DateRangeFilter startDate={startDate} endDate={endDate}
                         onStartChange={setStartDate} onEndChange={setEndDate} />
-                    <button onClick={fetchData} className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-100">
+                    <button onClick={fetchData} className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-100 shrink-0 border sm:border-0 border-gray-200">
                         <RefreshCw className="w-4 h-4" />
                     </button>
                 </div>

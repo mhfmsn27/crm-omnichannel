@@ -89,42 +89,44 @@ const CircleCard = ({ circle, onToggle, onDelete, onOpenReport, onReset, onEdit,
             </div>
 
             {/* Footer Action Buttons */}
-            <div className="mt-auto pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
+            <div className="mt-auto pt-3 border-t border-gray-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-1.5">
                 <button 
                     onClick={() => onOpenReport(circle.id)} 
-                    className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition-colors flex items-center gap-1.5 text-xs font-bold flex-1 justify-center border border-indigo-100 dark:border-indigo-900/50"
+                    className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-xl transition-colors flex items-center gap-1.5 text-xs font-bold flex-1 min-w-[85px] justify-center border border-indigo-100 dark:border-indigo-900/50"
                 >
                     <BarChart2 className="w-3.5 h-3.5" /> Laporan
                 </button>
-                <button
-                    onClick={() => onEdit(circle)}
-                    className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-1 text-xs border border-gray-200 dark:border-slate-700"
-                    title="Pengaturan Jam & Limit"
-                >
-                    <Settings className="w-3.5 h-3.5" />
-                </button>
-                <button
-                    onClick={() => onReset(circle)}
-                    className="p-2 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/50 rounded-xl transition-colors flex items-center gap-1 text-xs border border-orange-100 dark:border-orange-900/50"
-                    title="Reset Counter Hari Ini"
-                >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                </button>
-                <button
-                    onClick={() => onSyncKeys(circle)}
-                    disabled={isSyncing}
-                    className="p-2 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/50 rounded-xl transition-colors flex items-center gap-1 text-xs border border-sky-100 dark:border-sky-900/50 disabled:opacity-50"
-                    title="Sinkronkan Kunci Enkripsi (Atasi 'Menunggu pesan ini')"
-                >
-                    <ShieldCheck className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-                </button>
-                <button 
-                    onClick={() => onDelete(circle.id)} 
-                    className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-xl transition-colors flex items-center gap-1 text-xs"
-                    title="Hapus Circle"
-                >
-                    <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-1 shrink-0">
+                    <button
+                        onClick={() => onEdit(circle)}
+                        className="p-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-1 text-xs border border-gray-200 dark:border-slate-700"
+                        title="Pengaturan Jam & Limit"
+                    >
+                        <Settings className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                        onClick={() => onReset(circle)}
+                        className="p-2 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/50 rounded-xl transition-colors flex items-center gap-1 text-xs border border-orange-100 dark:border-orange-900/50"
+                        title="Reset Counter Hari Ini"
+                    >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                        onClick={() => onSyncKeys(circle)}
+                        disabled={isSyncing}
+                        className="p-2 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/50 rounded-xl transition-colors flex items-center gap-1 text-xs border border-sky-100 dark:border-sky-900/50 disabled:opacity-50"
+                        title="Sinkronkan Kunci Enkripsi (Atasi 'Menunggu pesan ini')"
+                    >
+                        <ShieldCheck className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                    </button>
+                    <button 
+                        onClick={() => onDelete(circle.id)} 
+                        className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-xl transition-colors flex items-center gap-1 text-xs"
+                        title="Hapus Circle"
+                    >
+                        <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -633,22 +635,22 @@ export default function WarmerPage() {
     if (loading && circles.length === 0) return <div className="p-8 text-center text-sm font-bold text-gray-500">Memuat data Warmer Circles...</div>;
 
     return (
-        <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
             {/* Page Header */}
-            <div className="flex flex-wrap justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                 <div>
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
-                        <div className="p-2 bg-orange-500 text-white rounded-2xl shadow-md">
-                            <Flame className="w-6 h-6" />
+                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <div className="p-2 bg-orange-500 text-white rounded-2xl shadow-md shrink-0">
+                            <Flame className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
-                        WhatsApp Number Warmer
+                        <span>WhatsApp Number Warmer</span>
                     </h2>
                     <p className="text-gray-500 dark:text-slate-400 text-xs mt-1">
                         Pemanasan nomor WhatsApp multi-perangkat otomatis dengan <b>jam aktif manusia normal (08:00 - 21:00 WIB)</b> untuk reputasi nomor yang aman & anti-banned.
                     </p>
                 </div>
                 {!isLocked && (
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full sm:w-auto justify-end">
                         <Button 
                             onClick={fetchData} 
                             variant="secondary" 
@@ -663,7 +665,7 @@ export default function WarmerPage() {
                                 setIsModalOpen(true);
                             }}
                             leftIcon={<Plus className="w-4 h-4" />}
-                            className="!bg-indigo-600 hover:!bg-indigo-700 text-white font-bold border-none shadow-md"
+                            className="!bg-indigo-600 hover:!bg-indigo-700 text-white font-bold border-none shadow-md flex-1 sm:flex-none justify-center"
                         >
                             Buat Circle Baru
                         </Button>

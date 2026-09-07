@@ -66,15 +66,15 @@ export default function QuickReplySettings() {
     if (loading) return <div className="p-8 text-center">Loading templates...</div>;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Message Templates</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Message Templates</h2>
                     <p className="text-gray-500 text-sm">Create shortcuts for faster replies in Inbox.</p>
                 </div>
                 <button
                     onClick={() => { setTemplateForm({ id: null, shortcut: '', content: '' }); setIsModalOpen(true); }}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 text-sm font-bold shadow-sm"
+                    className="w-full sm:w-auto justify-center px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 text-sm font-bold shadow-sm transition-colors"
                 >
                     <PlusCircle className="w-4 h-4" /> New Template
                 </button>

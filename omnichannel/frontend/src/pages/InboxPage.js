@@ -774,7 +774,7 @@ export default function InboxPage() {
                             {chatWallpaper.startsWith('#') && (
                                 <div
                                     className="absolute inset-0 z-0 opacity-[0.07] dark:opacity-[0.05] pointer-events-none mix-blend-multiply dark:mix-blend-lighten"
-                                    style={{ backgroundImage: 'url("https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f075d.png")', backgroundSize: '400px' }}
+                                    style={{ backgroundImage: 'url("/images/whatsapp-chat-tile.svg")', backgroundSize: '400px' }}
                                 />
                             )}
 
@@ -1033,7 +1033,7 @@ export default function InboxPage() {
                     </>
                 ) : (
                     <div className="flex-1 flex flex-col h-full overflow-y-auto bg-gray-50/50 dark:bg-[#111b21] relative items-center justify-center">
-                        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'url("https://web.whatsapp.com/img/bg-chat-tile-dark_a4be512e7195b6b733d9110b408f075d.png")', backgroundSize: '400px' }}></div>
+                        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'url("/images/whatsapp-chat-tile.svg")', backgroundSize: '400px' }}></div>
 
                         <div className="z-10 flex flex-col items-center justify-center text-center p-8 max-w-lg w-full mt-[-10vh]">
                             <div className="w-64 h-64 mb-8 relative flex items-center justify-center">

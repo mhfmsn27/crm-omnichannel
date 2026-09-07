@@ -194,16 +194,16 @@ export default function RolesPage() {
     if (loading) return <div className="p-8 text-center text-gray-400">Memuat data role...</div>;
 
     return (
-        <div className="p-4 md:p-6">
+        <div className="p-3.5 sm:p-6">
             {/* Header */}
-            <div className="flex flex-wrap items-start justify-between mb-6 gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3 sm:gap-4">
                 <div>
                     <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                         <Shield className="w-6 h-6 text-indigo-600" /> Manajemen Role
                     </h2>
                     <p className="text-sm text-gray-500 mt-0.5">Buat role kustom dengan permission yang dapat dikonfigurasi untuk setiap anggota tim.</p>
                 </div>
-                <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-sm text-sm">
+                <button onClick={openCreate} className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-sm text-sm">
                     <Plus className="w-4 h-4" /> Buat Role
                 </button>
             </div>

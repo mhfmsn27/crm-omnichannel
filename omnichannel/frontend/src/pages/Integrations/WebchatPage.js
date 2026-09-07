@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Save, Code, Copy, CheckCircle, Upload, Image, Plus, Globe, Edit, Trash2, ToggleLeft, ToggleRight, X, MessageSquare, Lock, ArrowRight, HelpCircle, Bot, Send, Loader2 } from 'lucide-react';
+import { Save, Code, Copy, CheckCircle, Upload, Image, Plus, Edit, Trash2, ToggleLeft, ToggleRight, X, MessageSquare, Lock, ArrowRight, HelpCircle, Bot, Send, Loader2 } from 'lucide-react';
+import { WebchatIcon } from '../../components/common/ChannelIcons';
 import { getApiUrl } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
 import Modal, { ModalFooter } from '../../components/common/Modal';
@@ -312,8 +313,8 @@ export default function WebchatPage() {
         <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto custom-scrollbar">
             <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Globe className="w-8 h-8 text-indigo-600" /> Webchat Widgets
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <WebchatIcon className="w-8 h-8 shrink-0 shadow-xs" /> Webchat Widgets
                     </h1>
 
                     <div className="flex gap-2 items-center mt-1">

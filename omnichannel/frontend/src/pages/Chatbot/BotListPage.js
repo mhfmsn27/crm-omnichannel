@@ -215,6 +215,8 @@ const SandboxModal = ({ isOpen, onClose, bots }) => {
         }
     };
 
+    const [mobileTab, setMobileTab] = useState('simulator');
+
     if (!isOpen) return null;
 
     const selectedBot = bots.find(b => parseInt(b.id) === parseInt(selectedBotId));
@@ -225,11 +227,32 @@ const SandboxModal = ({ isOpen, onClose, bots }) => {
             onClose={onClose}
             title={null}
             size="full"
-            className="h-[85vh] p-0 overflow-hidden"
+            className="h-[88vh] p-0 overflow-hidden flex flex-col"
         >
-            <div className="flex flex-col lg:flex-row h-full w-full overflow-y-auto">
+            {/* Mobile Tab Switcher (< lg) */}
+            <div className="lg:hidden flex items-center justify-between p-3 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 shrink-0 z-30">
+                <div className="flex bg-gray-100 dark:bg-slate-700 p-1 rounded-xl gap-1">
+                    <button
+                        onClick={() => setMobileTab('simulator')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${mobileTab === 'simulator' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-gray-500 dark:text-gray-400'}`}
+                    >
+                        💬 Chat Simulator
+                    </button>
+                    <button
+                        onClick={() => setMobileTab('config')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${mobileTab === 'config' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs' : 'text-gray-500 dark:text-gray-400'}`}
+                    >
+                        ⚙️ Bot Config
+                    </button>
+                </div>
+                <button onClick={onClose} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full text-gray-500">
+                    <X className="w-5 h-5" />
+                </button>
+            </div>
+
+            <div className="flex flex-col lg:flex-row flex-1 w-full overflow-y-auto">
                 {/* Left: Configuration */}
-                <div className="w-full lg:w-1/2 p-4 sm:p-8 border-b lg:border-b-0 lg:border-r bg-gray-50 overflow-y-auto custom-scrollbar">
+                <div className={`w-full lg:w-1/2 p-4 sm:p-8 border-b lg:border-b-0 lg:border-r bg-gray-50 dark:bg-slate-900 overflow-y-auto custom-scrollbar ${mobileTab === 'config' ? 'block' : 'hidden lg:block'}`}>
                     <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-3">
                             <div className="p-3 bg-indigo-100 rounded-xl">
@@ -240,7 +263,7 @@ const SandboxModal = ({ isOpen, onClose, bots }) => {
                                 <p className="text-sm text-gray-500">Test your bot behavior in real-time.</p>
                             </div>
                         </div>
-                        <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full md:hidden">
+                        <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full hidden">
                             <X className="w-5 h-5 text-gray-500" />
                         </button>
                     </div>
@@ -290,11 +313,11 @@ const SandboxModal = ({ isOpen, onClose, bots }) => {
                 </div>
 
                 {/* Right: Phone Simulator */}
-                <div className="w-full lg:w-1/2 bg-gray-100 flex items-center justify-center p-4 sm:p-8 relative">
-                    <button onClick={onClose} className="absolute top-4 right-4 bg-white p-2 rounded-full shadow hover:bg-gray-200 hidden md:block"><X className="w-6 h-6 text-gray-600" /></button>
+                <div className={`w-full lg:w-1/2 bg-gray-100 dark:bg-slate-950 flex items-center justify-center p-2 sm:p-6 lg:p-8 relative ${mobileTab === 'simulator' ? 'flex' : 'hidden lg:flex'}`}>
+                    <button onClick={onClose} className="absolute top-4 right-4 bg-white dark:bg-slate-800 p-2 rounded-full shadow hover:bg-gray-200 hidden md:block"><X className="w-6 h-6 text-gray-600 dark:text-gray-300" /></button>
 
                     {/* Device Frame */}
-                    <div className="w-full max-w-[380px] h-[600px] sm:h-[700px] bg-gray-900 rounded-[40px] sm:rounded-[50px] p-3 sm:p-4 shadow-2xl relative border-[4px] border-gray-800">
+                    <div className="w-full max-w-[360px] sm:max-w-[380px] h-[520px] sm:h-[650px] lg:h-[700px] bg-gray-900 rounded-[36px] sm:rounded-[50px] p-2.5 sm:p-4 shadow-2xl relative border-[4px] border-gray-800">
                         {/* Notch */}
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-32 bg-gray-900 rounded-b-2xl z-20"></div>
 
@@ -596,16 +619,16 @@ export default function BotListPage() {
                         </h2>
                         <p className="text-sm text-gray-500">Configure AI behavior for each device/channel.</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                         <button
                             onClick={() => setIsSandboxOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-bold hover:bg-gray-50 shadow-sm transition-colors"
+                            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-bold hover:bg-gray-50 shadow-sm transition-colors text-xs sm:text-sm"
                         >
                             <Smartphone className="w-4 h-4 text-indigo-600" /> Sandbox
                         </button>
                         <button
                             onClick={handleCreateClick}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-colors shadow-sm ${!hasApiKey ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
+                            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 rounded-lg font-bold transition-colors shadow-sm text-xs sm:text-sm ${!hasApiKey ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`}
                         >
                             <Plus className="w-4 h-4" /> New Bot
                         </button>

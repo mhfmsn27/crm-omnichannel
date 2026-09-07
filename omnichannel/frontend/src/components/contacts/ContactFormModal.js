@@ -265,17 +265,23 @@ export default function ContactFormModal({ isOpen, onClose, onSubmit, initialDat
     const fetchCustomFields = async () => {
         try {
             const r = await axios.get('/api/app/contacts/custom-fields');
-            setCustomFields(r.data);
-        } catch {}
+            setCustomFields(Array.isArray(r.data) ? r.data : []);
+        } catch {
+            setCustomFields([]);
+        }
     };
 
     const fetchCustomValues = async (contactId) => {
         try {
             const r = await axios.get(`/api/app/contacts/${contactId}/field-values`);
             const map = {};
-            r.data.forEach(f => { map[f.field_key] = f.value; });
+            if (Array.isArray(r.data)) {
+                r.data.forEach(f => { map[f.field_key] = f.value; });
+            }
             setCustomValues(map);
-        } catch {}
+        } catch {
+            setCustomValues({});
+        }
     };
 
     useEffect(() => {

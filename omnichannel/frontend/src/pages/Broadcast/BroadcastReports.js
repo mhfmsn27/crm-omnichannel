@@ -163,29 +163,29 @@ const CampaignDetailModal = ({ campaign, onClose }) => {
                     </div>
 
                     {/* Quick Stats Grid */}
-                    <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 shadow-sm flex flex-col justify-center">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase mb-1">Total Target</p>
-                            <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white">{total}</h3>
+                    <div className="md:col-span-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-3 sm:p-4 shadow-sm flex flex-col justify-center">
+                            <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-bold uppercase mb-1">Total Target</p>
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">{total}</h3>
                         </div>
-                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 shadow-sm flex flex-col justify-center">
-                            <p className="text-xs text-green-600 dark:text-green-400 font-bold uppercase mb-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Delivered</p>
-                            <h3 className="text-3xl font-extrabold text-green-600 dark:text-green-400">{sent}</h3>
-                            <p className="text-xs text-green-500/70 mt-1">{successRate}% success rate</p>
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-3 sm:p-4 shadow-sm flex flex-col justify-center">
+                            <p className="text-[10px] sm:text-xs text-green-600 dark:text-green-400 font-bold uppercase mb-1 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Delivered</p>
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-green-600 dark:text-green-400">{sent}</h3>
+                            <p className="text-[10px] sm:text-xs text-green-500/70 mt-0.5 sm:mt-1">{successRate}% success</p>
                         </div>
-                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 shadow-sm flex flex-col justify-center">
-                            <p className="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase mb-1 flex items-center gap-1"><Eye className="w-3 h-3" /> Read</p>
-                            <h3 className="text-3xl font-extrabold text-purple-600 dark:text-purple-400">{read}</h3>
-                            <p className="text-xs text-purple-500/70 mt-1">{readRate}% read rate</p>
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-3 sm:p-4 shadow-sm flex flex-col justify-center">
+                            <p className="text-[10px] sm:text-xs text-purple-600 dark:text-purple-400 font-bold uppercase mb-1 flex items-center gap-1"><Eye className="w-3 h-3" /> Read</p>
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-purple-600 dark:text-purple-400">{read}</h3>
+                            <p className="text-[10px] sm:text-xs text-purple-500/70 mt-0.5 sm:mt-1">{readRate}% read</p>
                         </div>
-                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 shadow-sm flex flex-col justify-center">
-                            <p className="text-xs text-red-600 dark:text-red-400 font-bold uppercase mb-1 flex items-center gap-1"><XCircle className="w-3 h-3" /> Failed</p>
-                            <h3 className="text-3xl font-extrabold text-red-600 dark:text-red-400">{failed}</h3>
-                            <p className="text-xs text-red-500/70 mt-1">{failureRate}% failure rate</p>
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-3 sm:p-4 shadow-sm flex flex-col justify-center">
+                            <p className="text-[10px] sm:text-xs text-red-600 dark:text-red-400 font-bold uppercase mb-1 flex items-center gap-1"><XCircle className="w-3 h-3" /> Failed</p>
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-red-600 dark:text-red-400">{failed}</h3>
+                            <p className="text-[10px] sm:text-xs text-red-500/70 mt-0.5 sm:mt-1">{failureRate}% failed</p>
                         </div>
-                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 shadow-sm flex flex-col justify-center">
-                            <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase mb-1 flex items-center gap-1"><RefreshCw className="w-3 h-3" /> Retryable</p>
-                            <h3 className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-3 sm:p-4 shadow-sm flex flex-col justify-center col-span-2 sm:col-span-1">
+                            <p className="text-[10px] sm:text-xs text-blue-600 dark:text-blue-400 font-bold uppercase mb-1 flex items-center gap-1"><RefreshCw className="w-3 h-3" /> Retryable</p>
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-blue-600 dark:text-blue-400">
                                 {details.filter(r => r.status === 'failed' && !isNonRetryableError(r.error_log)).length}
                             </h3>
                         </div>
@@ -219,7 +219,7 @@ const CampaignDetailModal = ({ campaign, onClose }) => {
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                                 {loading ? (
-                                    <tr><td colSpan="5" className="p-8 text-center text-gray-400 dark:text-gray-500">Loading details...</td></tr>
+                                    <tr><td colSpan="6" className="p-8 text-center text-gray-400 dark:text-gray-500">Loading details...</td></tr>
                                 ) : (
                                     details
                                         .filter(row => !showFailedOnly || row.status === 'failed')
@@ -417,7 +417,7 @@ export default function BroadcastReports() {
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
                 <StatCard title="Total Campaigns" value={totalCampaigns} subValue="All time" icon={Megaphone} color="bg-blue-500" />
                 <StatCard title="Messages Sent" value={totalSent.toLocaleString()} subValue="Successfully delivered" icon={CheckCircle} color="bg-green-500" />
                 <StatCard title="Failed Messages" value={totalFailed.toLocaleString()} subValue="Errors or Invalid Numbers" icon={AlertTriangle} color="bg-red-500" />
@@ -425,7 +425,7 @@ export default function BroadcastReports() {
             </div>
 
             {/* Chart */}
-            <div className="bg-white/90 dark:bg-dark-surface/90 backdrop-blur p-6 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all mb-8 h-[400px]">
+            <div className="bg-white/90 dark:bg-dark-surface/90 backdrop-blur p-4 sm:p-6 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all mb-6 sm:mb-8 h-[300px] sm:h-[400px]">
                 <h3 className="font-bold text-gray-800 dark:text-white mb-6 tracking-tight">Recent Campaign Performance</h3>
                 <ResponsiveContainer width="100%" height="90%">
                     <BarChart data={chartData} barGap={0}>
@@ -448,7 +448,96 @@ export default function BroadcastReports() {
                 <div className="p-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-white/90 dark:bg-dark-surface/90 backdrop-blur sticky top-0 z-10 shadow-sm">
                     <h3 className="font-bold text-gray-800 dark:text-white tracking-tight">Campaign History</h3>
                 </div>
-                <div className="overflow-x-auto">
+                {/* Mobile Card View (< md) */}
+                <div className="md:hidden divide-y divide-gray-100 dark:divide-slate-700">
+                    {campaigns.map(c => {
+                        const total = parseInt(c.total) || 0;
+                        const sent = parseInt(c.sent) || 0;
+                        const failed = parseInt(c.failed) || 0;
+                        const read = parseInt(c.read) || 0;
+                        const isFinished = total > 0 && (sent + failed >= total);
+                        const displayStatus = (c.status === 'processing' && isFinished) ? 'completed' : c.status;
+
+                        return (
+                            <div
+                                key={c.id}
+                                className="p-4 hover:bg-gray-50/80 dark:hover:bg-slate-800/80 transition-colors cursor-pointer space-y-3"
+                                onClick={() => setSelectedCampaign(c)}
+                            >
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <h4 className="font-bold text-gray-900 dark:text-white text-sm truncate">{c.name}</h4>
+                                        <p className="text-xs text-gray-400 mt-0.5">{new Date(c.created_at).toLocaleDateString()}</p>
+                                    </div>
+                                    <div className="shrink-0">
+                                        {getStatusBadge(displayStatus)}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-4 gap-2 bg-gray-50 dark:bg-slate-800/50 p-2.5 rounded-xl text-center text-xs">
+                                    <div>
+                                        <span className="text-gray-400 block text-[10px] uppercase">Total</span>
+                                        <span className="font-bold text-gray-700 dark:text-gray-300 font-mono">{total}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-green-500 block text-[10px] uppercase">Sent</span>
+                                        <span className="font-bold text-green-600 dark:text-green-400 font-mono">{sent}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-red-500 block text-[10px] uppercase">Failed</span>
+                                        <span className="font-bold text-red-600 dark:text-red-400 font-mono">{failed}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-purple-500 block text-[10px] uppercase">Read</span>
+                                        <span className="font-bold text-purple-600 dark:text-purple-400 font-mono">{read}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between text-xs pt-1">
+                                    <span className="text-gray-500 dark:text-gray-400 truncate max-w-[150px]">
+                                        {c.rotator_group_id ? `Rotator: ${c.rotator_name}` : (c.device_name || 'No device')}
+                                    </span>
+                                    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                        {c.status === 'processing' && !isFinished && (
+                                            <>
+                                                <button onClick={(e) => handleAction(e, c.id, 'pause')} className="p-1.5 text-orange-500 hover:bg-orange-50 rounded" title="Pause">
+                                                    <Pause className="w-4 h-4" />
+                                                </button>
+                                                <button onClick={(e) => handleAction(e, c.id, 'cancel')} className="p-1.5 text-red-500 hover:bg-red-50 rounded" title="Stop">
+                                                    <StopCircle className="w-4 h-4" />
+                                                </button>
+                                            </>
+                                        )}
+                                        {c.status === 'paused' && (
+                                            <button onClick={(e) => handleAction(e, c.id, 'resume')} className="p-1.5 text-green-500 hover:bg-green-50 rounded" title="Resume">
+                                                <Play className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => setSelectedCampaign(c)}
+                                            className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold rounded-lg hover:bg-indigo-100"
+                                        >
+                                            Detail
+                                        </button>
+                                        <button
+                                            onClick={(e) => handleDelete(e, c.id)}
+                                            className="p-1.5 text-gray-400 hover:text-red-600 rounded"
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                    {campaigns.length === 0 && (
+                        <div className="p-8 text-center text-gray-400 text-sm">No campaigns found.</div>
+                    )}
+                </div>
+
+                {/* Desktop Table View (hidden on mobile) */}
+                <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left whitespace-nowrap">
                     <thead className="bg-gray-50/80 dark:bg-dark-bg/80 border-b border-gray-200 dark:border-slate-700 text-gray-500 dark:text-gray-400 text-xs uppercase sticky top-0">
                         <tr>
@@ -548,7 +637,7 @@ export default function BroadcastReports() {
                         })}
                         {campaigns.length === 0 && (
                             <tr>
-                                <td colSpan="7" className="p-12 text-center text-gray-400 dark:text-gray-500">No campaigns found.</td>
+                                <td colSpan="9" className="p-12 text-center text-gray-400 dark:text-gray-500">No campaigns found.</td>
                             </tr>
                         )}
                     </tbody>

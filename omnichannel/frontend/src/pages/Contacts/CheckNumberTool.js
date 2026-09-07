@@ -216,9 +216,9 @@ export default function CheckNumberTool() {
     const isLocked = false; // PERSONAL VERSION: Bypass Limit
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto custom-scrollbar">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto custom-scrollbar">
             {/* HEADER */}
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
                 <div>
                     <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <ShieldCheck className="w-8 h-8 text-indigo-600" /> WhatsApp Number Checker
@@ -287,23 +287,23 @@ export default function CheckNumberTool() {
 
                             {/* Actions & Table */}
                             <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                                <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
-                                    <div className="flex gap-2">
-                                        <button onClick={() => setFilterStatus('all')} className={`px-3 py-1 text-xs font-bold rounded ${filterStatus === 'all' ? 'bg-white shadow text-indigo-600' : 'text-gray-500'}`}>All</button>
-                                        <button onClick={() => setFilterStatus('valid')} className={`px-3 py-1 text-xs font-bold rounded ${filterStatus === 'valid' ? 'bg-white shadow text-green-600' : 'text-gray-500'}`}>Valid Only</button>
-                                        <button onClick={() => setFilterStatus('invalid')} className={`px-3 py-1 text-xs font-bold rounded ${filterStatus === 'invalid' ? 'bg-white shadow text-red-600' : 'text-gray-500'}`}>Invalid Only</button>
+                                <div className="p-3.5 sm:p-4 border-b bg-gray-50 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+                                    <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
+                                        <button onClick={() => setFilterStatus('all')} className={`px-3 py-1.5 text-xs font-bold rounded shrink-0 ${filterStatus === 'all' ? 'bg-white shadow text-indigo-600' : 'text-gray-500'}`}>All</button>
+                                        <button onClick={() => setFilterStatus('valid')} className={`px-3 py-1.5 text-xs font-bold rounded shrink-0 ${filterStatus === 'valid' ? 'bg-white shadow text-green-600' : 'text-gray-500'}`}>Valid Only</button>
+                                        <button onClick={() => setFilterStatus('invalid')} className={`px-3 py-1.5 text-xs font-bold rounded shrink-0 ${filterStatus === 'invalid' ? 'bg-white shadow text-red-600' : 'text-gray-500'}`}>Invalid Only</button>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button onClick={() => setIsSaveModalOpen(true)} className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded hover:bg-indigo-700">
-                                            <UserPlus className="w-3 h-3" /> Save Valid
+                                        <button onClick={() => setIsSaveModalOpen(true)} className="flex-1 sm:flex-none justify-center flex items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded hover:bg-indigo-700">
+                                            <UserPlus className="w-3.5 h-3.5" /> Save Valid
                                         </button>
-                                        <button onClick={handleExport} className="flex items-center gap-1 px-3 py-1.5 bg-white border text-gray-700 text-xs font-bold rounded hover:bg-gray-50">
-                                            <Download className="w-3 h-3" /> Export Excel
+                                        <button onClick={handleExport} className="flex-1 sm:flex-none justify-center flex items-center gap-1 px-3 py-1.5 bg-white border text-gray-700 text-xs font-bold rounded hover:bg-gray-50">
+                                            <Download className="w-3.5 h-3.5" /> Export Excel
                                         </button>
                                     </div>
                                 </div>
                                 <div className="overflow-x-auto w-full">
-                                    <table className="w-full text-left text-sm min-w-[450px]">
+                                    <table className="w-full text-left text-sm min-w-[500px]">
                                         <thead className="bg-gray-50 border-b text-gray-500 text-xs uppercase">
                                             <tr>
                                                 <th className="px-6 py-3">Input Number</th>
@@ -360,16 +360,16 @@ export default function CheckNumberTool() {
 
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-2">Input Method</label>
-                                            <div className="flex gap-4 mb-4">
-                                                <label className={`flex-1 p-4 border rounded-lg cursor-pointer flex items-center gap-3 ${inputType === 'manual' ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-200' : 'hover:bg-gray-50'}`}>
+                                            <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-4 mb-4">
+                                                <label className={`flex-1 p-3.5 sm:p-4 border rounded-lg cursor-pointer flex items-center gap-3 ${inputType === 'manual' ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-200' : 'hover:bg-gray-50'}`}>
                                                     <input type="radio" name="input" checked={inputType === 'manual'} onChange={() => setInputType('manual')} className="hidden" />
-                                                    <FileText className="w-5 h-5 text-indigo-600" />
-                                                    <span className="font-bold text-gray-700">Copy-Paste</span>
+                                                    <FileText className="w-5 h-5 text-indigo-600 shrink-0" />
+                                                    <span className="font-bold text-gray-700 text-sm">Copy-Paste</span>
                                                 </label>
-                                                <label className={`flex-1 p-4 border rounded-lg cursor-pointer flex items-center gap-3 ${inputType === 'file' ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-200' : 'hover:bg-gray-50'}`}>
+                                                <label className={`flex-1 p-3.5 sm:p-4 border rounded-lg cursor-pointer flex items-center gap-3 ${inputType === 'file' ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-200' : 'hover:bg-gray-50'}`}>
                                                     <input type="radio" name="input" checked={inputType === 'file'} onChange={() => setInputType('file')} className="hidden" />
-                                                    <Upload className="w-5 h-5 text-indigo-600" />
-                                                    <span className="font-bold text-gray-700">Upload File</span>
+                                                    <Upload className="w-5 h-5 text-indigo-600 shrink-0" />
+                                                    <span className="font-bold text-gray-700 text-sm">Upload File</span>
                                                 </label>
                                             </div>
 

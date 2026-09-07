@@ -1054,7 +1054,7 @@ export default function WhatsAppDevicePage() {
                 {/* ADD CARD: Always Visible for Personal Version */}
                 <div
                     onClick={() => setIsAddModalOpen(true)}
-                    className="border-2 border-dashed border-gray-300 dark:border-[#334155] rounded-xl p-5 flex flex-col items-center justify-center text-gray-400 dark:text-slate-500 hover:border-indigo-500 hover:text-indigo-500 cursor-pointer transition-all h-[240px] bg-gray-50 dark:bg-[#0f172a] hover:bg-white dark:hover:bg-[#1e293b] hover:shadow-lg group"
+                    className="border-2 border-dashed border-gray-300 dark:border-[#334155] rounded-xl p-5 flex flex-col items-center justify-center text-gray-400 dark:text-slate-500 hover:border-indigo-500 hover:text-indigo-500 cursor-pointer transition-all min-h-[240px] bg-gray-50 dark:bg-[#0f172a] hover:bg-white dark:hover:bg-[#1e293b] hover:shadow-lg group"
                 >
                     <div className="w-14 h-14 bg-white dark:bg-[#1e293b] rounded-full shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <Plus className="w-6 h-6" />
@@ -1064,7 +1064,7 @@ export default function WhatsAppDevicePage() {
                 </div>
 
                 {unofficialDevices.map(device => (
-                    <div key={device.id} className="h-[240px]">
+                    <div key={device.id} className="min-h-[240px] h-full">
                         <DeviceCard
                             device={device}
                             onDelete={handleDelete}

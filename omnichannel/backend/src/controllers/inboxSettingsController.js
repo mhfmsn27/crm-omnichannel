@@ -1,5 +1,20 @@
 import pool from '../config/db.js';
 
+let schemaEnsured = false;
+export const ensureAssignmentSchema = async () => {
+    if (schemaEnsured) return;
+    try {
+        await pool.query(`
+            ALTER TABLE organizations
+                ADD COLUMN IF NOT EXISTS assignment_mode VARCHAR(20) DEFAULT 'manual',
+                ADD COLUMN IF NOT EXISTS rr_last_user_id INT DEFAULT NULL;
+        `);
+        schemaEnsured = true;
+    } catch (e) {
+        console.error('[InboxSettings] ensureAssignmentSchema error:', e.message);
+    }
+};
+
 // ============================================================
 // AUTO-ASSIGN / ROUND-ROBIN SETTINGS
 // ============================================================
@@ -8,13 +23,15 @@ import pool from '../config/db.js';
 export const getAssignmentSettings = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureAssignmentSchema();
         const result = await pool.query(
             'SELECT assignment_mode FROM organizations WHERE id = $1',
             [organization_id]
         );
         res.json({ assignment_mode: result.rows[0]?.assignment_mode || 'manual' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('[InboxSettings] getAssignmentSettings error:', err.message);
+        res.json({ assignment_mode: 'manual' });
     }
 };
 
@@ -29,12 +46,14 @@ export const updateAssignmentSettings = async (req, res) => {
     }
 
     try {
+        await ensureAssignmentSchema();
         await pool.query(
             'UPDATE organizations SET assignment_mode = $1 WHERE id = $2',
             [assignment_mode, organization_id]
         );
         res.json({ success: true, assignment_mode });
     } catch (err) {
+        console.error('[InboxSettings] updateAssignmentSettings error:', err.message);
         res.status(500).json({ error: err.message });
     }
 };
@@ -87,6 +106,7 @@ export const getAgentsWithInboxAccess = async (inboxId) => {
 // ============================================================
 export const autoAssignConversation = async (orgId, conversationId, io, division = 'CS', channel = null, inboxId = null) => {
     try {
+        await ensureAssignmentSchema();
         const orgRes = await pool.query(
             'SELECT assignment_mode, rr_last_user_id FROM organizations WHERE id = $1',
             [orgId]

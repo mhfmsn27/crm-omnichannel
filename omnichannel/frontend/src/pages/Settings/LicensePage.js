@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Shield, Check, X, RefreshCw, AlertCircle, Globe, Key, Clock } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { usePageTitle } from '../../context/HeaderContext';
 
 function formatDate(dateStr) {
     if (!dateStr) return '-';
@@ -24,6 +25,7 @@ function timeAgo(timestamp) {
 }
 
 export default function LicensePage() {
+    usePageTitle('LISENSI DOMAIN');
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState(null);
     const [debug, setDebug] = useState(null);
@@ -38,17 +40,15 @@ export default function LicensePage() {
             // Use PUBLIC endpoint - no auth required
             const checkRes = await axios.get('/api/license/check');
             setStatus(checkRes.data);
-            console.log('[LicensePage] Check result:', checkRes.data);
 
             // Get detailed status from authenticated endpoint (will work if logged in)
             try {
                 const statusRes = await axios.get('/api/app/license/status');
                 setDebug(statusRes.data);
             } catch (e) {
-                console.log('[LicensePage] Detailed status not available (not logged in)');
+                // Ignore if not logged in
             }
         } catch (e) {
-            console.error('License fetch error:', e);
             const errorMessage = e.response?.data?.message || 'Gagal memuat data license';
             setStatus({ status: 'invalid', message: errorMessage });
         } finally {
@@ -76,7 +76,6 @@ export default function LicensePage() {
             toast.success('License berhasil di-refresh!');
         } catch (e) {
             toast.dismiss();
-            console.error('Refresh error:', e);
             toast.error('Refresh gagal: ' + (e.response?.data?.message || e.message));
         }
     };
@@ -122,7 +121,7 @@ export default function LicensePage() {
     }
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 md:p-8 space-y-6 pb-24 md:pb-8">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">

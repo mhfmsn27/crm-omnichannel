@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bot, Zap, AlertTriangle, HelpCircle, TrendingUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
@@ -34,22 +34,22 @@ export default function ChatbotStatsReport() {
     if (loading) return <div className="p-8">Loading Report...</div>;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto custom-scrollbar">
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-                <h2 className="text-2xl font-bold text-gray-900">Chatbot AI Performance</h2>
-                <button onClick={fetchData} className="text-sm text-indigo-600 font-bold hover:underline">Refresh Data</button>
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto custom-scrollbar">
+            <div className="flex flex-wrap justify-between items-center mb-6 md:mb-8 gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Chatbot AI Performance</h2>
+                <button onClick={fetchData} className="text-xs sm:text-sm text-indigo-600 font-bold hover:underline">Refresh Data</button>
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6 mb-6 sm:mb-8">
                 <Card
-                    icon={<Bot className="w-8 h-8 text-indigo-600" />}
+                    icon={<Bot className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" />}
                     bg="bg-indigo-50"
                     label="Total Interactions"
                     value={summary?.total_interactions}
                 />
                 <Card
-                    icon={<Zap className="w-8 h-8 text-green-600" />}
+                    icon={<Zap className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />}
                     bg="bg-green-50"
                     label="Handled by AI"
                     value={summary?.handled_by_ai}
@@ -57,7 +57,7 @@ export default function ChatbotStatsReport() {
                     subColor="text-green-600"
                 />
                 <Card
-                    icon={<AlertTriangle className="w-8 h-8 text-orange-600" />}
+                    icon={<AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8 text-orange-600" />}
                     bg="bg-orange-50"
                     label="Fallback / Missed"
                     value={summary?.fallback_count}
@@ -65,7 +65,7 @@ export default function ChatbotStatsReport() {
                     subColor="text-orange-600"
                 />
                 <Card
-                    icon={<TrendingUp className="w-8 h-8 text-blue-600" />}
+                    icon={<TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />}
                     bg="bg-blue-50"
                     label="Avg Confidence"
                     value={summary?.avg_confidence ? `${(summary.avg_confidence * 100).toFixed(1)}%` : '-'}
@@ -164,12 +164,12 @@ export default function ChatbotStatsReport() {
 }
 
 const Card = ({ icon, bg, label, value, sub, subColor }) => (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
-        <div className={`p-4 ${bg} rounded-full`}>{icon}</div>
-        <div>
-            <p className="text-xs text-gray-500 uppercase font-bold text-nowrap">{label}</p>
-            <p className="text-2xl font-extrabold text-gray-900">{value !== undefined ? value : '-'}</p>
-            {sub && <p className={`text-xs font-bold ${subColor}`}>{sub}</p>}
+    <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 sm:gap-4">
+        <div className={`p-3 sm:p-4 ${bg} rounded-full shrink-0`}>{icon}</div>
+        <div className="min-w-0 flex-1">
+            <p className="text-[11px] sm:text-xs text-gray-500 uppercase font-bold truncate">{label}</p>
+            <p className="text-xl sm:text-2xl font-extrabold text-gray-900 truncate">{value !== undefined ? value : '-'}</p>
+            {sub && <p className={`text-[11px] sm:text-xs font-bold truncate ${subColor}`}>{sub}</p>}
         </div>
     </div>
 );

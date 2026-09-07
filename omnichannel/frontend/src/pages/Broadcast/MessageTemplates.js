@@ -162,7 +162,7 @@ export default function MessageTemplates() {
                                     /{t.shortcut}
                                 </span>
                             </div>
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                 <button onClick={(e) => openEdit(e, t)} className="p-1.5 text-gray-400 hover:text-indigo-600 rounded hover:bg-gray-50"><Edit className="w-4 h-4" /></button>
                                 <button onClick={(e) => handleDelete(e, t.id)} className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-50"><Trash2 className="w-4 h-4" /></button>
                             </div>
@@ -218,9 +218,9 @@ export default function MessageTemplates() {
                 className="max-h-[90vh] flex flex-col p-0"
                 footer={
                     <ModalFooter>
-                        <div className="w-full flex justify-end gap-3 pt-2">
-                            <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors">Cancel</button>
-                            <button type="button" onClick={handleSubmit} className="px-8 py-2.5 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 flex items-center gap-2 shadow-lg shadow-purple-200 hover:shadow-purple-300 transition-all transform hover:-translate-y-0.5">
+                        <div className="w-full flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-2">
+                            <button type="button" onClick={() => setIsModalOpen(false)} className="w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors text-center">Cancel</button>
+                            <button type="button" onClick={handleSubmit} className="w-full sm:w-auto px-8 py-2.5 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 flex items-center justify-center gap-2 shadow-lg shadow-purple-200 hover:shadow-purple-300 transition-all transform hover:-translate-y-0.5 text-center">
                                 <Save className="w-4 h-4" /> Save Template
                             </button>
                         </div>

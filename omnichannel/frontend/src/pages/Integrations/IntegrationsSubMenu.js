@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { ArrowRight, LayoutTemplate } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { hasPerm } from '../../utils/rbac';
 import {
     WhatsAppIcon,
     WhatsAppApiIcon,
     WhatsAppCoExIcon,
+    MetaIcon,
     EmailIcon,
     MessengerIcon,
     InstagramIcon,
@@ -65,11 +66,11 @@ export default function IntegrationsSubMenu({ isCollapsed }) {
     return (
         <div className="flex flex-col w-full">
             {/* MOBILE ONLY: Horizontal Scrollable Tab Bar */}
-            <div className="md:hidden flex flex-row overflow-x-auto no-scrollbar gap-1.5 py-1 px-1 pb-1.5 w-full">
+            <div className="md:hidden flex flex-row overflow-x-auto no-scrollbar gap-1.5 py-1 px-1 pb-1.5 w-full touch-pan-x scroll-smooth">
                 {canIntegrations && <MenuItem to="whatsapp" Icon={WhatsAppIcon} label="WhatsApp" isCollapsed={false} />}
                 {canIntegrations && <MenuItem to="wa-api" Icon={WhatsAppApiIcon} label="WhatsApp API" isCollapsed={false} />}
                 {canIntegrations && <MenuItem to="wa-coex" Icon={WhatsAppCoExIcon} label="WhatsApp CoEx" isCollapsed={false} />}
-                {canTemplates && <MenuItem to="templates" Icon={LayoutTemplate} label="Meta Templates" isNew isCollapsed={false} />}
+                {canTemplates && <MenuItem to="templates" Icon={MetaIcon} label="Meta Templates" isNew isCollapsed={false} />}
                 {canIntegrations && <MenuItem to="email" Icon={EmailIcon} label="Email Inbox" isNew isCollapsed={false} />}
                 {canIntegrations && <MenuItem to="messenger" Icon={MessengerIcon} label="Messenger" isNew isCollapsed={false} />}
                 {canIntegrations && <MenuItem to="instagram" Icon={InstagramIcon} label="Instagram" isNew isCollapsed={false} />}
@@ -99,7 +100,7 @@ export default function IntegrationsSubMenu({ isCollapsed }) {
                         {canIntegrations && <MenuItem to="whatsapp" Icon={WhatsAppIcon} label="WhatsApp" isCollapsed={isCollapsed} />}
                         {canIntegrations && <MenuItem to="wa-api" Icon={WhatsAppApiIcon} label="WhatsApp API" isCollapsed={isCollapsed} />}
                         {canIntegrations && <MenuItem to="wa-coex" Icon={WhatsAppCoExIcon} label="WhatsApp CoEx" isCollapsed={isCollapsed} />}
-                        {canTemplates && <MenuItem to="templates" Icon={LayoutTemplate} label="Meta Cloud Templates" isNew isCollapsed={isCollapsed} />}
+                        {canTemplates && <MenuItem to="templates" Icon={MetaIcon} label="Meta Cloud Templates" isNew isCollapsed={isCollapsed} />}
                         {canIntegrations && <MenuItem to="email" Icon={EmailIcon} label="Email Inbox" isNew isCollapsed={isCollapsed} />}
                         {canIntegrations && <MenuItem to="messenger" Icon={MessengerIcon} label="Messenger" isNew isCollapsed={isCollapsed} />}
                         {canIntegrations && <MenuItem to="instagram" Icon={InstagramIcon} label="Instagram" isNew isCollapsed={isCollapsed} />}

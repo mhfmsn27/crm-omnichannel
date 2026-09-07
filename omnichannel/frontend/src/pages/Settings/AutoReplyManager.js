@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Edit, Trash2, ChevronRight, MessageCircle, Clock, ToggleRight, ToggleLeft, Save, LayoutTemplate, Copy, Zap, ArrowRight, Plus, Users } from 'lucide-react';
@@ -88,7 +88,7 @@ const RuleItem = ({ rule, onEdit, onDelete, onSelectChild }) => {
                         <p className="text-sm text-gray-500 line-clamp-1 break-all">{rule.response_content}</p>
                     </div>
                 </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <button onClick={() => onEdit(rule)} className="p-1.5 text-gray-400 hover:text-indigo-600"><Edit className="w-4 h-4" /></button>
                     <button onClick={() => onDelete(rule.id)} className="p-1.5 text-gray-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                     <button onClick={() => onSelectChild(rule)} className="p-1.5 text-gray-400 hover:text-indigo-600"><ChevronRight className="w-4 h-4" /></button>

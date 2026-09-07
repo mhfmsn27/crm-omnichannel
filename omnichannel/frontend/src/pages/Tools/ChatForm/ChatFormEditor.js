@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Save, ArrowLeft, Plus, Trash2, FileText, Upload, Settings, CheckSquare, Square, Image } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -73,54 +73,57 @@ export default function ChatFormEditor({ form, onBack }) {
     };
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-                <button onClick={onBack} className="flex items-center text-gray-600 hover:text-gray-900 font-bold">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto">
+            <div className="flex justify-between items-center mb-6 gap-3">
+                <button onClick={onBack} className="flex items-center text-gray-600 hover:text-gray-900 font-bold text-sm">
+                    <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
                 </button>
-                <button onClick={handleSave} className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700">
+                <button onClick={handleSave} className="px-5 py-2 bg-indigo-600 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-indigo-700 shadow-sm text-sm">
                     <Save className="w-4 h-4" /> Save Form
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white p-6 rounded-xl border shadow-sm">
+                    <div className="bg-white p-4 sm:p-6 rounded-xl border shadow-sm">
                         <h3 className="font-bold mb-4 text-gray-800">Basic Info</h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Form Name</label>
-                                <input className="w-full border p-2 rounded" value={data.name} onChange={e=>setData({...data, name: e.target.value})} placeholder="Pendaftaran Member" />
+                                <input className="w-full border p-2.5 rounded-lg text-sm" value={data.name} onChange={e=>setData({...data, name: e.target.value})} placeholder="Pendaftaran Member" />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Trigger Keyword</label>
-                                <input className="w-full border p-2 rounded" value={data.trigger_keyword} onChange={e=>setData({...data, trigger_keyword: e.target.value})} placeholder="daftar" />
+                                <input className="w-full border p-2.5 rounded-lg text-sm" value={data.trigger_keyword} onChange={e=>setData({...data, trigger_keyword: e.target.value})} placeholder="daftar" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-xl border shadow-sm">
+                    <div className="bg-white p-4 sm:p-6 rounded-xl border shadow-sm">
                         <h3 className="font-bold mb-4 text-gray-800">Questions Flow</h3>
                         <div className="space-y-4">
                             {data.steps.map((step, idx) => (
-                                <div key={idx} className="flex gap-4 items-start bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                    <div className="w-6 h-6 bg-white rounded-full border flex items-center justify-center font-bold text-xs text-gray-500 shrink-0 shadow-sm">{idx + 1}</div>
-                                    <div className="flex-1 space-y-3">
+                                <div key={idx} className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start bg-gray-50 p-3.5 sm:p-4 rounded-xl border border-gray-200 relative">
+                                    <div className="flex items-center justify-between w-full sm:w-auto">
+                                        <div className="w-6 h-6 bg-white rounded-full border flex items-center justify-center font-bold text-xs text-gray-500 shrink-0 shadow-sm">{idx + 1}</div>
+                                        <button onClick={() => removeStep(idx)} className="sm:hidden text-red-400 hover:text-red-600 p-1"><Trash2 className="w-4 h-4"/></button>
+                                    </div>
+                                    <div className="flex-1 w-full space-y-3">
                                         <textarea 
-                                            className="w-full border p-2 rounded text-sm" 
+                                            className="w-full border p-2.5 rounded-lg text-sm" 
                                             placeholder="Question to user..." 
                                             value={step.question}
                                             onChange={e=>handleStepChange(idx, 'question', e.target.value)}
                                         />
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-col sm:flex-row gap-2">
                                             <input 
-                                                className="flex-1 border p-2 rounded text-xs" 
+                                                className="flex-1 border p-2 rounded-lg text-xs" 
                                                 placeholder="Label (e.g. Nama)" 
                                                 value={step.label}
                                                 onChange={e=>handleStepChange(idx, 'label', e.target.value)}
                                             />
                                             <select 
-                                                className="border p-2 rounded text-xs bg-white"
+                                                className="border p-2 rounded-lg text-xs bg-white"
                                                 value={step.validation}
                                                 onChange={e=>handleStepChange(idx, 'validation', e.target.value)}
                                             >
@@ -130,10 +133,10 @@ export default function ChatFormEditor({ form, onBack }) {
                                             </select>
                                         </div>
                                     </div>
-                                    <button onClick={() => removeStep(idx)} className="text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4"/></button>
+                                    <button onClick={() => removeStep(idx)} className="hidden sm:block text-red-400 hover:text-red-600 p-1.5 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
                                 </div>
                             ))}
-                            <button onClick={addStep} className="w-full py-2 border-2 border-dashed rounded-lg text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center gap-2">
+                            <button onClick={addStep} className="w-full py-2.5 border-2 border-dashed rounded-xl text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center gap-2 text-sm transition-colors">
                                 <Plus className="w-4 h-4" /> Add Question
                             </button>
                         </div>

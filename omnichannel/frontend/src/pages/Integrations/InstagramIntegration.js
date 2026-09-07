@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Instagram, Plus, RefreshCw, Zap, ToggleLeft, ToggleRight, Lock, CheckCircle, Info, ExternalLink, HelpCircle, X, AlertTriangle } from 'lucide-react';
+import { Plus, RefreshCw, Zap, ToggleLeft, ToggleRight, Lock, CheckCircle, Info, ExternalLink, HelpCircle, X, AlertTriangle } from 'lucide-react';
+import { InstagramIcon } from '../../components/common/ChannelIcons';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { getApiUrl } from '../../config/api';
@@ -231,10 +232,8 @@ export default function InstagramIntegration() {
         <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <div className="bg-pink-500 text-white p-1.5 rounded-lg">
-                            <Instagram className="w-6 h-6" />
-                        </div>
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <InstagramIcon className="w-8 h-8 shrink-0 shadow-xs" />
                         Instagram Direct
                     </h2>
                     <p className="text-sm text-gray-500 dark:text-slate-400">Connect using App ID: {config.meta?.instagram_app_id || 'Not Set'}</p>

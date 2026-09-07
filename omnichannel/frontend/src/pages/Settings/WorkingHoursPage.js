@@ -39,8 +39,8 @@ export default function WorkingHoursPage() {
     useEffect(() => {
         axios.get('/api/app/settings/working-hours')
             .then(res => {
-                if (res.data.schedule) setSchedule(res.data.schedule);
-                if (res.data.config) setConfig(res.data.config);
+                if (Array.isArray(res.data?.schedule)) setSchedule(res.data.schedule);
+                if (res.data?.config) setConfig(res.data.config);
             })
             .catch(() => toast.error('Gagal memuat jam operasional'))
             .finally(() => setLoading(false));
@@ -55,8 +55,8 @@ export default function WorkingHoursPage() {
         try {
             await axios.put('/api/app/settings/working-hours', { schedule, config });
             toast.success('Jam operasional disimpan');
-        } catch {
-            toast.error('Gagal menyimpan');
+        } catch (e) {
+            toast.error(e.response?.data?.error || 'Gagal menyimpan');
         } finally {
             setSaving(false);
         }
@@ -65,7 +65,7 @@ export default function WorkingHoursPage() {
     if (loading) return <div className="p-8 text-center text-gray-400">Memuat...</div>;
 
     return (
-        <div className="p-6 md:p-8 max-w-2xl">
+        <div className="p-3.5 sm:p-6 md:p-8 max-w-2xl pb-24 md:pb-8">
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Jam Operasional</h2>
             <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
                 Tentukan jam kerja bisnis Anda. Di luar jam ini, sistem akan otomatis merespons sesuai pengaturan.
@@ -84,13 +84,14 @@ export default function WorkingHoursPage() {
             </div>
 
             {/* Schedule Grid */}
-            <div className="mb-6 bg-white dark:bg-dark-surface rounded-xl border border-gray-200 dark:border-dark-border overflow-hidden">
-                <div className="px-4 py-3 bg-gray-50 dark:bg-dark-bg border-b border-gray-200 dark:border-dark-border grid grid-cols-[100px_1fr_1fr_60px] gap-3 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
-                    <span>Hari</span>
-                    <span>Mulai</span>
-                    <span>Selesai</span>
-                    <span>Aktif</span>
-                </div>
+            <div className="mb-6 bg-white dark:bg-dark-surface rounded-xl border border-gray-200 dark:border-dark-border overflow-x-auto w-full">
+                <div className="min-w-[380px]">
+                    <div className="px-4 py-3 bg-gray-50 dark:bg-dark-bg border-b border-gray-200 dark:border-dark-border grid grid-cols-[100px_1fr_1fr_60px] gap-3 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wide">
+                        <span>Hari</span>
+                        <span>Mulai</span>
+                        <span>Selesai</span>
+                        <span>Aktif</span>
+                    </div>
                 {schedule.map((day, idx) => (
                     <div
                         key={day.day_of_week}
@@ -121,6 +122,7 @@ export default function WorkingHoursPage() {
                         </div>
                     </div>
                 ))}
+                </div>
             </div>
 
             {/* Outside Hours Behavior */}

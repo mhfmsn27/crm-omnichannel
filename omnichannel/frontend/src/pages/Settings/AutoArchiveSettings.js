@@ -49,7 +49,7 @@ export default function AutoArchiveSettings() {
     }
 
     return (
-        <div className="p-6 max-w-xl">
+        <div className="p-3.5 sm:p-6 max-w-xl">
             <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
                     <Archive className="w-5 h-5 text-indigo-600" />

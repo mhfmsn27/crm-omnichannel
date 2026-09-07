@@ -46,8 +46,9 @@ export default function WorkflowRulesSettings() {
     const fetchRules = async () => {
         try {
             const res = await axios.get('/api/app/workflow/rules');
-            setRules(res.data || []);
+            setRules(Array.isArray(res.data) ? res.data : []);
         } catch (e) {
+            setRules([]);
             toast.error('Failed to load rules');
         } finally {
             setLoading(false);
@@ -102,8 +103,8 @@ export default function WorkflowRulesSettings() {
     if (loading) return <div className="p-8 text-center text-gray-400">Memuat...</div>;
 
     return (
-        <div className="p-6 md:p-8 max-w-4xl">
-            <div className="flex items-center justify-between mb-6">
+        <div className="p-4 sm:p-6 md:p-8 max-w-4xl pb-24 md:pb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">Workflow Rules</h2>
                     <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
@@ -112,7 +113,7 @@ export default function WorkflowRulesSettings() {
                 </div>
                 <button
                     onClick={() => { setEditingRule(null); setForm({ name: '', description: '', trigger_type: 'message_received', trigger_conditions: {}, actions: [], priority: 0, stop_on_match: false }); setModalOpen(true); }}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 flex items-center gap-2"
+                    className="w-full sm:w-auto justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 flex items-center gap-2 shadow-sm"
                 >
                     <Plus className="w-4 h-4" /> Tambah Rule
                 </button>

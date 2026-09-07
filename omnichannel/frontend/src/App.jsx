@@ -117,7 +117,6 @@ const LazyAutoArchiveSettings = lazy(() => import('./pages/Settings/AutoArchiveS
 const LazyRolesPage = lazy(() => import('./pages/Settings/RolesPage'));
 const LazyDivisionsPage = lazy(() => import('./pages/Settings/DivisionsPage'));
 const LazyInboxManagement = lazy(() => import('./pages/Settings/InboxManagement'));
-const LazyDeviceDataSettingsPage = lazy(() => import('./pages/Settings/DeviceDataSettingsPage'));
 const LazyOngkirSettingsPage = lazy(() => import('./pages/Settings/OngkirSettingsPage'));
 const LazyAssignmentSettingsPage = lazy(() => import('./pages/Settings/AssignmentSettingsPage'));
 const LazyWorkingHoursPage = lazy(() => import('./pages/Settings/WorkingHoursPage'));
@@ -128,7 +127,6 @@ const LazyCustomFieldsSettings = lazy(() => import('./pages/Settings/CustomField
 const LazyWaTemplateLibrary = lazy(() => import('./pages/Settings/WaTemplateLibrary'));
 const LazyWorkflowRulesSettings = lazy(() => import('./pages/Settings/WorkflowRulesSettings'));
 const LazyWebhookSettingsPage = lazy(() => import('./pages/Settings/WebhookSettingsPage'));
-const LazyEmailSettingsPage = lazy(() => import('./pages/Settings/EmailSettingsPage'));
 const LazySystemHealthPage = lazy(() => import('./pages/Settings/SystemHealthPage'));
 
 // Account Module
@@ -313,14 +311,7 @@ const SETTINGS_INDEX_CANDIDATES = [
     { path: '/settings/assignment', perm: 'assign_conversations' },
     { path: '/settings/working-hours', perm: 'manage_settings' },
     { path: '/settings/sla', perm: 'manage_tickets' },
-    { path: '/settings/webhooks', perm: 'manage_webhooks' },
-    { path: '/settings/multi-language', perm: 'chatbot_training' },
     { path: '/settings/license', perm: 'manage_settings' },
-    { path: '/settings/device-data', perm: 'manage_integrations' },
-    { path: '/settings/email', perm: 'manage_integrations' },
-    { path: '/settings/ecommerce', perm: 'manage_integrations' },
-    { path: '/settings/ongkir', perm: 'manage_integrations' },
-    { path: '/settings/billing', perm: 'manage_settings' },
 ];
 
 const PrivateRoute = ({ children, allowedRoles, requiredPerm }) => {
@@ -575,7 +566,6 @@ function AppRoutes() {
 
                     <Route path="/settings" element={<PrivateRoute requiredPerm={SETTINGS_PERMS}><LazySettingsLayout /></PrivateRoute>}>
                         <Route index element={<SmartRedirect candidates={SETTINGS_INDEX_CANDIDATES} />} />
-                        <Route path="ongkir" element={<PrivateRoute requiredPerm="manage_integrations"><LazyOngkirSettingsPage /></PrivateRoute>} />
                         <Route path="assignment" element={<PrivateRoute requiredPerm="assign_conversations"><LazyAssignmentSettingsPage /></PrivateRoute>} />
                         <Route path="working-hours" element={<PrivateRoute requiredPerm="manage_settings"><LazyWorkingHoursPage /></PrivateRoute>} />
                         <Route path="team" element={<PrivateRoute requiredPerm="manage_team"><LazyTeamSettings /></PrivateRoute>} />
@@ -591,16 +581,19 @@ function AppRoutes() {
                         <Route path="auto-label" element={<PrivateRoute requiredPerm="manage_labels"><LazyAutoLabelManager /></PrivateRoute>} />
                         <Route path="rules" element={<PrivateRoute requiredPerm="manage_settings"><LazyWorkflowRulesSettings /></PrivateRoute>} />
                         <Route path="workflow-rules" element={<PrivateRoute requiredPerm="manage_settings"><LazyWorkflowRulesSettings /></PrivateRoute>} />
-                        <Route path="webhooks" element={<PrivateRoute requiredPerm="manage_webhooks"><LazyWebhookSettingsPage /></PrivateRoute>} />
-                        <Route path="webhook" element={<PrivateRoute requiredPerm="manage_webhooks"><LazyWebhookSettingsPage /></PrivateRoute>} />
-                        <Route path="ecommerce" element={<PrivateRoute requiredPerm="manage_integrations"><LazyEcommercePage /></PrivateRoute>} />
                         <Route path="license" element={<PrivateRoute requiredPerm="manage_settings"><LazyLicensePage /></PrivateRoute>} />
                         <Route path="auto-archive" element={<PrivateRoute requiredPerm="manage_settings"><LazyAutoArchiveSettings /></PrivateRoute>} />
-                        <Route path="email" element={<PrivateRoute requiredPerm="manage_integrations"><LazyEmailSettingsPage /></PrivateRoute>} />
-                        <Route path="device-data" element={<PrivateRoute requiredPerm="manage_integrations"><LazyDeviceDataSettingsPage /></PrivateRoute>} />
                         <Route path="system-health" element={<PrivateRoute requiredPerm="manage_system_health"><LazySystemHealthPage /></PrivateRoute>} />
-                        <Route path="billing" element={<PrivateRoute requiredPerm="manage_settings"><LazyBillingSettings /></PrivateRoute>} />
-                        <Route path="multi-language" element={<PrivateRoute requiredPerm="chatbot_training"><LazyMultiLanguagePage /></PrivateRoute>} />
+                        <Route path="billing" element={<Navigate to="/settings" replace />} />
+
+                        {/* Backward compatibility redirects for externalized modules */}
+                        <Route path="ongkir" element={<Navigate to="/integrations/ongkir" replace />} />
+                        <Route path="webhooks" element={<Navigate to="/integrations/webhooks" replace />} />
+                        <Route path="webhook" element={<Navigate to="/integrations/webhooks" replace />} />
+                        <Route path="ecommerce" element={<Navigate to="/integrations/ecommerce" replace />} />
+                        <Route path="email" element={<Navigate to="/integrations/email" replace />} />
+                        <Route path="device-data" element={<Navigate to="/integrations/device-health" replace />} />
+                        <Route path="multi-language" element={<Navigate to="/chatbot/multi-language" replace />} />
                     </Route>
 
                     <Route path="/account" element={<LazyAccountLayout />}>

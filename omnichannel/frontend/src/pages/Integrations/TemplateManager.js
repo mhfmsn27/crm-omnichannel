@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { RefreshCw, LayoutTemplate, CheckCircle, XCircle, Clock, Search, Plus, Trash2, Smartphone, AlertCircle, X, Save, Image as ImageIcon, Play, FileText, Link as ExternalLink, Phone, Copy, Reply } from 'lucide-react';
+import { RefreshCw, CheckCircle, XCircle, Clock, Search, Plus, Trash2, Smartphone, AlertCircle, X, Save, Image as ImageIcon, Play, FileText, Link as ExternalLink, Phone, Copy, Reply } from 'lucide-react';
+import { MetaIcon } from '../../components/common/ChannelIcons';
 
 // Mobile Preview Component (Adapting from CreateCampaign)
 const MobilePreview = ({ message, headerType, headerMedia, footer, buttons }) => {
@@ -157,8 +158,8 @@ const TemplateManager = () => {
         <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto custom-scrollbar">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <LayoutTemplate className="w-8 h-8 text-indigo-600" /> Template Manager
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2.5">
+                        <MetaIcon className="w-8 h-8 shrink-0 shadow-xs" /> Template Manager
                     </h2>
                     <p className="text-sm text-gray-500">Create, sync and manage your Official WhatsApp templates.</p>
                 </div>

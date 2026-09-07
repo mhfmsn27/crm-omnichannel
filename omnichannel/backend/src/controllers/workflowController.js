@@ -1,10 +1,56 @@
 import pool from '../config/db.js';
+import { ensureCustomFieldsSchema } from './customFieldController.js';
+
+let schemaEnsured = false;
+export const ensureWorkflowRulesSchema = async () => {
+    if (schemaEnsured) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS workflow_rules (
+                id BIGSERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                name VARCHAR(255) NOT NULL,
+                description TEXT,
+                trigger_type VARCHAR(100) NOT NULL,
+                trigger_conditions JSONB DEFAULT '{}'::jsonb,
+                actions JSONB NOT NULL DEFAULT '[]'::jsonb,
+                priority INTEGER DEFAULT 0,
+                stop_on_match BOOLEAN DEFAULT FALSE,
+                is_active BOOLEAN DEFAULT TRUE,
+                created_by BIGINT REFERENCES users(id) ON DELETE SET NULL,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS workflow_rule_logs (
+                id BIGSERIAL PRIMARY KEY,
+                rule_id BIGINT REFERENCES workflow_rules(id) ON DELETE CASCADE,
+                conversation_id BIGINT REFERENCES conversations(id) ON DELETE CASCADE,
+                contact_id BIGINT REFERENCES contacts(id) ON DELETE SET NULL,
+                trigger_type VARCHAR(100),
+                action_executed JSONB DEFAULT '[]'::jsonb,
+                status VARCHAR(50) DEFAULT 'success',
+                executed_at TIMESTAMPTZ DEFAULT NOW()
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_workflow_rules_org ON workflow_rules(organization_id, is_active, priority);
+            CREATE INDEX IF NOT EXISTS idx_workflow_rule_logs_rule ON workflow_rule_logs(rule_id, executed_at);
+        `);
+        schemaEnsured = true;
+    } catch (e) {
+        console.error('[Workflow] ensureWorkflowRulesSchema error:', e.message);
+    }
+};
 
 // --- Workflow Rules CRUD ---
 
 export const getRules = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await Promise.allSettled([
+            ensureWorkflowRulesSchema(),
+            ensureCustomFieldsSchema()
+        ]);
         const result = await pool.query(
             `SELECT wr.*, u.name as created_by_name,
                     (SELECT COUNT(*) FROM workflow_rule_logs WHERE rule_id = wr.id) as execution_count
@@ -14,9 +60,10 @@ export const getRules = async (req, res) => {
              ORDER BY wr.priority DESC, wr.created_at DESC`,
             [organization_id]
         );
-        res.json(result.rows);
+        res.json(result.rows || []);
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        console.error('[Workflow] getRules error:', e.message);
+        res.json([]);
     }
 };
 
@@ -29,6 +76,7 @@ export const createRule = async (req, res) => {
     }
 
     try {
+        await ensureWorkflowRulesSchema();
         const result = await pool.query(
             `INSERT INTO workflow_rules (organization_id, name, description, trigger_type, trigger_conditions, actions, priority, stop_on_match, is_active, created_by)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
@@ -57,6 +105,7 @@ export const updateRule = async (req, res) => {
     const { name, description, trigger_type, trigger_conditions, actions, priority, stop_on_match, is_active } = req.body;
 
     try {
+        await ensureWorkflowRulesSchema();
         const result = await pool.query(
             `UPDATE workflow_rules SET
              name = COALESCE($1, name),
@@ -99,6 +148,7 @@ export const deleteRule = async (req, res) => {
     const { id } = req.params;
 
     try {
+        await ensureWorkflowRulesSchema();
         const result = await pool.query(
             `DELETE FROM workflow_rules WHERE id = $1 AND organization_id = $2 RETURNING id`,
             [id, organization_id]
@@ -119,6 +169,7 @@ export const toggleRule = async (req, res) => {
     const { id } = req.params;
 
     try {
+        await ensureWorkflowRulesSchema();
         const result = await pool.query(
             `UPDATE workflow_rules SET is_active = NOT is_active, updated_at = NOW()
              WHERE id = $1 AND organization_id = $2
@@ -142,6 +193,7 @@ export const getRuleLogs = async (req, res) => {
     const { limit = 50 } = req.query;
 
     try {
+        await ensureWorkflowRulesSchema();
         const result = await pool.query(
             `SELECT wfl.*, c.contact_name, c.phone_number
              FROM workflow_rule_logs wfl
@@ -163,6 +215,7 @@ export const testRule = async (req, res) => {
     const { rule_id, test_data } = req.body;
 
     try {
+        await ensureWorkflowRulesSchema();
         const ruleRes = await pool.query(
             `SELECT * FROM workflow_rules WHERE id = $1 AND organization_id = $2`,
             [rule_id, organization_id]
@@ -199,6 +252,7 @@ export const testRule = async (req, res) => {
 
 export const evaluateRules = async (organizationId, triggerType, context) => {
     try {
+        await ensureWorkflowRulesSchema();
         const rules = await pool.query(
             `SELECT * FROM workflow_rules
              WHERE organization_id = $1 AND is_active = true AND trigger_type = $2

@@ -114,10 +114,44 @@ export const submitRating = async (req, res) => {
     }
 };
 
+// Self-healing schema for CSAT surveys table
+export const ensureCsatTable = async () => {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS csat_surveys (
+                id SERIAL PRIMARY KEY,
+                organization_id INT REFERENCES organizations(id) ON DELETE CASCADE,
+                conversation_id INT REFERENCES conversations(id) ON DELETE CASCADE,
+                contact_id INT REFERENCES contacts(id) ON DELETE CASCADE,
+                agent_id INT REFERENCES users(id) ON DELETE SET NULL,
+                rating INT,
+                feedback TEXT,
+                public_token VARCHAR(255) UNIQUE,
+                status VARCHAR(50) DEFAULT 'pending',
+                responded_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS idx_csat_surveys_org ON csat_surveys (organization_id);
+            CREATE INDEX IF NOT EXISTS idx_csat_surveys_token ON csat_surveys (public_token);
+        `);
+    } catch (e) {
+        console.error('[CSAT] ensureCsatTable error:', e.message);
+    }
+};
+ensureCsatTable().catch(() => {});
+
 // Get CSAT analytics stats for dashboard
 export const getCsatStats = async (req, res) => {
     const { organization_id } = req.user;
+    const days = parseInt(req.query.days) || 30;
+
     try {
+        await ensureCsatTable();
+
+        const dateCondition = days > 0 ? `AND created_at >= NOW() - ($2 || ' days')::INTERVAL` : '';
+        const queryParams = days > 0 ? [organization_id, days] : [organization_id];
+
         const statsRes = await pool.query(
             `SELECT 
                 COUNT(*) as total_surveys,
@@ -130,10 +164,11 @@ export const getCsatStats = async (req, res) => {
                 COUNT(*) FILTER (WHERE rating = 2) as stars_2,
                 COUNT(*) FILTER (WHERE rating = 1) as stars_1
              FROM csat_surveys
-             WHERE organization_id = $1`,
-            [organization_id]
+             WHERE organization_id = $1 ${dateCondition}`,
+            queryParams
         );
 
+        const leaderboardDateCondition = days > 0 ? `AND s.created_at >= NOW() - ($2 || ' days')::INTERVAL` : '';
         const agentLeaderboard = await pool.query(
             `SELECT u.id, u.name, 
                     COUNT(s.id) as total_reviews,
@@ -141,18 +176,74 @@ export const getCsatStats = async (req, res) => {
                     ROUND((COUNT(*) FILTER (WHERE s.rating >= 4)::decimal / NULLIF(COUNT(s.id), 0)) * 100, 1) as satisfied_rate
              FROM csat_surveys s
              JOIN users u ON s.agent_id = u.id
-             WHERE s.organization_id = $1 AND s.status = 'completed'
+             WHERE s.organization_id = $1 AND s.status = 'completed' ${leaderboardDateCondition}
              GROUP BY u.id, u.name
              ORDER BY avg_rating DESC LIMIT 10`,
-            [organization_id]
+            queryParams
         );
 
+        const raw = statsRes.rows[0] || {};
+        const totalSurveys = parseInt(raw.total_surveys) || 0;
+        const totalResponses = parseInt(raw.total_responses) || 0;
+        const avgRating = parseFloat(raw.average_rating) || 0;
+        const responseRate = totalSurveys > 0 ? parseFloat(((totalResponses / totalSurveys) * 100).toFixed(1)) : 0;
+        const stars5 = parseInt(raw.stars_5) || 0;
+        const stars4 = parseInt(raw.stars_4) || 0;
+        const stars3 = parseInt(raw.stars_3) || 0;
+        const stars2 = parseInt(raw.stars_2) || 0;
+        const stars1 = parseInt(raw.stars_1) || 0;
+
+        const promoters = stars5 + stars4;
+        const detractors = stars1 + stars2;
+        const nps = totalResponses > 0 ? Math.round(((promoters - detractors) / totalResponses) * 100) : 0;
+
+        const ratingDistribution = [
+            { rating: 5, count: stars5 },
+            { rating: 4, count: stars4 },
+            { rating: 3, count: stars3 },
+            { rating: 2, count: stars2 },
+            { rating: 1, count: stars1 }
+        ];
+
         res.json({
-            summary: statsRes.rows[0],
-            leaderboard: agentLeaderboard.rows
+            // Direct camelCase properties expected by CSATReportPage
+            avgRating,
+            totalResponses,
+            totalSurveys,
+            responseRate,
+            nps,
+            ratingDistribution,
+            // Legacy / nested object support
+            summary: {
+                ...raw,
+                average_rating: avgRating,
+                total_responses: totalResponses,
+                total_surveys: totalSurveys,
+                csat_percentage: raw.csat_percentage ? parseFloat(raw.csat_percentage) : 0,
+                response_rate: responseRate,
+                nps
+            },
+            leaderboard: agentLeaderboard.rows || []
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('[CSAT] getCsatStats error:', err.message);
+        res.json({
+            avgRating: 0,
+            totalResponses: 0,
+            totalSurveys: 0,
+            responseRate: 0,
+            nps: 0,
+            ratingDistribution: [5, 4, 3, 2, 1].map(r => ({ rating: r, count: 0 })),
+            summary: {
+                total_surveys: 0,
+                total_responses: 0,
+                average_rating: 0,
+                csat_percentage: 0,
+                response_rate: 0,
+                nps: 0
+            },
+            leaderboard: []
+        });
     }
 };
 
@@ -196,32 +287,53 @@ export const getSurveys = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const offset = (page - 1) * limit;
+    const days = parseInt(req.query.days) || 0;
 
     try {
+        await ensureCsatTable();
+
+        const dateFilter = days > 0 ? `AND s.created_at >= NOW() - ($4 || ' days')::INTERVAL` : '';
+        const params = days > 0 
+            ? [organization_id, limit, offset, days] 
+            : [organization_id, limit, offset];
+
         const surveysRes = await pool.query(
             `SELECT s.*, c.name as contact_name, c.phone_number, u.name as agent_name
              FROM csat_surveys s
              LEFT JOIN contacts c ON s.contact_id = c.id
              LEFT JOIN users u ON s.agent_id = u.id
-             WHERE s.organization_id = $1
+             WHERE s.organization_id = $1 ${dateFilter}
              ORDER BY s.created_at DESC
              LIMIT $2 OFFSET $3`,
-            [organization_id, limit, offset]
+            params
         );
 
+        const countDateFilter = days > 0 ? `AND created_at >= NOW() - ($2 || ' days')::INTERVAL` : '';
+        const countParams = days > 0 ? [organization_id, days] : [organization_id];
+
         const countRes = await pool.query(
-            'SELECT COUNT(*) as total FROM csat_surveys WHERE organization_id = $1',
-            [organization_id]
+            `SELECT COUNT(*) as total FROM csat_surveys WHERE organization_id = $1 ${countDateFilter}`,
+            countParams
         );
+
+        const total = parseInt(countRes.rows[0]?.total || 0);
 
         res.json({
             surveys: surveysRes.rows,
-            total: parseInt(countRes.rows[0]?.total || 0),
+            data: surveysRes.rows,
+            total,
             page,
             limit
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('[CSAT] getSurveys error:', err.message);
+        res.json({
+            surveys: [],
+            data: [],
+            total: 0,
+            page,
+            limit
+        });
     }
 };
 

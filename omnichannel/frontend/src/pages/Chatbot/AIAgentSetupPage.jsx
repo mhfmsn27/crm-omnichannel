@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { 
     ArrowLeft, Save, Bot, MessageSquare, Book, Globe, BarChart2, 
-    Settings, Upload, Trash2, Send, RotateCcw, AlertTriangle, Sparkles 
+    Settings, Upload, Trash2, Send, RotateCcw, AlertTriangle, Sparkles, X 
 } from 'lucide-react';
 import AISkillLibraryModal from '../../components/chatbot/AISkillLibraryModal';
 import AIQuickSetupWizard from '../../components/chatbot/AIQuickSetupWizard';
@@ -44,6 +44,7 @@ export default function AIAgentSetupPage() {
     const [simMessages, setSimMessages] = useState([{ id: 1, from: 'bot', text: 'Simulator ready. Send a message to test your AI configuration.' }]);
     const [simInput, setSimInput] = useState('');
     const [simLoading, setSimLoading] = useState(false);
+    const [isMobileSimOpen, setIsMobileSimOpen] = useState(false);
     const scrollRef = useRef(null);
 
     useEffect(() => {
@@ -237,26 +238,26 @@ export default function AIAgentSetupPage() {
             <div className="flex-1 min-w-0 flex flex-col h-full">
                 
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b bg-white shadow-sm z-10">
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => navigate('/chatbot/list')} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border-b bg-white shadow-sm z-10 gap-3">
+                    <div className="flex items-center gap-3">
+                        <button onClick={() => navigate('/chatbot/list')} className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                             <ArrowLeft className="w-5 h-5 text-gray-600" />
                         </button>
-                        <div>
-                            <h1 className="text-xl font-black text-gray-800">AI Agent Setup</h1>
-                            <p className="text-sm text-gray-500">{formData.name || 'Unnamed Bot'}</p>
+                        <div className="min-w-0">
+                            <h1 className="text-lg sm:text-xl font-black text-gray-800 truncate">AI Agent Setup</h1>
+                            <p className="text-xs sm:text-sm text-gray-500 truncate">{formData.name || 'Unnamed Bot'}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                         <button
                             onClick={() => setIsSkillModalOpen(true)}
-                            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-950 font-black text-xs md:text-sm rounded-lg flex items-center gap-2 transition-all shadow-sm hover:shadow-amber-500/20"
+                            className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-gray-950 font-black text-xs md:text-sm rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-sm hover:shadow-amber-500/20 whitespace-nowrap"
                         >
-                            <Sparkles className="w-4 h-4 text-gray-950" />
-                            <span>✨ Pasang AI Skill</span>
+                            <Sparkles className="w-4 h-4 text-gray-950 shrink-0" />
+                            <span>✨ Pasang Skill</span>
                         </button>
-                        <button onClick={handleSave} className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 flex items-center gap-2 transition-all shadow-sm">
-                            <Save className="w-4 h-4" /> Save Configuration
+                        <button onClick={handleSave} className="flex-1 sm:flex-initial px-3.5 sm:px-6 py-2 bg-indigo-600 text-white font-bold text-xs md:text-sm rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-1.5 transition-all shadow-sm whitespace-nowrap">
+                            <Save className="w-4 h-4 shrink-0" /> Save Config
                         </button>
                     </div>
                 </div>
@@ -432,9 +433,9 @@ export default function AIAgentSetupPage() {
                                                 <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                                                     {qaList.map(qa => (
                                                         <div key={qa.id} className="bg-gray-50 p-3 rounded border text-sm relative group">
-                                                            <div className="font-bold text-gray-800 mb-1">{qa.question}</div>
+                                                            <div className="font-bold text-gray-800 mb-1 pr-6">{qa.question}</div>
                                                             <div className="text-gray-600 line-clamp-3">{qa.answer}</div>
-                                                            <button onClick={() => handleDeleteQa(qa.id)} className="absolute top-2 right-2 p-1 bg-red-100 text-red-600 rounded opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3"/></button>
+                                                            <button onClick={() => handleDeleteQa(qa.id)} className="absolute top-2 right-2 p-1 bg-red-100 text-red-600 rounded opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3"/></button>
                                                         </div>
                                                     ))}
                                                     {qaList.length === 0 && <p className="text-xs text-gray-400 text-center py-4">No Q&A data.</p>}
@@ -623,6 +624,84 @@ export default function AIAgentSetupPage() {
                 botId={bot?.id}
                 onSkillApplied={handleSkillApplied}
             />
+
+            {/* MOBILE FLOATING ACTION BUTTON TO OPEN SIMULATOR */}
+            <div className="lg:hidden fixed bottom-6 right-4 z-40">
+                <button
+                    onClick={() => setIsMobileSimOpen(true)}
+                    className="px-4 py-2.5 bg-[#00A884] text-white rounded-full shadow-lg flex items-center gap-2 font-bold text-xs sm:text-sm hover:bg-[#009B7C] active:scale-95 transition-all"
+                >
+                    <Bot className="w-4 h-4" />
+                    <span>Test AI Simulator</span>
+                </button>
+            </div>
+
+            {/* MOBILE SIMULATOR MODAL / DRAWER */}
+            {isMobileSimOpen && (
+                <div className="lg:hidden fixed inset-0 z-50 bg-black/50 flex flex-col justify-end animate-in fade-in duration-200">
+                    <div className="bg-white w-full h-[85vh] rounded-t-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
+                        <div className="h-14 bg-[#00A884] flex items-center justify-between px-4 text-white shadow-sm shrink-0">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">
+                                    <Bot className="w-5 h-5 text-white"/>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-sm leading-tight">Live Test Simulator</h3>
+                                    <p className="text-[10px] text-white/80">Simulator aktif</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <button onClick={() => setSimMessages([{ id: 1, from: 'bot', text: 'Chat reset. Send a new message.' }])} className="p-2 hover:bg-white/20 rounded-full transition-colors" title="Reset Chat">
+                                    <RotateCcw className="w-4 h-4" />
+                                </button>
+                                <button onClick={() => setIsMobileSimOpen(false)} className="p-2 hover:bg-white/20 rounded-full transition-colors" title="Close">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Chat History */}
+                        <div className="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar bg-[#e5ddd5]" ref={scrollRef}>
+                            {simMessages.map(m => (
+                                <div key={m.id} className={`flex ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[85%] rounded-lg px-3 py-2 text-xs sm:text-sm shadow-sm relative break-words
+                                        ${m.from === 'user' ? 'bg-[#D9FDD3] rounded-tr-none text-gray-800' : 'bg-white rounded-tl-none text-gray-800'}
+                                    `}>
+                                        <div dangerouslySetInnerHTML={{__html: m.text.replace(/\n/g, '<br/>')}} />
+                                    </div>
+                                </div>
+                            ))}
+                            {simLoading && (
+                                <div className="flex justify-start">
+                                    <div className="bg-white rounded-lg p-2.5 rounded-tl-none shadow-sm flex items-center gap-1">
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75"></div>
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Input Area */}
+                        <div className="p-2.5 bg-[#F0F2F5] flex items-center gap-2 shrink-0 border-t">
+                            <input
+                                className="flex-1 p-2.5 rounded-full border-none outline-none text-xs sm:text-sm shadow-sm bg-white"
+                                placeholder="Ketik pesan untuk test AI..."
+                                value={simInput}
+                                onChange={e => setSimInput(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleSimulate()}
+                            />
+                            <button
+                                onClick={handleSimulate}
+                                disabled={simLoading || !simInput.trim()}
+                                className="w-9 h-9 rounded-full bg-[#00A884] text-white flex items-center justify-center hover:bg-[#009B7C] disabled:opacity-50 transition-colors shadow-sm shrink-0"
+                            >
+                                <Send className="w-4 h-4 ml-0.5" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -23,17 +23,17 @@ const formatDuration = (seconds) => {
 
 function MetricCard({ title, value, sub, icon: Icon, color, trend, trendValue }) {
     return (
-        <div className="bg-white rounded-xl border p-5 shadow-sm">
-            <div className="flex items-start justify-between mb-3">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">{title}</span>
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${color}`}>
-                    <Icon className="w-4 h-4" />
+        <div className="bg-white rounded-xl border p-3.5 sm:p-5 shadow-sm">
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+                <span className="text-[11px] sm:text-xs font-bold text-gray-500 uppercase tracking-wide truncate mr-1">{title}</span>
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
+                    <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
-            {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{value}</p>
+            {sub && <p className="text-[11px] sm:text-xs text-gray-400 mt-1 truncate">{sub}</p>}
             {trend && (
-                <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-500' : 'text-gray-400'}`}>
+                <div className={`flex items-center gap-1 mt-1.5 sm:mt-2 text-xs font-medium ${trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-500' : 'text-gray-400'}`}>
                     {trend > 0 ? <ArrowUp className="w-3 h-3" /> : trend < 0 ? <ArrowDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
                     {trendValue || Math.abs(trend)}% vs prev
                 </div>
@@ -62,21 +62,25 @@ function ChannelBadge({ channel }) {
 
 function DateRangePicker({ startDate, endDate, onStartChange, onEndChange }) {
     return (
-        <div className="flex items-center gap-2 bg-white rounded-lg border p-1">
-            <Calendar className="w-4 h-4 text-gray-400 ml-2" />
-            <input
-                type="date"
-                value={startDate}
-                onChange={(e) => onStartChange(e.target.value)}
-                className="border-0 text-sm p-1 focus:outline-none"
-            />
-            <span className="text-gray-400">-</span>
-            <input
-                type="date"
-                value={endDate}
-                onChange={(e) => onEndChange(e.target.value)}
-                className="border-0 text-sm p-1 focus:outline-none"
-            />
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 bg-white rounded-lg border p-1 w-full sm:w-auto">
+            <div className="flex items-center gap-1 flex-1 sm:flex-initial min-w-[120px]">
+                <Calendar className="w-3.5 h-3.5 text-gray-400 ml-1.5 shrink-0" />
+                <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => onStartChange(e.target.value)}
+                    className="border-0 bg-transparent text-xs sm:text-sm p-1 focus:outline-none w-full"
+                />
+            </div>
+            <span className="text-gray-400 text-xs px-0.5">-</span>
+            <div className="flex items-center gap-1 flex-1 sm:flex-initial min-w-[110px]">
+                <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => onEndChange(e.target.value)}
+                    className="border-0 bg-transparent text-xs sm:text-sm p-1 focus:outline-none w-full"
+                />
+            </div>
         </div>
     );
 }
@@ -220,19 +224,19 @@ export default function AdvancedAnalyticsDashboard() {
     }
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-3.5 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <BarChart2 className="w-5 h-5 text-indigo-500" />
+                    <h1 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <BarChart2 className="w-5 h-5 text-indigo-500 shrink-0" />
                         Advanced Analytics
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                         Comprehensive insights into your customer service performance
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="w-full md:w-auto flex items-center justify-between sm:justify-start gap-2">
                     <DateRangePicker
                         startDate={startDate}
                         endDate={endDate}
@@ -241,7 +245,8 @@ export default function AdvancedAnalyticsDashboard() {
                     />
                     <button
                         onClick={fetchOverview}
-                        className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-100"
+                        className="p-2 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-100 shrink-0 border sm:border-0 border-gray-200"
+                        title="Refresh Data"
                     >
                         <RefreshCw className="w-4 h-4" />
                     </button>
@@ -249,7 +254,7 @@ export default function AdvancedAnalyticsDashboard() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-4 border-b overflow-x-auto">
+            <div className="flex gap-2 sm:gap-4 border-b overflow-x-auto no-scrollbar scroll-smooth touch-pan-x pb-0.5">
                 {[
                     { id: 'overview', label: 'Overview', icon: BarChart2 },
                     { id: 'conversations', label: 'Conversations', icon: MessageCircle },
@@ -405,41 +410,43 @@ export default function AdvancedAnalyticsDashboard() {
                         <div className="p-4 border-b">
                             <h3 className="font-bold text-gray-800">Volume by Channel</h3>
                         </div>
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Channel</th>
-                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Total</th>
-                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Resolved</th>
-                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Rate</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(conversations?.volumeByChannel || []).map((ch, idx) => (
-                                    <tr key={idx} className="border-b hover:bg-gray-50">
-                                        <td className="p-4">
-                                            <ChannelBadge channel={ch.channel} />
-                                        </td>
-                                        <td className="p-4 text-center font-medium">{ch.total}</td>
-                                        <td className="p-4 text-center">{ch.resolved}</td>
-                                        <td className="p-4 text-center">
-                                            <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                                (ch.total > 0 && ch.resolved / ch.total > 0.7) ? 'bg-green-100 text-green-700' :
-                                                (ch.total > 0 && ch.resolved / ch.total > 0.4) ? 'bg-yellow-100 text-yellow-700' :
-                                                'bg-gray-100 text-gray-600'
-                                            }`}>
-                                                {ch.total > 0 ? Math.round((ch.resolved / ch.total) * 100) : 0}%
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {(!conversations?.volumeByChannel || conversations.volumeByChannel.length === 0) && (
+                        <div className="overflow-x-auto w-full">
+                            <table className="w-full min-w-[500px]">
+                                <thead className="bg-gray-50">
                                     <tr>
-                                        <td colSpan="4" className="p-8 text-center text-gray-400">No channel data available</td>
+                                        <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Channel</th>
+                                        <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Total</th>
+                                        <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Resolved</th>
+                                        <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Rate</th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {(conversations?.volumeByChannel || []).map((ch, idx) => (
+                                        <tr key={idx} className="border-b hover:bg-gray-50">
+                                            <td className="p-4">
+                                                <ChannelBadge channel={ch.channel} />
+                                            </td>
+                                            <td className="p-4 text-center font-medium">{ch.total}</td>
+                                            <td className="p-4 text-center">{ch.resolved}</td>
+                                            <td className="p-4 text-center">
+                                                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                                    (ch.total > 0 && ch.resolved / ch.total > 0.7) ? 'bg-green-100 text-green-700' :
+                                                    (ch.total > 0 && ch.resolved / ch.total > 0.4) ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-gray-100 text-gray-600'
+                                                }`}>
+                                                    {ch.total > 0 ? Math.round((ch.resolved / ch.total) * 100) : 0}%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {(!conversations?.volumeByChannel || conversations.volumeByChannel.length === 0) && (
+                                        <tr>
+                                            <td colSpan="4" className="p-8 text-center text-gray-400">No channel data available</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
@@ -705,49 +712,51 @@ export default function AdvancedAnalyticsDashboard() {
                             <h3 className="font-bold text-gray-800">Backlog per Channel</h3>
                             <span className="text-xs text-gray-400">Percakapan yang belum selesai</span>
                         </div>
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Channel</th>
-                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Total</th>
-                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Unresolved</th>
-                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Backlog %</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {(channels?.channels || []).map((ch, idx) => {
-                                    const total = parseInt(ch.total_conversations || 0);
-                                    const resolved = parseInt(ch.resolved || 0);
-                                    const unresolved = total - resolved;
-                                    const backlogPct = total > 0 ? Math.round((unresolved / total) * 100) : 0;
-                                    return (
-                                        <tr key={idx} className="border-b hover:bg-gray-50">
-                                            <td className="p-4"><ChannelBadge channel={ch.channel} /></td>
-                                            <td className="p-4 text-center font-medium">{total}</td>
-                                            <td className="p-4 text-center">
-                                                <span className={`font-medium ${unresolved > 0 ? 'text-orange-600' : 'text-green-600'}`}>{unresolved}</span>
-                                            </td>
-                                            <td className="p-4 text-center">
-                                                <div className="flex items-center gap-2 justify-center">
-                                                    <div className="w-20 bg-gray-100 rounded-full h-2">
-                                                        <div
-                                                            className={`h-2 rounded-full transition-all ${backlogPct > 50 ? 'bg-red-500' : backlogPct > 30 ? 'bg-orange-400' : 'bg-green-400'}`}
-                                                            style={{ width: `${backlogPct}%` }}
-                                                        />
-                                                    </div>
-                                                    <span className="text-xs text-gray-500 w-8">{backlogPct}%</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                                {(!channels?.channels || channels.channels.length === 0) && (
+                        <div className="overflow-x-auto w-full">
+                            <table className="w-full min-w-[500px]">
+                                <thead className="bg-gray-50">
                                     <tr>
-                                        <td colSpan="4" className="p-8 text-center text-gray-400">No data available</td>
+                                        <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Channel</th>
+                                        <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Total</th>
+                                        <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Unresolved</th>
+                                        <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Backlog %</th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {(channels?.channels || []).map((ch, idx) => {
+                                        const total = parseInt(ch.total_conversations || 0);
+                                        const resolved = parseInt(ch.resolved || 0);
+                                        const unresolved = total - resolved;
+                                        const backlogPct = total > 0 ? Math.round((unresolved / total) * 100) : 0;
+                                        return (
+                                            <tr key={idx} className="border-b hover:bg-gray-50">
+                                                <td className="p-4"><ChannelBadge channel={ch.channel} /></td>
+                                                <td className="p-4 text-center font-medium">{total}</td>
+                                                <td className="p-4 text-center">
+                                                    <span className={`font-medium ${unresolved > 0 ? 'text-orange-600' : 'text-green-600'}`}>{unresolved}</span>
+                                                </td>
+                                                <td className="p-4 text-center">
+                                                    <div className="flex items-center gap-2 justify-center">
+                                                        <div className="w-20 bg-gray-100 rounded-full h-2">
+                                                            <div
+                                                                className={`h-2 rounded-full transition-all ${backlogPct > 50 ? 'bg-red-500' : backlogPct > 30 ? 'bg-orange-400' : 'bg-green-400'}`}
+                                                                style={{ width: `${backlogPct}%` }}
+                                                            />
+                                                        </div>
+                                                        <span className="text-xs text-gray-500 w-8">{backlogPct}%</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                    {(!channels?.channels || channels.channels.length === 0) && (
+                                        <tr>
+                                            <td colSpan="4" className="p-8 text-center text-gray-400">No data available</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     {/* Queue health indicator */}
@@ -855,47 +864,49 @@ export default function AdvancedAnalyticsDashboard() {
                                     <div className="p-4 border-b">
                                         <h3 className="font-bold text-gray-800">Agent Workload (Live)</h3>
                                     </div>
-                                    <table className="w-full">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Agent</th>
-                                                <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Active</th>
-                                                <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Unread</th>
-                                                <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Load</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {liveData.agent_workload.map((agent, idx) => {
-                                                const maxLoad = Math.max(...liveData.agent_workload.map(a => a.active_count || 0), 1);
-                                                const loadPct = Math.round((agent.active_count / maxLoad) * 100);
-                                                return (
-                                                    <tr key={idx} className="border-b hover:bg-gray-50">
-                                                        <td className="p-4">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700">
-                                                                    {agent.agent_name?.charAt(0)?.toUpperCase() || '?'}
+                                    <div className="overflow-x-auto w-full">
+                                        <table className="w-full min-w-[500px]">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Agent</th>
+                                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Active</th>
+                                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Unread</th>
+                                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Load</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {liveData.agent_workload.map((agent, idx) => {
+                                                    const maxLoad = Math.max(...liveData.agent_workload.map(a => a.active_count || 0), 1);
+                                                    const loadPct = Math.round((agent.active_count / maxLoad) * 100);
+                                                    return (
+                                                        <tr key={idx} className="border-b hover:bg-gray-50">
+                                                            <td className="p-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700">
+                                                                        {agent.agent_name?.charAt(0)?.toUpperCase() || '?'}
+                                                                    </div>
+                                                                    <span className="text-sm font-medium">{agent.agent_name || 'Unknown'}</span>
                                                                 </div>
-                                                                <span className="text-sm font-medium">{agent.agent_name || 'Unknown'}</span>
-                                                            </div>
-                                                        </td>
-                                                        <td className="p-4 text-center font-medium">{agent.active_count || 0}</td>
-                                                        <td className="p-4 text-center text-orange-600 font-medium">{agent.unread_count || 0}</td>
-                                                        <td className="p-4">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="flex-1 bg-gray-100 rounded-full h-2">
-                                                                    <div
-                                                                        className={`h-2 rounded-full transition-all ${loadPct > 75 ? 'bg-red-500' : loadPct > 50 ? 'bg-yellow-400' : 'bg-green-400'}`}
-                                                                        style={{ width: `${loadPct}%` }}
-                                                                    />
+                                                            </td>
+                                                            <td className="p-4 text-center font-medium">{agent.active_count || 0}</td>
+                                                            <td className="p-4 text-center text-orange-600 font-medium">{agent.unread_count || 0}</td>
+                                                            <td className="p-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="flex-1 bg-gray-100 rounded-full h-2">
+                                                                        <div
+                                                                            className={`h-2 rounded-full transition-all ${loadPct > 75 ? 'bg-red-500' : loadPct > 50 ? 'bg-yellow-400' : 'bg-green-400'}`}
+                                                                            style={{ width: `${loadPct}%` }}
+                                                                        />
+                                                                    </div>
+                                                                    <span className="text-xs text-gray-400 w-8">{loadPct}%</span>
                                                                 </div>
-                                                                <span className="text-xs text-gray-400 w-8">{loadPct}%</span>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             )}
 

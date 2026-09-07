@@ -50,43 +50,73 @@ export const EmailIcon = ({ className = "w-4 h-4", ...props }) => (
     </svg>
 );
 
-// 5. Meta Messenger Icon
+// 4b. Meta Official Brand Icon (Meta Cloud Templates)
+export const MetaIcon = ({ className = "w-4 h-4", ...props }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+        <defs>
+            <linearGradient id="crmhub-meta-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#0081FB" />
+                <stop offset="100%" stopColor="#0064E0" />
+            </linearGradient>
+        </defs>
+        {/* Solid fallback base with squircle matching other icons */}
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="#0081FB" />
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#crmhub-meta-bg)" />
+        {/* Official Meta Infinity Symbol */}
+        <path
+            d="M16.5 8c-1.1 0-2.15.55-3.05 1.55-.9-1-1.95-1.55-3.05-1.55-2.6 0-4.5 2.05-4.5 4.9 0 2.85 1.9 4.9 4.5 4.9 1.15 0 2.2-.55 3.12-1.65.92 1.1 1.97 1.65 3.08 1.65 2.6 0 4.5-2.05 4.5-4.9 0-2.85-1.9-4.9-4.5-4.9zm-6.1 7.45c-1.5 0-2.58-1.28-2.58-2.95 0-1.67 1.08-2.95 2.58-2.95.77 0 1.5.47 2.16 1.43l.64.92-.64.93c-.66.96-1.39 1.42-2.16 1.42zm6.1 0c-.77 0-1.5-.46-2.16-1.42l-.64-.93.64-.92c.66-.96 1.39-1.43 2.16-1.43 1.5 0 2.58 1.28 2.58 2.95 0 1.67-1.08 2.95-2.58 2.95z"
+            fill="#FFFFFF"
+        />
+    </svg>
+);
+export const MetaTemplatesIcon = MetaIcon;
+
+// 5. Meta Messenger Official Brand Icon
 export const MessengerIcon = ({ className = "w-4 h-4", ...props }) => (
     <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
         <defs>
-            <linearGradient id="metaMsgGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <linearGradient id="crmhub-msg-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#0099FF" />
-                <stop offset="60%" stopColor="#A033FF" />
+                <stop offset="50%" stopColor="#A033FF" />
                 <stop offset="100%" stopColor="#FF5280" />
             </linearGradient>
         </defs>
+        {/* Solid fallback base so it is NEVER transparent */}
         <path
-            d="M12 2C6.477 2 2 6.145 2 11.258c0 2.915 1.455 5.518 3.737 7.158V22l3.433-1.884c.898.249 1.854.384 2.83.384 5.523 0 10-4.145 10-9.258C22 6.145 17.523 2 12 2z"
-            fill="url(#metaMsgGrad)"
+            d="M12 2.5C6.75 2.5 2.5 6.44 2.5 11.3c0 2.77 1.38 5.25 3.55 6.87V21.5l3.24-1.78c.85.24 1.76.37 2.71.37 5.25 0 9.5-3.94 9.5-8.8C21.5 6.44 17.25 2.5 12 2.5z"
+            fill="#0084FF"
         />
         <path
-            d="M6.8 13.8l3.9-4.1 2.3 2.2 4.2-4.1-3.9 4.1-2.3-2.2-4.2 4.1z"
+            d="M12 2.5C6.75 2.5 2.5 6.44 2.5 11.3c0 2.77 1.38 5.25 3.55 6.87V21.5l3.24-1.78c.85.24 1.76.37 2.71.37 5.25 0 9.5-3.94 9.5-8.8C21.5 6.44 17.25 2.5 12 2.5z"
+            fill="url(#crmhub-msg-gradient)"
+        />
+        {/* Official Messenger Lightning Bolt */}
+        <path
+            d="M12.95 14.2l-2.42-2.58-4.73 2.58 5.2-5.52 2.48 2.58 4.67-2.58-5.2 5.52z"
             fill="#FFFFFF"
         />
     </svg>
 );
 
-// 6. Instagram Icon
+// 6. Instagram Official Brand Icon
 export const InstagramIcon = ({ className = "w-4 h-4", ...props }) => (
-    <svg viewBox="0 0 24 24" className={className} fill="none" {...props}>
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
         <defs>
-            <linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#FFDC80" />
-                <stop offset="25%" stopColor="#F77737" />
-                <stop offset="50%" stopColor="#FD1D1D" />
-                <stop offset="75%" stopColor="#C13584" />
-                <stop offset="100%" stopColor="#833AB4" />
-            </linearGradient>
+            <radialGradient id="crmhub-ig-radial" cx="30%" cy="107%" r="150%">
+                <stop offset="0%" stopColor="#fdf497" />
+                <stop offset="5%" stopColor="#fdf497" />
+                <stop offset="45%" stopColor="#fd5949" />
+                <stop offset="60%" stopColor="#d6249f" />
+                <stop offset="90%" stopColor="#285AEB" />
+            </radialGradient>
         </defs>
-        <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#igGrad)" />
-        <rect x="6" y="6" width="12" height="12" rx="3.5" stroke="#FFFFFF" strokeWidth="1.8" />
+        {/* Solid fallback base so it is NEVER transparent */}
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="#E1306C" />
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#crmhub-ig-radial)" />
+        {/* Official Instagram Camera Glyph */}
+        <rect x="6.2" y="6.2" width="11.6" height="11.6" rx="3.3" stroke="#FFFFFF" strokeWidth="1.8" />
         <circle cx="12" cy="12" r="3" stroke="#FFFFFF" strokeWidth="1.8" />
-        <circle cx="15.8" cy="8.2" r="1" fill="#FFFFFF" />
+        <circle cx="15.6" cy="8.4" r="0.9" fill="#FFFFFF" />
     </svg>
 );
 
@@ -150,23 +180,33 @@ export const TelegramIcon = ({ className = "w-4 h-4", ...props }) => (
     </svg>
 );
 
-// 12. Webchat Widget Icon
+// 12. Webchat Widget Official Standard Icon
 export const WebchatIcon = ({ className = "w-4 h-4", ...props }) => (
-    <svg viewBox="0 0 24 24" className={className} fill="none" {...props}>
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
         <defs>
-            <linearGradient id="wbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="crmhub-webchat-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#6366F1" />
-                <stop offset="100%" stopColor="#4F46E5" />
+                <stop offset="100%" stopColor="#4338CA" />
             </linearGradient>
         </defs>
-        <circle cx="12" cy="12" r="11" fill="url(#wbGrad)" />
+        {/* Solid fallback base with squircle matching other channel icons */}
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="#4F46E5" />
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="url(#crmhub-webchat-grad)" />
+        {/* Secondary Back Chat Bubble */}
         <path
-            d="M7 11.5c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5c-.7 0-1.4-.1-2-.4l-2.5.9.8-2.2c-.8-.9-1.3-2-1.3-3.3z"
+            d="M15 6.5H8.5C6.84 6.5 5.5 7.84 5.5 9.5c0 1.08.57 2.03 1.43 2.57-.14.69-.57 1.53-.57 1.53s1.42-.17 2.28-.82c.46.14.95.22 1.46.22h4.9c1.66 0 3-1.34 3-3s-1.34-3.5-3-3.5z"
+            fill="#C7D2FE"
+            opacity="0.55"
+        />
+        {/* Primary Front Chat Bubble */}
+        <path
+            d="M16 9.5h-5.5c-1.66 0-3 1.34-3 3 0 1.05.54 1.97 1.36 2.51-.13.72-.56 1.59-.56 1.59s1.42-.18 2.27-.85c.45.16.94.25 1.43.25H16c1.66 0 3-1.34 3-3s-1.34-3-3-3z"
             fill="#FFFFFF"
         />
-        <circle cx="10" cy="11.5" r="0.9" fill="#4F46E5" />
-        <circle cx="12" cy="11.5" r="0.9" fill="#4F46E5" />
-        <circle cx="14" cy="11.5" r="0.9" fill="#4F46E5" />
+        {/* 3 Active Conversation Typing Dots */}
+        <circle cx="11.2" cy="12.5" r="0.9" fill="#4F46E5" />
+        <circle cx="13.5" cy="12.5" r="0.9" fill="#4F46E5" />
+        <circle cx="15.8" cy="12.5" r="0.9" fill="#4F46E5" />
     </svg>
 );
 
@@ -261,6 +301,11 @@ export default function ChannelIcon({ type, className = "w-4 h-4", ...props }) {
         case 'email':
         case 'mail':
             return <EmailIcon className={className} {...props} />;
+        case 'meta':
+        case 'templates':
+        case 'meta-templates':
+        case 'meta_templates':
+            return <MetaIcon className={className} {...props} />;
         case 'messenger':
         case 'facebook':
             return <MessengerIcon className={className} {...props} />;

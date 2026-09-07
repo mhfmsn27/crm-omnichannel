@@ -111,6 +111,7 @@ export default function GMapsScraperTool() {
     // History
     const [history, setHistory] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
+    const [mobileTab, setMobileTab] = useState('search'); // 'search' | 'results'
 
     useEffect(() => {
         fetchConfig();
@@ -192,7 +193,11 @@ export default function GMapsScraperTool() {
                 setResults(prev => [...prev, ...newResults]);
             } else {
                 setResults(newResults);
-                if (newResults.length === 0) toast("No leads found. Try different keywords.");
+                if (newResults.length === 0) {
+                    toast("No leads found. Try different keywords.");
+                } else {
+                    setMobileTab('results');
+                }
                 fetchHistory();
             }
 
@@ -212,6 +217,7 @@ export default function GMapsScraperTool() {
             setResults(res.data);
             setPagination({ nextPageToken: null, nextOffset: null });
             setShowHistory(false);
+            setMobileTab('results');
         } catch (e) { } finally { setLoading(false); }
     };
 
@@ -252,28 +258,47 @@ export default function GMapsScraperTool() {
     return (
         <div className="h-full flex flex-col bg-gray-50">
             {/* Header */}
-            <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
+            <div className="bg-white border-b px-4 sm:px-6 py-3.5 sm:py-4 flex justify-between items-center gap-3">
                 <div>
-                    <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <MapPin className="w-6 h-6 text-indigo-600" /> GMaps Scraper
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 shrink-0" /> 
+                        <span>GMaps Scraper</span>
                     </h2>
                     <p className="text-xs text-gray-500">Find business leads from Google Maps.</p>
                 </div>
                 {!isLocked && (
                     <div className="flex gap-2">
                         <button onClick={() => setShowHistory(!showHistory)} className={`p-2 rounded-lg border transition-colors ${showHistory ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'hover:bg-gray-100 text-gray-600'}`} title="History">
-                            <History className="w-5 h-5" />
+                            <History className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                         <button onClick={() => setIsConfigOpen(true)} className="p-2 hover:bg-gray-100 rounded-lg text-gray-600 border" title="Settings">
-                            <Settings className="w-5 h-5" />
+                            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                     </div>
                 )}
             </div>
 
-            <div className="flex-1 flex overflow-hidden relative">
+            {/* Mobile Tab Switcher (Visible when results exist) */}
+            {results.length > 0 && (
+                <div className="lg:hidden flex border-b bg-white px-3 py-2 gap-2">
+                    <button 
+                        onClick={() => setMobileTab('search')} 
+                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 ${mobileTab === 'search' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                    >
+                        <Search className="w-3.5 h-3.5" /> Cari Leads
+                    </button>
+                    <button 
+                        onClick={() => setMobileTab('results')} 
+                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 ${mobileTab === 'results' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                    >
+                        <MapPin className="w-3.5 h-3.5" /> Hasil ({results.length})
+                    </button>
+                </div>
+            )}
+
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
                 {/* LEFT: Search Form */}
-                <div className="w-96 bg-white border-r p-6 flex flex-col gap-6 overflow-y-auto z-10 shadow-lg relative">
+                <div className={`${mobileTab === 'search' ? 'flex' : 'hidden lg:flex'} w-full lg:w-96 bg-white border-b lg:border-b-0 lg:border-r p-4 sm:p-6 flex-col gap-4 sm:gap-6 overflow-y-auto z-10 shadow-sm lg:shadow-lg relative shrink-0`}>
 
                     {/* PAYWALL OVERLAY */}
                     {isLocked && (
@@ -359,7 +384,7 @@ export default function GMapsScraperTool() {
                 </div>
 
                 {/* RIGHT: Results */}
-                <div className="flex-1 bg-gray-50 flex flex-col overflow-hidden">
+                <div className={`${mobileTab === 'results' ? 'flex' : 'hidden lg:flex'} flex-1 bg-gray-50 flex-col overflow-hidden`}>
                     {results.length > 0 ? (
                         <>
                             <div className="p-4 flex justify-between items-center bg-white border-b">

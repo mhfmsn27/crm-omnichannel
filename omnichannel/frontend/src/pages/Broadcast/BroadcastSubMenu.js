@@ -1,16 +1,17 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { PlusCircle, BarChart2, FileText, RefreshCw, HelpCircle, ArrowRight, LayoutTemplate, DollarSign, Repeat, Bot, Calendar } from 'lucide-react';
+import { PlusCircle, BarChart2, FileText, RefreshCw, HelpCircle, ArrowRight, DollarSign, Repeat, Bot, Calendar } from 'lucide-react';
+import { MetaIcon } from '../../components/common/ChannelIcons';
 import { useAuth } from '../../context/AuthContext';
 import { hasPerm } from '../../utils/rbac';
 
 const MenuItem = ({ to, icon: Icon, label, isExternal, isCollapsed }) => {
-    const baseClasses = "shrink-0 md:w-full mb-0 md:mb-1.5 px-3 py-2 md:py-2.5 bg-white rounded-xl border border-gray-100 text-gray-600 font-medium text-left shadow-xs hover:shadow-sm hover:bg-gray-50 transition-all duration-200 flex items-center justify-between group whitespace-nowrap dark:bg-[#1e293b] dark:border-slate-800 dark:text-gray-300 dark:hover:bg-slate-800";
+    const baseClasses = "shrink-0 md:w-full mb-0 md:mb-1.5 px-3 py-2 md:py-2.5 bg-white rounded-xl border border-gray-100 text-gray-600 font-medium text-left shadow-xs hover:shadow-sm hover:bg-gray-50 active:scale-95 transition-all duration-200 flex items-center justify-between group whitespace-nowrap touch-manipulation dark:bg-[#1e293b] dark:border-slate-800 dark:text-gray-300 dark:hover:bg-slate-800";
 
     if (isExternal) {
         return (
             <Link to={to} className={baseClasses + " border-pink-200 hover:border-pink-400 text-pink-600 hover:animate-pulse dark:border-pink-800 dark:text-pink-400"}>
-                <div className={`flex items-center gap-2.5 ${isCollapsed ? 'md:justify-center' : ''}`}>
+                <div className={`flex items-center gap-2 ${isCollapsed ? 'md:justify-center' : ''}`}>
                     <div className="bg-pink-50 p-1.5 rounded-lg text-pink-500 group-hover:text-pink-600 dark:bg-pink-900/30 dark:text-pink-400 shrink-0">
                         <Icon className="w-4 h-4" />
                     </div>
@@ -26,11 +27,11 @@ const MenuItem = ({ to, icon: Icon, label, isExternal, isCollapsed }) => {
             to={to}
             className={({ isActive }) =>
                 isActive
-                    ? "shrink-0 md:w-full mb-0 md:mb-1.5 px-3 py-2 md:py-2.5 bg-orange-50 rounded-xl border border-orange-500 text-orange-700 font-bold text-left shadow-xs flex items-center justify-between group whitespace-nowrap dark:bg-orange-950/30 dark:border-orange-500 dark:text-orange-300"
+                    ? "shrink-0 md:w-full mb-0 md:mb-1.5 px-3 py-2 md:py-2.5 bg-orange-50 rounded-xl border border-orange-500 text-orange-700 font-bold text-left shadow-xs flex items-center justify-between group whitespace-nowrap touch-manipulation dark:bg-orange-950/30 dark:border-orange-500 dark:text-orange-300"
                     : baseClasses
             }
         >
-            <div className={`flex items-center gap-2.5 ${isCollapsed ? 'md:justify-center' : ''}`}>
+            <div className={`flex items-center gap-2 ${isCollapsed ? 'md:justify-center' : ''}`}>
                 <div className="bg-gray-100 p-1.5 rounded-lg text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600 transition-colors dark:bg-slate-800 dark:text-slate-400 shrink-0">
                     <Icon className="w-4 h-4" />
                 </div>
@@ -55,17 +56,19 @@ export default function BroadcastSubMenu({ isCollapsed }) {
 
     return (
         <div className="flex flex-col w-full">
-            {/* MOBILE ONLY: Horizontal Scrollable Tab Bar */}
-            <div className="md:hidden flex flex-row overflow-x-auto no-scrollbar gap-1.5 py-1 px-1 pb-1.5 w-full">
-                {canBroadcast && <MenuItem to="create" icon={PlusCircle} label="Create Campaign" isCollapsed={false} />}
-                {canSchedule && <MenuItem to="schedule" icon={Calendar} label="Jadwal" isCollapsed={false} />}
-                {canReports && <MenuItem to="reports" icon={BarChart2} label="Reports" isCollapsed={false} />}
-                {canBroadcast && <MenuItem to="upselling" icon={Repeat} label="Upselling" isCollapsed={false} />}
-                {canTemplates && <MenuItem to="templates" icon={FileText} label="Templates" isCollapsed={false} />}
-                {canTemplates && <MenuItem to="meta-templates" icon={LayoutTemplate} label="Meta Templates" isCollapsed={false} />}
-                {canRotators && <MenuItem to="rotators" icon={RefreshCw} label="Rotators" isCollapsed={false} />}
-                {canBroadcast && <MenuItem to="settings" icon={Bot} label="Bot & Settings" isCollapsed={false} />}
-                {canBroadcast && <MenuItem to="tutorial" icon={HelpCircle} label="Tutorial" isCollapsed={false} />}
+            {/* MOBILE ONLY: Horizontal Scrollable Tab Bar with gradient indicator */}
+            <div className="md:hidden relative w-full mb-2">
+                <div className="flex flex-row overflow-x-auto scroll-smooth scrollbar-none gap-1.5 py-1 px-1 pb-1.5 w-full touch-pan-x">
+                    {canBroadcast && <MenuItem to="create" icon={PlusCircle} label="Create Campaign" isCollapsed={false} />}
+                    {canSchedule && <MenuItem to="schedule" icon={Calendar} label="Jadwal" isCollapsed={false} />}
+                    {canReports && <MenuItem to="reports" icon={BarChart2} label="Reports" isCollapsed={false} />}
+                    {canBroadcast && <MenuItem to="upselling" icon={Repeat} label="Upselling" isCollapsed={false} />}
+                    {canTemplates && <MenuItem to="templates" icon={FileText} label="Templates" isCollapsed={false} />}
+                    {canTemplates && <MenuItem to="meta-templates" icon={MetaIcon} label="Meta Templates" isCollapsed={false} />}
+                    {canRotators && <MenuItem to="rotators" icon={RefreshCw} label="Rotators" isCollapsed={false} />}
+                    {canBroadcast && <MenuItem to="settings" icon={Bot} label="Bot & Settings" isCollapsed={false} />}
+                    {canBroadcast && <MenuItem to="tutorial" icon={HelpCircle} label="Tutorial" isCollapsed={false} />}
+                </div>
             </div>
 
             {/* DESKTOP/TABLET ONLY: Vertical Categorized Sidebar */}
@@ -84,7 +87,7 @@ export default function BroadcastSubMenu({ isCollapsed }) {
                     <div className="mb-4 px-1">
                         {!isCollapsed && <p className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider mb-2">Assets</p>}
                         {canTemplates && <MenuItem to="templates" icon={FileText} label="Templates" isCollapsed={isCollapsed} />}
-                        {canTemplates && <MenuItem to="meta-templates" icon={LayoutTemplate} label="Meta Templates" isCollapsed={isCollapsed} />}
+                        {canTemplates && <MenuItem to="meta-templates" icon={MetaIcon} label="Meta Templates" isCollapsed={isCollapsed} />}
                         {canRotators && <MenuItem to="rotators" icon={RefreshCw} label="Rotators" isCollapsed={isCollapsed} />}
                     </div>
                 )}

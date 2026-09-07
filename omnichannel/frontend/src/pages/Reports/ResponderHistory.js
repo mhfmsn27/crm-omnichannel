@@ -45,15 +45,15 @@ export default function ResponderHistory() {
     if (loading) return <div className="flex h-full items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-indigo-600" /></div>;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
-                <h2 className="text-xl font-bold text-gray-900">Responder History CSAT</h2>
-                <div className="flex items-center gap-2">
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">Responder History CSAT</h2>
+                <div className="flex items-center justify-between sm:justify-start gap-2 w-full md:w-auto">
                     <DateRangeFilter startDate={startDate} endDate={endDate} onChange={(s, e) => { setStartDate(s); setEndDate(e); }} />
                     <button
                         onClick={handleExport}
                         disabled={downloading}
-                        className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 disabled:opacity-50"
+                        className="p-2 sm:p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 disabled:opacity-50 shrink-0"
                         title="Export History"
                     >
                         {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
@@ -62,8 +62,8 @@ export default function ResponderHistory() {
             </div>
 
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm min-w-[480px]">
+                <div className="overflow-x-auto w-full">
+                <table className="w-full text-left text-sm min-w-[550px]">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th className="px-6 py-4 font-bold text-gray-500 uppercase">Date</th>

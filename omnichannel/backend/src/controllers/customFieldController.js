@@ -1,17 +1,60 @@
 import pool from '../config/db.js';
 
+let schemaEnsured = false;
+export const ensureCustomFieldsSchema = async () => {
+    if (schemaEnsured) return;
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS contact_custom_fields (
+                id BIGSERIAL PRIMARY KEY,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                field_key VARCHAR(100) NOT NULL,
+                field_label VARCHAR(255) NOT NULL,
+                field_type VARCHAR(50) NOT NULL DEFAULT 'text',
+                field_options JSONB DEFAULT NULL,
+                is_required BOOLEAN NOT NULL DEFAULT FALSE,
+                position INTEGER NOT NULL DEFAULT 0,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                UNIQUE(organization_id, field_key)
+            );
+
+            CREATE TABLE IF NOT EXISTS contact_field_values (
+                id BIGSERIAL PRIMARY KEY,
+                contact_id BIGINT NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+                organization_id BIGINT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+                field_key VARCHAR(100) NOT NULL,
+                value TEXT,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                UNIQUE(contact_id, field_key)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_contact_custom_fields_org ON contact_custom_fields(organization_id);
+            CREATE INDEX IF NOT EXISTS idx_contact_custom_fields_pos ON contact_custom_fields(organization_id, position);
+            CREATE INDEX IF NOT EXISTS idx_contact_field_values_contact ON contact_field_values(contact_id);
+            CREATE INDEX IF NOT EXISTS idx_contact_field_values_org_key ON contact_field_values(organization_id, field_key);
+        `);
+        schemaEnsured = true;
+    } catch (err) {
+        console.error('[CustomFields] Error ensuring schema:', err.message);
+    }
+};
+
 // --- Field Definitions CRUD ---
 
 export const getFields = async (req, res) => {
     const { organization_id } = req.user;
     try {
+        await ensureCustomFieldsSchema();
         const result = await pool.query(
             `SELECT * FROM contact_custom_fields WHERE organization_id = $1 ORDER BY position ASC, id ASC`,
             [organization_id]
         );
-        res.json(result.rows);
+        res.json(result.rows || []);
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        console.error('[CustomFields] getFields error:', e.message);
+        res.json([]);
     }
 };
 
@@ -27,6 +70,7 @@ export const createField = async (req, res) => {
     const key = field_key.toLowerCase().replace(/[^a-z0-9_]/g, '_');
 
     try {
+        await ensureCustomFieldsSchema();
         // Check uniqueness within org
         const dup = await pool.query(
             `SELECT id FROM contact_custom_fields WHERE organization_id = $1 AND field_key = $2`,
@@ -58,13 +102,14 @@ export const updateField = async (req, res) => {
 
     if (field_label !== undefined) { sets.push(`field_label = $${i++}`); params.push(field_label); }
     if (field_type !== undefined) { sets.push(`field_type = $${i++}`); params.push(field_type); }
-    if (field_options !== undefined) { sets.push(`field_options = $${i++}`); params.push(JSON.stringify(field_options)); }
+    if (field_options !== undefined) { sets.push(`field_options = $${i++}`); params.push(field_options ? JSON.stringify(field_options) : null); }
     if (is_required !== undefined) { sets.push(`is_required = $${i++}`); params.push(is_required); }
     if (position !== undefined) { sets.push(`position = $${i++}`); params.push(position); }
 
     if (sets.length === 0) return res.status(400).json({ error: 'No fields to update' });
 
     try {
+        await ensureCustomFieldsSchema();
         const result = await pool.query(
             `UPDATE contact_custom_fields SET ${sets.join(', ')} WHERE id = $1 AND organization_id = $2 RETURNING *`,
             params
@@ -80,6 +125,7 @@ export const deleteField = async (req, res) => {
     const { organization_id } = req.user;
     const { id } = req.params;
     try {
+        await ensureCustomFieldsSchema();
         // Get the field key to also delete values
         const fieldRes = await pool.query(
             `SELECT field_key FROM contact_custom_fields WHERE id = $1 AND organization_id = $2`,
@@ -102,6 +148,7 @@ export const reorderFields = async (req, res) => {
     if (!Array.isArray(order)) return res.status(400).json({ error: 'order must be an array' });
 
     try {
+        await ensureCustomFieldsSchema();
         await Promise.all(order.map(({ id, position }) =>
             pool.query(
                 `UPDATE contact_custom_fields SET position = $1 WHERE id = $2 AND organization_id = $3`,
@@ -120,6 +167,7 @@ export const getContactFieldValues = async (req, res) => {
     const { organization_id } = req.user;
     const { contactId } = req.params;
     try {
+        await ensureCustomFieldsSchema();
         // Return all field definitions with their current values merged
         const fields = await pool.query(
             `SELECT * FROM contact_custom_fields WHERE organization_id = $1 ORDER BY position ASC, id ASC`,
@@ -140,7 +188,8 @@ export const getContactFieldValues = async (req, res) => {
 
         res.json(result);
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        console.error('[CustomFields] getContactFieldValues error:', e.message);
+        res.json([]);
     }
 };
 
@@ -154,6 +203,7 @@ export const saveContactFieldValues = async (req, res) => {
     }
 
     try {
+        await ensureCustomFieldsSchema();
         const entries = Object.entries(values);
         await Promise.all(entries.map(([field_key, value]) => {
             if (value === null || value === '') {

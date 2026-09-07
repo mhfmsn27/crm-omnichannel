@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
     FileText, Users, Download, Search, ChevronRight, ArrowLeft, 
@@ -80,16 +80,16 @@ const SubmissionDetailView = ({ form, onBack }) => {
     return (
         <div className="animate-in slide-in-from-right-4 duration-300">
             {/* Header Detail */}
-            <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-4">
-                    <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+                <div className="flex items-center gap-3 sm:gap-4">
+                    <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600 shrink-0">
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-indigo-600" /> {form.name}
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                            <FileText className="w-5 h-5 text-indigo-600 shrink-0" /> {form.name}
                         </h2>
-                        <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
+                        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-500 mt-0.5">
                             <span className="bg-gray-100 px-2 py-0.5 rounded font-mono text-xs">Keyword: {form.trigger_keyword}</span>
                             <span>•</span>
                             <span>{submissions.length} Total Entries</span>
@@ -98,15 +98,15 @@ const SubmissionDetailView = ({ form, onBack }) => {
                 </div>
                 <button 
                     onClick={handleExport}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 transition-colors shadow-sm"
+                    className="w-full sm:w-auto justify-center px-4 py-2 bg-green-600 text-white rounded-lg font-bold flex items-center gap-2 hover:bg-green-700 transition-colors shadow-sm text-sm shrink-0"
                 >
                     <FileSpreadsheet className="w-4 h-4" /> Export Excel
                 </button>
             </div>
 
             {/* Toolbar */}
-            <div className="bg-white p-4 rounded-t-xl border border-gray-200 border-b-0 flex justify-between items-center">
-                <div className="relative w-72">
+            <div className="bg-white p-3.5 sm:p-4 rounded-t-xl border border-gray-200 border-b-0 flex justify-between items-center">
+                <div className="relative w-full sm:w-72">
                     <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     <input 
                         className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -119,8 +119,8 @@ const SubmissionDetailView = ({ form, onBack }) => {
 
             {/* Data Table */}
             <div className="bg-white border border-gray-200 rounded-b-xl shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm whitespace-nowrap">
+                <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left text-sm whitespace-nowrap min-w-[500px]">
                         <thead className="bg-gray-50 border-b">
                             <tr>
                                 <th className="px-6 py-4 font-bold text-gray-600">Date</th>
@@ -213,11 +213,11 @@ export default function ChatFormReport() {
     }
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto custom-scrollbar">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Laporan Chat Form</h2>
+        <div className="p-3.5 sm:p-6 md:p-8 h-full overflow-y-auto custom-scrollbar">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Laporan Chat Form</h2>
 
             {/* 1. Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6 mb-6 sm:mb-8">
                 <StatCard 
                     title="Total Submissions" 
                     value={totalSubmissions.toLocaleString()} 
@@ -244,8 +244,8 @@ export default function ChatFormReport() {
             {/* 2. Main List */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-[400px]">
                 {/* Toolbar */}
-                <div className="p-5 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50">
-                    <div className="relative w-full md:w-80">
+                <div className="p-3.5 sm:p-5 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-gray-50">
+                    <div className="relative w-full sm:w-80">
                         <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                         <input 
                             className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -256,7 +256,7 @@ export default function ChatFormReport() {
                     </div>
                     <div className="flex gap-2">
                         <select 
-                            className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none"
+                            className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none w-full sm:w-auto"
                             value={filterStatus}
                             onChange={e => setFilterStatus(e.target.value)}
                         >

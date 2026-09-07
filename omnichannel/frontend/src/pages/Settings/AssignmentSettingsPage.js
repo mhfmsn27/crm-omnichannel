@@ -36,7 +36,7 @@ export default function AssignmentSettingsPage() {
 
     useEffect(() => {
         axios.get('/api/app/inbox/settings/assignment')
-            .then(res => setMode(res.data.assignment_mode || 'manual'))
+            .then(res => setMode(res.data?.assignment_mode || 'manual'))
             .catch(() => toast.error('Gagal memuat pengaturan'))
             .finally(() => setLoading(false));
     }, []);
@@ -46,8 +46,8 @@ export default function AssignmentSettingsPage() {
         try {
             await axios.put('/api/app/inbox/settings/assignment', { assignment_mode: mode });
             toast.success('Pengaturan assignment disimpan');
-        } catch {
-            toast.error('Gagal menyimpan');
+        } catch (e) {
+            toast.error(e.response?.data?.error || 'Gagal menyimpan');
         } finally {
             setSaving(false);
         }
@@ -56,7 +56,7 @@ export default function AssignmentSettingsPage() {
     if (loading) return <div className="p-8 text-center text-gray-400">Memuat...</div>;
 
     return (
-        <div className="p-6 md:p-8 max-w-2xl">
+        <div className="p-3.5 sm:p-6 md:p-8 max-w-2xl pb-24 md:pb-8">
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Auto-Assignment Agent</h2>
             <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
                 Tentukan bagaimana percakapan baru yang masuk didistribusikan ke agent.

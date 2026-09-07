@@ -59,7 +59,7 @@ export default function SLASettingsPage() {
     if (loading) return <div className="p-8 text-center text-gray-400">Memuat...</div>;
 
     return (
-        <div className="p-6 md:p-8 max-w-2xl">
+        <div className="p-3.5 sm:p-6 md:p-8 max-w-2xl">
             <div className="flex items-center gap-3 mb-1">
                 <ShieldAlert className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">Kebijakan SLA & Tiket</h2>
