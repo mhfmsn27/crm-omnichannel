@@ -5,6 +5,8 @@ import { getPreviewMessages } from '../utils/systemDictionary.js';
 import { checkFeatureAccess } from '../services/featureGateService.js';
 import { manualResetCircle } from '../services/warmerScheduler.js';
 import { checkWarmerActiveHours, calculateNextWarmerDelay } from '../services/warmerTimeHelper.js';
+import * as waService from '../services/waGatewayService.js';
+import { normalizeWhatsappPhone } from '../utils/phoneHelper.js';
 
 const warmerQueue = new Queue('warmer-queue', { connection: redisConnection });
 
@@ -376,6 +378,63 @@ export const getReport = async (req, res) => {
             logs: logsRes.rows
         });
 
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// POST /api/app/warmer/:id/sync-keys
+// Proactively synchronizes Signal protocol encryption keys and presence across all devices in a circle
+export const syncWarmerKeys = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+
+    try {
+        const circleRes = await pool.query(
+            'SELECT * FROM warmer_circles WHERE id = $1 AND organization_id = $2',
+            [id, organization_id]
+        );
+        if (circleRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Warmer Circle tidak ditemukan' });
+        }
+
+        const membersRes = await pool.query(`
+            SELECT wcs.*, ws.whatsapp_number as phone, ws.session_id as gateway_uuid, ws.status as device_status
+            FROM warmer_circle_sessions wcs
+            JOIN whatsapp_sessions ws ON wcs.session_id = ws.id
+            WHERE wcs.warmer_circle_id = $1
+            AND ws.whatsapp_number IS NOT NULL
+            AND ws.status != 'disconnected'
+        `, [id]);
+
+        const members = membersRes.rows;
+        if (members.length < 2) {
+            return res.status(400).json({ error: 'Minimal butuh 2 device aktif untuk sinkronisasi kunci' });
+        }
+
+        let syncedPairs = 0;
+        for (let i = 0; i < members.length; i++) {
+            for (let j = 0; j < members.length; j++) {
+                if (i !== j) {
+                    const devA = members[i];
+                    const devB = members[j];
+                    if (devA.gateway_uuid && devB.phone) {
+                        const targetPhone = normalizeWhatsappPhone(devB.phone);
+                        // Refresh session & announce available presence to heal encryption delays
+                        await waService.refreshContactSession(devA.gateway_uuid, targetPhone).catch(() => {});
+                        await waService.sendChatPresence(devA.gateway_uuid, targetPhone, 'available').catch(() => {});
+                        syncedPairs++;
+                    }
+                }
+            }
+        }
+
+        res.json({
+            success: true,
+            synced_devices: members.length,
+            synced_pairs: syncedPairs,
+            message: `Berhasil menyinkronkan kunci enkripsi untuk ${members.length} device (${syncedPairs} jalur komunikasi). Pesan tertunda akan otomatis terdekripsi di WhatsApp.`
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

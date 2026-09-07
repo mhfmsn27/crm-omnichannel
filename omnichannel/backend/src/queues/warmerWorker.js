@@ -4,8 +4,9 @@ import IORedis from 'ioredis'; // Direct Import
 import { redisConfig } from '../config/redis.js'; // Import Config
 import * as waService from '../services/waGatewayService.js';
 import { getRandomSystemMessage } from '../utils/systemDictionary.js';
-import { generateWarmerPersonaMessage } from '../services/aiWarmerPersona.js';
+import { generateWarmerPersonaPair, generateWarmerPersonaMessage } from '../services/aiWarmerPersona.js';
 import { checkWarmerActiveHours, calculateNextWarmerDelay } from '../services/warmerTimeHelper.js';
+import { normalizeWhatsappPhone, normalizeJid } from '../utils/phoneHelper.js';
 
 import crypto from 'crypto';
 
@@ -25,6 +26,55 @@ export const initWarmerWorker = (io) => {
   });
 
   const worker = new Worker('warmer-queue', async (job) => {
+    // 0. TWO-WAY CONVERSATIONAL REPLY HANDLER
+    // Executes natural reciprocal reply to advance Signal protocol ratchet in both directions
+    if (job.name === 'warmer-reply' || job.data.isReply) {
+        const { circleId, senderSessionId, senderMemberId, senderGatewayUuid, receiverPhone, receiverGatewayUuid, replyText } = job.data;
+        if (!senderGatewayUuid || !receiverPhone || !replyText) return;
+
+        try {
+            const cleanReceiverPhone = normalizeWhatsappPhone(receiverPhone);
+            const targetJid = normalizeJid(cleanReceiverPhone);
+
+            // Step 1: Mark incoming chat as read on receiver's device
+            await waService.markChatRead(senderGatewayUuid, targetJid, true).catch(() => {});
+
+            // Step 2: Show typing presence with human delay (1.5 - 2.5s)
+            await waService.sendChatPresence(senderGatewayUuid, targetJid, 'composing').catch(() => {});
+            await new Promise(r => setTimeout(r, randomInt(1500, 2500)));
+
+            // Step 3: Block echo webhook
+            const contentString = (replyText || '').trim() + 'text';
+            const contentHash = crypto.createHash('md5').update(contentString).digest('hex');
+            const echoKey = `echo:${senderGatewayUuid}:${cleanReceiverPhone}:${contentHash}`;
+            await workerConnection.set(echoKey, '1', 'EX', 300);
+
+            // Step 4: Send reciprocal reply
+            await waService.sendText(senderGatewayUuid, cleanReceiverPhone, replyText);
+
+            // Step 5: Update stats and log
+            if (senderMemberId) {
+                await pool.query(
+                    `UPDATE warmer_circle_sessions 
+                     SET messages_sent_today = messages_sent_today + 1, last_active_at = NOW() 
+                     WHERE id = $1`,
+                    [senderMemberId]
+                );
+            }
+
+            await pool.query(
+                `INSERT INTO warmer_logs (warmer_circle_id, sender_session_id, message_content) 
+                 VALUES ($1, $2, $3)`,
+                [circleId, senderSessionId, replyText]
+            );
+
+            console.log(`[Warmer Circle] Reciprocal reply sent from ${senderGatewayUuid} to ${cleanReceiverPhone}. Ratchet keys synchronized.`);
+        } catch (replyErr) {
+            console.warn(`[Warmer Circle] Reciprocal reply failed: ${replyErr.message}`);
+        }
+        return;
+    }
+
     // OLD LOGIC (Pair) - Support Legacy or Remove
     if (job.data.settingId) {
         return;
@@ -124,42 +174,64 @@ export const initWarmerWorker = (io) => {
             return;
         }
 
-        // 6. Select Message (Supports AI Persona, Custom Dictionary, and System Dictionary)
-        let messageText = "";
-        if (circle.dictionary_mode === 'ai_persona' || circle.dictionary_mode === 'persona') {
-            messageText = generateWarmerPersonaMessage(circle.persona_topic || 'auto');
-        } else if (circle.dictionary_mode === 'custom' && circle.custom_dictionary && circle.custom_dictionary.length > 0) {
-            messageText = getRandomElement(circle.custom_dictionary);
-        } else {
-            messageText = generateWarmerPersonaMessage('auto') || getRandomSystemMessage();
-        }
-        messageText = (messageText || '').trim();
+        // Strictly normalize both phone numbers to canonical international format
+        const cleanReceiverPhone = normalizeWhatsappPhone(receiver.phone);
+        const cleanSenderPhone = normalizeWhatsappPhone(sender.phone);
 
-        // 7. Execute Send
-        console.log(`[Warmer Circle] [${circle.name}] Sending interaction from ${sender.phone || sender.gateway_uuid} to ${receiver.phone}`);
+        // 6. Select Message (Supports AI Persona Dialogue Pairs, Custom Dictionary, and System Dictionary)
+        let promptText = "";
+        let replyText = null;
+
+        if (circle.dictionary_mode === 'ai_persona' || circle.dictionary_mode === 'persona') {
+            const pair = generateWarmerPersonaPair(circle.persona_topic || 'auto');
+            promptText = pair.prompt;
+            replyText = pair.reply;
+        } else if (circle.dictionary_mode === 'custom' && circle.custom_dictionary && circle.custom_dictionary.length > 0) {
+            promptText = getRandomElement(circle.custom_dictionary);
+            if (circle.custom_dictionary.length > 1) {
+                const otherLines = circle.custom_dictionary.filter(item => item !== promptText);
+                if (otherLines.length > 0) {
+                    replyText = getRandomElement(otherLines);
+                }
+            }
+        } else {
+            const pair = generateWarmerPersonaPair('auto');
+            promptText = pair ? pair.prompt : getRandomSystemMessage();
+            replyText = pair ? pair.reply : "Siap, terima kasih banyak atas infonya ya!";
+        }
+        promptText = (promptText || '').trim();
+
+        // 7. Execute Send with Presence & Anti-Decryption Delay Protection
+        console.log(`[Warmer Circle] [${circle.name}] Sending interaction from ${cleanSenderPhone || sender.gateway_uuid} to ${cleanReceiverPhone}`);
         try {
             // Block Outbound Echo (Sender) & Incoming Webhook (Receiver)
-            const contentString = (messageText || '').trim() + 'text';
+            const contentString = promptText + 'text';
             const contentHash = crypto.createHash('md5').update(contentString).digest('hex');
             
-            const normalizePhoneLocal = (phone) => {
-                let p = String(phone).replace(/[^0-9]/g, '');
-                if (p.startsWith('0')) p = '62' + p.slice(1);
-                else if (p.startsWith('8')) p = '62' + p;
-                return p;
-            };
-
-            const echoPhone = normalizePhoneLocal(receiver.phone);
-            const echoKey = `echo:${sender.gateway_uuid}:${echoPhone}:${contentHash}`;
-            
-            const receiverEchoPhone = normalizePhoneLocal(sender.phone);
-            const incomingKey = `warmer_incoming:${receiver.gateway_uuid}:${receiverEchoPhone}:${contentHash}`;
+            const echoKey = `echo:${sender.gateway_uuid}:${cleanReceiverPhone}:${contentHash}`;
+            const incomingKey = `warmer_incoming:${receiver.gateway_uuid}:${cleanSenderPhone}:${contentHash}`;
 
             // Block webhook for 5 minutes
             await workerConnection.set(echoKey, '1', 'EX', 300);
             await workerConnection.set(incomingKey, '1', 'EX', 300);
 
-            await waService.sendText(sender.gateway_uuid, receiver.phone, messageText);
+            // Step 7a: Send typing presence before message to establish session routing
+            const targetJid = normalizeJid(cleanReceiverPhone);
+            await waService.sendChatPresence(sender.gateway_uuid, targetJid, 'composing').catch(() => {});
+            await new Promise(r => setTimeout(r, randomInt(1500, 2500))); // Human typing delay
+
+            // Step 7b: Send message with session error self-healing
+            try {
+                await waService.sendText(sender.gateway_uuid, cleanReceiverPhone, promptText);
+            } catch (sendError) {
+                const errMsg = String(sendError.message || sendError);
+                console.warn(`[Warmer Circle] Initial send error (${cleanReceiverPhone}): ${errMsg}. Triggering session refresh...`);
+                // Auto-heal session if Signal session / encryption error
+                await waService.refreshContactSession(sender.gateway_uuid, cleanReceiverPhone).catch(() => {});
+                await new Promise(r => setTimeout(r, 2000));
+                // Retry once
+                await waService.sendText(sender.gateway_uuid, cleanReceiverPhone, promptText);
+            }
             
             // 8. Update Stats
             await pool.query(
@@ -173,14 +245,31 @@ export const initWarmerWorker = (io) => {
             await pool.query(
                 `INSERT INTO warmer_logs (warmer_circle_id, sender_session_id, message_content) 
                  VALUES ($1, $2, $3)`,
-                [circleId, sender.session_id, messageText]
+                [circleId, sender.session_id, promptText]
             );
+
+            // 9. TWO-WAY RECIPROCAL DIALOGUE (Mutual E2EE Session Key Ratcheting)
+            // Schedule an authentic reply from receiver to sender after 15 - 35 seconds
+            // This mutually closes the Signal ratchet and guarantees 0 "Waiting for this message" delays
+            if (replyText && receiver.gateway_uuid && receiver.messages_sent_today < circle.daily_limit_per_device) {
+                const replyDelay = randomInt(15000, 35000);
+                console.log(`[Warmer Circle] [${circle.name}] Scheduling two-way reply from ${cleanReceiverPhone} in ${Math.round(replyDelay / 1000)}s`);
+                await warmerQueue.add('warmer-reply', {
+                    circleId,
+                    isReply: true,
+                    senderSessionId: receiver.session_id,
+                    senderMemberId: receiver.id,
+                    senderGatewayUuid: receiver.gateway_uuid,
+                    receiverPhone: cleanSenderPhone,
+                    replyText
+                }, { delay: replyDelay });
+            }
 
         } catch (sendErr) {
             console.error(`[Warmer Circle] Send Failed: ${sendErr.message}`);
         }
 
-        // 9. Schedule Next Job (Respects Active Hours & Sleep Window)
+        // 10. Schedule Next Job (Respects Active Hours & Sleep Window)
         const nextSchedule = calculateNextWarmerDelay(circle, new Date(), { isDailyLimitReached: false });
         await warmerQueue.add('warmer-multi-device', { circleId }, { delay: nextSchedule.delayMs });
         
@@ -193,5 +282,5 @@ export const initWarmerWorker = (io) => {
       connection: workerConnection // Use dedicated connection
   });
 
-  console.log("Warmer Circle Worker Initialized");
+  console.log("Warmer Circle Worker Initialized (Two-Way Dialogue & E2EE Auto-Healer Active)");
 };

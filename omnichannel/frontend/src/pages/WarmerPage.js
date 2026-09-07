@@ -13,7 +13,7 @@ import Button from '../components/common/Button';
 import EmptyState from '../components/common/EmptyState';
 
 // --- COMPONENT: Circle Card ---
-const CircleCard = ({ circle, onToggle, onDelete, onOpenReport, onReset, onEdit }) => {
+const CircleCard = ({ circle, onToggle, onDelete, onOpenReport, onReset, onEdit, onSyncKeys, isSyncing }) => {
     const startHour = String(circle.active_hours_start ?? 8).padStart(2, '0');
     const endHour = String(circle.active_hours_end ?? 21).padStart(2, '0');
     const isHumanHoursActive = circle.enable_active_hours !== false;
@@ -109,6 +109,14 @@ const CircleCard = ({ circle, onToggle, onDelete, onOpenReport, onReset, onEdit 
                     title="Reset Counter Hari Ini"
                 >
                     <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+                <button
+                    onClick={() => onSyncKeys(circle)}
+                    disabled={isSyncing}
+                    className="p-2 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/50 rounded-xl transition-colors flex items-center gap-1 text-xs border border-sky-100 dark:border-sky-900/50 disabled:opacity-50"
+                    title="Sinkronkan Kunci Enkripsi (Atasi 'Menunggu pesan ini')"
+                >
+                    <ShieldCheck className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
                 </button>
                 <button 
                     onClick={() => onDelete(circle.id)} 
@@ -604,6 +612,22 @@ export default function WarmerPage() {
         setIsModalOpen(true);
     };
 
+    const [syncingCircleId, setSyncingCircleId] = useState(null);
+
+    const handleSyncKeys = async (circle) => {
+        setSyncingCircleId(circle.id);
+        const toastId = toast.loading(`Menyinkronkan kunci enkripsi untuk "${circle.name}"...`);
+        try {
+            const res = await axios.post(`/api/app/warmer/${circle.id}/sync-keys`);
+            toast.success(res.data.message || "Kunci enkripsi berhasil disinkronkan!", { id: toastId, duration: 5000 });
+            fetchData();
+        } catch (err) {
+            toast.error("Gagal sinkronisasi kunci: " + (err.response?.data?.error || err.message), { id: toastId });
+        } finally {
+            setSyncingCircleId(null);
+        }
+    };
+
     const isLocked = false;
 
     if (loading && circles.length === 0) return <div className="p-8 text-center text-sm font-bold text-gray-500">Memuat data Warmer Circles...</div>;
@@ -648,13 +672,24 @@ export default function WarmerPage() {
             </div>
 
             {/* Information Alert Badge */}
-            <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-slate-800/80 border border-indigo-100 dark:border-slate-700 flex items-center gap-3">
-                <div className="p-2 bg-indigo-600 text-white rounded-xl shadow-sm shrink-0">
-                    <ShieldCheck className="w-4 h-4" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-slate-800/80 border border-indigo-100 dark:border-slate-700 flex items-center gap-3">
+                    <div className="p-2 bg-indigo-600 text-white rounded-xl shadow-sm shrink-0">
+                        <Clock className="w-4 h-4" />
+                    </div>
+                    <div className="text-xs text-gray-700 dark:text-slate-300">
+                        <span className="font-black text-indigo-900 dark:text-indigo-300">Proteksi Jam Aktif Alami: </span>
+                        Sistem otomatis menghentikan interaksi di malam/dini hari (00:00 - 07:59 WIB) dan hanya berinteraksi pada jam aktif yang Anda tentukan agar akun WhatsApp tidak terdeteksi sebagai spam bot.
+                    </div>
                 </div>
-                <div className="text-xs text-gray-700 dark:text-slate-300">
-                    <span className="font-black text-indigo-900 dark:text-indigo-300">Proteksi Jam Aktif Alami: </span>
-                    Sistem otomatis menghentikan interaksi di malam/dini hari (00:00 - 07:59 WIB) dan hanya berinteraksi pada jam aktif yang Anda tentukan agar akun WhatsApp tidak terdeteksi sebagai spam bot.
+                <div className="p-4 rounded-2xl bg-sky-50/60 dark:bg-slate-800/80 border border-sky-100 dark:border-slate-700 flex items-center gap-3">
+                    <div className="p-2 bg-sky-600 text-white rounded-xl shadow-sm shrink-0">
+                        <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div className="text-xs text-gray-700 dark:text-slate-300">
+                        <span className="font-black text-sky-900 dark:text-sky-300">Auto-Healer &amp; Dialog 2 Arah: </span>
+                        Warmer aktif dengan percakapan dua arah timbal-balik alami. Jika terdapat chat bertuliskan <i>"Menunggu pesan ini"</i>, klik tombol perisai 🛡️ pada circle untuk menyinkronkan kunci enkripsi secara instan.
+                    </div>
                 </div>
             </div>
 
@@ -688,6 +723,8 @@ export default function WarmerPage() {
                             onOpenReport={handleOpenReport}
                             onReset={handleReset}
                             onEdit={handleOpenEdit}
+                            onSyncKeys={handleSyncKeys}
+                            isSyncing={syncingCircleId === c.id}
                         />
                     ))}
                 </div>

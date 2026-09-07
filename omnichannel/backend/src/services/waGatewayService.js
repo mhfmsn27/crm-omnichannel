@@ -22,44 +22,52 @@ const getHeaders = () => ({
 // Helper: Sleep
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-// Helper: Normalize "to" JID - convert LID to proper JID format
+// Helper: Normalize "to" JID - convert LID and local phone formats to proper JID format
 // wa-server now rejects LID format: must use phone@s.whatsapp.net
 export const normalizeJid = (to) => {
   if (!to) return null;
 
-  const strTo = String(to);
+  const strTo = String(to).trim();
 
-  // Already valid JID with @s.whatsapp.net
-  if (strTo.includes('@s.whatsapp.net')) {
+  // Preserve WhatsApp Group JID
+  if (strTo.endsWith('@g.us')) {
     return strTo;
   }
 
-  // LID format detected - convert to proper JID
-  // e.g., "236077222777046@lid" or "123@s.whatsapp.net@lid" -> "236077222777046@s.whatsapp.net"
+  // Already valid JID with @s.whatsapp.net - normalize digits & strip device suffix
+  if (strTo.includes('@s.whatsapp.net')) {
+    const parts = strTo.split('@');
+    const cleanUser = parts[0].split(':')[0];
+    let user = cleanUser.replace(/[^0-9]/g, '');
+    if (user.startsWith('0')) user = '62' + user.slice(1);
+    else if (user.startsWith('8')) user = '62' + user;
+    return `${user}@s.whatsapp.net`;
+  }
+
+  // LID format detected - extract digits if possible and convert to proper JID
   if (strTo.includes('@lid')) {
-    // Remove @lid and any double suffixes
-    const clean = strTo.replace(/@lid@lid$/, '@lid').replace(/@lid$/, '');
-
-    // If it's just digits, add @s.whatsapp.net
-    if (/^\d+$/.test(clean)) {
-      return `${clean}@s.whatsapp.net`;
+    const clean = strTo.replace(/@lid@lid$/, '@lid').replace(/@lid$/, '').split(':')[0];
+    const digits = clean.replace(/[^0-9]/g, '');
+    if (digits) {
+      let p = digits;
+      if (p.startsWith('0')) p = '62' + p.slice(1);
+      else if (p.startsWith('8')) p = '62' + p;
+      return `${p}@s.whatsapp.net`;
     }
-
-    // If it has @ but not @s.whatsapp.net, fix the domain
-    if (clean.includes('@')) {
-      return clean.split('@')[0] + '@s.whatsapp.net';
-    }
-
     return `${clean}@s.whatsapp.net`;
   }
 
-  // Phone number only - add @s.whatsapp.net
-  if (/^\d+$/.test(strTo)) {
-    return `${strTo}@s.whatsapp.net`;
+  // Numeric phone (supports 08xxx, +62xxx, 62xxx, with spaces/dashes)
+  const digits = strTo.replace(/[^0-9]/g, '');
+  if (digits) {
+    let p = digits;
+    if (p.startsWith('0')) p = '62' + p.slice(1);
+    else if (p.startsWith('8')) p = '62' + p;
+    return `${p}@s.whatsapp.net`;
   }
 
-  // Already has @ but wrong domain (ignore groups)
-  if (strTo.includes('@') && !strTo.includes('@s.whatsapp.net') && !strTo.endsWith('@g.us')) {
+  // Already has @ but wrong domain
+  if (strTo.includes('@') && !strTo.includes('@s.whatsapp.net')) {
     return strTo.split('@')[0] + '@s.whatsapp.net';
   }
 
@@ -455,15 +463,45 @@ export const getGroupMetaData = async (sessionId, jid) => {
     }
   }
 };
-// --- TYPING INDICATOR (CRM -> WA) ---
-export const sendTyping = async (sessionId, to, isTyping = true) => {
+// --- CHAT PRESENCE (composing, available, paused) ---
+export const sendChatPresence = async (sessionId, to, presence = 'composing') => {
+  const normalizedTo = normalizeJid(to);
   try {
-    const payload = { sessionId, to, typing: isTyping };
-    await axios.post(GATEWAY_URL+'/presence/update', payload, { headers: getHeaders(), timeout: 5000 });
+    const payload = { sessionId, jid: normalizedTo, presence };
+    await axios.post(`${GATEWAY_URL}/chat/presence`, payload, { headers: getHeaders(), timeout: 10000 });
+    return true;
   } catch (error) {
-    console.warn('[WA Gateway] Typing indicator not supported:', error.message);
+    console.warn(`[WA Gateway] Send presence (${presence}) failed for ${normalizedTo}:`, error.message);
+    return false;
   }
 };
+
+// --- CHAT MARK READ ---
+export const markChatRead = async (sessionId, to, read = true) => {
+  const normalizedTo = normalizeJid(to);
+  try {
+    const payload = { sessionId, jid: normalizedTo, read };
+    await axios.post(`${GATEWAY_URL}/chat/mark-read`, payload, { headers: getHeaders(), timeout: 10000 });
+    return true;
+  } catch (error) {
+    console.warn(`[WA Gateway] Mark read failed for ${normalizedTo}:`, error.message);
+    return false;
+  }
+};
+
+// --- FORCE REFRESH CONTACT SESSION (Heal E2EE / "Waiting for this message") ---
+export const refreshContactSession = async (sessionId, to) => {
+  const normalizedTo = normalizeJid(to);
+  try {
+    const payload = { jid: normalizedTo };
+    const res = await axios.post(`${GATEWAY_URL}/sessions/${sessionId}/refresh-contact`, payload, { headers: getHeaders(), timeout: 15000 });
+    return res.data;
+  } catch (error) {
+    console.warn(`[WA Gateway] Refresh contact session failed for ${normalizedTo}:`, error.message);
+    return null;
+  }
+};
+
 // --- STAR/UNSTAR ---
 export const starMessage = async (sessionId, jid, messageId) => {
   try {

@@ -9,6 +9,7 @@ router.post('/', checkPlanFeature('tool_warmer'), warmerController.createWarmer)
 router.put('/:id', checkPlanFeature('tool_warmer'), warmerController.updateWarmer);
 router.patch('/:id/toggle', checkPlanFeature('tool_warmer'), warmerController.toggleWarmer);
 router.post('/:id/reset', checkPlanFeature('tool_warmer'), warmerController.resetWarmer);
+router.post('/:id/sync-keys', checkPlanFeature('tool_warmer'), warmerController.syncWarmerKeys);
 router.delete('/:id', checkPlanFeature('tool_warmer'), warmerController.deleteWarmer);
 router.get('/:id/report', warmerController.getReport);
 
