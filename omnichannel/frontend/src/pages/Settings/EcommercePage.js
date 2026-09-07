@@ -485,8 +485,8 @@ export default function EcommercePage() {
 
             {/* Orders Tab */}
             {activeTab === 'orders' && (
-                <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                    <table className="w-full">
+                <div className="bg-white rounded-xl border shadow-sm overflow-x-auto w-full">
+                    <table className="w-full min-w-[550px]">
                         <thead className="bg-gray-50">
                             <tr>
                                 <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Order ID</th>
@@ -512,7 +512,7 @@ export default function EcommercePage() {
 
             {/* Products Tab */}
             {activeTab === 'products' && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {products.map(product => (
                         <ProductCard key={product.id} product={product} />
                     ))}

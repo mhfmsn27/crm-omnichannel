@@ -67,16 +67,16 @@ export default function UpsellingPage() {
 
     return (
         <PaywallGuard feature="feat_upselling" title="Upselling Campaign Actions Locked" description="Automate your sales with recurring broadcasts and upselling campaigns.">
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-800">Upselling Campaign</h1>
                         <div className="text-sm text-gray-500 breadcrumbs">
                             <span>Dashboard</span> / <span className="text-indigo-600">Upselling Campaign</span>
                         </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <button onClick={fetchCampaigns} className="px-3 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2 text-sm font-medium">
                             <RefreshCw className="w-4 h-4" /> Refresh
                         </button>
@@ -106,8 +106,8 @@ export default function UpsellingPage() {
                 </div>
 
                 {/* Table */}
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    <table className="w-full text-left">
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto w-full">
+                    <table className="w-full text-left min-w-[700px]">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
                                 <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase">Campaign Info</th>

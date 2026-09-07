@@ -74,16 +74,16 @@ export default function BulkInvoiceTool({ embedded = false }) {
         XLSX.writeFile(wb, "invoice_template.xlsx");
     };
 
-    const wrapperClass = embedded ? "w-full" : "p-8 max-w-4xl mx-auto";
+    const wrapperClass = embedded ? "w-full" : "p-4 sm:p-8 max-w-4xl mx-auto";
 
     return (
         <div className={wrapperClass}>
             {!embedded && <h2 className="text-2xl font-bold text-gray-800 mb-6">Bulk Invoicing</h2>}
             
-            <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm text-center">
+            <div className="bg-white p-4 sm:p-8 rounded-xl border border-gray-200 shadow-sm text-center">
                 <div className="mb-6">
                     <button onClick={downloadTemplate} className="text-indigo-600 font-bold text-sm hover:underline mb-4 block mx-auto">Download Excel Template</button>
-                    <div className="border-2 border-dashed border-gray-300 p-8 rounded-xl hover:bg-gray-50 transition-colors relative">
+                    <div className="border-2 border-dashed border-gray-300 p-6 sm:p-8 rounded-xl hover:bg-gray-50 transition-colors relative">
                         <input type="file" onChange={handleFileUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                         <div className="pointer-events-none">
                             {file ? (
@@ -101,9 +101,9 @@ export default function BulkInvoiceTool({ embedded = false }) {
                 </div>
 
                 {data.length > 0 && (
-                    <div className="mb-6 text-left bg-gray-50 p-4 rounded-lg border border-gray-100 max-h-60 overflow-y-auto custom-scrollbar">
+                    <div className="mb-6 text-left bg-gray-50 p-4 rounded-lg border border-gray-100 max-h-60 overflow-y-auto overflow-x-auto custom-scrollbar">
                         <p className="font-bold mb-2 text-sm text-gray-600 sticky top-0 bg-gray-50 pb-1 border-b">{data.length} Valid Rows Detected:</p>
-                        <table className="w-full text-xs">
+                        <table className="w-full text-xs min-w-[320px]">
                             <thead>
                                 <tr className="text-gray-500 border-b"><th className="pb-1 text-left">Phone</th><th className="pb-1 text-left">Name</th><th className="pb-1 text-right">Amount</th></tr>
                             </thead>
@@ -123,7 +123,7 @@ export default function BulkInvoiceTool({ embedded = false }) {
                 <button 
                     onClick={handleProcess} 
                     disabled={loading || data.length === 0}
-                    className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2 mx-auto shadow-lg shadow-indigo-200"
+                    className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2 mx-auto shadow-lg shadow-indigo-200"
                 >
                     {loading ? 'Processing...' : <>Generate Invoices & Broadcast <Play className="w-4 h-4" /></>}
                 </button>

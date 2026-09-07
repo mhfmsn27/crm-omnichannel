@@ -93,14 +93,14 @@ export default function MemberList() {
     };
 
     return (
-        <div className="p-8 h-full flex flex-col relative">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 flex-shrink-0">
+        <div className="p-4 sm:p-6 md:p-8 h-full flex flex-col relative">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4 flex-shrink-0">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Member Management</h1>
                     <p className="text-sm text-gray-500">View and manage system users/organizations.</p>
                 </div>
 
-                <div className="flex gap-3 w-full md:w-auto">
+                <div className="flex flex-wrap sm:flex-nowrap gap-3 w-full md:w-auto">
                     <button
                         onClick={() => setShowModal(true)}
                         className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 transition-colors shadow-sm"
@@ -132,8 +132,8 @@ export default function MemberList() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-1 flex flex-col">
-                <div className="overflow-y-auto flex-1">
-                    <table className="w-full text-left">
+                <div className="overflow-auto overflow-x-auto w-full flex-1">
+                    <table className="w-full text-left min-w-[650px]">
                         <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                             <tr>
                                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Organization</th>

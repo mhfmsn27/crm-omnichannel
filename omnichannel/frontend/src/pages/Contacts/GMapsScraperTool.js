@@ -371,8 +371,8 @@ export default function GMapsScraperTool() {
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-auto p-4">
-                                <table className="w-full bg-white rounded-lg shadow-sm overflow-hidden text-sm border-collapse">
+                            <div className="flex-1 overflow-auto overflow-x-auto w-full p-4">
+                                <table className="w-full min-w-[650px] bg-white rounded-lg shadow-sm overflow-hidden text-sm border-collapse">
                                     <thead className="bg-gray-50 border-b text-left">
                                         <tr>
                                             <th className="p-3 w-10 text-center border-r">
@@ -424,16 +424,16 @@ export default function GMapsScraperTool() {
 
                             {/* Footer Action */}
                             {selectedIndices.length > 0 && (
-                                <div className="p-4 bg-white border-t shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex items-center justify-between animate-in slide-in-from-bottom-4 z-20">
-                                    <span className="font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full text-sm">{selectedIndices.length} Selected</span>
-                                    <div className="flex gap-3 items-center">
+                                <div className="p-4 bg-white border-t shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 animate-in slide-in-from-bottom-4 z-20">
+                                    <span className="font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full text-sm self-start sm:self-auto">{selectedIndices.length} Selected</span>
+                                    <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                                         <input
-                                            className="border p-2 rounded-lg text-sm w-64 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                            className="border p-2 rounded-lg text-sm w-full sm:w-64 focus:ring-2 focus:ring-indigo-500 outline-none"
                                             placeholder="Label Name (e.g. Scrape Coffee)"
                                             value={labelName}
                                             onChange={e => setLabelName(e.target.value)}
                                         />
-                                        <button onClick={handleSaveContacts} className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-sm transition-transform active:scale-95">
+                                        <button onClick={handleSaveContacts} className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-sm transition-transform active:scale-95 text-center">
                                             Save to Contacts
                                         </button>
                                     </div>

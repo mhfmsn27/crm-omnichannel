@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ArrowLeft, FileText, Calendar, Download } from 'lucide-react';
 import { getApiUrl } from '../../../config/api';
@@ -25,19 +25,20 @@ export default function ChatFormReports({ form, onBack }) {
 
     return (
         <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-                <button onClick={onBack} className="flex items-center text-gray-600 hover:text-gray-900 font-bold">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <button onClick={onBack} className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-bold">
                     <ArrowLeft className="w-4 h-4 mr-2" /> Back to Forms
                 </button>
-                <button onClick={handleExport} className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold flex items-center gap-2 hover:bg-green-700">
+                <button onClick={handleExport} className="w-full sm:w-auto justify-center px-4 py-2 bg-green-600 text-white rounded-lg font-bold flex items-center gap-2 hover:bg-green-700">
                     <Download className="w-4 h-4" /> Export Excel
                 </button>
             </div>
 
-            <h2 className="text-xl font-bold mb-6">Submissions: {form.name}</h2>
+            <h2 className="text-xl font-bold mb-6 text-gray-900 dark:text-white">Submissions: {form.name}</h2>
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                <table className="w-full text-left text-sm">
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left text-sm min-w-[500px]">
                     <thead className="bg-gray-50 border-b">
                         <tr>
                             <th className="p-4 font-bold text-gray-600">Date</th>
@@ -76,6 +77,7 @@ export default function ChatFormReports({ form, onBack }) {
                         {submissions.length === 0 && <tr><td colSpan="4" className="p-8 text-center text-gray-400">No data yet</td></tr>}
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     );

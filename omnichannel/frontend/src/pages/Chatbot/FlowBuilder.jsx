@@ -246,10 +246,10 @@ function FlowBuilder({ flowId: propFlowId, onClose }) {
             setFlowName(flow.name);
             setTriggerKeyword(flow.trigger_keyword);
             if (flow.nodes) {
-                setNodes(flow.nodes);
+                setNodes(typeof flow.nodes === 'string' ? JSON.parse(flow.nodes) : flow.nodes);
             }
             if (flow.edges) {
-                setEdges(flow.edges);
+                setEdges(typeof flow.edges === 'string' ? JSON.parse(flow.edges) : flow.edges);
             }
         } catch (e) {
             toast.error('Failed to load flow');

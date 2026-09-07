@@ -4,7 +4,7 @@
  */
 
 export const registerServiceWorker = async () => {
-    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+    if ('serviceWorker' in navigator) {
         try {
             const registration = await navigator.serviceWorker.register('/sw.js');
             console.log('[PWA] Service Worker registered with scope:', registration.scope);

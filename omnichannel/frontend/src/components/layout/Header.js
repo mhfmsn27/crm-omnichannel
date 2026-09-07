@@ -5,7 +5,8 @@ import {
     Bell, HelpCircle, FileText, Moon, Sun,
     Settings, BarChart2, Package, Users,
     Smartphone, Code, LogOut, ChevronDown,
-    CreditCard, User, DollarSign, CheckCheck, Palette
+    CreditCard, User, DollarSign, CheckCheck, Palette,
+    Menu, Download
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -52,8 +53,18 @@ export default function Header() {
     const [loadingNotifications, setLoadingNotifications] = useState(false);
     const notificationRef = useRef(null);
 
-    const dropdownRef = useRef(null);
     const [isOnline, setIsOnline] = useState(user?.is_online || false);
+    const [canInstallPwa, setCanInstallPwa] = useState(false);
+
+    // Check if PWA can be installed
+    useEffect(() => {
+        const checkInstallable = () => {
+            if (window.pwaDeferredPrompt) setCanInstallPwa(true);
+        };
+        checkInstallable();
+        window.addEventListener('PWA_CAN_INSTALL', checkInstallable);
+        return () => window.removeEventListener('PWA_CAN_INSTALL', checkInstallable);
+    }, []);
 
     // Sync state with user prop
     useEffect(() => {
@@ -192,26 +203,48 @@ export default function Header() {
             fetchUnreadCount();
         }
     };    return (
-        <header className="h-14 bg-white/80 dark:bg-dark-surface/80 backdrop-blur-md border-b border-gray-200 dark:border-dark-border px-4 md:px-6 flex items-center justify-between sticky top-0 z-40 shadow-sm transition-colors duration-200">
-            {/* Left Side: Page Title */}
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+        <header className="h-14 bg-white/80 dark:bg-dark-surface/80 backdrop-blur-md border-b border-gray-200 dark:border-dark-border px-3 sm:px-4 md:px-6 flex items-center justify-between sticky top-0 z-40 shadow-sm transition-colors duration-200">
+            {/* Left Side: Mobile Hamburger & Page Title */}
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new CustomEvent('TOGGLE_MOBILE_SIDEBAR'))}
+                    className="md:hidden p-2 -ml-1 text-slate-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer flex-shrink-0"
+                    title="Buka Menu"
+                    aria-label="Open Navigation Menu"
+                >
+                    <Menu className="w-5 h-5" />
+                </button>
                 {title && (
-                    <h1 className="text-base md:text-lg font-bold text-gray-800 dark:text-white uppercase tracking-tight truncate min-w-0">
+                    <h1 className="text-sm sm:text-base md:text-lg font-bold text-gray-800 dark:text-white uppercase tracking-tight truncate min-w-0">
                         {title}
                     </h1>
                 )}
             </div>
 
             {/* Right Side: Actions */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+                {/* PWA Install Button (shows when installable) */}
+                {canInstallPwa && (
+                    <button
+                        type="button"
+                        onClick={() => window.dispatchEvent(new CustomEvent('TRIGGER_PWA_INSTALL'))}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-[#008069] dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                        title="Install Aplikasi CRMHUB di HP / Komputer"
+                    >
+                        <Download className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Install App</span>
+                    </button>
+                )}
+
                 {/* Theme Palette Switcher Button */}
                 <button
                     onClick={() => setIsThemeModalOpen(true)}
-                    className="w-10 h-10 flex items-center justify-center hover:bg-gray-100/80 dark:hover:bg-dark-bg/80 rounded-xl transition-colors text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-sky-400"
+                    className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-gray-100/80 dark:hover:bg-dark-bg/80 rounded-xl transition-colors text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-sky-400"
                     title="Pilih Tema & Tampilan UI"
                     aria-label="Pilih Tema"
                 >
-                    <Palette className="w-5 h-5" />
+                    <Palette className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
                 <div className="relative" ref={notificationRef}>

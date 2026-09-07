@@ -52,7 +52,7 @@ export default function MemberReportModal({ member, onClose }) {
                 </ModalFooter>
             }
         >
-            <div className="p-6 overflow-y-auto flex-1">
+            <div className="p-4 sm:p-6 overflow-y-auto flex-1">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center h-48 text-gray-400">
                         <Loader2 className="w-8 h-8 animate-spin mb-2 text-indigo-500" />
@@ -61,7 +61,7 @@ export default function MemberReportModal({ member, onClose }) {
                 ) : data ? (
                     <div className="space-y-6">
                         {/* Stats Cards */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 flex items-center gap-4">
                                 <div className="bg-indigo-100 p-3 rounded-lg text-indigo-600">
                                     <Users className="w-6 h-6" />
@@ -87,8 +87,8 @@ export default function MemberReportModal({ member, onClose }) {
                             <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                                 <Megaphone className="w-4 h-4 text-gray-500" /> Recent Broadcasts
                             </h4>
-                            <div className="border border-gray-200 rounded-lg overflow-hidden">
-                                <table className="w-full text-left text-sm">
+                            <div className="border border-gray-200 rounded-lg overflow-x-auto w-full">
+                                <table className="w-full text-left text-sm min-w-[360px]">
                                     <thead className="bg-gray-50 border-b border-gray-200">
                                         <tr>
                                             <th className="px-4 py-3 font-medium text-gray-500">Campaign Name</th>

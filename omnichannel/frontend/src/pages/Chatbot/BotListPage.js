@@ -227,9 +227,9 @@ const SandboxModal = ({ isOpen, onClose, bots }) => {
             size="full"
             className="h-[85vh] p-0 overflow-hidden"
         >
-            <div className="flex h-full w-full">
+            <div className="flex flex-col lg:flex-row h-full w-full overflow-y-auto">
                 {/* Left: Configuration */}
-                <div className="w-1/2 p-8 border-r bg-gray-50 overflow-y-auto custom-scrollbar">
+                <div className="w-full lg:w-1/2 p-4 sm:p-8 border-b lg:border-b-0 lg:border-r bg-gray-50 overflow-y-auto custom-scrollbar">
                     <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-3">
                             <div className="p-3 bg-indigo-100 rounded-xl">
@@ -270,17 +270,17 @@ const SandboxModal = ({ isOpen, onClose, bots }) => {
                                     <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded truncate max-w-[200px]">{selectedBot.system_prompt?.substring(0, 50)}...</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-500">Knowledge Base:</span>
-                                    <span className={selectedBot.use_global_kb ? 'text-green-600 font-bold' : 'text-blue-600 font-bold'}>
-                                        {selectedBot.use_global_kb ? 'Global' : 'Custom Only'}
-                                    </span>
+                                    <span className="text-gray-500">Model:</span>
+                                    <span className="font-semibold text-gray-700">{selectedBot.model || 'gpt-3.5-turbo'}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-500">Escalation:</span>
-                                    <span className="text-red-600 font-mono text-xs">{selectedBot.escalation_keywords || 'None'}</span>
+                                    <span className="text-gray-500">Temperature:</span>
+                                    <span className="font-semibold text-gray-700">{selectedBot.temperature ?? 0.7}</span>
                                 </div>
                             </>
-                        ) : <p className="text-gray-400 italic">Select a bot to view config</p>}
+                        ) : (
+                            <p className="text-gray-400">Select a bot to view settings</p>
+                        )}
                     </div>
 
                     <div className="mt-8 bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-3 text-sm text-blue-700">
@@ -290,11 +290,11 @@ const SandboxModal = ({ isOpen, onClose, bots }) => {
                 </div>
 
                 {/* Right: Phone Simulator */}
-                <div className="w-1/2 bg-gray-100 flex items-center justify-center p-8 relative">
+                <div className="w-full lg:w-1/2 bg-gray-100 flex items-center justify-center p-4 sm:p-8 relative">
                     <button onClick={onClose} className="absolute top-4 right-4 bg-white p-2 rounded-full shadow hover:bg-gray-200 hidden md:block"><X className="w-6 h-6 text-gray-600" /></button>
 
                     {/* Device Frame */}
-                    <div className="w-[380px] h-[700px] bg-gray-900 rounded-[50px] p-4 shadow-2xl relative border-[4px] border-gray-800">
+                    <div className="w-full max-w-[380px] h-[600px] sm:h-[700px] bg-gray-900 rounded-[40px] sm:rounded-[50px] p-3 sm:p-4 shadow-2xl relative border-[4px] border-gray-800">
                         {/* Notch */}
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-32 bg-gray-900 rounded-b-2xl z-20"></div>
 

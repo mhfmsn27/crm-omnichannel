@@ -276,8 +276,8 @@ export default function PaymentSettings({ isTab = false }) {
                             </button>
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left">
+                        <div className="overflow-x-auto w-full">
+                            <table className="w-full text-sm text-left min-w-[550px]">
                                 <thead className="bg-gray-50 text-gray-600 font-bold border-b border-gray-200">
                                     <tr>
                                         <th className="p-3">Code</th>
@@ -595,7 +595,7 @@ export default function PaymentSettings({ isTab = false }) {
 
                             {editForm.type === 'manual_bank' ? (
                                 <>
-                                    <div className="grid grid-cols-3 gap-4 mb-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                                         <div className="col-span-1">
                                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Bank Name</label>
                                             <input className="border p-2 rounded w-full" placeholder="e.g. BCA" value={editForm.provider_name || ''} onChange={e => setEditForm({ ...editForm, provider_name: e.target.value })} />

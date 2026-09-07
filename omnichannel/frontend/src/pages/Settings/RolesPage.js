@@ -110,8 +110,11 @@ export default function RolesPage() {
         }
     };
 
+    const [permSearch, setPermSearch] = useState('');
+
     const openCreate = () => {
         setForm(EMPTY_FORM);
+        setPermSearch('');
         setIsModalOpen(true);
     };
 
@@ -125,6 +128,7 @@ export default function RolesPage() {
             permissions: Array.isArray(role.permissions) ? role.permissions : [],
             color: role.color || 'blue',
         });
+        setPermSearch('');
         setIsModalOpen(true);
     };
 
@@ -163,8 +167,19 @@ export default function RolesPage() {
         }
     };
 
-    // Group permissions by group key
-    const permsByGroup = allPerms.reduce((acc, p) => {
+    // Group permissions by group key with search filtering
+    const filteredPerms = allPerms.filter(p => {
+        if (!permSearch.trim()) return true;
+        const q = permSearch.toLowerCase();
+        return (
+            (p.label && p.label.toLowerCase().includes(q)) ||
+            (p.id && p.id.toLowerCase().includes(q)) ||
+            (p.description && p.description.toLowerCase().includes(q)) ||
+            (p.group && p.group.toLowerCase().includes(q))
+        );
+    });
+
+    const permsByGroup = filteredPerms.reduce((acc, p) => {
         if (!acc[p.group]) acc[p.group] = [];
         acc[p.group].push(p);
         return acc;
@@ -331,11 +346,58 @@ export default function RolesPage() {
                                 </div>
                             </div>
 
-                            {/* Permissions — only for agent type */}
-                            {form.role_type === 'agent' && (
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Permission</label>
-                                    {Object.entries(permsByGroup).map(([group, perms]) => (
+                            {/* Permissions Configuration for Role */}
+                            <div>
+                                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-700 uppercase">
+                                            Izin Menu & Submenu (RBAC)
+                                        </label>
+                                        <span className="text-xs text-gray-500">
+                                            {form.permissions.length} dari {allPerms.length} izin diaktifkan
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setForm({ ...form, permissions: allPerms.map(p => p.id) })}
+                                            className="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-md transition"
+                                        >
+                                            Pilih Semua ({allPerms.length})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setForm({ ...form, permissions: [] })}
+                                            className="text-xs font-semibold px-2.5 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-md transition"
+                                        >
+                                            Hapus Semua
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Search bar for permissions */}
+                                <div className="mb-3">
+                                    <input
+                                        type="text"
+                                        value={permSearch}
+                                        onChange={e => setPermSearch(e.target.value)}
+                                        placeholder="Cari menu, submenu, atau izin (misal: leads, wallboard, invoice)..."
+                                        className="w-full text-xs px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-gray-50 focus:bg-white transition"
+                                    />
+                                </div>
+
+                                {form.role_type === 'admin_member' && (
+                                    <div className="p-2.5 mb-3 bg-indigo-50/70 border border-indigo-100 rounded-lg text-xs text-indigo-800">
+                                        Role ini bertipe Admin. Anda dapat menyesuaikan menu & submenu apa saja yang diizinkan untuk role ini, atau gunakan <strong>Pilih Semua</strong> untuk akses tanpa batas.
+                                    </div>
+                                )}
+
+                                {Object.keys(permsByGroup).length === 0 ? (
+                                    <div className="p-4 text-center text-xs text-gray-400 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                                        Tidak ada izin yang cocok dengan pencarian "{permSearch}"
+                                    </div>
+                                ) : (
+                                    Object.entries(permsByGroup).map(([group, perms]) => (
                                         <PermissionGroup
                                             key={group}
                                             group={group}
@@ -343,14 +405,9 @@ export default function RolesPage() {
                                             selected={form.permissions}
                                             onToggle={newPerms => setForm({ ...form, permissions: newPerms })}
                                         />
-                                    ))}
-                                </div>
-                            )}
-                            {form.role_type === 'admin_member' && (
-                                <div className="p-3 bg-purple-50 border border-purple-100 rounded-lg text-sm text-purple-700">
-                                    Admin memiliki akses penuh ke semua fitur. Permission individual tidak berlaku.
-                                </div>
-                            )}
+                                    ))
+                                )}
+                            </div>
 
                         </form>
             </Modal>

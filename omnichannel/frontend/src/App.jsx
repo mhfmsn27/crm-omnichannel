@@ -81,7 +81,10 @@ const LazyInvoiceListPage = lazy(() => import('./pages/Invoicing/InvoiceList'));
 const LazyInvoiceForm = lazy(() => import('./pages/Invoicing/InvoiceForm'));
 const LazyInvoiceSettings = lazy(() => import('./pages/Invoicing/InvoiceSettings'));
 const LazyInvoiceCreatePage = lazy(() => import('./pages/Invoicing/InvoiceCreatePage'));
+const LazyBulkInvoiceTool = lazy(() => import('./pages/Invoicing/BulkInvoiceTool'));
 const LazyPublicInvoiceView = lazy(() => import('./pages/Public/PublicInvoiceView'));
+const LazyBroadcastSchedulePage = lazy(() => import('./pages/Broadcast/BroadcastSchedulePage'));
+const LazyContactImportPage = lazy(() => import('./pages/Contacts/ContactImportPage'));
 
 // Reports Module
 const LazyReportsLayout = lazy(() => import('./pages/Reports/ReportsLayout'));
@@ -208,14 +211,117 @@ const LazyStaticPage = lazy(() => import('./pages/Public/StaticPage'));
 const LazyRatingPage = lazy(() => import('./pages/Public/RatingPage.jsx'));
 const LazyReferralHandler = lazy(() => import('./pages/Public/ReferralHandler.jsx'));
 
-// Helper to check permission
-const hasPerm = (user, perm) => {
-    if (!user) return false;
-    if (user.role === 'admin_member' || user.role === 'super_admin') return true;
+import { hasPerm, getFirstPermittedPath } from './utils/rbac';
 
-    const perms = Array.isArray(user.permissions) ? user.permissions : [];
-    return perms.includes(perm);
+const SmartRedirect = ({ candidates, fallback = '/dashboard' }) => {
+    const { user } = useAuth();
+    const targetPath = getFirstPermittedPath(user, candidates, fallback);
+    return <Navigate to={targetPath} replace />;
 };
+
+const CONTACTS_PERMS = ['manage_contacts', 'manage_leads', 'import_contacts', 'manage_labels'];
+const REPORTS_PERMS = ['view_reports', 'view_csat', 'view_wallboard', 'view_analytics', 'view_gamification', 'manage_pipeline', 'broadcast_reports', 'manage_chatbot', 'manage_chatform', 'manage_api'];
+const INVOICING_PERMS = ['manage_invoice', 'bulk_invoice', 'recurring_invoice'];
+const CHATBOT_PERMS = ['manage_chatbot', 'chatbot_training', 'manage_api'];
+const TOOLS_PERMS = ['use_tools', 'use_warmer', 'manage_followup', 'manage_chatform'];
+const INTEGRATIONS_PERMS = ['manage_integrations', 'manage_templates', 'manage_webhooks'];
+const BROADCAST_PERMS = ['manage_broadcast', 'broadcast_schedule', 'broadcast_reports', 'manage_templates', 'manage_rotator'];
+const SETTINGS_PERMS = ['manage_settings', 'manage_team', 'manage_roles', 'assign_conversations', 'manage_tickets', 'manage_templates', 'manage_labels', 'manage_webhooks', 'manage_system_health', 'chatbot_training', 'manage_integrations'];
+
+const CONTACTS_INDEX_CANDIDATES = [
+    { path: '/contacts/list', perm: 'manage_contacts' },
+    { path: '/contacts/leads', perm: 'manage_leads' },
+    { path: '/contacts/import', perm: 'import_contacts' },
+    { path: '/contacts/labels', perm: 'manage_labels' },
+];
+
+const REPORTS_INDEX_CANDIDATES = [
+    { path: '/reports/general', perm: 'view_reports' },
+    { path: '/reports/csat', perm: 'view_csat' },
+    { path: '/reports/agent-performance', perm: 'view_reports' },
+    { path: '/reports/sla-csat', perm: 'view_reports' },
+    { path: '/reports/responder-history', perm: 'view_reports' },
+    { path: '/reports/broadcast', perm: 'broadcast_reports' },
+    { path: '/reports/chatbot', perm: 'manage_chatbot' },
+    { path: '/reports/chat-form', perm: 'manage_chatform' },
+    { path: '/reports/sales-pipeline', perm: 'manage_pipeline' },
+    { path: '/reports/sales-kpi', perm: 'view_reports' },
+    { path: '/reports/attribution', perm: 'view_analytics' },
+    { path: '/reports/advanced-analytics', perm: 'view_analytics' },
+    { path: '/reports/customer-journey', perm: 'view_analytics' },
+    { path: '/reports/gamification', perm: 'view_gamification' },
+    { path: '/reports/wallboard', perm: 'view_wallboard' },
+    { path: '/reports/api-logs', perm: 'manage_api' },
+];
+
+const INVOICING_INDEX_CANDIDATES = [
+    { path: '/invoicing/list', perm: 'manage_invoice' },
+    { path: '/invoicing/create', perm: 'manage_invoice' },
+    { path: '/invoicing/bulk', perm: 'bulk_invoice' },
+    { path: '/invoicing/recurring', perm: 'recurring_invoice' },
+    { path: '/invoicing/settings', perm: 'manage_invoice' },
+];
+
+const CHATBOT_INDEX_CANDIDATES = [
+    { path: '/chatbot/list', perm: 'manage_chatbot' },
+    { path: '/chatbot/flows', perm: 'manage_chatbot' },
+    { path: '/chatbot/training', perm: 'chatbot_training' },
+    { path: '/chatbot/global-kb', perm: 'chatbot_training' },
+    { path: '/chatbot/multi-language', perm: 'chatbot_training' },
+    { path: '/chatbot/api', perm: 'manage_api' },
+];
+
+const TOOLS_INDEX_CANDIDATES = [
+    { path: '/tools/check-number', perm: 'use_tools' },
+    { path: '/tools/warmer', perm: 'use_warmer' },
+    { path: '/tools/chat-form', perm: 'manage_chatform' },
+    { path: '/tools/group-extractor', perm: 'use_tools' },
+    { path: '/tools/scraper', perm: 'use_tools' },
+    { path: '/tools/follow-up', perm: 'manage_followup' },
+];
+
+const INTEGRATIONS_INDEX_CANDIDATES = [
+    { path: '/integrations/whatsapp', perm: 'manage_integrations' },
+    { path: '/integrations/templates', perm: 'manage_templates' },
+    { path: '/integrations/webhooks', perm: 'manage_webhooks' },
+];
+
+const BROADCAST_INDEX_CANDIDATES = [
+    { path: '/broadcast/create', perm: 'manage_broadcast' },
+    { path: '/broadcast/schedule', perm: 'broadcast_schedule' },
+    { path: '/broadcast/reports', perm: 'broadcast_reports' },
+    { path: '/broadcast/templates', perm: 'manage_templates' },
+    { path: '/broadcast/meta-templates', perm: 'manage_templates' },
+    { path: '/broadcast/rotators', perm: 'manage_rotator' },
+    { path: '/broadcast/upselling', perm: 'manage_broadcast' },
+    { path: '/broadcast/settings', perm: 'manage_broadcast' },
+];
+
+const SETTINGS_INDEX_CANDIDATES = [
+    { path: '/settings/team', perm: 'manage_team' },
+    { path: '/settings/roles', perm: 'manage_roles' },
+    { path: '/settings/quick-replies', perm: 'manage_settings' },
+    { path: '/settings/custom-fields', perm: 'manage_settings' },
+    { path: '/settings/divisions', perm: 'manage_settings' },
+    { path: '/settings/system-health', perm: 'manage_system_health' },
+    { path: '/settings/auto-reply', perm: 'manage_settings' },
+    { path: '/settings/auto-label', perm: 'manage_labels' },
+    { path: '/settings/workflow-rules', perm: 'manage_settings' },
+    { path: '/settings/auto-archive', perm: 'manage_settings' },
+    { path: '/settings/wa-templates', perm: 'manage_templates' },
+    { path: '/settings/inboxes', perm: 'manage_settings' },
+    { path: '/settings/assignment', perm: 'assign_conversations' },
+    { path: '/settings/working-hours', perm: 'manage_settings' },
+    { path: '/settings/sla', perm: 'manage_tickets' },
+    { path: '/settings/webhooks', perm: 'manage_webhooks' },
+    { path: '/settings/multi-language', perm: 'chatbot_training' },
+    { path: '/settings/license', perm: 'manage_settings' },
+    { path: '/settings/device-data', perm: 'manage_integrations' },
+    { path: '/settings/email', perm: 'manage_integrations' },
+    { path: '/settings/ecommerce', perm: 'manage_integrations' },
+    { path: '/settings/ongkir', perm: 'manage_integrations' },
+    { path: '/settings/billing', perm: 'manage_settings' },
+];
 
 const PrivateRoute = ({ children, allowedRoles, requiredPerm }) => {
     const { user, loading } = useAuth();
@@ -327,170 +433,174 @@ function AppRoutes() {
                 {/* ADMIN MEMBER & AGENT (PERSISTENT MAINLAYOUT) */}
                 <Route element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><MainLayout /></PrivateRoute>}>
                     <Route path="/dashboard" element={<LazyDashboardPage />} />
-                    <Route path="/inbox" element={<LazyInboxPage />} />
-                    <Route path="/bookings" element={<LazyBookingsPage />} />
+                    <Route path="/inbox" element={<PrivateRoute requiredPerm="view_all_chats"><LazyInboxPage /></PrivateRoute>} />
+                    <Route path="/bookings" element={<PrivateRoute requiredPerm="manage_bookings"><LazyBookingsPage /></PrivateRoute>} />
 
-                    <Route path="/developer" element={<PrivateRoute allowedRoles={['admin_member']}><LazyDeveloperLayout /></PrivateRoute>}>
+                    <Route path="/developer" element={<PrivateRoute requiredPerm="manage_api"><LazyDeveloperLayout /></PrivateRoute>}>
                         <Route index element={<Navigate to="apps" replace />} />
                         <Route path="apps" element={<LazyAppListPage />} />
                         <Route path="docs" element={<LazyApiDocsPage />} />
                     </Route>
 
-                    <Route path="/reports" element={<LazyReportsLayout />}>
-                        <Route index element={<Navigate to="general" replace />} />
-                        <Route path="general" element={<LazyGeneralReport />} />
-                        <Route path="csat" element={<LazyCSATReportPage />} />
-                        <Route path="agent-performance" element={<LazyAgentPerformance />} />
-                        <Route path="sla-csat" element={<LazySlaCsatReport />} />
-                        <Route path="responder-history" element={<LazyResponderHistory />} />
-                        <Route path="broadcast" element={<LazyBroadcastStatsReport />} />
-                        <Route path="chatbot" element={<LazyChatbotStatsReport />} />
-                        <Route path="chat-form" element={<LazyChatFormReport />} />
-                        <Route path="sales-pipeline" element={<LazySalesPipelineReport />} />
-                        <Route path="sales-kpi" element={<LazySalesKpiDashboard />} />
-                        <Route path="attribution" element={<LazyAttributionDashboard />} />
-                        <Route path="advanced-analytics" element={<LazyAdvancedAnalyticsDashboard />} />
-                        <Route path="customer-journey" element={<LazyCustomerJourneyPage />} />
-                        <Route path="gamification" element={<LazyGamificationPage />} />
-                        <Route path="wallboard" element={<LazyLiveWallboardPage />} />
-                        <Route path="api-logs" element={<LazyLogApiReport />} />
+                    <Route path="/reports" element={<PrivateRoute requiredPerm={REPORTS_PERMS}><LazyReportsLayout /></PrivateRoute>}>
+                        <Route index element={<SmartRedirect candidates={REPORTS_INDEX_CANDIDATES} />} />
+                        <Route path="general" element={<PrivateRoute requiredPerm="view_reports"><LazyGeneralReport /></PrivateRoute>} />
+                        <Route path="csat" element={<PrivateRoute requiredPerm="view_csat"><LazyCSATReportPage /></PrivateRoute>} />
+                        <Route path="agent-performance" element={<PrivateRoute requiredPerm="view_reports"><LazyAgentPerformance /></PrivateRoute>} />
+                        <Route path="sla-csat" element={<PrivateRoute requiredPerm="view_reports"><LazySlaCsatReport /></PrivateRoute>} />
+                        <Route path="responder-history" element={<PrivateRoute requiredPerm="view_reports"><LazyResponderHistory /></PrivateRoute>} />
+                        <Route path="broadcast" element={<PrivateRoute requiredPerm="broadcast_reports"><LazyBroadcastStatsReport /></PrivateRoute>} />
+                        <Route path="chatbot" element={<PrivateRoute requiredPerm="manage_chatbot"><LazyChatbotStatsReport /></PrivateRoute>} />
+                        <Route path="chat-form" element={<PrivateRoute requiredPerm="manage_chatform"><LazyChatFormReport /></PrivateRoute>} />
+                        <Route path="sales-pipeline" element={<PrivateRoute requiredPerm="manage_pipeline"><LazySalesPipelineReport /></PrivateRoute>} />
+                        <Route path="sales-kpi" element={<PrivateRoute requiredPerm="view_reports"><LazySalesKpiDashboard /></PrivateRoute>} />
+                        <Route path="attribution" element={<PrivateRoute requiredPerm="view_analytics"><LazyAttributionDashboard /></PrivateRoute>} />
+                        <Route path="advanced-analytics" element={<PrivateRoute requiredPerm="view_analytics"><LazyAdvancedAnalyticsDashboard /></PrivateRoute>} />
+                        <Route path="customer-journey" element={<PrivateRoute requiredPerm="view_analytics"><LazyCustomerJourneyPage /></PrivateRoute>} />
+                        <Route path="gamification" element={<PrivateRoute requiredPerm="view_gamification"><LazyGamificationPage /></PrivateRoute>} />
+                        <Route path="wallboard" element={<PrivateRoute requiredPerm="view_wallboard"><LazyLiveWallboardPage /></PrivateRoute>} />
+                        <Route path="api-logs" element={<PrivateRoute requiredPerm="manage_api"><LazyLogApiReport /></PrivateRoute>} />
                     </Route>
 
                     <Route path="/analytics" element={<Navigate to="/reports/general" replace />} />
 
-                    <Route path="/invoicing" element={<PrivateRoute requiredPerm="manage_invoice"><LazyInvoiceLayout /></PrivateRoute>}>
-                        <Route index element={<Navigate to="list" replace />} />
-                        <Route path="list" element={<LazyInvoiceListPage />} />
-                        <Route path="create" element={<LazyInvoiceCreatePage />} />
-                        <Route path="recurring" element={<LazyRecurringInvoiceList />} />
-                        <Route path="edit/:id" element={<LazyInvoiceForm />} />
-                        <Route path="settings" element={<LazyInvoiceSettings />} />
+                    <Route path="/invoicing" element={<PrivateRoute requiredPerm={INVOICING_PERMS}><LazyInvoiceLayout /></PrivateRoute>}>
+                        <Route index element={<SmartRedirect candidates={INVOICING_INDEX_CANDIDATES} />} />
+                        <Route path="list" element={<PrivateRoute requiredPerm="manage_invoice"><LazyInvoiceListPage /></PrivateRoute>} />
+                        <Route path="create" element={<PrivateRoute requiredPerm="manage_invoice"><LazyInvoiceCreatePage /></PrivateRoute>} />
+                        <Route path="bulk" element={<PrivateRoute requiredPerm="bulk_invoice"><LazyBulkInvoiceTool /></PrivateRoute>} />
+                        <Route path="recurring" element={<PrivateRoute requiredPerm="recurring_invoice"><LazyRecurringInvoiceList /></PrivateRoute>} />
+                        <Route path="edit/:id" element={<PrivateRoute requiredPerm="manage_invoice"><LazyInvoiceForm /></PrivateRoute>} />
+                        <Route path="settings" element={<PrivateRoute requiredPerm="manage_invoice"><LazyInvoiceSettings /></PrivateRoute>} />
                     </Route>
 
-                    <Route path="/chatbot" element={<PrivateRoute requiredPerm="manage_chatbot"><LazyChatbotLayout /></PrivateRoute>}>
-                        <Route index element={<Navigate to="list" replace />} />
-                        <Route path="list" element={<LazyBotListPage />} />
-                        <Route path="ai-agent/:id" element={<LazyAIAgentSetupPage />} />
-                        <Route path="flows" element={<LazyFlowListPage />} />
-                        <Route path="flows/new" element={<LazyFlowBuilderPage />} />
-                        <Route path="flows/:id" element={<LazyFlowBuilderPage />} />
-                        <Route path="global-kb" element={<LazyGlobalKBPage />} />
-                        <Route path="training" element={<LazyChatbotTrainingPage />} />
-                        <Route path="api" element={<LazyApiSettingsPage />} />
+                    <Route path="/chatbot" element={<PrivateRoute requiredPerm={CHATBOT_PERMS}><LazyChatbotLayout /></PrivateRoute>}>
+                        <Route index element={<SmartRedirect candidates={CHATBOT_INDEX_CANDIDATES} />} />
+                        <Route path="list" element={<PrivateRoute requiredPerm="manage_chatbot"><LazyBotListPage /></PrivateRoute>} />
+                        <Route path="ai-agent/:id" element={<PrivateRoute requiredPerm="manage_chatbot"><LazyAIAgentSetupPage /></PrivateRoute>} />
+                        <Route path="flows" element={<PrivateRoute requiredPerm="manage_chatbot"><LazyFlowListPage /></PrivateRoute>} />
+                        <Route path="flows/new" element={<PrivateRoute requiredPerm="manage_chatbot"><LazyFlowBuilderPage /></PrivateRoute>} />
+                        <Route path="flows/:id" element={<PrivateRoute requiredPerm="manage_chatbot"><LazyFlowBuilderPage /></PrivateRoute>} />
+                        <Route path="global-kb" element={<PrivateRoute requiredPerm="chatbot_training"><LazyGlobalKBPage /></PrivateRoute>} />
+                        <Route path="training" element={<PrivateRoute requiredPerm="chatbot_training"><LazyChatbotTrainingPage /></PrivateRoute>} />
+                        <Route path="api" element={<PrivateRoute requiredPerm="manage_api"><LazyApiSettingsPage /></PrivateRoute>} />
                         <Route path="tutorial" element={<LazyChatbotTutorial />} />
-                        <Route path="multi-language" element={<PrivateRoute allowedRoles={['admin_member']}><LazyMultiLanguagePage /></PrivateRoute>} />
+                        <Route path="multi-language" element={<PrivateRoute requiredPerm="chatbot_training"><LazyMultiLanguagePage /></PrivateRoute>} />
                     </Route>
 
-                    <Route path="/contacts" element={<LazyContactsLayout />}>
-                        <Route index element={<Navigate to="list" replace />} />
-                        <Route path="list" element={<LazyContactListPage />} />
-                        <Route path=":id" element={<LazyContactDetailPage />} />
-                        <Route path="labels" element={<LazyLabelManagementPage />} />
+                    <Route path="/contacts" element={<PrivateRoute requiredPerm={CONTACTS_PERMS}><LazyContactsLayout /></PrivateRoute>}>
+                        <Route index element={<SmartRedirect candidates={CONTACTS_INDEX_CANDIDATES} />} />
+                        <Route path="list" element={<PrivateRoute requiredPerm="manage_contacts"><LazyContactListPage /></PrivateRoute>} />
+                        <Route path="leads" element={<PrivateRoute requiredPerm="manage_leads"><LazyLeadListPage /></PrivateRoute>} />
+                        <Route path="import" element={<PrivateRoute requiredPerm="import_contacts"><LazyContactImportPage /></PrivateRoute>} />
+                        <Route path=":id" element={<PrivateRoute requiredPerm="manage_contacts"><LazyContactDetailPage /></PrivateRoute>} />
+                        <Route path="labels" element={<PrivateRoute requiredPerm="manage_labels"><LazyLabelManagementPage /></PrivateRoute>} />
                     </Route>
 
-                    <Route path="/tools" element={<PrivateRoute requiredPerm="use_tools"><LazyToolsLayout /></PrivateRoute>}>
-                        <Route index element={<Navigate to="check-number" replace />} />
-                        <Route path="check-number" element={<LazyCheckNumberTool />} />
-                        <Route path="group-extractor" element={<LazyGroupExtractorTool />} />
-                        <Route path="scraper" element={<LazyGMapsScraperTool />} />
-                        <Route path="warmer" element={<LazyWarmerPage />} />
-                        <Route path="follow-up" element={<LazyFollowUpTool />} />
-                        <Route path="chat-form" element={<LazyChatFormList />} />
+                    <Route path="/tools" element={<PrivateRoute requiredPerm={TOOLS_PERMS}><LazyToolsLayout /></PrivateRoute>}>
+                        <Route index element={<SmartRedirect candidates={TOOLS_INDEX_CANDIDATES} />} />
+                        <Route path="check-number" element={<PrivateRoute requiredPerm="use_tools"><LazyCheckNumberTool /></PrivateRoute>} />
+                        <Route path="group-extractor" element={<PrivateRoute requiredPerm="use_tools"><LazyGroupExtractorTool /></PrivateRoute>} />
+                        <Route path="scraper" element={<PrivateRoute requiredPerm="use_tools"><LazyGMapsScraperTool /></PrivateRoute>} />
+                        <Route path="warmer" element={<PrivateRoute requiredPerm="use_warmer"><LazyWarmerPage /></PrivateRoute>} />
+                        <Route path="follow-up" element={<PrivateRoute requiredPerm="manage_followup"><LazyFollowUpTool /></PrivateRoute>} />
+                        <Route path="chat-form" element={<PrivateRoute requiredPerm="manage_chatform"><LazyChatFormList /></PrivateRoute>} />
                         <Route path="tutorial" element={<LazyToolsTutorial />} />
                     </Route>
 
-                    <Route path="/integrations" element={<PrivateRoute allowedRoles={['admin_member']}><LazyIntegrationsLayout /></PrivateRoute>}>
-                        <Route index element={<Navigate to="whatsapp" replace />} />
-                        <Route path="whatsapp" element={<LazyWhatsAppDevicePage />} />
-                        <Route path="whatsapp-api" element={<LazyWhatsAppAPIPage />} />
-                        <Route path="wa-api" element={<LazyWhatsAppAPIPage />} />
-                        <Route path="whatsapp-coex" element={<LazyWhatsAppCoExPage />} />
-                        <Route path="wa-coex" element={<LazyWhatsAppCoExPage />} />
-                        <Route path="email" element={<LazyEmailIntegration />} />
-                        <Route path="messenger" element={<LazyMessengerIntegration />} />
-                        <Route path="instagram" element={<LazyInstagramIntegration />} />
-                        <Route path="tiktok" element={<LazyTikTokIntegration />} />
-                        <Route path="shopee" element={<LazyShopeeIntegration />} />
-                        <Route path="tokopedia" element={<LazyTokopediaIntegration />} />
-                        <Route path="line" element={<LazyLineIntegration />} />
-                        <Route path="telegram" element={<LazyTelegramIntegration />} />
-                        <Route path="webchat" element={<LazyWebchatPage />} />
-                        <Route path="zapier" element={<LazyZapierPage />} />
-                        <Route path="templates" element={<LazyTemplateManager />} />
-                        <Route path="device-health" element={<LazyDeviceHealthPage />} />
-                        <Route path="ecommerce" element={<LazyEcommercePage />} />
-                        <Route path="ongkir" element={<LazyOngkirSettingsPage />} />
-                        <Route path="webhooks" element={<LazyWebhookSettingsPage />} />
-                        <Route path="webhook" element={<LazyWebhookSettingsPage />} />
+                    <Route path="/integrations" element={<PrivateRoute requiredPerm={INTEGRATIONS_PERMS}><LazyIntegrationsLayout /></PrivateRoute>}>
+                        <Route index element={<SmartRedirect candidates={INTEGRATIONS_INDEX_CANDIDATES} />} />
+                        <Route path="whatsapp" element={<PrivateRoute requiredPerm="manage_integrations"><LazyWhatsAppDevicePage /></PrivateRoute>} />
+                        <Route path="whatsapp-api" element={<PrivateRoute requiredPerm="manage_integrations"><LazyWhatsAppAPIPage /></PrivateRoute>} />
+                        <Route path="wa-api" element={<PrivateRoute requiredPerm="manage_integrations"><LazyWhatsAppAPIPage /></PrivateRoute>} />
+                        <Route path="whatsapp-coex" element={<PrivateRoute requiredPerm="manage_integrations"><LazyWhatsAppCoExPage /></PrivateRoute>} />
+                        <Route path="wa-coex" element={<PrivateRoute requiredPerm="manage_integrations"><LazyWhatsAppCoExPage /></PrivateRoute>} />
+                        <Route path="email" element={<PrivateRoute requiredPerm="manage_integrations"><LazyEmailIntegration /></PrivateRoute>} />
+                        <Route path="messenger" element={<PrivateRoute requiredPerm="manage_integrations"><LazyMessengerIntegration /></PrivateRoute>} />
+                        <Route path="instagram" element={<PrivateRoute requiredPerm="manage_integrations"><LazyInstagramIntegration /></PrivateRoute>} />
+                        <Route path="tiktok" element={<PrivateRoute requiredPerm="manage_integrations"><LazyTikTokIntegration /></PrivateRoute>} />
+                        <Route path="shopee" element={<PrivateRoute requiredPerm="manage_integrations"><LazyShopeeIntegration /></PrivateRoute>} />
+                        <Route path="tokopedia" element={<PrivateRoute requiredPerm="manage_integrations"><LazyTokopediaIntegration /></PrivateRoute>} />
+                        <Route path="line" element={<PrivateRoute requiredPerm="manage_integrations"><LazyLineIntegration /></PrivateRoute>} />
+                        <Route path="telegram" element={<PrivateRoute requiredPerm="manage_integrations"><LazyTelegramIntegration /></PrivateRoute>} />
+                        <Route path="webchat" element={<PrivateRoute requiredPerm="manage_integrations"><LazyWebchatPage /></PrivateRoute>} />
+                        <Route path="zapier" element={<PrivateRoute requiredPerm="manage_integrations"><LazyZapierPage /></PrivateRoute>} />
+                        <Route path="templates" element={<PrivateRoute requiredPerm="manage_templates"><LazyTemplateManager /></PrivateRoute>} />
+                        <Route path="device-health" element={<PrivateRoute requiredPerm="manage_integrations"><LazyDeviceHealthPage /></PrivateRoute>} />
+                        <Route path="ecommerce" element={<PrivateRoute requiredPerm="manage_integrations"><LazyEcommercePage /></PrivateRoute>} />
+                        <Route path="ongkir" element={<PrivateRoute requiredPerm="manage_integrations"><LazyOngkirSettingsPage /></PrivateRoute>} />
+                        <Route path="webhooks" element={<PrivateRoute requiredPerm="manage_webhooks"><LazyWebhookSettingsPage /></PrivateRoute>} />
+                        <Route path="webhook" element={<PrivateRoute requiredPerm="manage_webhooks"><LazyWebhookSettingsPage /></PrivateRoute>} />
                     </Route>
 
-                    <Route path="/broadcast" element={<PrivateRoute requiredPerm="manage_broadcast"><LazyBroadcastLayout /></PrivateRoute>}>
-                        <Route index element={<Navigate to="create" replace />} />
-                        <Route path="create" element={<LazyCreateCampaign />} />
-                        <Route path="reports" element={<LazyBroadcastReports />} />
-                        <Route path="templates" element={<LazyMessageTemplates />} />
-                        <Route path="meta-templates" element={<LazyTemplateManager />} />
-                        <Route path="rotators" element={<LazyRotatorManager />} />
-                        <Route path="rotator" element={<LazyRotatorManager />} />
-                        <Route path="upselling" element={<LazyUpsellingPage />} />
-                        <Route path="upselling/create" element={<LazyCreateUpselling />} />
+                    <Route path="/broadcast" element={<PrivateRoute requiredPerm={BROADCAST_PERMS}><LazyBroadcastLayout /></PrivateRoute>}>
+                        <Route index element={<SmartRedirect candidates={BROADCAST_INDEX_CANDIDATES} />} />
+                        <Route path="create" element={<PrivateRoute requiredPerm="manage_broadcast"><LazyCreateCampaign /></PrivateRoute>} />
+                        <Route path="schedule" element={<PrivateRoute requiredPerm="broadcast_schedule"><LazyBroadcastSchedulePage /></PrivateRoute>} />
+                        <Route path="reports" element={<PrivateRoute requiredPerm="broadcast_reports"><LazyBroadcastReports /></PrivateRoute>} />
+                        <Route path="templates" element={<PrivateRoute requiredPerm="manage_templates"><LazyMessageTemplates /></PrivateRoute>} />
+                        <Route path="meta-templates" element={<PrivateRoute requiredPerm="manage_templates"><LazyTemplateManager /></PrivateRoute>} />
+                        <Route path="rotators" element={<PrivateRoute requiredPerm="manage_rotator"><LazyRotatorManager /></PrivateRoute>} />
+                        <Route path="rotator" element={<PrivateRoute requiredPerm="manage_rotator"><LazyRotatorManager /></PrivateRoute>} />
+                        <Route path="upselling" element={<PrivateRoute requiredPerm="manage_broadcast"><LazyUpsellingPage /></PrivateRoute>} />
+                        <Route path="upselling/create" element={<PrivateRoute requiredPerm="manage_broadcast"><LazyCreateUpselling /></PrivateRoute>} />
                         <Route path="tutorial" element={<LazyBroadcastTutorial />} />
-                        <Route path="settings" element={<LazyBroadcastSettingsPage />} />
+                        <Route path="settings" element={<PrivateRoute requiredPerm="manage_broadcast"><LazyBroadcastSettingsPage /></PrivateRoute>} />
                     </Route>
 
                     {/* Pipelines CRM Routes */}
-                    <Route path="/pipelines" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineListPage /></PrivateRoute>} />
-                    <Route path="/pipelines/create" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
-                    <Route path="/pipelines/editor" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
-                    <Route path="/pipelines/editor/:id" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
-                    <Route path="/pipelines/:id" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineBoardPage /></PrivateRoute>} />
-                    <Route path="/pipelines/:id/board" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineBoardPage /></PrivateRoute>} />
-                    <Route path="/pipelines/:id/edit" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipelines" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineListPage /></PrivateRoute>} />
+                    <Route path="/pipelines/create" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipelines/editor" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipelines/editor/:id" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipelines/:id" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineBoardPage /></PrivateRoute>} />
+                    <Route path="/pipelines/:id/board" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineBoardPage /></PrivateRoute>} />
+                    <Route path="/pipelines/:id/edit" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineEditorPage /></PrivateRoute>} />
 
                     <Route path="/pipeline" element={<Navigate to="/pipelines" replace />} />
                     <Route path="/pipeline/create" element={<Navigate to="/pipelines/create" replace />} />
                     <Route path="/pipeline/editor" element={<Navigate to="/pipelines/editor" replace />} />
-                    <Route path="/pipeline/editor/:id" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
-                    <Route path="/pipeline/:id" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineBoardPage /></PrivateRoute>} />
-                    <Route path="/pipeline/:id/board" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineBoardPage /></PrivateRoute>} />
-                    <Route path="/pipeline/:id/edit" element={<PrivateRoute requiredPerm="manage_crm"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipeline/editor/:id" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineEditorPage /></PrivateRoute>} />
+                    <Route path="/pipeline/:id" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineBoardPage /></PrivateRoute>} />
+                    <Route path="/pipeline/:id/board" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineBoardPage /></PrivateRoute>} />
+                    <Route path="/pipeline/:id/edit" element={<PrivateRoute requiredPerm="manage_pipeline"><LazyPipelineEditorPage /></PrivateRoute>} />
 
                     <Route path="/followup" element={<Navigate to="/tools/follow-up" replace />} />
 
-                    <Route path="/tickets" element={<PrivateRoute requiredPerm="manage_crm"><LazyTicketListPage /></PrivateRoute>} />
-                    <Route path="/leads" element={<PrivateRoute requiredPerm="manage_crm"><LazyLeadListPage /></PrivateRoute>} />
-                    <Route path="/products" element={<PrivateRoute requiredPerm="manage_crm"><LazyProductListPage /></PrivateRoute>} />
-                    <Route path="/tasks" element={<PrivateRoute requiredPerm="manage_crm"><LazyTaskListPage /></PrivateRoute>} />
-                    <Route path="/sales-visits" element={<PrivateRoute requiredPerm="manage_crm"><LazySalesVisitPage /></PrivateRoute>} />
+                    <Route path="/tickets" element={<PrivateRoute requiredPerm="manage_tickets"><LazyTicketListPage /></PrivateRoute>} />
+                    <Route path="/leads" element={<PrivateRoute requiredPerm="manage_leads"><LazyLeadListPage /></PrivateRoute>} />
+                    <Route path="/products" element={<PrivateRoute requiredPerm="manage_products"><LazyProductListPage /></PrivateRoute>} />
+                    <Route path="/tasks" element={<PrivateRoute requiredPerm="manage_tasks"><LazyTaskListPage /></PrivateRoute>} />
+                    <Route path="/sales-visits" element={<PrivateRoute requiredPerm="manage_sales_visits"><LazySalesVisitPage /></PrivateRoute>} />
 
-                    <Route path="/settings" element={<LazySettingsLayout />}>
-                        <Route index element={<Navigate to="team" replace />} />
-                        <Route path="ongkir" element={<LazyOngkirSettingsPage />} />
-                        <Route path="assignment" element={<LazyAssignmentSettingsPage />} />
-                        <Route path="working-hours" element={<LazyWorkingHoursPage />} />
-                        <Route path="team" element={<LazyTeamSettings />} />
-                        <Route path="roles" element={<LazyRolesPage />} />
-                        <Route path="divisions" element={<LazyDivisionsPage />} />
-                        <Route path="inbox" element={<LazyInboxManagement />} />
-                        <Route path="inboxes" element={<LazyInboxManagement />} />
-                        <Route path="quick-replies" element={<LazyQuickReplySettings />} />
-                        <Route path="sla" element={<LazySLASettingsPage />} />
-                        <Route path="custom-fields" element={<LazyCustomFieldsSettings />} />
-                        <Route path="wa-templates" element={<LazyWaTemplateLibrary />} />
-                        <Route path="auto-reply" element={<LazyAutoReplyManager />} />
-                        <Route path="auto-label" element={<LazyAutoLabelManager />} />
-                        <Route path="rules" element={<LazyWorkflowRulesSettings />} />
-                        <Route path="workflow-rules" element={<LazyWorkflowRulesSettings />} />
-                        <Route path="webhooks" element={<LazyWebhookSettingsPage />} />
-                        <Route path="webhook" element={<LazyWebhookSettingsPage />} />
-                        <Route path="ecommerce" element={<LazyEcommercePage />} />
-                        <Route path="license" element={<LazyLicensePage />} />
-                        <Route path="auto-archive" element={<LazyAutoArchiveSettings />} />
-                        <Route path="email" element={<LazyEmailSettingsPage />} />
-                        <Route path="device-data" element={<LazyDeviceDataSettingsPage />} />
-                        <Route path="system-health" element={<LazySystemHealthPage />} />
-                        <Route path="billing" element={<LazyBillingSettings />} />
-                        <Route path="multi-language" element={<LazyMultiLanguagePage />} />
+                    <Route path="/settings" element={<PrivateRoute requiredPerm={SETTINGS_PERMS}><LazySettingsLayout /></PrivateRoute>}>
+                        <Route index element={<SmartRedirect candidates={SETTINGS_INDEX_CANDIDATES} />} />
+                        <Route path="ongkir" element={<PrivateRoute requiredPerm="manage_integrations"><LazyOngkirSettingsPage /></PrivateRoute>} />
+                        <Route path="assignment" element={<PrivateRoute requiredPerm="assign_conversations"><LazyAssignmentSettingsPage /></PrivateRoute>} />
+                        <Route path="working-hours" element={<PrivateRoute requiredPerm="manage_settings"><LazyWorkingHoursPage /></PrivateRoute>} />
+                        <Route path="team" element={<PrivateRoute requiredPerm="manage_team"><LazyTeamSettings /></PrivateRoute>} />
+                        <Route path="roles" element={<PrivateRoute requiredPerm="manage_roles"><LazyRolesPage /></PrivateRoute>} />
+                        <Route path="divisions" element={<PrivateRoute requiredPerm="manage_settings"><LazyDivisionsPage /></PrivateRoute>} />
+                        <Route path="inbox" element={<PrivateRoute requiredPerm="manage_settings"><LazyInboxManagement /></PrivateRoute>} />
+                        <Route path="inboxes" element={<PrivateRoute requiredPerm="manage_settings"><LazyInboxManagement /></PrivateRoute>} />
+                        <Route path="quick-replies" element={<PrivateRoute requiredPerm="manage_settings"><LazyQuickReplySettings /></PrivateRoute>} />
+                        <Route path="sla" element={<PrivateRoute requiredPerm="manage_tickets"><LazySLASettingsPage /></PrivateRoute>} />
+                        <Route path="custom-fields" element={<PrivateRoute requiredPerm="manage_settings"><LazyCustomFieldsSettings /></PrivateRoute>} />
+                        <Route path="wa-templates" element={<PrivateRoute requiredPerm="manage_templates"><LazyWaTemplateLibrary /></PrivateRoute>} />
+                        <Route path="auto-reply" element={<PrivateRoute requiredPerm="manage_settings"><LazyAutoReplyManager /></PrivateRoute>} />
+                        <Route path="auto-label" element={<PrivateRoute requiredPerm="manage_labels"><LazyAutoLabelManager /></PrivateRoute>} />
+                        <Route path="rules" element={<PrivateRoute requiredPerm="manage_settings"><LazyWorkflowRulesSettings /></PrivateRoute>} />
+                        <Route path="workflow-rules" element={<PrivateRoute requiredPerm="manage_settings"><LazyWorkflowRulesSettings /></PrivateRoute>} />
+                        <Route path="webhooks" element={<PrivateRoute requiredPerm="manage_webhooks"><LazyWebhookSettingsPage /></PrivateRoute>} />
+                        <Route path="webhook" element={<PrivateRoute requiredPerm="manage_webhooks"><LazyWebhookSettingsPage /></PrivateRoute>} />
+                        <Route path="ecommerce" element={<PrivateRoute requiredPerm="manage_integrations"><LazyEcommercePage /></PrivateRoute>} />
+                        <Route path="license" element={<PrivateRoute requiredPerm="manage_settings"><LazyLicensePage /></PrivateRoute>} />
+                        <Route path="auto-archive" element={<PrivateRoute requiredPerm="manage_settings"><LazyAutoArchiveSettings /></PrivateRoute>} />
+                        <Route path="email" element={<PrivateRoute requiredPerm="manage_integrations"><LazyEmailSettingsPage /></PrivateRoute>} />
+                        <Route path="device-data" element={<PrivateRoute requiredPerm="manage_integrations"><LazyDeviceDataSettingsPage /></PrivateRoute>} />
+                        <Route path="system-health" element={<PrivateRoute requiredPerm="manage_system_health"><LazySystemHealthPage /></PrivateRoute>} />
+                        <Route path="billing" element={<PrivateRoute requiredPerm="manage_settings"><LazyBillingSettings /></PrivateRoute>} />
+                        <Route path="multi-language" element={<PrivateRoute requiredPerm="chatbot_training"><LazyMultiLanguagePage /></PrivateRoute>} />
                     </Route>
 
                     <Route path="/account" element={<LazyAccountLayout />}>
@@ -502,7 +612,7 @@ function AppRoutes() {
                 </Route>
 
                 {/* Standalone Fullscreen Wallboard for TV screens */}
-                <Route path="/wallboard" element={<PrivateRoute allowedRoles={['admin_member', 'agent']}><LazyLiveWallboardPage /></PrivateRoute>} />
+                <Route path="/wallboard" element={<PrivateRoute requiredPerm="view_wallboard"><LazyLiveWallboardPage /></PrivateRoute>} />
 
                 {/* FALLBACK */}
                 <Route path="*" element={<Navigate to="/" replace />} />

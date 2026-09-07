@@ -136,8 +136,8 @@ export default function InvoiceHistory() {
             </div>
 
             {/* Desktop Table View */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hidden md:block">
-                <table className="w-full text-left text-sm">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto hidden md:block">
+                <table className="w-full text-left text-sm min-w-[650px]">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th className="px-6 py-3 font-bold text-gray-500 uppercase text-xs">Invoice ID</th>

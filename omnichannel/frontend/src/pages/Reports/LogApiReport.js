@@ -34,7 +34,7 @@ const LogDetailModal = ({ log, onClose }) => {
         >
             <div className="space-y-6">
                 {/* Summary */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     <div className="bg-white p-4 rounded-lg border shadow-sm">
                         <p className="text-xs text-gray-500 uppercase font-bold">Status</p>
                         <div className={`mt-1 font-mono text-lg font-bold ${log.status_code < 300 ? 'text-green-600' : 'text-red-600'}`}>
@@ -180,8 +180,8 @@ export default function LogApiReport() {
 
             {/* Table */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-                <div className="flex-1 overflow-auto">
-                    <table className="w-full text-left text-sm whitespace-nowrap">
+                <div className="flex-1 overflow-auto overflow-x-auto w-full">
+                    <table className="w-full text-left text-sm whitespace-nowrap min-w-[550px]">
                         <thead className="bg-gray-50 border-b border-gray-200 text-gray-500 text-xs uppercase">
                             <tr>
                                 <th className="px-6 py-3 font-bold">Time</th>

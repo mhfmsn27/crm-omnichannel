@@ -5,7 +5,7 @@ import {
   MessageSquare, Megaphone, QrCode, Bot,
   LogOut, BarChart2, LayoutTemplate,
   Wrench, Code, Columns, Ticket, CheckSquare,
-  Menu, ChevronLeft, ChevronRight, Settings2, FileText, Repeat2, Receipt, ChevronDown, Inbox, Calendar
+  Menu, ChevronLeft, ChevronRight, Settings2, FileText, Repeat2, Receipt, ChevronDown, Inbox, Calendar, MapPin, X
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -15,15 +15,7 @@ import { useLanguage } from '../../i18n';
 import { useTheme } from '../../context/ThemeContext';
 import { getApiUrl } from '../../config/api';
 
-// Helper to check permission - matches backend permissionMiddleware.js logic
-const hasPerm = (user, perm) => {
-  if (!user) return false;
-  // admin_member and super_admin bypass all permission checks
-  if (user.role === 'admin_member' || user.role === 'super_admin') return true;
-  // For agents, check if permission exists in their permissions array
-  const perms = Array.isArray(user.permissions) ? user.permissions : [];
-  return perms.includes(perm);
-};
+import { hasPerm } from '../../utils/rbac';
 
 // Dynamic route prefetch helper to eliminate initial chunk load delay
 const prefetchRoute = (path) => {
@@ -40,6 +32,9 @@ const prefetchRoute = (path) => {
       import('../../pages/Contacts/ContactsLayout');
       import('../../pages/Contacts/ContactListPage');
       break;
+    case '/leads':
+      import('../../pages/Contacts/LeadListPage');
+      break;
     case '/bookings':
       import('../../pages/Bookings/BookingsPage');
       break;
@@ -54,6 +49,9 @@ const prefetchRoute = (path) => {
     case '/pipelines':
     case '/pipeline':
       import('../../pages/Pipeline/PipelineListPage');
+      break;
+    case '/sales-visits':
+      import('../../pages/CRM/SalesVisitPage');
       break;
     case '/products':
       import('../../pages/Products/ProductListPage');
@@ -72,6 +70,9 @@ const prefetchRoute = (path) => {
     case '/analytics':
       import('../../pages/Reports/ReportsLayout');
       import('../../pages/Reports/GeneralReport');
+      break;
+    case '/wallboard':
+      import('../../pages/Reports/LiveWallboardPage');
       break;
     case '/tools':
       import('../../pages/Tools/ToolsLayout');
@@ -99,45 +100,6 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
   const hasSub = subItems && subItems.length > 0;
   const isClassic = currentPresetConfig?.id === 'classic';
 
-  const content = (
-    <>
-      {active && showLabel && !hasSub && (
-        <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-r-full ${
-          currentPresetConfig?.indicatorClass || 'bg-[#008069]'
-        }`} />
-      )}
-      <div className={`flex items-center ${showLabel ? 'gap-3 min-w-0 flex-1' : 'justify-center w-full'}`}>
-        <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-all duration-200 ${
-          active 
-            ? (isClassic ? 'text-white scale-105' : 'text-[#008069] dark:text-[#25D366] scale-105') 
-            : (isClassic ? 'text-white/75 group-hover:text-white group-hover:scale-110' : 'text-slate-500 dark:text-slate-400 group-hover:text-[#008069] dark:group-hover:text-[#25D366] group-hover:scale-110')
-        }`} />
-        {showLabel && (
-          <span className={`text-[13px] transition-all duration-200 truncate ${
-            active 
-              ? 'font-bold' 
-              : 'font-medium group-hover:font-semibold group-hover:text-[#008069] dark:group-hover:text-[#25D366]'
-          }`}>
-            {label}
-          </span>
-        )}
-      </div>
-      {showLabel && hasSub && (
-        <ChevronDown className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${
-          isSubExpanded 
-            ? 'rotate-180 text-[#008069] dark:text-[#25D366]' 
-            : 'text-slate-400 group-hover:text-[#008069] dark:group-hover:text-[#25D366]'
-        }`} />
-      )}
-      {!showLabel && (
-        <div className="absolute left-14 z-[100] px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-xl whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0 flex items-center hidden md:flex">
-          <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
-          <span className="relative z-10">{label}</span>
-        </div>
-      )}
-    </>
-  );
-
   const activeClasses = currentPresetConfig?.activeMenuClass || 'bg-[#E7F7F2] text-[#008069] shadow-2xs font-bold border border-[#A2E2CD]';
   const inactiveClasses = currentPresetConfig?.inactiveMenuClass || 'text-slate-600 dark:text-slate-300 hover:bg-[#E7F7F2]/70 dark:hover:bg-[#008069]/15 hover:text-[#008069] dark:hover:text-[#25D366] hover:border-[#A2E2CD]/70 dark:hover:border-[#008069]/30 border border-transparent';
 
@@ -147,20 +109,63 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
 
   return (
     <div className="flex flex-col w-full">
-      {hasSub ? (
-        <button onClick={onToggleSub} className={baseClasses}>
-          {content}
-        </button>
-      ) : (
+      <div className={baseClasses}>
         <Link 
           to={to} 
-          onClick={onClick} 
+          onClick={(e) => {
+            if (hasSub && !isSubExpanded && onToggleSub) {
+              onToggleSub();
+            }
+            if (onClick) onClick(e);
+          }} 
           onMouseEnter={() => prefetchRoute(to)}
-          className={baseClasses}
+          className={`flex items-center ${showLabel ? 'gap-3 min-w-0 flex-1' : 'justify-center w-full'}`}
         >
-          {content}
+          {active && showLabel && !hasSub && (
+            <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-r-full ${
+              currentPresetConfig?.indicatorClass || 'bg-[#008069]'
+            }`} />
+          )}
+          <Icon className={`w-[18px] h-[18px] flex-shrink-0 transition-all duration-200 ${
+            active 
+              ? (isClassic ? 'text-white scale-105' : 'text-[#008069] dark:text-[#25D366] scale-105') 
+              : (isClassic ? 'text-white/75 group-hover:text-white group-hover:scale-110' : 'text-slate-500 dark:text-slate-400 group-hover:text-[#008069] dark:group-hover:text-[#25D366] group-hover:scale-110')
+          }`} />
+          {showLabel && (
+            <span className={`text-[13px] transition-all duration-200 truncate ${
+              active 
+                ? 'font-bold' 
+                : 'font-medium group-hover:font-semibold group-hover:text-[#008069] dark:group-hover:text-[#25D366]'
+            }`}>
+              {label}
+            </span>
+          )}
         </Link>
-      )}
+        {showLabel && hasSub && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleSub();
+            }}
+            className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            title={isSubExpanded ? "Tutup Submenu" : "Buka Submenu"}
+          >
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${
+              isSubExpanded 
+                ? 'rotate-180 text-[#008069] dark:text-[#25D366]' 
+                : 'text-slate-400 group-hover:text-[#008069] dark:group-hover:text-[#25D366]'
+            }`} />
+          </button>
+        )}
+        {!showLabel && (
+          <div className="absolute left-14 z-[100] px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md shadow-xl whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0 flex items-center hidden md:flex">
+            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
+            <span className="relative z-10">{label}</span>
+          </div>
+        )}
+      </div>
 
       {/* Sub Items (Only visible if Sidebar is expanded) */}
       {hasSub && isSubExpanded && showLabel && (
@@ -190,12 +195,12 @@ const MenuItem = ({ icon: Icon, active, label, to, onClick, showLabel, subItems,
 const MobileNavItem = ({ icon: Icon, label, to, active, onClick, isProminent }) => {
   if (isProminent) {
     return (
-      <Link to={to} onClick={onClick} className="relative -top-5 group flex items-center justify-center">
+      <Link to={to} onClick={onClick} className="relative -top-3 group flex items-center justify-center flex-1">
         <div className={`
-            w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-4 border-gray-50 transition-transform active:scale-90
-            ${active ? 'bg-[#008069] text-white' : 'bg-gray-900 text-white'}
+            w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 transition-transform active:scale-95
+            ${active ? 'bg-[#008069] text-white shadow-[#008069]/30' : 'bg-slate-900 dark:bg-[#008069] text-white'}
         `}>
-          <Icon className="w-6 h-6" />
+          <Icon className="w-5 h-5" />
         </div>
       </Link>
     );
@@ -205,12 +210,12 @@ const MobileNavItem = ({ icon: Icon, label, to, active, onClick, isProminent }) 
     <Link
       to={to}
       onClick={onClick}
-      className={`flex flex-col items-center justify-center w-full h-full py-2 min-h-[60px] gap-1 ${
-        active ? 'text-[#008069]' : 'text-gray-400 active:text-gray-600'
+      className={`flex flex-col items-center justify-center flex-1 h-full py-1.5 min-h-[56px] gap-0.5 transition-colors ${
+        active ? 'text-[#008069] dark:text-[#25D366] font-semibold' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
       }`}
     >
-      <Icon className="w-6 h-6" />
-      <span className="text-[10px] font-semibold leading-tight text-center">{label}</span>
+      <Icon className="w-5 h-5" />
+      <span className="text-[10px] font-medium leading-tight text-center truncate max-w-[64px]">{label}</span>
     </Link>
   );
 };
@@ -230,6 +235,24 @@ export default function Sidebar({ isExpanded, onToggle }) {
   const [inboxIsolationEnabled, setInboxIsolationEnabled] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState(null);
   const dropdownRef = useRef(null);
+
+  // Close mobile drawer on route navigation
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
+
+  // Listen for mobile header hamburger toggle event
+  useEffect(() => {
+    const handleToggleMobile = () => {
+      setIsOpen((prev) => !prev);
+    };
+    window.addEventListener('TOGGLE_MOBILE_SIDEBAR', handleToggleMobile);
+    return () => window.removeEventListener('TOGGLE_MOBILE_SIDEBAR', handleToggleMobile);
+  }, []);
+
+  // Determine if active chat conversation is open on mobile
+  const searchParams = new URLSearchParams(location.search);
+  const isChatOpen = location.pathname.startsWith('/inbox') && (searchParams.has('id') || searchParams.has('conversationId'));
 
   // Fetch inbox isolation setting and accessible inboxes
   useEffect(() => {
@@ -304,21 +327,39 @@ export default function Sidebar({ isExpanded, onToggle }) {
   // Build Menu dynamically based on role
   let menus = [];
 
-  if (user.role === 'super_admin') {
+  if (user?.role === 'super_admin') {
     menus = [
       { label: t('nav.dashboard', 'Dashboard'), path: '/admin/dashboard', icon: Home, section: 'Utama' },
       { label: t('nav.cms', 'CMS Content'), path: '/admin/cms', icon: LayoutTemplate, section: 'Manajemen' },
       { label: t('nav.members', 'Members'), path: '/admin/members', icon: Users, section: 'Manajemen' },
       { label: t('nav.system', 'System'), path: '/admin/system', icon: Settings, section: 'Sistem' },
     ];
-  } else if (user.role === 'admin_member') {
-    menus = [
-      { label: t('nav.dashboard', 'Dashboard'), path: '/dashboard', icon: Home, section: 'Utama' },
+  } else {
+    // All Organization Roles (Owner, Admins, Agents with or without custom roles)
+    const orgCandidateMenus = [
+      { 
+        label: t('nav.dashboard', 'Dashboard'), 
+        path: '/dashboard', 
+        icon: Home, 
+        section: 'Utama',
+        perm: null 
+      },
       { 
         label: t('nav.integrations', 'Integrasi'), 
         path: '/integrations', 
         icon: QrCode,
-        section: 'Komunikasi'
+        section: 'Komunikasi',
+        perm: 'manage_integrations',
+        subItems: [
+          { label: 'WhatsApp Device', path: '/integrations/whatsapp', perm: 'manage_integrations' },
+          { label: 'WhatsApp API', path: '/integrations/wa-api', perm: 'manage_integrations' },
+          { label: 'Meta Templates', path: '/integrations/templates', perm: 'manage_templates' },
+          { label: 'Email Inbox', path: '/integrations/email', perm: 'manage_integrations' },
+          { label: 'Messenger & IG', path: '/integrations/messenger', perm: 'manage_integrations' },
+          { label: 'Webchat Widget', path: '/integrations/webchat', perm: 'manage_integrations' },
+          { label: 'Device Health', path: '/integrations/device-health', perm: 'manage_integrations' },
+          { label: 'Webhooks & API', path: '/integrations/webhooks', perm: 'manage_webhooks' },
+        ]
       },
       { 
         label: t('nav.inbox', 'Kotak Masuk'), 
@@ -326,89 +367,215 @@ export default function Sidebar({ isExpanded, onToggle }) {
         icon: MessageSquare, 
         disabled: isFeatureDisabled('mod_inbox'),
         section: 'Komunikasi',
+        perm: 'view_all_chats',
         subItems: [
-          { label: 'All Channels', path: '/inbox' },
-          { label: 'WhatsApp', path: '/inbox?channel=whatsapp' },
-          { label: 'Messenger', path: '/inbox?channel=messenger' },
-          { label: 'Instagram', path: '/inbox?channel=instagram' },
-          { label: 'Telegram', path: '/inbox?channel=telegram' },
-          { label: 'Webchat', path: '/inbox?channel=webchat' }
+          { label: 'All Channels', path: '/inbox', perm: 'view_all_chats' },
+          { label: 'WhatsApp', path: '/inbox?channel=whatsapp', perm: 'view_all_chats' },
+          { label: 'Messenger', path: '/inbox?channel=messenger', perm: 'view_all_chats' },
+          { label: 'Instagram', path: '/inbox?channel=instagram', perm: 'view_all_chats' },
+          { label: 'Telegram', path: '/inbox?channel=telegram', perm: 'view_all_chats' },
+          { label: 'Webchat', path: '/inbox?channel=webchat', perm: 'view_all_chats' }
         ]
       },
-      { label: t('nav.contacts', 'Kontak'), path: '/contacts', icon: Users, section: 'Komunikasi' },
-      { label: t('nav.bookings', 'Bookings'), path: '/bookings', icon: Calendar, section: 'Komunikasi' },
-      { label: t('nav.broadcast', 'Broadcast'), path: '/broadcast', icon: Megaphone, disabled: isFeatureDisabled('mod_broadcast'), section: 'Komunikasi' },
-      { label: t('nav.pipeline', 'Pipeline'), path: '/pipelines', icon: Columns, section: 'CRM & Bisnis' },
-      { label: t('nav.products', 'Produk'), path: '/products', icon: Package, section: 'CRM & Bisnis' },
-      { label: t('nav.tasks', 'Tasks'), path: '/tasks', icon: CheckSquare, section: 'CRM & Bisnis' },
-      { label: t('nav.tickets', 'Tickets'), path: '/tickets', icon: Ticket, section: 'CRM & Bisnis' },
-      { label: t('nav.invoicing', 'Tagihan / Invoice'), path: '/invoicing', icon: Receipt, section: 'CRM & Bisnis' },
-      { label: t('nav.reports', 'Laporan'), path: '/reports', icon: BarChart2, section: 'CRM & Bisnis' },
+      { 
+        label: t('nav.contacts', 'Kontak'), 
+        path: '/contacts', 
+        icon: Users, 
+        section: 'Komunikasi',
+        perm: 'manage_contacts',
+        subItems: [
+          { label: 'Semua Kontak', path: '/contacts/list', perm: 'manage_contacts' },
+          { label: 'Lead & Prospek', path: '/contacts/leads', perm: 'manage_leads' },
+          { label: 'Import Kontak', path: '/contacts/import', perm: 'import_contacts' },
+          { label: 'Manajemen Label', path: '/contacts/labels', perm: 'manage_labels' },
+        ]
+      },
+      { 
+        label: t('nav.bookings', 'Bookings'), 
+        path: '/bookings', 
+        icon: Calendar, 
+        section: 'Komunikasi',
+        perm: 'manage_bookings'
+      },
+      { 
+        label: t('nav.broadcast', 'Broadcast'), 
+        path: '/broadcast', 
+        icon: Megaphone, 
+        disabled: isFeatureDisabled('mod_broadcast'), 
+        section: 'Komunikasi',
+        perm: 'manage_broadcast',
+        subItems: [
+          { label: 'Buat Campaign', path: '/broadcast/create', perm: 'manage_broadcast' },
+          { label: 'Jadwal Broadcast', path: '/broadcast/schedule', perm: 'broadcast_schedule' },
+          { label: 'Laporan Riwayat', path: '/broadcast/reports', perm: 'broadcast_reports' },
+          { label: 'Template Pesan', path: '/broadcast/templates', perm: 'manage_templates' },
+          { label: 'Meta Templates', path: '/broadcast/meta-templates', perm: 'manage_templates' },
+          { label: 'Rotator CS Link', path: '/broadcast/rotators', perm: 'manage_rotator' },
+          { label: 'Upselling Campaign', path: '/broadcast/upselling', perm: 'manage_broadcast' },
+        ]
+      },
+      { 
+        label: t('nav.chatbot', 'Chatbot'), 
+        path: '/chatbot', 
+        icon: Bot, 
+        disabled: isFeatureDisabled('mod_chatbot'),
+        section: 'Komunikasi',
+        perm: 'manage_chatbot',
+        subItems: [
+          { label: 'Kelola Bots', path: '/chatbot/list', perm: 'manage_chatbot' },
+          { label: 'Visual Flow Builder', path: '/chatbot/flows', perm: 'manage_chatbot' },
+          { label: 'AI Training', path: '/chatbot/training', perm: 'chatbot_training' },
+          { label: 'Global Knowledge', path: '/chatbot/global-kb', perm: 'chatbot_training' },
+          { label: 'Multi-Language AI', path: '/chatbot/multi-language', perm: 'chatbot_training' },
+        ]
+      },
+      { 
+        label: t('nav.pipeline', 'Pipeline'), 
+        path: '/pipelines', 
+        icon: Columns, 
+        section: 'CRM & Bisnis',
+        perm: 'manage_pipeline',
+        subItems: [
+          { label: 'Pipeline Board', path: '/pipelines', perm: 'manage_pipeline' },
+          { label: 'Buat Pipeline Baru', path: '/pipelines/create', perm: 'manage_pipeline' },
+        ]
+      },
+      { 
+        label: t('nav.salesVisits', 'Kunjungan Sales'), 
+        path: '/sales-visits', 
+        icon: MapPin, 
+        section: 'CRM & Bisnis',
+        perm: 'manage_sales_visits'
+      },
+      { 
+        label: t('nav.products', 'Produk'), 
+        path: '/products', 
+        icon: Package, 
+        section: 'CRM & Bisnis',
+        perm: 'manage_products'
+      },
+      { 
+        label: t('nav.tasks', 'Tasks'), 
+        path: '/tasks', 
+        icon: CheckSquare, 
+        section: 'CRM & Bisnis',
+        perm: 'manage_tasks'
+      },
+      { 
+        label: t('nav.tickets', 'Tickets'), 
+        path: '/tickets', 
+        icon: Ticket, 
+        section: 'CRM & Bisnis',
+        perm: 'manage_tickets'
+      },
+      { 
+        label: t('nav.invoicing', 'Tagihan / Invoice'), 
+        path: '/invoicing', 
+        icon: Receipt, 
+        section: 'CRM & Bisnis',
+        perm: 'manage_invoice',
+        subItems: [
+          { label: 'Semua Faktur & SPO', path: '/invoicing/list', perm: 'manage_invoice' },
+          { label: 'Buat Faktur Baru', path: '/invoicing/create', perm: 'manage_invoice' },
+          { label: 'Import Tagihan Massal', path: '/invoicing/bulk', perm: 'bulk_invoice' },
+          { label: 'Faktur Berlangganan', path: '/invoicing/recurring', perm: 'recurring_invoice' },
+          { label: 'Pengaturan Faktur', path: '/invoicing/settings', perm: 'manage_invoice' },
+        ]
+      },
+      { 
+        label: t('nav.reports', 'Laporan'), 
+        path: '/reports', 
+        icon: BarChart2, 
+        section: 'CRM & Bisnis',
+        perm: 'view_reports',
+        subItems: [
+          { label: 'Overview & Ringkasan', path: '/reports/general', perm: 'view_reports' },
+          { label: 'Advanced Analytics', path: '/reports/advanced-analytics', perm: 'view_analytics' },
+          { label: 'Performa Tim Agen', path: '/reports/agent-performance', perm: 'view_reports' },
+          { label: 'Survei CSAT', path: '/reports/csat', perm: 'view_csat' },
+          { label: 'Sales KPI Dashboard', path: '/reports/sales-kpi', perm: 'view_reports' },
+          { label: 'Customer Journey', path: '/reports/customer-journey', perm: 'view_analytics' },
+          { label: 'Gamification Board', path: '/reports/gamification', perm: 'view_gamification' },
+          { label: 'Live Wallboard TV', path: '/reports/wallboard', perm: 'view_wallboard' },
+        ]
+      },
       { 
         label: t('nav.tools', 'Tools'), 
         path: '/tools', 
         icon: Settings2,
-        section: 'Sistem & Alat'
+        section: 'Sistem & Alat',
+        perm: 'use_tools',
+        subItems: [
+          { label: 'WA Warmer Circle', path: '/tools/warmer', perm: 'use_warmer' },
+          { label: 'Validasi Nomor WA', path: '/tools/check-number', perm: 'use_tools' },
+          { label: 'Ekstrak Kontak Grup', path: '/tools/group-extractor', perm: 'use_tools' },
+          { label: 'Interactive Chat Form', path: '/tools/chat-form', perm: 'manage_chatform' },
+          { label: 'GMaps Lead Scraper', path: '/tools/scraper', perm: 'use_tools' },
+          { label: 'Auto Follow-Up', path: '/tools/follow-up', perm: 'manage_followup' },
+        ]
       },
       { 
         label: t('nav.settings', 'Pengaturan'), 
         path: '/settings', 
         icon: Wrench,
-        section: 'Sistem & Alat'
+        section: 'Sistem & Alat',
+        perm: 'manage_settings',
+        subItems: [
+          { label: 'Tim & Hak Akses', path: '/settings/team', perm: 'manage_team' },
+          { label: 'Custom Contact Fields', path: '/settings/custom-fields', perm: 'manage_settings' },
+          { label: 'Server Health & Backup', path: '/settings/system-health', perm: 'manage_system_health' },
+          { label: 'Auto Reply & Balas Cepat', path: '/settings/auto-reply', perm: 'manage_settings' },
+          { label: 'Kebijakan SLA & CS', path: '/settings/sla', perm: 'manage_settings' },
+          { label: 'Kotak Masuk Terpisah', path: '/settings/inboxes', perm: 'manage_settings' },
+          { label: 'Integrasi Ekstensi & API', path: '/settings/webhooks', perm: 'manage_webhooks' },
+          { label: 'Lisensi Domain', path: '/settings/license', perm: 'manage_settings' },
+        ]
       },
     ];
 
-    if (!isFeatureDisabled('mod_chatbot')) {
-      menus.splice(5, 0, { label: t('nav.chatbot', 'Chatbot'), path: '/chatbot', icon: Bot, section: 'Komunikasi' });
-    }
     if (!isFeatureDisabled('api_public')) {
-      menus.push({ label: t('nav.api', 'API Developer'), path: '/developer', icon: Code, section: 'Sistem & Alat' });
+      orgCandidateMenus.push({ 
+        label: t('nav.api', 'API Developer'), 
+        path: '/developer', 
+        icon: Code, 
+        section: 'Sistem & Alat',
+        perm: 'manage_api',
+        subItems: [
+          { label: 'My API Apps', path: '/developer/apps', perm: 'manage_api' },
+          { label: 'Dokumentasi API', path: '/developer/docs', perm: 'manage_api' },
+        ]
+      });
     }
-  } else {
-    // Base menus visible for all agents
-    menus = [
-      { label: t('nav.dashboard', 'Dashboard'), path: '/dashboard', icon: Home, section: 'Utama' },
-      { label: t('nav.inbox', 'Kotak Masuk'), path: '/inbox', icon: MessageSquare, disabled: isFeatureDisabled('mod_inbox'), section: 'Komunikasi' },
-      { label: t('nav.contacts', 'Kontak'), path: '/contacts', icon: Users, section: 'Komunikasi' },
-      { label: t('nav.bookings', 'Bookings'), path: '/bookings', icon: Calendar, section: 'Komunikasi' },
-      { label: t('nav.reports', 'Laporan'), path: '/reports', icon: BarChart2, section: 'CRM & Bisnis' },
-      { 
-        label: t('nav.settings', 'Pengaturan'), 
-        path: '/settings', 
-        icon: Settings,
-        section: 'Sistem & Alat'
-      },
-    ];
 
-    const extras = [];
-    if (hasPerm(user, 'manage_broadcast') && !isFeatureDisabled('mod_broadcast')) {
-      extras.push({ label: t('nav.broadcast', 'Broadcast'), path: '/broadcast', icon: Megaphone, section: 'Komunikasi' });
-    }
-    if (hasPerm(user, 'manage_chatbot') && !isFeatureDisabled('mod_chatbot')) {
-      extras.push({ label: t('nav.chatbot', 'Chatbot'), path: '/chatbot', icon: Bot, section: 'Komunikasi' });
-    }
-    if (hasPerm(user, 'manage_pipeline')) {
-      extras.push({ label: t('nav.pipeline', 'Pipeline'), path: '/pipelines', icon: Columns, section: 'CRM & Bisnis' });
-    }
-    if (hasPerm(user, 'manage_products')) {
-      extras.push({ label: t('nav.products', 'Produk'), path: '/products', icon: Package, section: 'CRM & Bisnis' });
-    }
-    if (hasPerm(user, 'use_tools')) {
-      extras.push({ label: t('nav.tools', 'Tools'), path: '/tools', icon: Settings2, section: 'Sistem & Alat' });
-    }
-    if (hasPerm(user, 'manage_followup')) {
-      extras.push({ label: 'Follow-up', path: '/followup', icon: Repeat2, section: 'Komunikasi' });
-    }
-    if (hasPerm(user, 'manage_tasks')) {
-      extras.push({ label: t('nav.tasks', 'Tasks'), path: '/tasks', icon: CheckSquare, section: 'CRM & Bisnis' });
-    }
-    if (hasPerm(user, 'manage_tickets')) {
-      extras.push({ label: t('nav.tickets', 'Tickets'), path: '/tickets', icon: Ticket, section: 'CRM & Bisnis' });
-    }
-    if (hasPerm(user, 'manage_invoice')) {
-      extras.push({ label: t('nav.invoicing', 'Tagihan / Invoice'), path: '/invoicing', icon: Receipt, section: 'CRM & Bisnis' });
-    }
-    menus.splice(menus.length - 1, 0, ...extras);
+    // Filter candidate menus and their subItems based on RBAC permissions and feature toggles
+    menus = orgCandidateMenus
+      .filter(m => !m.disabled)
+      .map(item => {
+        const hasParentPerm = !item.perm || hasPerm(user, item.perm);
+        if (item.subItems && item.subItems.length > 0) {
+          const allowedSubItems = item.subItems.filter(sub => !sub.perm || hasPerm(user, sub.perm));
+          return {
+            ...item,
+            basePath: item.path,
+            targetPath: !hasParentPerm && allowedSubItems.length > 0 ? allowedSubItems[0].path : item.path,
+            subItems: allowedSubItems
+          };
+        }
+        return {
+          ...item,
+          basePath: item.path,
+          targetPath: item.path
+        };
+      })
+      .filter(item => {
+        // Parent menu is included if:
+        // 1. User has direct or fallback permission for parent, OR
+        // 2. Parent has no perm requirement, OR
+        // 3. Any of its sub-items are permitted
+        const hasParentPerm = !item.perm || hasPerm(user, item.perm);
+        const hasVisibleSubItems = item.subItems && item.subItems.length > 0;
+        return hasParentPerm || hasVisibleSubItems;
+      });
   }
 
   menus = menus.filter(m => !m.disabled);
@@ -429,9 +596,6 @@ export default function Sidebar({ isExpanded, onToggle }) {
   if (otherItems.length > 0) {
     sections.push({ title: 'Lainnya', items: otherItems });
   }
-
-  const searchParams = new URLSearchParams(location.search);
-  const isChatOpen = location.pathname.startsWith('/inbox') && searchParams.has('id');
 
   const handleHover = (label, top) => {
     if (label) setHoveredItem({ label, top });
@@ -481,7 +645,18 @@ export default function Sidebar({ isExpanded, onToggle }) {
         </button>
 
         {/* Brand Header Card */}
-        <div className={`mb-3 flex-shrink-0 px-2`}>
+        <div className="mb-3 flex-shrink-0 px-2 relative">
+          {/* Mobile Drawer Close Button */}
+          {isOpen && (
+            <button
+              onClick={() => setIsOpen(false)}
+              className="md:hidden absolute -top-1 right-3 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-colors z-20 cursor-pointer"
+              title="Tutup Menu"
+              aria-label="Tutup Menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
           <div className={`flex items-center gap-3 p-2 rounded-2xl ${
             currentPresetConfig?.id === 'classic' 
               ? 'bg-white/10 text-white' 
@@ -620,16 +795,16 @@ export default function Sidebar({ isExpanded, onToggle }) {
               )}
               {section.items.map((menu) => (
                 <MenuItem
-                  key={menu.path}
+                  key={menu.basePath || menu.path}
                   icon={menu.icon}
-                  active={location.pathname.startsWith(menu.path)}
-                  to={menu.path}
+                  active={location.pathname.startsWith(menu.basePath || menu.path)}
+                  to={menu.targetPath || menu.path}
                   label={menu.label}
                   onClick={() => setIsOpen(false)}
                   showLabel={showLabel}
                   subItems={menu.subItems}
-                  isSubExpanded={expandedMenu === menu.path}
-                  onToggleSub={() => setExpandedMenu(expandedMenu === menu.path ? null : menu.path)}
+                  isSubExpanded={expandedMenu === (menu.basePath || menu.path)}
+                  onToggleSub={() => setExpandedMenu(expandedMenu === (menu.basePath || menu.path) ? null : (menu.basePath || menu.path))}
                   locationPath={location.pathname + location.search}
                   currentPresetConfig={currentPresetConfig}
                 />
@@ -684,23 +859,24 @@ export default function Sidebar({ isExpanded, onToggle }) {
 
       {/* Mobile Bottom Navbar */}
       {!isOpen && !isChatOpen && (
-        <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-[60] pb-safe h-16 flex items-center justify-around px-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-          {menus.slice(0, 5).map((menu) => (
+        <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 z-[60] pb-[env(safe-area-inset-bottom,0px)] h-16 flex items-center justify-around px-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+          {menus.slice(0, 4).map((menu) => (
             <MobileNavItem
-              key={menu.path}
+              key={menu.basePath || menu.path}
               icon={menu.icon}
               label={menu.label}
-              to={menu.path}
-              active={location.pathname.startsWith(menu.path)}
-              isProminent={menu.path === '/inbox'}
+              to={menu.targetPath || menu.path}
+              active={location.pathname.startsWith(menu.basePath || menu.path)}
+              isProminent={(menu.basePath || menu.path) === '/inbox'}
             />
           ))}
           <button
             onClick={() => setIsOpen(true)}
-            className="flex flex-col items-center justify-center w-16 h-full space-y-0.5 text-gray-400"
+            className="flex flex-col items-center justify-center flex-1 h-full py-1.5 min-h-[56px] gap-0.5 text-slate-400 dark:text-slate-500 hover:text-[#008069] dark:hover:text-[#25D366] transition-colors cursor-pointer"
+            title="Buka Menu Lengkap"
           >
             <Menu className="w-5 h-5" />
-            <span className="text-[9px] font-medium">Menu</span>
+            <span className="text-[10px] font-medium leading-tight text-center truncate">Menu</span>
           </button>
         </div>
       )}

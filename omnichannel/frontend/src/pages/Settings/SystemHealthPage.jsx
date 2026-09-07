@@ -268,7 +268,7 @@ export default function SystemHealthPage() {
                                             {q.status}
                                         </span>
                                     </div>
-                                    <div className="grid grid-cols-4 gap-2 text-center mt-3 pt-3 border-t border-gray-200/60 dark:border-slate-700">
+                                    <div className="grid grid-cols-4 gap-1 sm:gap-2 text-center mt-3 pt-3 border-t border-gray-200/60 dark:border-slate-700">
                                         <div>
                                             <div className="text-[10px] text-gray-400">Waiting</div>
                                             <div className="text-xs font-black text-gray-800 dark:text-gray-200">{q.waiting ?? 0}</div>

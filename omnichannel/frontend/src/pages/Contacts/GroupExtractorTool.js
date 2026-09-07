@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { UserPlus, Smartphone, Users, Download, Save, RefreshCw, Loader2, ArrowRight, CheckCircle, Check, AlertCircle, AlertTriangle, Lock, Crown } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -232,15 +232,15 @@ export default function GroupExtractorTool() {
                 {step === 2 && !isLocked && (
                     <div>
                         {/* ... Group List UI ... */}
-                        <div className="flex justify-between items-center mb-4">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
                             <h3 className="font-bold text-lg">Pilih Grup ({groups.length})</h3>
-                            <button onClick={() => setStep(1)} className="text-sm text-gray-500 hover:text-gray-800">Kembali</button>
+                            <button onClick={() => setStep(1)} className="text-sm text-gray-500 hover:text-gray-800 self-start sm:self-auto">Kembali</button>
                         </div>
-                        <div className="border rounded-lg overflow-hidden max-h-[500px] overflow-y-auto custom-scrollbar">
+                        <div className="border rounded-lg overflow-hidden max-h-[500px] overflow-y-auto overflow-x-auto custom-scrollbar">
                             {groups.length === 0 ? (
                                 <div className="p-8 text-center text-gray-400">Tidak ada grup ditemukan.</div>
                             ) : (
-                                <table className="w-full text-left text-sm">
+                                <table className="w-full text-left text-sm min-w-[480px]">
                                     <thead className="bg-gray-50 border-b">
                                         <tr>
                                             <th className="p-4 font-bold text-gray-600">Nama Grup</th>
@@ -274,18 +274,18 @@ export default function GroupExtractorTool() {
                 {step === 3 && extractedData && !isLocked && (
                     <div>
                         {/* ... Save UI ... */}
-                        <div className="flex justify-between items-center mb-6 border-b pb-4">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 border-b pb-4">
                             <div>
                                 <h3 className="font-bold text-xl text-gray-900">Hasil Ekstraksi</h3>
                                 <p className="text-sm text-gray-500">Grup: <b>{extractedData.subject}</b> ({extractedData.size} Peserta)</p>
                             </div>
-                            <button onClick={() => setStep(2)} className="text-sm text-gray-500 hover:text-gray-800">Pilih Grup Lain</button>
+                            <button onClick={() => setStep(2)} className="text-sm text-gray-500 hover:text-gray-800 self-start sm:self-auto">Pilih Grup Lain</button>
                         </div>
                         {/* ... Table and Save Form ... */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div className="md:col-span-2">
-                                <div className="border rounded-lg overflow-hidden max-h-[400px] overflow-y-auto custom-scrollbar">
-                                    <table className="w-full text-left text-sm">
+                                <div className="border rounded-lg overflow-hidden max-h-[400px] overflow-y-auto overflow-x-auto custom-scrollbar">
+                                    <table className="w-full text-left text-sm min-w-[340px]">
                                         <thead className="bg-gray-50 sticky top-0">
                                             <tr>
                                                 <th className="p-3 font-bold text-gray-600">No. WhatsApp / ID</th>

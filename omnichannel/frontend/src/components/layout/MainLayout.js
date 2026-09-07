@@ -120,7 +120,7 @@ export default function MainLayout({ children }) {
                         </div>
                     )}
                     
-                    <div className={`flex-1 relative ${isInbox ? '' : 'pb-16 md:pb-0'}`}>
+                    <div className={`flex-1 relative overflow-x-hidden w-full ${isInbox ? '' : 'pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:pb-0'}`}>
                         <Suspense fallback={<ContentLoader />}>
                             {children || <Outlet />}
                         </Suspense>

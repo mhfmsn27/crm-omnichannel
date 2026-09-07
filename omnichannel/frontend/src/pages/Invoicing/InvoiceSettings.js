@@ -135,7 +135,7 @@ export default function InvoiceSettings() {
     ];
 
     return (
-        <div className="p-8 max-w-4xl mx-auto h-full overflow-y-auto">
+        <div className="p-4 sm:p-8 max-w-4xl mx-auto h-full overflow-y-auto">
             <h2 className="text-2xl font-bold mb-6 text-gray-800">Invoice Settings</h2>
 
             {/* Tabs */}
@@ -152,7 +152,7 @@ export default function InvoiceSettings() {
 
             {/* TAB: General Settings */}
             {activeTab === 'general' && (
-                <div className="bg-white p-8 rounded-xl border shadow-sm space-y-8">
+                <div className="bg-white p-4 sm:p-8 rounded-xl border shadow-sm space-y-8">
                     {/* Section 1: Branding */}
                     <div>
                         <h3 className="text-sm font-bold text-indigo-600 uppercase mb-4 border-b pb-2">Branding & Identity</h3>
@@ -222,7 +222,7 @@ export default function InvoiceSettings() {
                     {/* Section 3: Invoice Config */}
                     <div>
                         <h3 className="text-sm font-bold text-indigo-600 uppercase mb-4 border-b pb-2">Invoice Configuration</h3>
-                        <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1">Prefix</label>
                                 <input className="w-full border p-2 rounded-lg text-sm" value={settings.prefix} onChange={e => setSettings({...settings, prefix: e.target.value})} />

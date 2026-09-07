@@ -359,7 +359,7 @@ function ProductDetailModal({ isOpen, onClose, product, category }) {
                         </div>
 
                         <div className="space-y-4">
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
                                     <p className="text-xs text-gray-500 font-medium">Kategori</p>
                                     <p className="text-sm text-gray-900 dark:text-white mt-0.5">
@@ -532,8 +532,8 @@ export default function ProductListPage() {
                         <p className="text-sm mt-1">Klik "Tambah Produk" untuk mulai mengisi katalog</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full text-sm min-w-[540px]">
                             <thead>
                                 <tr className="border-b border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     <th className="text-left px-4 py-3">Produk</th>

@@ -8,13 +8,7 @@ import {
     Search, ChevronDown, ChevronRight, Star, Crown, Activity
 } from 'lucide-react';
 
-// Helper to check permission
-const hasPerm = (user, perm) => {
-    if (!user) return false;
-    if (user.role === 'admin_member' || user.role === 'super_admin') return true;
-    const perms = Array.isArray(user.permissions) ? user.permissions : [];
-    return perms.includes(perm);
-};
+import { hasPerm } from '../../utils/rbac';
 
 /**
  * CollapsibleGroup - Group of menu items that can be collapsed
@@ -65,23 +59,23 @@ function MenuItem({ to, icon: Icon, label, badge, isCollapsed }) {
             to={to}
             title={isCollapsed ? label : ''}
             className={({ isActive }) =>
-                `w-full mb-1 px-3 py-2.5 rounded-lg border text-left shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-3 group ${
+                `shrink-0 md:w-full mb-0 md:mb-1 px-3 py-2 md:py-2.5 rounded-xl border text-left shadow-xs transition-all duration-200 flex items-center gap-2.5 group whitespace-nowrap ${
                     isActive
-                        ? 'bg-orange-50 border-orange-500 text-orange-700 dark:bg-orange-900/20 dark:border-orange-500 dark:text-orange-300'
-                        : 'bg-white border-transparent text-gray-600 hover:bg-gray-50 dark:bg-[#1e293b] dark:border-transparent dark:text-gray-300 dark:hover:bg-slate-800'
+                        ? 'bg-orange-50 border-orange-500 text-orange-700 dark:bg-orange-950/30 dark:border-orange-500 dark:text-orange-300 font-bold'
+                        : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 dark:bg-[#1e293b] dark:border-slate-800 dark:text-gray-300 dark:hover:bg-slate-800 font-medium'
                 }`
             }
         >
-            <div className="bg-gray-100 p-1.5 rounded-md text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600 transition-colors dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-orange-900/30 dark:group-hover:text-orange-400">
+            <div className="bg-gray-100 p-1.5 rounded-lg text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600 transition-colors dark:bg-slate-800 dark:text-slate-400 shrink-0">
                 <Icon className="w-4 h-4" />
             </div>
-            {!isCollapsed && <span className="font-bold text-xs truncate flex-1">{label}</span>}
+            <span className={`text-xs ${isCollapsed ? 'md:hidden' : ''}`}>{label}</span>
             {badge && (
-                <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-600 text-[10px] rounded font-medium">
+                <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-300 text-[9px] rounded font-semibold uppercase">
                     {badge}
                 </span>
             )}
-            {!isCollapsed && <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-orange-400" />}
+            {!isCollapsed && <ArrowRight className="hidden md:block w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-orange-400 shrink-0 ml-auto" />}
         </NavLink>
     );
 }
@@ -108,39 +102,53 @@ export default function SettingsSubMenu({ isCollapsed }) {
     const { user } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
 
-    const isAdmin = user?.role === 'admin_member' || user?.role === 'super_admin';
-    const canManageTeam = isAdmin || hasPerm(user, 'manage_team');
+    // Granular permissions for settings sub-items
+    const canManageSettings = hasPerm(user, 'manage_settings');
+    const canManageTeam = hasPerm(user, 'manage_team');
+    const canManageRoles = hasPerm(user, 'manage_roles');
+    const canManageSystemHealth = hasPerm(user, 'manage_system_health');
+    const canManageChatbotTraining = hasPerm(user, 'chatbot_training');
+    const canManageLabels = hasPerm(user, 'manage_labels');
+    const canManageTemplates = hasPerm(user, 'manage_templates');
+    const canAssign = hasPerm(user, 'assign_conversations');
+    const canManageTickets = hasPerm(user, 'manage_tickets');
+    const canManageIntegrations = hasPerm(user, 'manage_integrations');
+    const canManageWebhooks = hasPerm(user, 'manage_webhooks');
 
-    // All menu items organized by group
+    // All menu items organized by group with dynamic RBAC inclusion/exclusion
     const allItems = {
         workspace: [
-            { to: "quick-replies", icon: MessageSquare, label: "Global Quick Replies" },
-            ...(isAdmin ? [{ to: "custom-fields", icon: Type, label: "Custom Fields" }] : []),
+            ...(canManageSettings ? [{ to: "quick-replies", icon: MessageSquare, label: "Global Quick Replies" }] : []),
+            ...(canManageSettings ? [{ to: "custom-fields", icon: Type, label: "Custom Fields" }] : []),
             ...(canManageTeam ? [{ to: "team", icon: Users, label: "Team & Anggota" }] : []),
-            ...(isAdmin ? [
-                { to: "roles", icon: Key, label: "Role & Akses" },
-                { to: "divisions", icon: Building2, label: "Divisi" },
-                { to: "system-health", icon: Activity, label: "Server Health & Backup", badge: "PRO" },
-            ] : []),
-            ...(isAdmin ? [{ to: "license", icon: Shield, label: "Lisensi Domain", badge: "NEW" }] : []),
+            ...(canManageRoles ? [{ to: "roles", icon: Key, label: "Role & Akses" }] : []),
+            ...(canManageSettings ? [{ to: "divisions", icon: Building2, label: "Divisi" }] : []),
+            ...(canManageSystemHealth ? [{ to: "system-health", icon: Activity, label: "Server Health & Backup", badge: "PRO" }] : []),
+            ...(canManageChatbotTraining ? [{ to: "multi-language", icon: Bot, label: "Multi-Bahasa & AI" }] : []),
+            ...(canManageSettings ? [{ to: "license", icon: Shield, label: "Lisensi Domain", badge: "NEW" }] : []),
         ],
         automation: [
-            ...(isAdmin ? [
-                { to: "auto-reply", icon: Zap, label: "Auto Reply" },
-                { to: "auto-label", icon: Tag, label: "Auto Label" },
-                { to: "workflow-rules", icon: Workflow, label: "Workflow Rules" },
-                { to: "auto-archive", icon: Archive, label: "Auto Archive" },
-            ] : []),
-            { to: "wa-templates", icon: LayoutTemplate, label: "WA Template" },
+            ...(canManageSettings ? [{ to: "auto-reply", icon: Zap, label: "Auto Reply" }] : []),
+            ...(canManageLabels ? [{ to: "auto-label", icon: Tag, label: "Auto Label" }] : []),
+            ...(canManageSettings ? [{ to: "workflow-rules", icon: Workflow, label: "Workflow Rules" }] : []),
+            ...(canManageSettings ? [{ to: "auto-archive", icon: Archive, label: "Auto Archive" }] : []),
+            ...(canManageTemplates ? [{ to: "wa-templates", icon: LayoutTemplate, label: "WA Template" }] : []),
         ],
         customerService: [
-            ...(isAdmin ? [
-                { to: "inboxes", icon: Inbox, label: "Kotak Masuk Terpisah" },
-                { to: "assignment", icon: UserCheck, label: "Auto Assignment" },
-                { to: "working-hours", icon: Clock, label: "Jam Operasional" },
-                { to: "sla", icon: ShieldAlert, label: "Kebijakan SLA" },
-                { to: "device-data", icon: Smartphone, label: "Device Data" },
-            ] : []),
+            ...(canManageSettings ? [{ to: "inboxes", icon: Inbox, label: "Kotak Masuk Terpisah" }] : []),
+            ...(canAssign ? [{ to: "assignment", icon: UserCheck, label: "Auto Assignment" }] : []),
+            ...(canManageSettings ? [{ to: "working-hours", icon: Clock, label: "Jam Operasional" }] : []),
+            ...(canManageTickets ? [{ to: "sla", icon: ShieldAlert, label: "Kebijakan SLA" }] : []),
+            ...(canManageIntegrations ? [{ to: "device-data", icon: Smartphone, label: "Device Data" }] : []),
+        ],
+        integrationsApi: [
+            ...(canManageIntegrations ? [{ to: "email", icon: Mail, label: "Email SMTP & IMAP" }] : []),
+            ...(canManageWebhooks ? [{ to: "webhooks", icon: Webhook, label: "Webhook Outbound" }] : []),
+            ...(canManageIntegrations ? [{ to: "ecommerce", icon: ShoppingCart, label: "E-Commerce Sync" }] : []),
+            ...(canManageIntegrations ? [{ to: "ongkir", icon: Package, label: "Ongkir & Ekspedisi" }] : []),
+        ],
+        billing: [
+            ...(canManageSettings ? [{ to: "billing", icon: Settings2, label: "Paket & Billing" }] : []),
         ],
     };
 
@@ -168,6 +176,8 @@ export default function SettingsSubMenu({ isCollapsed }) {
         workspace: { title: "Workspace", icon: Users },
         automation: { title: "Automasi", icon: Zap },
         customerService: { title: "Customer Service", icon: Headphones },
+        integrationsApi: { title: "Integrasi & Ekstensi", icon: Webhook },
+        billing: { title: "Paket & Billing", icon: Settings2 },
     };
 
     // Check if we have any items in a group
@@ -204,57 +214,93 @@ export default function SettingsSubMenu({ isCollapsed }) {
     }
 
     return (
-        <div className="flex flex-col h-full">
-            {/* Search */}
-            <SearchInput value={searchQuery} onChange={setSearchQuery} />
-
-            {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
-                {/* Workspace Group */}
-                {hasItems('workspace') && (
-                    <CollapsibleGroup
-                        title={groupConfig.workspace.title}
-                        icon={groupConfig.workspace.icon}
-                        defaultOpen={searchQuery.trim() || true}
-                    >
-                        {filteredItems.workspace?.map(item => (
-                            <MenuItem key={item.to} {...item} />
-                        ))}
-                    </CollapsibleGroup>
-                )}
-
-                {/* Automation Group */}
-                {hasItems('automation') && (
-                    <CollapsibleGroup
-                        title={groupConfig.automation.title}
-                        icon={groupConfig.automation.icon}
-                        defaultOpen={searchQuery.trim() || true}
-                    >
-                        {filteredItems.automation?.map(item => (
-                            <MenuItem key={item.to} {...item} />
-                        ))}
-                    </CollapsibleGroup>
-                )}
-
-                {/* Customer Service Group */}
-                {hasItems('customerService') && (
-                    <CollapsibleGroup
-                        title={groupConfig.customerService.title}
-                        icon={groupConfig.customerService.icon}
-                        defaultOpen={searchQuery.trim() || true}
-                    >
-                        {filteredItems.customerService?.map(item => (
-                            <MenuItem key={item.to} {...item} />
-                        ))}
-                    </CollapsibleGroup>
-                )}
+        <div className="flex flex-col w-full h-full">
+            {/* MOBILE ONLY: Horizontal Scrollable Tab Bar */}
+            <div className="md:hidden flex flex-row overflow-x-auto no-scrollbar gap-1.5 py-1 px-1 pb-1.5 w-full">
+                {Object.values(filteredItems).flat().map(item => (
+                    <MenuItem key={item.to} {...item} isCollapsed={false} />
+                ))}
             </div>
 
-            {/* Footer */}
-            <div className="mt-auto pt-3 border-t border-gray-200 dark:border-slate-700">
-                <p className="text-[10px] text-gray-400 text-center">
-                    CRMHub v2.0 • {new Date().getFullYear()}
-                </p>
+            {/* DESKTOP/TABLET ONLY: Search & Collapsible Groups */}
+            <div className="hidden md:flex md:flex-col flex-1">
+                {/* Search */}
+                <SearchInput value={searchQuery} onChange={setSearchQuery} />
+
+                {/* Scrollable content */}
+                <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                    {/* Workspace Group */}
+                    {hasItems('workspace') && (
+                        <CollapsibleGroup
+                            title={groupConfig.workspace.title}
+                            icon={groupConfig.workspace.icon}
+                            defaultOpen={searchQuery.trim() || true}
+                        >
+                            {filteredItems.workspace?.map(item => (
+                                <MenuItem key={item.to} {...item} />
+                            ))}
+                        </CollapsibleGroup>
+                    )}
+
+                    {/* Automation Group */}
+                    {hasItems('automation') && (
+                        <CollapsibleGroup
+                            title={groupConfig.automation.title}
+                            icon={groupConfig.automation.icon}
+                            defaultOpen={searchQuery.trim() || true}
+                        >
+                            {filteredItems.automation?.map(item => (
+                                <MenuItem key={item.to} {...item} />
+                            ))}
+                        </CollapsibleGroup>
+                    )}
+
+                    {/* Customer Service Group */}
+                    {hasItems('customerService') && (
+                        <CollapsibleGroup
+                            title={groupConfig.customerService.title}
+                            icon={groupConfig.customerService.icon}
+                            defaultOpen={searchQuery.trim() || true}
+                        >
+                            {filteredItems.customerService?.map(item => (
+                                <MenuItem key={item.to} {...item} />
+                            ))}
+                        </CollapsibleGroup>
+                    )}
+
+                    {/* Integrations & API Group */}
+                    {hasItems('integrationsApi') && (
+                        <CollapsibleGroup
+                            title={groupConfig.integrationsApi.title}
+                            icon={groupConfig.integrationsApi.icon}
+                            defaultOpen={searchQuery.trim() || true}
+                        >
+                            {filteredItems.integrationsApi?.map(item => (
+                                <MenuItem key={item.to} {...item} />
+                            ))}
+                        </CollapsibleGroup>
+                    )}
+
+                    {/* Billing Group */}
+                    {hasItems('billing') && (
+                        <CollapsibleGroup
+                            title={groupConfig.billing.title}
+                            icon={groupConfig.billing.icon}
+                            defaultOpen={searchQuery.trim() || true}
+                        >
+                            {filteredItems.billing?.map(item => (
+                                <MenuItem key={item.to} {...item} />
+                            ))}
+                        </CollapsibleGroup>
+                    )}
+                </div>
+
+                {/* Footer */}
+                <div className="mt-auto pt-3 border-t border-gray-200 dark:border-slate-700">
+                    <p className="text-[10px] text-gray-400 text-center">
+                        CRMHub v2.0 • {new Date().getFullYear()}
+                    </p>
+                </div>
             </div>
         </div>
     );

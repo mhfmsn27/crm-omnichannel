@@ -52,22 +52,23 @@ export default function PlanList() {
   );
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-4 sm:p-6 md:p-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Subscription Plans</h1>
           <p className="text-sm text-gray-500">Manage pricing tiers and feature limits.</p>
         </div>
         <button 
           onClick={() => navigate('/admin/plans/create')}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+          className="w-full sm:w-auto justify-center flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-sm"
         >
           <Plus className="w-4 h-4" /> Create New Plan
         </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full text-left">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left min-w-[700px]">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Plan Name</th>
@@ -136,6 +137,7 @@ export default function PlanList() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

@@ -260,12 +260,12 @@ export default function SettingsPage() {
     if (loading) return <div className="p-8">Loading Settings...</div>;
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
-            <div className="flex flex-col md:flex-row gap-8 items-start">
+        <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
 
                 {/* LEFT SIDEBAR: MENU */}
-                <aside className="w-full md:w-64 flex-shrink-0 sticky top-6">
-                    <div className="mb-6 px-2">
+                <aside className="w-full md:w-64 flex-shrink-0 md:sticky md:top-6">
+                    <div className="mb-4 md:mb-6 px-2">
                         <h1 className="text-2xl font-bold text-gray-900">System Settings</h1>
                         <p className="text-xs text-gray-500 mt-1">Configure global application parameters.</p>
                     </div>
@@ -282,7 +282,7 @@ export default function SettingsPage() {
                 </aside>
 
                 {/* RIGHT CONTENT */}
-                <main className="flex-1 w-full bg-white rounded-2xl shadow-sm border border-gray-200 min-h-[600px] p-8">
+                <main className="flex-1 w-full bg-white rounded-2xl shadow-sm border border-gray-200 min-h-[600px] p-4 sm:p-6 md:p-8">
                     <div className="mb-8 border-b border-gray-100 pb-4 flex justify-between items-center">
                         <div>
                             <h2 className="text-xl font-bold text-gray-800 capitalize">
@@ -677,7 +677,8 @@ export default function SettingsPage() {
                             <div>
                                 <h3 className="font-bold text-gray-800 mb-4">Payout Requests</h3>
                                 <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                                    <table className="w-full text-sm text-left">
+                                    <div className="overflow-x-auto w-full">
+                                        <table className="w-full text-sm text-left min-w-[650px]">
                                         <thead className="bg-gray-50 text-gray-500 font-medium border-b">
                                             <tr>
                                                 <th className="px-6 py-3">Partner</th>
@@ -728,6 +729,7 @@ export default function SettingsPage() {
                                             )}
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

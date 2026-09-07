@@ -47,7 +47,7 @@ export default function WarmerReportModal({ isOpen, circleId, onClose }) {
                     ) : (
                         <div className="space-y-8">
                             {/* Stats Cards */}
-                            <div className="grid grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <div className="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm flex items-center justify-between">
                                     <div>
                                         <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Sent (7 Days)</p>
@@ -95,11 +95,11 @@ export default function WarmerReportModal({ isOpen, circleId, onClose }) {
                             </div>
 
                             {/* Recent Logs */}
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto w-full">
                                 <div className="p-4 border-b border-gray-100 bg-gray-50">
                                     <h4 className="font-bold text-gray-700 text-sm">Recent Activity Log</h4>
                                 </div>
-                                <table className="w-full text-left text-sm">
+                                <table className="w-full text-left text-sm min-w-[480px]">
                                     <thead className="bg-gray-50 text-gray-500 font-medium text-xs uppercase">
                                         <tr>
                                             <th className="px-6 py-3">Time</th>

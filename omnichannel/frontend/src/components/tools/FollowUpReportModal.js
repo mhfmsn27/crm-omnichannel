@@ -59,8 +59,8 @@ export default function FollowUpReportModal({ isOpen, onClose, sequence }) {
             size="lg"
             className="p-0 max-h-[80vh] flex flex-col"
         >
-            <div className="flex-1 overflow-y-auto p-0 custom-scrollbar">
-                <table className="w-full text-left text-sm">
+            <div className="flex-1 overflow-y-auto overflow-x-auto p-0 custom-scrollbar w-full">
+                <table className="w-full text-left text-sm min-w-[450px]">
                     <thead className="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
                         <tr>
                             <th className="px-6 py-3 font-medium text-gray-500">Contact</th>

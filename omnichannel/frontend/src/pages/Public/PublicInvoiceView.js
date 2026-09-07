@@ -97,12 +97,12 @@ export default function PublicInvoiceView() {
 
             <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
                 {/* Header */}
-                <div className="p-8 text-white flex justify-between items-start transition-colors duration-300" style={{ backgroundColor: isPaid ? '#10b981' : (settings.theme_color || '#4f46e5') }}>
+                <div className="p-5 sm:p-8 text-white flex flex-col sm:flex-row justify-between items-start gap-4 transition-colors duration-300" style={{ backgroundColor: isPaid ? '#10b981' : (settings.theme_color || '#4f46e5') }}>
                     <div>
                         <h1 className="text-2xl font-bold">INVOICE</h1>
                         <p className="opacity-80 text-sm mt-1">{invoice.invoice_number}</p>
                     </div>
-                    <div className="text-right flex flex-col items-end">
+                    <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
                         {settings.logo_url && (
                             <div className="bg-white p-1.5 rounded-lg shadow-sm mb-3">
                                 <img src={getApiUrl(settings.logo_url)} alt="Logo" className="h-10 w-auto object-contain" />
@@ -115,15 +115,15 @@ export default function PublicInvoiceView() {
                     </div>
                 </div>
 
-                <div className="p-8">
+                <div className="p-4 sm:p-8">
                     {/* Info Grid */}
-                    <div className="grid grid-cols-2 gap-8 mb-8 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 mb-8 text-sm">
                         <div>
                             <p className="text-gray-500 mb-1">Bill To:</p>
                             <p className="font-bold text-gray-800">{invoice.contact_name}</p>
                             <p className="text-gray-600">{invoice.contact_phone}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-left sm:text-right">
                             <p className="text-gray-500 mb-1">Dates:</p>
                             <p><span className="text-gray-600">Issued:</span> <span className="font-bold">{new Date(invoice.issue_date).toLocaleDateString()}</span></p>
                             <p><span className="text-gray-600">Due:</span> <span className={`font-bold ${isOverdue ? 'text-orange-500' : 'text-red-500'}`}>{new Date(invoice.due_date).toLocaleDateString()}</span></p>
@@ -134,30 +134,32 @@ export default function PublicInvoiceView() {
                     </div>
 
                     {/* Items Table */}
-                    <table className="w-full mb-8">
-                        <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
-                            <tr>
-                                <th className="p-3 text-left">Description</th>
-                                <th className="p-3 text-center">Qty</th>
-                                <th className="p-3 text-right">Price</th>
-                                <th className="p-3 text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-sm divide-y">
-                            {invoice.items.map((item, i) => (
-                                <tr key={i}>
-                                    <td className="p-3 font-medium text-gray-800">{item.description}</td>
-                                    <td className="p-3 text-center">{item.quantity}</td>
-                                    <td className="p-3 text-right">{parseInt(item.unit_price).toLocaleString()}</td>
-                                    <td className="p-3 text-right font-bold">{parseInt(item.amount).toLocaleString()}</td>
+                    <div className="overflow-x-auto w-full mb-8">
+                        <table className="w-full min-w-[360px]">
+                            <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
+                                <tr>
+                                    <th className="p-3 text-left">Description</th>
+                                    <th className="p-3 text-center">Qty</th>
+                                    <th className="p-3 text-right">Price</th>
+                                    <th className="p-3 text-right">Total</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="text-sm divide-y">
+                                {invoice.items.map((item, i) => (
+                                    <tr key={i}>
+                                        <td className="p-3 font-medium text-gray-800">{item.description}</td>
+                                        <td className="p-3 text-center">{item.quantity}</td>
+                                        <td className="p-3 text-right">{parseInt(item.unit_price).toLocaleString()}</td>
+                                        <td className="p-3 text-right font-bold">{parseInt(item.amount).toLocaleString()}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
 
                     {/* Totals */}
                     <div className="flex justify-end mb-8">
-                        <div className="w-64 space-y-2 text-sm">
+                        <div className="w-full sm:w-64 space-y-2 text-sm">
                             <div className="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
                                 <span>{parseInt(invoice.subtotal).toLocaleString()}</span>

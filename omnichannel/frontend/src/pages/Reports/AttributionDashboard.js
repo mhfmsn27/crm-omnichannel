@@ -292,8 +292,8 @@ export default function AttributionDashboard() {
 
                     {/* By Source Tab */}
                     {activeTab === 'sources' && (
-                        <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                            <table className="w-full">
+                        <div className="bg-white rounded-xl border shadow-sm overflow-x-auto w-full">
+                            <table className="w-full min-w-[500px]">
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th className="text-left py-3 px-4 text-xs font-bold text-gray-500 uppercase">Source</th>

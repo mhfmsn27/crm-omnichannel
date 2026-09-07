@@ -162,13 +162,13 @@ export default function DashboardPage() {
     const PIE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444'];
 
     return (
-        <div className="p-8 bg-gray-50 min-h-screen">
-            <div className="flex justify-between items-center mb-8">
+        <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen">
+            <div className="flex justify-between items-center mb-6 md:mb-8 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Super Admin Dashboard</h1>
-                    <p className="text-gray-500">Overview of business performance and system health.</p>
+                    <p className="text-gray-500 text-sm">Overview of business performance and system health.</p>
                 </div>
-                <button onClick={fetchData} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600">
+                <button onClick={fetchData} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600 shadow-sm">
                     <RefreshCw className="w-5 h-5" />
                 </button>
             </div>

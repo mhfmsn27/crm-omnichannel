@@ -43,14 +43,14 @@ export default function AnalyticsPage() {
     if (!data) return <div className="p-8">Failed to load data</div>;
 
     return (
-        <div className="p-8 bg-gray-50 min-h-screen h-full overflow-y-auto">
+        <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen h-full overflow-y-auto">
             {/* HEADER */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Analytics & Performance</h1>
                     <p className="text-sm text-gray-500">Deep dive into your conversation metrics and customer satisfaction.</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                     <DateRangeFilter startDate={startDate} endDate={endDate} onChange={(s, e) => { setStartDate(s); setEndDate(e); }} />
                     <button className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 font-medium text-sm transition-colors">
                         <Download className="w-4 h-4" /> Export
@@ -92,9 +92,9 @@ export default function AnalyticsPage() {
                      <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
                         <Trophy className="w-5 h-5 text-orange-500" /> Agent Leaderboard
                     </h3>
-                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                    <div className="flex-1 overflow-y-auto overflow-x-auto custom-scrollbar pr-2 w-full">
                         {data.agent_performance && data.agent_performance.length > 0 ? (
-                            <table className="w-full text-left text-sm">
+                            <table className="w-full text-left text-sm min-w-[280px]">
                                 <thead className="bg-gray-50 border-b border-gray-100">
                                     <tr>
                                         <th className="pb-2 pt-2 pl-2 font-medium text-gray-500">Agent</th>

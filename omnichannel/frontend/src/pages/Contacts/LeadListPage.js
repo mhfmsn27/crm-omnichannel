@@ -116,7 +116,7 @@ export default function LeadListPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                 {[
                     { key: 'hot', label: 'Hot Leads', icon: '🔥', color: 'bg-red-50 border-red-200 text-red-600' },
                     { key: 'warm', label: 'Warm Leads', icon: '🌡️', color: 'bg-orange-50 border-orange-200 text-orange-600' },
@@ -145,73 +145,75 @@ export default function LeadListPage() {
                         <p className="text-sm mt-1">Lead muncul otomatis setelah 5+ pesan percakapan masuk</p>
                     </div>
                 ) : (
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                <th className="text-left px-4 py-3">Kontak</th>
-                                <th className="text-left px-4 py-3">Status</th>
-                                <th className="text-left px-4 py-3">Skor</th>
-                                <th className="text-left px-4 py-3 hidden md:table-cell">Terqualifikasi</th>
-                                <th className="text-left px-4 py-3">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50 dark:divide-dark-border">
-                            {leads.map(lead => {
-                                const sconf = LEAD_STATUS_CONFIG[lead.lead_status] || LEAD_STATUS_CONFIG.unqualified;
-                                return (
-                                    <tr key={lead.id} onClick={() => navigate(`/contacts?id=${lead.id}`)}
-                                        className="hover:bg-gray-50 dark:hover:bg-dark-bg cursor-pointer transition-colors">
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
-                                                    <User className="w-4 h-4 text-indigo-500" />
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full text-sm min-w-[550px]">
+                            <thead>
+                                <tr className="border-b border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th className="text-left px-4 py-3">Kontak</th>
+                                    <th className="text-left px-4 py-3">Status</th>
+                                    <th className="text-left px-4 py-3">Skor</th>
+                                    <th className="text-left px-4 py-3 hidden md:table-cell">Terqualifikasi</th>
+                                    <th className="text-left px-4 py-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50 dark:divide-dark-border">
+                                {leads.map(lead => {
+                                    const sconf = LEAD_STATUS_CONFIG[lead.lead_status] || LEAD_STATUS_CONFIG.unqualified;
+                                    return (
+                                        <tr key={lead.id} onClick={() => navigate(`/contacts?id=${lead.id}`)}
+                                            className="hover:bg-gray-50 dark:hover:bg-dark-bg cursor-pointer transition-colors">
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
+                                                        <User className="w-4 h-4 text-indigo-500" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium text-gray-800 dark:text-white text-sm">{lead.name || 'Unknown'}</p>
+                                                        <p className="text-xs text-gray-400">{lead.phone_number}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="font-medium text-gray-800 dark:text-white text-sm">{lead.name || 'Unknown'}</p>
-                                                    <p className="text-xs text-gray-400">{lead.phone_number}</p>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${sconf.color}`}>
+                                                    {sconf.icon} {sconf.label}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <LeadScoreBar score={lead.lead_score || 0} />
+                                            </td>
+                                            <td className="px-4 py-3 hidden md:table-cell text-xs text-gray-500 dark:text-gray-400">
+                                                {lead.lead_qualified_at
+                                                    ? new Date(lead.lead_qualified_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+                                                    : '—'}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                                    <select
+                                                        value={lead.lead_status}
+                                                        onChange={e => handleStatusChange(lead.id, e.target.value, e)}
+                                                        className="text-xs border border-gray-200 dark:border-dark-border rounded-lg px-2 py-1 bg-white dark:bg-dark-bg dark:text-white focus:outline-none"
+                                                    >
+                                                        <option value="cold">❄️ Cold</option>
+                                                        <option value="warm">🌡️ Warm</option>
+                                                        <option value="hot">🔥 Hot</option>
+                                                        <option value="converted">✅ Converted</option>
+                                                        <option value="unqualified">— Unqualified</option>
+                                                    </select>
+                                                    <button
+                                                        onClick={e => handleRequalify(lead.id, e)}
+                                                        title="Re-qualify dengan data terbaru"
+                                                        className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                                    >
+                                                        <RefreshCw className="w-3.5 h-3.5" />
+                                                    </button>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${sconf.color}`}>
-                                                {sconf.icon} {sconf.label}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <LeadScoreBar score={lead.lead_score || 0} />
-                                        </td>
-                                        <td className="px-4 py-3 hidden md:table-cell text-xs text-gray-500 dark:text-gray-400">
-                                            {lead.lead_qualified_at
-                                                ? new Date(lead.lead_qualified_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
-                                                : '—'}
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                                                <select
-                                                    value={lead.lead_status}
-                                                    onChange={e => handleStatusChange(lead.id, e.target.value, e)}
-                                                    className="text-xs border border-gray-200 dark:border-dark-border rounded-lg px-2 py-1 bg-white dark:bg-dark-bg dark:text-white focus:outline-none"
-                                                >
-                                                    <option value="cold">❄️ Cold</option>
-                                                    <option value="warm">🌡️ Warm</option>
-                                                    <option value="hot">🔥 Hot</option>
-                                                    <option value="converted">✅ Converted</option>
-                                                    <option value="unqualified">— Unqualified</option>
-                                                </select>
-                                                <button
-                                                    onClick={e => handleRequalify(lead.id, e)}
-                                                    title="Re-qualify dengan data terbaru"
-                                                    className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                                                >
-                                                    <RefreshCw className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 {!loading && totalPages > 1 && (

@@ -97,8 +97,8 @@ export default function LabelManagementPage() {
         </div>
 
         {/* DESKTOP TABLE */}
-        <div className="hidden md:block bg-white dark:bg-dark-surface rounded-xl border border-gray-200 dark:border-dark-border shadow-sm overflow-hidden">
-            <table className="w-full text-left">
+        <div className="hidden md:block bg-white dark:bg-dark-surface rounded-xl border border-gray-200 dark:border-dark-border shadow-sm overflow-x-auto">
+            <table className="w-full text-left min-w-[500px]">
                 <thead className="bg-gray-50 dark:bg-dark-bg border-b border-gray-200 dark:border-dark-border">
                     <tr>
                         <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">Label Name</th>

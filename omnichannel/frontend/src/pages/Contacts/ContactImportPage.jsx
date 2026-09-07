@@ -101,14 +101,15 @@ export default function ContactImport() {
             {result && (
                 <div className={`rounded-lg p-4 ${result.errors > 0 ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
                     <div className="flex items-center gap-2">
-                    {result.errors > 0 ? <XCircle className="w-5 h-5 text-red-500" /> : <CheckCircle className="w-5 h-5 text-green-500" />}
-                    <div>
-                        <p className="font-medium">
-                            {result.imported} dik impor, {result.skipped} dilewati
-                        </p>
-                        {result.errors > 0 && (
-                            <p className="text-sm text-red-600">{result.errors} error</p>
-                        )}
+                        {result.errors > 0 ? <XCircle className="w-5 h-5 text-red-500" /> : <CheckCircle className="w-5 h-5 text-green-500" />}
+                        <div>
+                            <p className="font-medium">
+                                {result.imported} kontak diimpor, {result.skipped} dilewati
+                            </p>
+                            {result.errors > 0 && (
+                                <p className="text-sm text-red-600">{result.errors} error</p>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

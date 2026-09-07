@@ -515,7 +515,7 @@ export default function AIAgentSetupPage() {
                         {/* ANALYTICS TAB */}
                         {activeTab === 'analytics' && (
                             <div className="space-y-6">
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div className="bg-white p-5 rounded-xl border shadow-sm text-center">
                                         <div className="text-xs text-gray-500 font-bold uppercase mb-1">Total Queries</div>
                                         <div className="text-2xl font-black text-gray-800">{aiStats.total_messages}</div>
@@ -535,8 +535,8 @@ export default function AIAgentSetupPage() {
                                         <h3 className="font-bold text-gray-800">Unanswered Questions (Fallbacks)</h3>
                                         <p className="text-xs text-gray-500">Train your KB with these exact queries to lower the fallback rate.</p>
                                     </div>
-                                    <div className="max-h-96 overflow-y-auto">
-                                        <table className="w-full text-left text-sm">
+                                    <div className="max-h-96 overflow-y-auto overflow-x-auto custom-scrollbar">
+                                        <table className="w-full text-left text-sm min-w-[340px]">
                                             <thead className="bg-gray-50 border-b sticky top-0">
                                                 <tr><th className="p-3 font-bold text-gray-600">User Message</th><th className="p-3 font-bold text-gray-600 w-32">Time</th></tr>
                                             </thead>

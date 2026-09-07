@@ -474,7 +474,7 @@ export default function BotConfigModal({ isOpen, bot, onClose }) {
                     {/* TAB 5: ANALYTICS */}
                     {activeTab === 'analytics' && (
                         <div className="space-y-6 max-w-4xl mx-auto">
-                            <div className="grid grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                                 <div className="bg-white p-6 rounded-xl border shadow-sm">
                                     <div className="text-gray-500 text-sm font-bold uppercase mb-2">Total AI Queries</div>
                                     <div className="text-3xl font-black text-gray-800">{aiStats.total_messages}</div>
@@ -494,8 +494,8 @@ export default function BotConfigModal({ isOpen, bot, onClose }) {
                                     <h3 className="font-bold text-gray-800 flex items-center gap-2"><BarChart2 className="w-5 h-5 text-indigo-600"/> Unanswered Questions Log</h3>
                                     <span className="text-xs text-gray-500">Train your KB with these queries</span>
                                 </div>
-                                <div className="max-h-96 overflow-y-auto">
-                                    <table className="w-full text-left text-sm">
+                                <div className="max-h-96 overflow-y-auto overflow-x-auto custom-scrollbar">
+                                    <table className="w-full text-left text-sm min-w-[340px]">
                                         <thead className="bg-gray-50 border-b sticky top-0">
                                             <tr>
                                                 <th className="p-4 font-bold text-gray-600">User Message</th>

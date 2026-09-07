@@ -244,85 +244,87 @@ export default function TicketListPage() {
                         <p className="text-sm mt-1">Tiket muncul otomatis dari percakapan masuk</p>
                     </div>
                 ) : (
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                <th className="text-left px-4 py-3">Tiket</th>
-                                <th className="text-left px-4 py-3">Kontak</th>
-                                <th className="text-left px-4 py-3 hidden md:table-cell">Channel</th>
-                                <th className="text-left px-4 py-3">Prioritas</th>
-                                <th className="text-left px-4 py-3 hidden lg:table-cell">Status</th>
-                                <th className="text-left px-4 py-3 hidden lg:table-cell">SLA</th>
-                                <th className="text-left px-4 py-3 hidden xl:table-cell">Agen</th>
-                                <th className="text-left px-4 py-3 hidden xl:table-cell">Pesan Terakhir</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50 dark:divide-dark-border">
-                            {tickets.map(ticket => {
-                                const pconf = PRIORITY_CONFIG[ticket.priority] || PRIORITY_CONFIG.medium;
-                                const sconf = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.open;
-                                return (
-                                    <tr
-                                        key={ticket.id}
-                                        onClick={() => openInInbox(ticket.id)}
-                                        className="hover:bg-gray-50 dark:hover:bg-dark-bg cursor-pointer transition-colors group"
-                                    >
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2">
-                                                {ticket.sla_breached && <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />}
-                                                <span className="font-mono font-semibold text-indigo-600 dark:text-indigo-400 group-hover:underline text-xs">
-                                                    {ticket.ticket_number || `#${ticket.id}`}
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full text-sm min-w-[500px]">
+                            <thead>
+                                <tr className="border-b border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th className="text-left px-4 py-3">Tiket</th>
+                                    <th className="text-left px-4 py-3">Kontak</th>
+                                    <th className="text-left px-4 py-3 hidden md:table-cell">Channel</th>
+                                    <th className="text-left px-4 py-3">Prioritas</th>
+                                    <th className="text-left px-4 py-3 hidden lg:table-cell">Status</th>
+                                    <th className="text-left px-4 py-3 hidden lg:table-cell">SLA</th>
+                                    <th className="text-left px-4 py-3 hidden xl:table-cell">Agen</th>
+                                    <th className="text-left px-4 py-3 hidden xl:table-cell">Pesan Terakhir</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50 dark:divide-dark-border">
+                                {tickets.map(ticket => {
+                                    const pconf = PRIORITY_CONFIG[ticket.priority] || PRIORITY_CONFIG.medium;
+                                    const sconf = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.open;
+                                    return (
+                                        <tr
+                                            key={ticket.id}
+                                            onClick={() => openInInbox(ticket.id)}
+                                            className="hover:bg-gray-50 dark:hover:bg-dark-bg cursor-pointer transition-colors group"
+                                        >
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    {ticket.sla_breached && <span className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />}
+                                                    <span className="font-mono font-semibold text-indigo-600 dark:text-indigo-400 group-hover:underline text-xs">
+                                                        {ticket.ticket_number || `#${ticket.id}`}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
+                                                        <User className="w-3.5 h-3.5 text-indigo-500" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium text-gray-800 dark:text-white text-xs">{ticket.contact_name || 'Unknown'}</p>
+                                                        <p className="text-gray-400 text-xs">{ticket.contact_phone || ''}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 hidden md:table-cell">
+                                                <span className="text-base">{CHANNEL_ICONS[ticket.channel] || '💬'}</span>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-full border ${pconf.color}`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${pconf.dot}`} />
+                                                    {pconf.label}
                                                 </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
-                                                    <User className="w-3.5 h-3.5 text-indigo-500" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-gray-800 dark:text-white text-xs">{ticket.contact_name || 'Unknown'}</p>
-                                                    <p className="text-gray-400 text-xs">{ticket.contact_phone || ''}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 hidden md:table-cell">
-                                            <span className="text-base">{CHANNEL_ICONS[ticket.channel] || '💬'}</span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-full border ${pconf.color}`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${pconf.dot}`} />
-                                                {pconf.label}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 hidden lg:table-cell">
-                                            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${sconf.color}`}>
-                                                {sconf.label}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 hidden lg:table-cell">
-                                            <SLABadge
-                                                sla_deadline_at={ticket.sla_deadline_at}
-                                                sla_breached={ticket.sla_breached}
-                                                status={ticket.status}
-                                            />
-                                        </td>
-                                        <td className="px-4 py-3 hidden xl:table-cell text-xs text-gray-500 dark:text-gray-400">
-                                            {ticket.assigned_to_name || <span className="text-gray-300">Unassigned</span>}
-                                        </td>
-                                        <td className="px-4 py-3 hidden xl:table-cell max-w-xs">
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{ticket.last_message || '—'}</p>
-                                            {ticket.last_message_at && (
-                                                <p className="text-xs text-gray-300 dark:text-gray-600">
-                                                    {new Date(ticket.last_message_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                                                </p>
-                                            )}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                                            </td>
+                                            <td className="px-4 py-3 hidden lg:table-cell">
+                                                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${sconf.color}`}>
+                                                    {sconf.label}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 hidden lg:table-cell">
+                                                <SLABadge
+                                                    sla_deadline_at={ticket.sla_deadline_at}
+                                                    sla_breached={ticket.sla_breached}
+                                                    status={ticket.status}
+                                                />
+                                            </td>
+                                            <td className="px-4 py-3 hidden xl:table-cell text-xs text-gray-500 dark:text-gray-400">
+                                                {ticket.assigned_to_name || <span className="text-gray-300">Unassigned</span>}
+                                            </td>
+                                            <td className="px-4 py-3 hidden xl:table-cell max-w-xs">
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{ticket.last_message || '—'}</p>
+                                                {ticket.last_message_at && (
+                                                    <p className="text-xs text-gray-300 dark:text-gray-600">
+                                                        {new Date(ticket.last_message_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                                    </p>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 {/* Pagination */}

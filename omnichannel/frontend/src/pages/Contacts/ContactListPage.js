@@ -69,8 +69,8 @@ const UnsubscribeLogsModal = ({ isOpen, onClose, onResubscribe }) => {
             title="Unsubscribe History"
             size="2xl"
         >
-            <div className="p-0 custom-scrollbar -mx-4 -my-4">
-                <table className="w-full text-left text-sm">
+            <div className="p-0 overflow-x-auto custom-scrollbar -mx-4 -my-4">
+                <table className="w-full text-left text-sm min-w-[500px]">
                     <thead className="bg-gray-50 dark:bg-dark-bg border-b dark:border-dark-border sticky top-0 z-10">
                         <tr>
                             <th className="px-6 py-3 font-medium text-gray-500 dark:text-slate-400">Date</th>

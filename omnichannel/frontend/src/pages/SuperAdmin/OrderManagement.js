@@ -182,8 +182,8 @@ export default function OrderManagement() {
     };
 
     return (
-        <div className="p-8">
-            <div className="flex justify-between items-center mb-8">
+        <div className="p-4 sm:p-6 md:p-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <CreditCard className="w-8 h-8 text-indigo-600" /> Transaction History
@@ -191,7 +191,7 @@ export default function OrderManagement() {
                     <p className="text-sm text-gray-500">Monitor and verify incoming payments.</p>
                 </div>
 
-                <div className="flex gap-2 bg-white p-1 rounded-lg border shadow-sm">
+                <div className="flex flex-wrap gap-1 sm:gap-2 bg-white p-1 rounded-lg border shadow-sm w-full md:w-auto">
                     {['all', 'pending_confirmation', 'success', 'failed'].map(s => (
                         <button
                             key={s}
@@ -206,7 +206,8 @@ export default function OrderManagement() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <table className="w-full text-left">
+                <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left min-w-[700px]">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Invoice</th>
@@ -262,6 +263,7 @@ export default function OrderManagement() {
                         {!loading && orders.length === 0 && <tr><td colSpan="6" className="p-12 text-center text-gray-400">No transactions found.</td></tr>}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             <VerificationModal

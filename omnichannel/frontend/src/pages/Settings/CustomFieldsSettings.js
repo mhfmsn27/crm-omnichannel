@@ -194,8 +194,8 @@ export default function CustomFieldsSettings() {
                     </button>
                 </div>
             ) : (
-                <div className="bg-white dark:bg-dark-surface rounded-xl border border-gray-200 dark:border-dark-border overflow-hidden">
-                    <table className="w-full">
+                <div className="bg-white dark:bg-dark-surface rounded-xl border border-gray-200 dark:border-dark-border overflow-x-auto w-full">
+                    <table className="w-full min-w-[550px]">
                         <thead>
                             <tr className="bg-gray-50 dark:bg-dark-bg border-b border-gray-200 dark:border-dark-border">
                                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-slate-400 uppercase">Order</th>

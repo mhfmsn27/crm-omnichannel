@@ -200,8 +200,8 @@ export default function BroadcastStatsReport() {
                     {/* Log Table */}
                     <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-80">
                         <div className="p-4 border-b bg-gray-50 font-bold text-gray-700">Recipient Log (Last 100)</div>
-                        <div className="flex-1 overflow-y-auto">
-                            <table className="w-full text-left text-sm">
+                        <div className="flex-1 overflow-y-auto overflow-x-auto">
+                            <table className="w-full text-left text-sm min-w-[480px]">
                                 <thead className="bg-white border-b text-gray-500 text-xs uppercase sticky top-0">
                                     <tr>
                                         <th className="px-6 py-3">Name / Phone</th>

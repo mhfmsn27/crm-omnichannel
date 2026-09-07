@@ -383,8 +383,8 @@ export default function TeamSettings() {
             )}
 
             {/* DESKTOP TABLE */}
-            <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <table className="w-full text-left">
+            <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto w-full">
+                <table className="w-full text-left min-w-[600px]">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
                             <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Name</th>

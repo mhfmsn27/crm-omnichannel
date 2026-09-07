@@ -357,7 +357,7 @@ export default function BroadcastSettingsPage() {
                         {/* Telegram Triggers */}
                         <div className="pt-1 space-y-2">
                             <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block">Pemicu Telegram:</span>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                 <label className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-slate-700 text-xs font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-900">
                                     <input type="checkbox" checked={notifyOnComplete} onChange={e => setNotifyOnComplete(e.target.checked)} className="text-[#229ED9] rounded" />
                                     <span>Selesai</span>
@@ -415,7 +415,7 @@ export default function BroadcastSettingsPage() {
                         {/* Email Triggers */}
                         <div className="pt-1 space-y-2">
                             <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block">Pemicu Email:</span>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                 <label className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 dark:border-slate-700 text-xs font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-900">
                                     <input type="checkbox" checked={emailNotifyOnComplete} onChange={e => setEmailNotifyOnComplete(e.target.checked)} className="text-purple-600 rounded" />
                                     <span>Selesai</span>
