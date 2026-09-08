@@ -11,7 +11,9 @@ import ContactModal from './ContactModal';
 import LocationModal from './LocationModal';
 import PollModal from './PollModal';
 import EventModal from './EventModal';
-import { Send, Plus, Smile, Mic, Loader2, FileText, Image as ImageIcon, X, Truck, Package, ExternalLink, Sparkles, CreditCard, FormInput, Pencil, Lock, MessageSquare, Clock, Check } from 'lucide-react';
+import QuickInvoiceModal from './QuickInvoiceModal.jsx';
+import MacroModal from './MacroModal.jsx';
+import { Send, Plus, Smile, Mic, Loader2, FileText, Image as ImageIcon, X, Truck, Package, ExternalLink, Sparkles, CreditCard, FormInput, Pencil, Lock, MessageSquare, Clock, Check, Zap } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -19,7 +21,7 @@ import { toast } from 'react-hot-toast';
 // Note: SuggestionPopover, AttachmentMenu, PaymentLinkModal, and WAFlowModal
 // are imported from separate files for better code organization
 
-export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSendProduct, onSendPaymentLink, templates, conversationId, editingMessage, onCancelEdit, onSubmitEdit, isGroupChat = false, contactPhone, draftText, onDraftChange }) {
+export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSendProduct, onSendPaymentLink, templates, conversationId, editingMessage, onCancelEdit, onSubmitEdit, isGroupChat = false, contactPhone, contactId, contactName, draftText, onDraftChange }) {
     const [inputText, setInputText] = useState('');
     const [isInternal, setIsInternal] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -30,11 +32,14 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [isWAFlowModalOpen, setIsWAFlowModalOpen] = useState(false);
+    const [isQuickInvoiceModalOpen, setIsQuickInvoiceModalOpen] = useState(false);
+    const [isDraggingOver, setIsDraggingOver] = useState(false);
     // New attachment modals
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
     const [isPollModalOpen, setIsPollModalOpen] = useState(false);
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+    const [isMacroModalOpen, setIsMacroModalOpen] = useState(false);
 
     const [aiSuggestion, setAiSuggestion] = useState('');
     const [isSuggesting, setIsSuggesting] = useState(false);
@@ -152,6 +157,20 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
             return;
         }
 
+        // Handle Quick Invoice & Order
+        if (type === 'quick_invoice') {
+            setIsAttachMenuOpen(false);
+            setIsQuickInvoiceModalOpen(true);
+            return;
+        }
+
+        // Handle 1-Click Macro
+        if (type === 'macro') {
+            setIsAttachMenuOpen(false);
+            setIsMacroModalOpen(true);
+            return;
+        }
+
         setCurrentFileType(type);
         if (fileInputRef.current) {
             fileInputRef.current.value = null;
@@ -168,19 +187,84 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
     };
 
     const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
 
         const type = currentFileType;
         setUploading(true);
 
         try {
-            await onUploadFile(file, type);
+            await onUploadFile(files.length === 1 ? files[0] : files, type);
         } catch (error) {
             console.error("Upload error in input:", error);
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = null;
+        }
+    };
+
+    // Clipboard Paste Handler (e.g. Snipping Tool screenshots via Ctrl+V)
+    const handlePaste = async (e) => {
+        const clipboardItems = e.clipboardData?.items;
+        if (!clipboardItems) return;
+
+        const files = [];
+        for (let i = 0; i < clipboardItems.length; i++) {
+            const item = clipboardItems[i];
+            if (item.kind === 'file') {
+                const file = item.getAsFile();
+                if (file) files.push(file);
+            }
+        }
+
+        if (files.length > 0) {
+            e.preventDefault();
+            const fileType = files[0].type.startsWith('image/') ? 'image' : 'document';
+            setUploading(true);
+            try {
+                await onUploadFile(files.length === 1 ? files[0] : files, fileType);
+            } catch (err) {
+                console.error("Paste upload error:", err);
+            } finally {
+                setUploading(false);
+            }
+        }
+    };
+
+    // Drag-and-Drop Handlers for files
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!isDraggingOver) setIsDraggingOver(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDraggingOver(false);
+    };
+
+    const handleDrop = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDraggingOver(false);
+
+        const droppedFiles = Array.from(e.dataTransfer?.files || []);
+        if (droppedFiles.length === 0) return;
+
+        const firstType = droppedFiles[0].type || '';
+        let fileType = 'document';
+        if (firstType.startsWith('image/')) fileType = 'image';
+        else if (firstType.startsWith('video/')) fileType = 'video';
+        else if (firstType.startsWith('audio/')) fileType = 'audio';
+
+        setUploading(true);
+        try {
+            await onUploadFile(droppedFiles.length === 1 ? droppedFiles[0] : droppedFiles, fileType);
+        } catch (err) {
+            console.error("Drop upload error:", err);
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -522,6 +606,21 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                 onClose={() => setIsPaymentModalOpen(false)}
                 onCreated={onSendPaymentLink}
             />
+            <QuickInvoiceModal
+                isOpen={isQuickInvoiceModalOpen}
+                onClose={() => setIsQuickInvoiceModalOpen(false)}
+                conversationId={conversationId}
+                contactId={contactId}
+                contactName={contactName}
+                onSendInvoiceMessage={(msgText) => onSendMessage(msgText)}
+            />
+            <MacroModal
+                isOpen={isMacroModalOpen}
+                onClose={() => setIsMacroModalOpen(false)}
+                conversationId={conversationId}
+                contactId={contactId}
+                onExecuted={() => {}}
+            />
             {isProductModalOpen && (
                 <div className="absolute bottom-full mb-2 left-4 w-96 bg-white dark:bg-dark-surface rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border z-50">
                     <div className="flex justify-between items-center p-3 border-b dark:border-dark-border">
@@ -548,7 +647,7 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                     onSelect={selectTemplate}
                 />
             )}
-            <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
+            <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileChange} multiple />
             <AttachmentMenu isOpen={isAttachMenuOpen} onSelect={triggerFileUpload} onClose={() => setIsAttachMenuOpen(false)} isGroupChat={isGroupChat} />
             {showEmojiPicker && (
                 <div className="absolute bottom-[60px] left-2 z-50 shadow-2xl rounded-xl">
@@ -622,8 +721,17 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
 
             {/* Input Row */}
             <div className="flex items-end gap-2 w-full">
-            {/* Full Capsule Container */}
-            <div className={`flex-1 rounded-[24px] px-2 py-1.5 shadow-[0_2px_5px_rgba(0,0,0,0.05)] border border-transparent focus-within:border-indigo-100 dark:focus-within:border-slate-600 focus-within:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300 flex items-end gap-1 ${isInternal ? 'bg-[#fff9c4] dark:bg-[#ffe082]/20' : 'bg-white dark:bg-[#2a3942]'}`}>
+            {/* Full Capsule Container with Drag-and-Drop support */}
+            <div 
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`flex-1 rounded-[24px] px-2 py-1.5 shadow-[0_2px_5px_rgba(0,0,0,0.05)] border transition-all duration-300 flex items-end gap-1 ${
+                    isDraggingOver 
+                        ? 'border-dashed border-emerald-500 ring-2 ring-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-950/40' 
+                        : 'border-transparent focus-within:border-indigo-100 dark:focus-within:border-slate-600 focus-within:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
+                } ${isInternal ? 'bg-[#fff9c4] dark:bg-[#ffe082]/20' : 'bg-white dark:bg-[#2a3942]'}`}
+            >
 
                 {/* Emoji Button */}
                 <button
@@ -646,18 +754,29 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                     {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Plus className="w-6 h-6" />}
                 </button>
 
-                {/* Text Area */}
+                {/* Text Area with Clipboard Paste (Ctrl+V Image) Support */}
                 <textarea
                     ref={textareaRef}
                     value={inputText}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ketik pesan"
+                    onPaste={handlePaste}
+                    placeholder={isDraggingOver ? "Lepaskan file di sini untuk mengunggah..." : "Ketik pesan"}
                     className="flex-1 w-full resize-none outline-none text-[15px] leading-[22px] chat-input-area text-[#111b21] dark:text-[#d1d7db] placeholder-[#8696a0] dark:placeholder-[#8696a0] custom-scrollbar px-2 mb-1.5"
                     rows={1}
                     style={{ minHeight: '24px', maxHeight: '120px', backgroundColor: 'transparent' }}
                     disabled={uploading}
                 />
+
+                {/* 1-Click Macro Workflow Button */}
+                <button
+                    type="button"
+                    onClick={() => setIsMacroModalOpen(true)}
+                    title="1-Click Agent Macro (Workflow Otomatis)"
+                    className="p-2 text-[#54656f] dark:text-[#8696a0] hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 dark:hover:text-purple-300 transition-colors rounded-full flex-shrink-0 mb-0.5"
+                >
+                    <Zap className="w-5 h-5" />
+                </button>
 
                 {/* AI Menu Button */}
                 <div className="relative">

@@ -191,6 +191,9 @@ export default function CreateCampaign() {
     // Special Mode
     const [isInvoiceMode, setIsInvoiceMode] = useState(false);
 
+    // WhatsApp Registration Pre-Validation State (Anti-Ban Protection)
+    const [validateWhatsApp, setValidateWhatsApp] = useState(true);
+
     // Delay Settings State
     const [antiBanMode, setAntiBanMode] = useState('safe');
     const [delaySettings, setDelaySettings] = useState({
@@ -211,6 +214,11 @@ export default function CreateCampaign() {
     // Recurring Settings
     const [isRecurring, setIsRecurring] = useState(false);
     const [recurrenceType, setRecurrenceType] = useState('daily');
+
+    // A/B Split Testing State
+    const [isAbTest, setIsAbTest] = useState(false);
+    const [messageTemplateB, setMessageTemplateB] = useState('');
+    const [abSplitRatio, setAbSplitRatio] = useState(50);
 
     // Telegram Bot Reporting State
     const [enableTelegramReport, setEnableTelegramReport] = useState(true);
@@ -616,11 +624,18 @@ export default function CreateCampaign() {
         // Ensure msgMin/msgMax are always in seconds (no unit conversion needed as default is seconds)
         processedDelaySettings.msgMin = parseInt(processedDelaySettings.msgMin) || 60;
         processedDelaySettings.msgMax = parseInt(processedDelaySettings.msgMax) || 120;
+        processedDelaySettings.validateWhatsApp = validateWhatsApp;
 
         formData.append('delaySettings', JSON.stringify(processedDelaySettings));
+        formData.append('validateWhatsApp', validateWhatsApp);
         formData.append('disableLinkTracking', disableLinkTracking);
         formData.append('includeUnsubscribe', includeUnsubscribe);
         formData.append('showInHistory', showInHistory);
+        formData.append('isAbTest', isAbTest);
+        if (isAbTest) {
+            formData.append('messageTemplateB', messageTemplateB);
+            formData.append('abSplitRatio', abSplitRatio);
+        }
         if (assignedAgentId) {
             formData.append('assignedAgentId', assignedAgentId);
         }
@@ -1134,6 +1149,78 @@ export default function CreateCampaign() {
                                     </div>
                                 </div>
                             )}
+
+                            {/* A/B Split Testing Card */}
+                            {!isOfficialDevice && (
+                                <div className="mt-4 p-4 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/30 dark:bg-indigo-950/20 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <Zap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                            <span className="font-bold text-sm text-gray-900 dark:text-white">
+                                                A/B Split Testing (Varian A vs Varian B)
+                                            </span>
+                                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                                                ENTERPRISE
+                                            </span>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={isAbTest}
+                                                onChange={(e) => setIsAbTest(e.target.checked)}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                                        </label>
+                                    </div>
+
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Bagi penerima broadcast secara otomatis menjadi 2 varian pesan berbeda untuk menguji formula pesan mana yang menghasilkan rasio baca & konversi tertinggi.
+                                    </p>
+
+                                    {isAbTest && (
+                                        <div className="space-y-4 pt-3 border-t border-indigo-100 dark:border-indigo-900/40">
+                                            {/* Split Ratio Slider */}
+                                            <div>
+                                                <div className="flex justify-between items-center text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                                    <span>Rasio Pembagian Penerima</span>
+                                                    <span className="text-indigo-600 dark:text-indigo-400 font-bold">
+                                                        Varian A ({abSplitRatio}%) : Varian B ({100 - abSplitRatio}%)
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="range"
+                                                    min="10"
+                                                    max="90"
+                                                    step="5"
+                                                    value={abSplitRatio}
+                                                    onChange={(e) => setAbSplitRatio(Number(e.target.value))}
+                                                    className="w-full accent-indigo-600 cursor-pointer"
+                                                />
+                                            </div>
+
+                                            {/* Variant B Message Box */}
+                                            <div>
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
+                                                        Konten Pesan Varian B
+                                                    </label>
+                                                    <span className="text-[10px] text-gray-400">
+                                                        Varian A menggunakan teks di atas
+                                                    </span>
+                                                </div>
+                                                <textarea
+                                                    value={messageTemplateB}
+                                                    onChange={(e) => setMessageTemplateB(e.target.value)}
+                                                    rows={4}
+                                                    placeholder="Tuliskan variasi pesan kedua di sini (misal: penawaran berbeda, kalimat pembuka berbeda)..."
+                                                    className="w-full p-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-3 pt-4">
@@ -1301,6 +1388,33 @@ export default function CreateCampaign() {
                         {/* Anti-Ban Settings Accordion */}
                         <AccordionSection title="Anti-Ban Settings" icon={ShieldCheck} defaultOpen={false}>
                             <div className="space-y-4">
+                                {/* WhatsApp Registration Pre-Validation Toggle */}
+                                <div className="p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl flex items-start justify-between gap-3 shadow-xs">
+                                    <div className="flex items-start gap-3">
+                                        <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg shrink-0 mt-0.5">
+                                            <ShieldCheck className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-sm text-emerald-950">Validasi WhatsApp Terdaftar</span>
+                                                <span className="px-2 py-0.5 bg-emerald-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">Proteksi Anti-Ban</span>
+                                            </div>
+                                            <p className="text-xs text-emerald-800/80 mt-1 leading-relaxed">
+                                                Otomatis mengecek apakah nomor tujuan aktif di WhatsApp sebelum pesan dikirim. Nomor yang tidak terdaftar akan otomatis dilewati agar nomor pengirim terhindar dari pemblokiran (ban) WhatsApp.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={validateWhatsApp} 
+                                            onChange={e => setValidateWhatsApp(e.target.checked)} 
+                                            className="sr-only peer" 
+                                        />
+                                        <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                                    </label>
+                                </div>
+
                                 {broadcastType === 'group' && (
                                     <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg flex gap-2 items-start">
                                         <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 shrink-0" />

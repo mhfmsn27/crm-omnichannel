@@ -5,7 +5,8 @@ import {
     Search, Filter, Lock, Edit, UserPlus, MoreVertical,
     CheckCircle, CheckCircle2, CheckCheck, Activity, ChevronDown, ArrowLeft, Loader2,
     Users, Image as ImageIcon, Bell, BellOff, User, Info,
-    RotateCcw, UserCheck, MessageCircle, X, Archive, Trash2, MailOpen
+    RotateCcw, UserCheck, MessageCircle, X, Archive, Trash2, MailOpen,
+    Clock, Download, Pin
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -31,6 +32,8 @@ import ContactInfoPanel from '../components/inbox/ContactInfoPanel';
 import { Skeleton } from '../components/common/Skeleton';
 import MessageLoadMore from '../components/inbox/MessageLoadMore';
 import FilterTabs from '../components/inbox/FilterTabs';
+import InChatSearchBar from '../components/inbox/InChatSearchBar.jsx';
+import PinnedMessageBanner from '../components/inbox/PinnedMessageBanner.jsx';
 
 // Modals
 import WallpaperModal from '../components/inbox/WallpaperModal';
@@ -43,6 +46,8 @@ import ContactSelectionModal from '../components/inbox/ContactSelectionModal.jsx
 import FilterChatModal from '../components/inbox/FilterChatModal.jsx';
 import LabelAssignmentModal from '../components/inbox/LabelAssignmentModal.jsx';
 import RealtimeDiagnostics from '../components/managers/RealtimeDiagnostics.jsx';
+import ChatExportModal from '../components/inbox/ChatExportModal.jsx';
+import ChatSnoozeModal from '../components/inbox/ChatSnoozeModal.jsx';
 
 // Helpers
 const formatDisplayName = (name) => {
@@ -178,6 +183,109 @@ export default function InboxPage() {
         handleBulkDelete, handleBulkAction, handleToggleBot, handleSubmitEdit, handleWallpaperSave,
         handleLabelUpdate, onContextTransfer, onContextResolve, onContextLabel
     } = actionHook;
+
+    // In-Chat Search State & Navigation
+    const [isInChatSearchOpen, setIsInChatSearchOpen] = useState(false);
+    const [inChatQuery, setInChatQuery] = useState('');
+    const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+
+    // Modals State: Export & Snooze
+    const [isExportOpen, setIsExportOpen] = useState(false);
+    const [isSnoozeOpen, setIsSnoozeOpen] = useState(false);
+    const [snoozeTargetConv, setSnoozeTargetConv] = useState(null);
+
+    // Pinned messages in active conversation
+    const pinnedMessages = (messages || []).filter(m => m.is_pinned);
+
+    // Search matches computed from groupedMessages
+    const searchMatches = React.useMemo(() => {
+        if (!inChatQuery || inChatQuery.trim().length < 2) return [];
+        const q = inChatQuery.toLowerCase();
+        const matches = [];
+        groupedMessages.forEach((item, index) => {
+            if (item.msg) {
+                const text = (item.msg.message_text || item.msg.content || '').toLowerCase();
+                const caption = (item.msg.media_caption || '').toLowerCase();
+                if (text.includes(q) || caption.includes(q)) {
+                    matches.push({ index, messageId: item.msg.id });
+                }
+            }
+        });
+        return matches;
+    }, [groupedMessages, inChatQuery]);
+
+    // Focus on match when matches or query changes
+    useEffect(() => {
+        if (searchMatches.length > 0) {
+            setCurrentMatchIndex(searchMatches.length - 1);
+            const target = searchMatches[searchMatches.length - 1];
+            if (target) {
+                virtuosoRef.current?.scrollToIndex({ index: target.index, align: 'center', behavior: 'smooth' });
+            }
+        } else {
+            setCurrentMatchIndex(0);
+        }
+    }, [searchMatches.length, inChatQuery]);
+
+    const handleJumpToSearchMatch = (direction) => {
+        if (searchMatches.length === 0) return;
+        let nextIdx;
+        if (direction === 'next') {
+            nextIdx = (currentMatchIndex + 1) % searchMatches.length;
+        } else {
+            nextIdx = (currentMatchIndex - 1 + searchMatches.length) % searchMatches.length;
+        }
+        setCurrentMatchIndex(nextIdx);
+        const target = searchMatches[nextIdx];
+        if (target) {
+            virtuosoRef.current?.scrollToIndex({ index: target.index, align: 'center', behavior: 'smooth' });
+        }
+    };
+
+    const handleJumpToPinnedMessage = (pinnedMsgOrId) => {
+        const targetId = typeof pinnedMsgOrId === 'object' ? (pinnedMsgOrId?.id || pinnedMsgOrId?.remote_message_id) : pinnedMsgOrId;
+        const targetRemoteId = typeof pinnedMsgOrId === 'object' ? pinnedMsgOrId?.remote_message_id : null;
+        const targetIndex = groupedMessages.findIndex(item => 
+            item.msg && (
+                String(item.msg.id) === String(targetId) || 
+                (targetRemoteId && item.msg.remote_message_id === targetRemoteId) ||
+                (item.msg.remote_message_id && String(item.msg.remote_message_id) === String(targetId))
+            )
+        );
+        if (targetIndex !== -1) {
+            virtuosoRef.current?.scrollToIndex({ index: targetIndex, align: 'center', behavior: 'smooth' });
+        } else {
+            toast.info("Pesan berada di riwayat percakapan sebelumnya");
+        }
+    };
+
+    const handleSnoozeSuccess = (snoozedUntil, updatedConv) => {
+        const targetId = updatedConv?.id || snoozeTargetConv?.id || selectedConvId;
+        setConversations(prev => prev.map(c => 
+            String(c.id) === String(targetId) ? { ...c, snoozed_until: snoozedUntil, snooze_reason: updatedConv?.snooze_reason || null } : c
+        ));
+    };
+
+    // Keyboard shortcut: Ctrl+F to open search
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+                if (selectedConvId) {
+                    e.preventDefault();
+                    setIsInChatSearchOpen(true);
+                }
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedConvId]);
+
+    // Reset in-chat search when conversation changes
+    useEffect(() => {
+        setIsInChatSearchOpen(false);
+        setInChatQuery('');
+        setCurrentMatchIndex(0);
+    }, [selectedConvId]);
 
     // Hook: Sockets
     useInboxSocket({
@@ -569,6 +677,10 @@ export default function InboxPage() {
                         onTransfer={onContextTransfer}
                         onResolve={onContextResolve}
                         onLabel={onContextLabel}
+                        onSnooze={(conv) => {
+                            setSnoozeTargetConv(conv);
+                            setIsSnoozeOpen(true);
+                        }}
                         onLoadMore={() => {
                             if (!isLoadingMore && hasMoreConversations) {
                                 setPage(prev => {
@@ -735,6 +847,36 @@ export default function InboxPage() {
                                     <ImageIcon className="w-5 h-5" />
                                 </button>
 
+                                {/* In-Chat Search Button */}
+                                <button
+                                    onClick={() => setIsInChatSearchOpen(prev => !prev)}
+                                    className={`p-2 rounded-lg transition-colors ${isInChatSearchOpen ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-bg'}`}
+                                    title="Cari dalam Chat (Ctrl+F)"
+                                >
+                                    <Search className="w-5 h-5" />
+                                </button>
+
+                                {/* Snooze / Follow-Up Reminder */}
+                                <button
+                                    onClick={() => {
+                                        setSnoozeTargetConv(selectedConv);
+                                        setIsSnoozeOpen(true);
+                                    }}
+                                    className={`p-2 rounded-lg transition-colors ${selectedConv?.snoozed_until && new Date(selectedConv.snoozed_until) > new Date() ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-bg'}`}
+                                    title={selectedConv?.snoozed_until && new Date(selectedConv.snoozed_until) > new Date() ? "Chat Ditunda (Snoozed)" : "Tunda Chat (Snooze)"}
+                                >
+                                    <Clock className="w-5 h-5" />
+                                </button>
+
+                                {/* Export Chat Transcript */}
+                                <button
+                                    onClick={() => setIsExportOpen(true)}
+                                    className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-bg rounded-lg transition-colors"
+                                    title="Export Transkrip Percakapan"
+                                >
+                                    <Download className="w-5 h-5" />
+                                </button>
+
                                 {/* Mute Toggle */}
                                 <button onClick={() => handleMuteConversation(selectedConv)} className={`p-2 rounded-lg transition-colors ${selectedConv?.is_muted ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-bg'}`} title={selectedConv?.is_muted ? "Unmute Notifications" : "Mute Notifications"}>
                                     {selectedConv?.is_muted ? <BellOff className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
@@ -755,6 +897,28 @@ export default function InboxPage() {
                                 </button>
                             </div>
                         </div>
+
+                        {/* In-Chat Search Bar */}
+                        <InChatSearchBar
+                            isOpen={isInChatSearchOpen}
+                            onClose={() => {
+                                setIsInChatSearchOpen(false);
+                                setInChatQuery('');
+                            }}
+                            searchQuery={inChatQuery}
+                            onSearchChange={setInChatQuery}
+                            currentMatchIndex={currentMatchIndex}
+                            totalMatches={searchMatches.length}
+                            onPrevMatch={() => handleJumpToSearchMatch('prev')}
+                            onNextMatch={() => handleJumpToSearchMatch('next')}
+                        />
+
+                        {/* Pinned Messages Banner */}
+                        <PinnedMessageBanner
+                            pinnedMessages={pinnedMessages}
+                            onJumpToMessage={handleJumpToPinnedMessage}
+                            onUnpinMessage={(msg) => handlePinMessage(typeof msg === 'object' ? msg.id : msg, true)}
+                        />
 
                         {/* Messages Area */}
                         <div className="flex-1 relative w-full bg-[#efeae2] dark:bg-[#0b141a] overflow-hidden group">
@@ -858,6 +1022,7 @@ export default function InboxPage() {
                                                         contactProfilePic={selectedConv?.profile_pic_url}
                                                         contactName={selectedConv?.contact_name}
                                                         isGroupChat={selectedConv?.phone_number?.endsWith('@g.us')}
+                                                        searchHighlightTerm={isInChatSearchOpen ? inChatQuery : ''}
                                                         onReply={onBubbleReply}
                                                         onForward={onBubbleForward}
                                                         onSaveToKb={onBubbleSaveToKb}
@@ -998,6 +1163,9 @@ export default function InboxPage() {
                                         onUploadFile={handleFileUpload}
                                         templates={allTemplates}
                                         conversationId={selectedConvId}
+                                        contactId={selectedConv?.contact_id}
+                                        contactName={selectedConv?.contact_name || selectedConv?.name}
+                                        contactPhone={selectedConv?.contact_phone || selectedConv?.phone_number}
                                         editingMessage={editingMessage}
                                         onCancelEdit={handleCancelEdit}
                                         onSubmitEdit={(newContent) => handleSubmitEdit(newContent, editingMessage, setEditingMessage)}
@@ -1129,6 +1297,25 @@ export default function InboxPage() {
                 conversationId={actionTargetConv ? actionTargetConv.id : selectedConvId}
                 initialLabels={actionTargetConv ? (actionTargetConv.labels || []) : activeContactLabels}
                 onUpdate={handleLabelUpdate}
+            />
+
+            {/* Chat Transcript Export Modal */}
+            <ChatExportModal
+                isOpen={isExportOpen}
+                onClose={() => setIsExportOpen(false)}
+                conversation={selectedConv}
+                messages={messages}
+            />
+
+            {/* Chat Snooze & Follow-Up Reminder Modal */}
+            <ChatSnoozeModal
+                isOpen={isSnoozeOpen}
+                onClose={() => {
+                    setIsSnoozeOpen(false);
+                    setSnoozeTargetConv(null);
+                }}
+                conversation={snoozeTargetConv || selectedConv}
+                onSuccess={handleSnoozeSuccess}
             />
 
             {/* Real-Time Diagnostics Modal */}

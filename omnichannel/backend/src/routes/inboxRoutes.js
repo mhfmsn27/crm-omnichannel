@@ -50,6 +50,8 @@ router.post('/conversations/:id/archive', inboxController.toggleArchive);
 router.post('/conversations/:id/pin', inboxController.togglePin);
 router.post('/conversations/:id/unread', inboxController.toggleUnread);
 router.post('/conversations/:id/mute', inboxController.toggleMuteConversation);
+router.post('/conversations/:id/snooze', inboxController.snoozeConversation);
+router.delete('/conversations/:id/snooze', inboxController.unsnoozeConversation);
 router.delete('/conversations/:id/messages', inboxController.clearChat);
 router.delete('/conversations/:id', inboxController.deleteConversation);
 router.post('/conversations/:id/labels', inboxController.updateLabels);

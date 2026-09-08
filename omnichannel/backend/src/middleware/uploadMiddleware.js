@@ -97,14 +97,15 @@ export const multerUpload = multer({
     fileFilter: fileFilter,
     limits: {
         fileSize: 50 * 1024 * 1024,
-        files: 1
+        files: 10
     }
 });
 
 export const robustUpload = (req, res, next) => {
     const upload = multerUpload.fields([
-        { name: 'file', maxCount: 1 },
-        { name: 'image', maxCount: 1 }
+        { name: 'file', maxCount: 10 },
+        { name: 'files', maxCount: 10 },
+        { name: 'image', maxCount: 10 }
     ]);
 
     upload(req, res, async (err) => {
@@ -115,36 +116,47 @@ export const robustUpload = (req, res, next) => {
             return res.status(400).json({ error: err.message });
         }
 
-        const uploadedFile = req.files?.['file']?.[0] || req.files?.['image']?.[0];
-        if (uploadedFile) {
+        const allUploadedFiles = [
+            ...(req.files?.['file'] || []),
+            ...(req.files?.['files'] || []),
+            ...(req.files?.['image'] || [])
+        ];
+
+        for (const uploadedFile of allUploadedFiles) {
             try {
                 const fd = fs.openSync(uploadedFile.path, 'r');
                 const buffer = Buffer.alloc(16);
                 fs.readSync(fd, buffer, 0, 16, 0);
                 fs.closeSync(fd);
 
-                const ext = req.uploadedFileExt || path.extname(uploadedFile.originalname).toLowerCase().replace('.', '');
+                const ext = path.extname(uploadedFile.originalname).toLowerCase().replace('.', '');
                 if (!validateMagicNumber(buffer, ext)) {
-                    fs.unlinkSync(uploadedFile.path);
+                    for (const f of allUploadedFiles) {
+                        if (f.path && fs.existsSync(f.path)) {
+                            try { fs.unlinkSync(f.path); } catch (_) {}
+                        }
+                    }
                     return res.status(400).json({
-                        error: 'File content does not match its extension. Upload rejected for security.'
+                        error: `File ${uploadedFile.originalname} content does not match its extension. Upload rejected for security.`
                     });
                 }
             } catch (validationErr) {
                 console.error('[Upload] Magic number validation error:', validationErr);
-                if (uploadedFile.path && fs.existsSync(uploadedFile.path)) {
-                    fs.unlinkSync(uploadedFile.path);
+                for (const f of allUploadedFiles) {
+                    if (f.path && fs.existsSync(f.path)) {
+                        try { fs.unlinkSync(f.path); } catch (_) {}
+                    }
                 }
                 return res.status(500).json({ error: 'File validation failed.' });
             }
         }
 
-        if (req.files) {
-            const file = req.files['file']?.[0] || req.files['image']?.[0];
-            if (file) {
-                req.file = file;
-            }
+        if (allUploadedFiles.length > 0) {
+            req.file = allUploadedFiles[0]; // Backward compatibility for single file handlers
+            req.allFiles = allUploadedFiles; // Array of all uploaded files
         }
+
         next();
     });
 };
+

@@ -13,6 +13,23 @@ import { sendBroadcastEmailReport } from '../services/broadcastEmailService.js';
 
 const broadcastQueue = new Queue('broadcast-queue', { connection: redisConnection });
 
+// Self-healing check for A/B Testing columns
+let abColumnsChecked = false;
+const ensureAbColumns = async () => {
+    if (abColumnsChecked) return;
+    try {
+        await pool.query(`
+            ALTER TABLE broadcasts ADD COLUMN IF NOT EXISTS is_ab_test BOOLEAN DEFAULT FALSE;
+            ALTER TABLE broadcasts ADD COLUMN IF NOT EXISTS message_template_b TEXT;
+            ALTER TABLE broadcasts ADD COLUMN IF NOT EXISTS ab_split_ratio INT DEFAULT 50;
+            ALTER TABLE broadcast_recipients ADD COLUMN IF NOT EXISTS message_variant VARCHAR(10) DEFAULT 'A';
+        `);
+        abColumnsChecked = true;
+    } catch (e) {
+        console.warn('[BroadcastController] ensureAbColumns notice:', e.message);
+    }
+};
+
 // ============================================================
 // QUIET HOURS SETTINGS HELPER
 // ============================================================
@@ -117,8 +134,17 @@ export const createCampaign = async (req, res) => {
     console.log(`[BroadcastController] Starting campaign creation: ${req.body.name}`);
 
     try {
-        const { name, message, rotatorGroupId: rawRotatorId, deviceId: rawDeviceId, targetType, targetValue, scheduleAt, delaySettings: delaySettingsJson, includeUnsubscribe, disableLinkTracking, mediaUrl, isRecurring, recurrenceType, flowId, assignedAgentId } = req.body;
+        const {
+            name, message, rotatorGroupId: rawRotatorId, deviceId: rawDeviceId,
+            targetType, targetValue, scheduleAt, delaySettings: delaySettingsJson,
+            includeUnsubscribe, disableLinkTracking, mediaUrl, isRecurring,
+            recurrenceType, flowId, assignedAgentId, validateWhatsApp: rawValidateWhatsApp,
+            isAbTest: rawIsAbTest, messageTemplateB, abSplitRatio: rawAbSplitRatio
+        } = req.body;
         const { organization_id } = req.user;
+
+        const isAbTest = rawIsAbTest === 'true' || rawIsAbTest === true;
+        const abSplitRatio = Math.min(90, Math.max(10, parseInt(rawAbSplitRatio) || 50));
 
         const mediaFile = req.files && req.files['media'] ? req.files['media'][0] : null;
         const targetFile = req.files && req.files['file'] ? req.files['file'][0] : null;
@@ -171,6 +197,11 @@ export const createCampaign = async (req, res) => {
             batchEnabled: true, batchSize: 20, batchMin: 60, batchMax: 60
         };
 
+        // Determine validate WhatsApp registration setting (Default: true for anti-ban protection)
+        const isValidateWhatsApp = rawValidateWhatsApp !== undefined
+            ? (rawValidateWhatsApp === true || rawValidateWhatsApp === 'true')
+            : true;
+
         if (delaySettingsJson) {
             try {
                 const parsed = JSON.parse(delaySettingsJson);
@@ -195,10 +226,14 @@ export const createCampaign = async (req, res) => {
                 console.warn("Invalid delaySettings JSON", e);
             }
         }
+        delaySettings.validateWhatsApp = isValidateWhatsApp;
 
         // 1. Check Feature Gate & Quota
         const access = await checkFeatureAccess(organization_id, 'feat_broadcast');
         if (!access.allowed) return res.status(403).json({ error: access.message, upsell: true });
+
+        // Ensure A/B test columns exist before starting transaction
+        await ensureAbColumns();
 
         await client.query('BEGIN');
 
@@ -262,6 +297,25 @@ export const createCampaign = async (req, res) => {
         const broadcastId = broadcastRes.rows[0].id;
         console.log(`[BroadcastController] Campaign created with ID: ${broadcastId}`);
 
+        // Safely persist validate_whatsapp and A/B test columns
+        try {
+            await client.query('UPDATE broadcasts SET validate_whatsapp = $1 WHERE id = $2', [isValidateWhatsApp, broadcastId]);
+        } catch (_) {
+            // Non-blocking fallback: delay_settings.validateWhatsApp is already stored in JSONB
+        }
+
+        if (isAbTest) {
+            try {
+                await client.query(`
+                    UPDATE broadcasts 
+                    SET is_ab_test = $1, message_template_b = $2, ab_split_ratio = $3 
+                    WHERE id = $4
+                `, [true, messageTemplateB || '', abSplitRatio, broadcastId]);
+            } catch (abErr) {
+                console.warn('[BroadcastController] Could not update A/B test columns on broadcasts:', abErr.message);
+            }
+        }
+
         // 3. Process Message Content (Link Tracking & Unsubscribe Injection)
         let finalMessage = message;
         // If disableLinkTracking is NOT true, we run link tracking (original default behavior)
@@ -271,6 +325,17 @@ export const createCampaign = async (req, res) => {
 
         if (includeUnsubscribe === 'true' || includeUnsubscribe === true) {
             finalMessage += "Klik link di bawah untuk tidak menerima broadcast lagi: {unsubscribe_url}";
+        }
+
+        // Process Variant B content if A/B test is active
+        let finalMessageB = messageTemplateB || '';
+        if (isAbTest && finalMessageB) {
+            if (disableLinkTracking !== 'true' && disableLinkTracking !== true) {
+                finalMessageB = await processMessageLinks(finalMessageB, organization_id, broadcastId, APP_URL, client);
+            }
+            if (includeUnsubscribe === 'true' || includeUnsubscribe === true) {
+                finalMessageB += "Klik link di bawah untuk tidak menerima broadcast lagi: {unsubscribe_url}";
+            }
         }
 
         let parsedTelegramSettings = null;
@@ -542,19 +607,24 @@ export const createCampaign = async (req, res) => {
             const brParams = [];
             let brParamIdx = 1;
 
-            chunk.forEach(r => {
-                brValues.push(`($${brParamIdx++}, $${brParamIdx++}, $${brParamIdx++}, 'queued', $${brParamIdx++}, $${brParamIdx++})`);
+            chunk.forEach((r, chunkIdx) => {
+                const globalIdx = i + chunkIdx;
+                const assignedVariant = isAbTest ? ((globalIdx % 100 < abSplitRatio) ? 'A' : 'B') : 'A';
+                r._assignedVariant = assignedVariant;
+
+                brValues.push(`($${brParamIdx++}, $${brParamIdx++}, $${brParamIdx++}, 'queued', $${brParamIdx++}, $${brParamIdx++}, $${brParamIdx++})`);
                 brParams.push(
                     broadcastId,
                     r.phone,
                     typeof r.name === 'string' ? r.name.substring(0, 100) : r.name,
                     r.isGroup && typeof r.name === 'string' ? r.name.substring(0, 255) : null,
-                    r.custom_vars ? JSON.stringify(r.custom_vars) : null
+                    r.custom_vars ? JSON.stringify(r.custom_vars) : null,
+                    assignedVariant
                 );
             });
 
             const brRes = await client.query(`
-                INSERT INTO broadcast_recipients (broadcast_id, phone_number, name, status, group_name, custom_vars)
+                INSERT INTO broadcast_recipients (broadcast_id, phone_number, name, status, group_name, custom_vars, message_variant)
                 VALUES ${brValues.join(',')}
                 RETURNING id, phone_number
             `, brParams);
@@ -597,6 +667,8 @@ export const createCampaign = async (req, res) => {
                 currentExecTime = calculateNextAvailableTime(currentExecTime, quietHoursSettings);
 
                 const finalJobDelay = Math.max(0, currentExecTime - Date.now());
+                const assignedVariant = r._assignedVariant || 'A';
+                const msgForRecipient = (assignedVariant === 'B' && finalMessageB) ? finalMessageB : finalMessage;
 
                 jobs.push({
                     name: 'send-message',
@@ -604,7 +676,8 @@ export const createCampaign = async (req, res) => {
                         broadcastId,
                         recipientId: recId,
                         contactId,
-                        messageTemplate: finalMessage,
+                        messageTemplate: msgForRecipient,
+                        messageVariant: assignedVariant,
                         mediaUrl: finalMediaUrl,
                         rotatorGroupId: rotatorGroupId,
                         deviceId: deviceId,
@@ -768,6 +841,7 @@ export const getCampaigns = async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT b.id, b.name, b.created_at, b.status, b.scheduled_at, b.device_id, b.rotator_group_id, b.delay_settings,
+            COALESCE(b.is_ab_test, false) as is_ab_test,
             COALESCE(ws.name, ws.whatsapp_number) as device_name,
             rg.name as rotator_name,
             (SELECT count(*) FROM broadcast_recipients br WHERE br.broadcast_id = b.id) as total,
@@ -790,6 +864,22 @@ export const getCampaignDetails = async (req, res) => {
     const { id } = req.params;
     const { organization_id } = req.user;
     try {
+        // Fetch Campaign Info
+        const campaignRes = await pool.query(`
+            SELECT b.id, b.name, b.message_template, b.media_url, b.status, b.scheduled_at, b.created_at,
+                   COALESCE(b.is_ab_test, false) as is_ab_test,
+                   b.message_template_b,
+                   COALESCE(b.ab_split_ratio, 50) as ab_split_ratio,
+                   COALESCE(ws.name, ws.whatsapp_number) as device_name,
+                   rg.name as rotator_name
+            FROM broadcasts b
+            LEFT JOIN whatsapp_sessions ws ON b.device_id = ws.id
+            LEFT JOIN rotator_groups rg ON b.rotator_group_id = rg.id
+            WHERE b.id = $1 AND b.organization_id = $2
+        `, [id, organization_id]);
+
+        const campaign = campaignRes.rows[0] || null;
+
         const result = await pool.query(`
             SELECT
                 br.id,
@@ -798,6 +888,7 @@ export const getCampaignDetails = async (req, res) => {
                 br.status,
                 br.sent_at,
                 br.error_log,
+                COALESCE(br.message_variant, 'A') as message_variant,
                 ws.name as device_name
             FROM broadcast_recipients br
             LEFT JOIN whatsapp_sessions ws ON br.used_session_id = ws.id
@@ -824,13 +915,38 @@ export const getCampaignDetails = async (req, res) => {
 
         const stats = statsRes.rows[0] || { total_clicks: 0, total_unsubscribes: 0, total_read: '0' };
 
+        // Calculate A/B variant breakdown stats if A/B testing is enabled
+        let abStats = null;
+        if (campaign && campaign.is_ab_test) {
+            try {
+                const abRes = await pool.query(`
+                    SELECT
+                        COALESCE(message_variant, 'A') as variant,
+                        COUNT(*) as total,
+                        COUNT(*) FILTER (WHERE status IN ('sent', 'delivered', 'read')) as sent,
+                        COUNT(*) FILTER (WHERE status = 'delivered') as delivered,
+                        COUNT(*) FILTER (WHERE status = 'read') as read,
+                        COUNT(*) FILTER (WHERE status = 'failed') as failed
+                    FROM broadcast_recipients
+                    WHERE broadcast_id = $1
+                    GROUP BY COALESCE(message_variant, 'A')
+                    ORDER BY variant ASC
+                `, [id]);
+                abStats = abRes.rows;
+            } catch (e) {
+                console.warn('[BroadcastController] Could not calculate abStats:', e.message);
+            }
+        }
+
         res.json({
+            campaign,
             recipients: result.rows,
             stats: {
                 clicks: parseInt(stats.total_clicks),
                 unsubscribes: parseInt(stats.total_unsubscribes),
                 read: parseInt(stats.total_read)
-            }
+            },
+            abStats
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

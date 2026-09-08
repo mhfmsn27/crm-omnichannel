@@ -132,10 +132,57 @@ export default function GlobalNotificationManager() {
             }
         };
 
+        const handleSlaBreachAlert = (data) => {
+            if (!data) return;
+
+            // Play alert sound
+            try {
+                if (audioRef.current) {
+                    audioRef.current.currentTime = 0;
+                    audioRef.current.play().catch(() => {});
+                }
+            } catch (e) {}
+
+            const breachLabel = data.breachType === 'first_response' ? 'First Response' : 'Resolution';
+            const alertMsg = `Tiket #${data.ticketNumber || data.ticketId} (${data.title || 'CS'}) melanggar target batas waktu ${breachLabel}!`;
+
+            // Desktop notification
+            if (typeof window !== 'undefined' && "Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification('⚠️ ESCALATION: SLA Breached!', {
+                        body: alertMsg,
+                        icon: '/vite.svg'
+                    });
+                } catch (e) {}
+            }
+
+            // High visibility Toast
+            toast.error(
+                (t) => (
+                    <div className="flex items-start gap-2.5">
+                        <div className="px-2 py-1 bg-rose-100 dark:bg-rose-900/60 rounded text-rose-700 dark:text-rose-200 font-extrabold text-xs">
+                            SLA
+                        </div>
+                        <div>
+                            <p className="font-bold text-xs text-rose-900 dark:text-rose-100">
+                                SLA Breach Alert!
+                            </p>
+                            <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5">
+                                {alertMsg}
+                            </p>
+                        </div>
+                    </div>
+                ),
+                { duration: 8000, position: 'top-right' }
+            );
+        };
+
         socket.on('new_message', handleNewMessage);
+        socket.on('sla_breach_alert', handleSlaBreachAlert);
 
         return () => {
             socket.off('new_message', handleNewMessage);
+            socket.off('sla_breach_alert', handleSlaBreachAlert);
         };
     }, [socket, location.pathname, config, user]);
 

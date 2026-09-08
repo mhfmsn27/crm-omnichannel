@@ -38,6 +38,7 @@ router.get('/sync/vcf', async (req, res) => {
 });
 router.post('/bulk-delete', contactController.bulkDelete);
 router.post('/bulk-label', contactController.bulkAssignLabel);
+router.post('/merge', contactController.mergeContacts);
 router.post('/import', robustUpload, contactController.importContacts);
 router.get('/unsubscribe-logs', contactController.getUnsubscribeLogs);
 

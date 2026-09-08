@@ -76,6 +76,18 @@ export const login = async (req, res) => {
             { expiresIn: '180d' }
         );
 
+        // Audit Log for enterprise compliance
+        import('../services/auditLogService.js').then(({ logActivity }) => {
+            logActivity({
+                organizationId: user.organization_id,
+                userId: user.id,
+                action: 'USER_LOGIN',
+                module: 'auth',
+                details: { email: user.email, name: user.name, role: user.role },
+                req
+            });
+        }).catch(() => {});
+
         res.json({
             token,
             user: {

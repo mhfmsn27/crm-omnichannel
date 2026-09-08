@@ -52,7 +52,9 @@ export {
     toggleUnread,
     toggleMuteConversation,
     toggleBlockContact,
-    bulkActionConversations
+    bulkActionConversations,
+    snoozeConversation,
+    unsnoozeConversation
 } from './inbox/conversationActionController.js';
 
 // Message CRUD & Operations Exports

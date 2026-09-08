@@ -733,13 +733,36 @@ export const sendInteractive = async (req, res) => {
 };
 
 export const uploadMedia = async (req, res) => {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-    const fileUrl = `/uploads/${req.file.filename}`;
+    const files = req.allFiles || (req.file ? [req.file] : []);
+    if (files.length === 0) return res.status(400).json({ error: "No file uploaded" });
+
+    if (files.length === 1) {
+        const file = files[0];
+        const fileUrl = `/uploads/${file.filename}`;
+        return res.json({
+            url: fileUrl,
+            mimetype: file.mimetype,
+            filename: file.originalname,
+            size: file.size
+        });
+    }
+
+    // Multiple files
+    const fileList = files.map(file => ({
+        url: `/uploads/${file.filename}`,
+        mimetype: file.mimetype,
+        filename: file.originalname,
+        size: file.size
+    }));
+
     res.json({
-        url: fileUrl,
-        mimetype: req.file.mimetype,
-        filename: req.file.originalname,
-        size: req.file.size
+        success: true,
+        // Fallback fields for legacy clients
+        url: fileList[0].url,
+        mimetype: fileList[0].mimetype,
+        filename: fileList[0].filename,
+        size: fileList[0].size,
+        files: fileList
     });
 };
 

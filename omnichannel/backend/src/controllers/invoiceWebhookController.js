@@ -7,6 +7,7 @@ import * as PaymentGatewayService from '../services/PaymentGatewayService.js';
 import * as waService from '../services/waGatewayService.js';
 import MetaService from '../services/MetaService.js';
 import TelegramService from '../services/TelegramService.js';
+import { syncDealOnInvoicePaid } from '../services/dealPipelineSyncService.js';
 import crypto from 'crypto';
 
 /**
@@ -121,6 +122,15 @@ export const handleInvoicePaymentWebhook = async (req, res) => {
             const confirmText = `Halo ${invoice.contact_name || 'Kak'}! 👋\n\nKami ingin menginformasikan bahwa pembayaran untuk *Invoice #${invoice.invoice_number}* senilai *Rp ${parseInt(amount).toLocaleString('id-ID')}* telah berhasil kami terima. ✅\n\nTerima kasih banyak atas kepercayaannya. Jika ada pertanyaan lebih lanjut, jangan ragu untuk membalas pesan ini ya! Semoga harinya menyenangkan. ✨`;
 
             await sendConfirmationMessage(invoice, confirmText, req.io);
+
+            // Auto-move CRM pipeline deal to Closed-Won / Lunas stage
+            await syncDealOnInvoicePaid({
+                invoiceId,
+                organizationId: matchedOrgId,
+                amount,
+                io: req.io,
+                userId: null
+            });
 
         } else if (status === 'expired') {
             await pool.query(

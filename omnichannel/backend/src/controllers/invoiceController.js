@@ -6,6 +6,7 @@ import { checkFeatureAccess } from '../services/featureGateService.js';
 import { analyzeAndGenerateInvoice, createFromDraft } from '../services/aiInvoiceGenerator.js';
 import * as PaymentGatewayService from '../services/PaymentGatewayService.js';
 import * as qrisService from '../services/qrisService.js';
+import { syncDealOnInvoicePaid } from '../services/dealPipelineSyncService.js';
 
 const generateToken = () => crypto.randomBytes(16).toString('hex');
 
@@ -483,6 +484,15 @@ export const markAsPaid = async (req, res) => {
              VALUES ($1, $2, 'manual', $3, $4, NOW())`,
             [id, paidAmount, notes || 'Marked as paid manually', req.user.id]
         );
+
+        // Auto-move CRM pipeline deal to Closed-Won / Lunas stage
+        await syncDealOnInvoicePaid({
+            invoiceId: id,
+            organizationId,
+            amount: paidAmount,
+            io: req.app?.get('io') || req.io,
+            userId: req.user.id
+        });
 
         res.json({ message: 'Marked as paid' });
     } catch (err) { res.status(500).json({ error: err.message }); }
@@ -1074,6 +1084,17 @@ export const recordPartialPayment = async (req, res) => {
         );
 
         await client.query('COMMIT');
+
+        // Auto-move CRM pipeline deal if payment completes the invoice (Lunas)
+        if (newStatus === 'paid') {
+            await syncDealOnInvoicePaid({
+                invoiceId: id,
+                organizationId,
+                amount: newPaid,
+                io: req.app?.get('io') || req.io,
+                userId
+            });
+        }
 
         res.status(201).json({
             message: newStatus === 'paid' ? 'Faktur telah LUNAS Penuh' : 'Pembayaran sebagian / DP berhasil dicatat',

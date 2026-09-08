@@ -12,7 +12,9 @@ import {
     User,
     MapPin,
     BarChart3,
-    Calendar
+    Calendar,
+    Receipt,
+    Zap
 } from 'lucide-react';
 
 /**
@@ -43,7 +45,9 @@ export default function AttachmentMenu({ isOpen, onSelect, onClose, isGroupChat 
         { divider2: true },
         { type: 'ongkir', icon: Truck, label: 'Cek Ongkir', color: 'green' },
         { type: 'payment', icon: CreditCard, label: 'Payment Link', color: 'blue' },
+        { type: 'quick_invoice', icon: Receipt, label: 'Buat Faktur / Pesanan', color: 'emerald' },
         { type: 'waflow', icon: FormInput, label: 'WA Form (Flow)', color: 'emerald' },
+        { type: 'macro', icon: Zap, label: '1-Click Macro', color: 'purple' },
     ];
 
     const colorClasses = {

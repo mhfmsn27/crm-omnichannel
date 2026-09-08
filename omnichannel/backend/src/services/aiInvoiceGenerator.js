@@ -260,11 +260,14 @@ export const createFromDraft = async (organizationId, draft) => {
 
         await client.query('COMMIT');
 
+        const appUrl = (process.env.APP_URL || '').replace(/\/$/, '');
+        const invoiceUrl = appUrl ? `${appUrl}/p/invoice/${token}` : `/p/invoice/${token}`;
+
         return {
             id: invoiceId,
             invoice_number: invoiceNumber,
             public_token: token,
-            invoice_url: `${process.env.APP_URL}/p/invoice/${token}`
+            invoice_url: invoiceUrl
         };
 
     } catch (error) {

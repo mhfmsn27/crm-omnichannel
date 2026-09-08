@@ -10,7 +10,7 @@ import crypto from 'crypto';
 import { triggerAutoRecovery } from '../controllers/broadcastController.js';
 import { sendBroadcastTelegramReport } from '../services/broadcastTelegramService.js';
 import { sendBroadcastEmailReport } from '../services/broadcastEmailService.js';
-import { normalizeWhatsappPhone as normalizePhone } from '../utils/phoneHelper.js';
+import { normalizeWhatsappPhone as normalizePhone, formatPhone62, cleanDigits } from '../utils/phoneHelper.js';
 
 // Helper: Get Conversation ID
 const getConversationId = async (orgId, contactId, phone, isGroup, sessionId, assignedAgentId) => {
@@ -574,6 +574,106 @@ export const initBroadcastWorker = (io) => {
               console.log(`[BROADCAST] Moving recipient ${recipientId} to delayed queue (+${Math.round(delayMs / 60000)} mins).`);
               await job.moveToDelayed(Date.now() + delayMs, job.token);
               return;
+            }
+
+            // ============================================================
+            // SMART ANTI-BAN: PRE-SEND WHATSAPP REGISTRATION VERIFICATION
+            // Verifies recipient is active on WhatsApp before sending.
+            // Bypasses unregistered numbers to prevent sender bans.
+            // ============================================================
+            let shouldValidateWhatsApp = true;
+            try {
+              const campSettingsRes = await pool.query(
+                `SELECT delay_settings, COALESCE(to_jsonb(b)->>'validate_whatsapp', 'true')::boolean as validate_col 
+                 FROM broadcasts b WHERE b.id = $1`,
+                [broadcastId]
+              );
+              if (campSettingsRes.rows.length > 0) {
+                const row = campSettingsRes.rows[0];
+                let parsedDelay = {};
+                if (typeof row.delay_settings === 'string') {
+                  try { parsedDelay = JSON.parse(row.delay_settings); } catch (_) {}
+                } else if (row.delay_settings) {
+                  parsedDelay = row.delay_settings;
+                }
+                if (row.validate_col === false || parsedDelay.validateWhatsApp === false) {
+                  shouldValidateWhatsApp = false;
+                }
+              }
+            } catch (_) {
+              // Safe fallback: default to true for maximum safety
+            }
+
+            if (shouldValidateWhatsApp && !isGroup && selectedSession.type !== 'official') {
+              const cleanDigitsPhone = formatPhone62(phone_number) || cleanDigits(phone_number);
+              const cacheKey = `wa_valid:${cleanDigitsPhone}`;
+              let isValidOnWa = null;
+
+              try {
+                const cached = await redisClient.get(cacheKey);
+                if (cached !== null) {
+                  isValidOnWa = cached === '1';
+                }
+              } catch (redisErr) {
+                console.warn('[BroadcastWorker] Redis cache read error:', redisErr.message);
+              }
+
+              if (isValidOnWa === null) {
+                try {
+                  console.log(`[BroadcastWorker] [Anti-Ban] Checking if ${cleanDigitsPhone} is on WhatsApp...`);
+                  const checkRes = await waService.checkNumber(selectedSession.session_id, cleanDigitsPhone);
+                  isValidOnWa = !!(checkRes && (checkRes.exists === true || checkRes.on_whatsapp === true));
+
+                  // Cache result in Redis for 7 days (604800 seconds)
+                  await redisClient.set(cacheKey, isValidOnWa ? '1' : '0', 'EX', 604800);
+                  console.log(`[BroadcastWorker] [Anti-Ban] Result for ${cleanDigitsPhone}: ${isValidOnWa ? 'REGISTERED (Safe)' : 'NOT REGISTERED (Blocked)'}`);
+                } catch (checkErr) {
+                  // Fail-safe: If gateway check fails due to temporary network timeout / 500, log warning and allow through
+                  // so temporary network hiccups do not block broadcast delivery.
+                  console.warn(`[BroadcastWorker] WhatsApp verification check failed for ${cleanDigitsPhone} (${checkErr.message}). Allowing send with caution.`);
+                  isValidOnWa = true;
+                }
+              }
+
+              if (isValidOnWa === false) {
+                console.warn(`[BroadcastWorker] ⛔ Skipping broadcast to ${phone_number} (recipient is NOT registered on WhatsApp). Protected sender from ban.`);
+
+                // Mark recipient as failed with explicit anti-ban reason
+                await pool.query(
+                  `UPDATE broadcast_recipients 
+                   SET status = 'failed', 
+                       error_log = 'Nomor tidak terdaftar di WhatsApp (Dilewati - Proteksi Anti-Ban)',
+                       used_session_id = $1
+                   WHERE id = $2`,
+                  [usedSessionId, recipientId]
+                );
+
+                // Update contact record if contactId exists so future campaigns don't target it
+                if (contactId) {
+                  try {
+                    await pool.query(
+                      `UPDATE contacts 
+                       SET is_subscribed = false,
+                           notes = COALESCE(notes || E'\n', '') || '[Anti-Ban] Nomor tidak aktif di WhatsApp (dilewati saat broadcast #' || $1 || ')'
+                       WHERE id = $2 AND organization_id = $3`,
+                      [broadcastId, contactId, orgId]
+                    );
+                  } catch (cErr) {
+                    console.warn('[BroadcastWorker] Failed to update contact note for unregistered number:', cErr.message);
+                  }
+                }
+
+                // Emit progress event to frontend UI
+                io.to(`org_${orgId}`).emit('broadcast_progress', {
+                  broadcastId,
+                  recipientId,
+                  status: 'failed',
+                  reason: 'unregistered'
+                });
+
+                // Return immediately without burning delay or triggering session pause!
+                return { status: 'failed', reason: 'not_on_whatsapp' };
+              }
             }
 
             let sendResult;

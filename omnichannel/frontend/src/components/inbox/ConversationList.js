@@ -2,7 +2,7 @@
 import React, { useState, memo, useCallback, useRef, useEffect } from 'react';
 import { List } from 'react-window';
 import { getInitialsAvatar } from '../../utils/avatar';
-import { Image, Video, FileText, Mic, Sticker, GitBranch, User, Pin, Archive, Trash, EyeOff, Eye, AlertCircle, CheckCircle, Calendar, MapPin, ChevronDown, BellOff, Bell, Ban, Eraser } from 'lucide-react';
+import { Image, Video, FileText, Mic, Sticker, GitBranch, User, Pin, Archive, Trash, EyeOff, Eye, AlertCircle, CheckCircle, Calendar, MapPin, ChevronDown, BellOff, Bell, Ban, Eraser, Clock } from 'lucide-react';
 import { Skeleton, SkeletonCircle } from '../common/Skeleton';
 import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -259,8 +259,30 @@ const ContactItem = ({ conversation, isActive, onClick, onContextMenu, isSelecti
                         {/* Urgency Badge */}
                         <UrgencyBadge isUrgent={conversation.is_urgent} size="sm" />
 
+                        {/* SLA Breached Badge */}
+                        {(conversation.sla_breached || conversation.ticket_sla_breached) && (
+                            <span
+                                className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-rose-500 text-white text-[8px] font-extrabold uppercase tracking-wide animate-pulse shadow-sm flex-shrink-0"
+                                title="SLA Breached! Tiket melebihi batas waktu penanganan."
+                            >
+                                <AlertCircle className="w-2.5 h-2.5 mr-0.5" />
+                                SLA BREACHED
+                            </span>
+                        )}
+
                         {/* Sentiment Badge */}
                         <SentimentBadge sentiment={conversation.last_sentiment} />
+
+                        {/* Snooze Badge */}
+                        {conversation.snoozed_until && new Date(conversation.snoozed_until) > new Date() && (
+                            <span
+                                className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-900/30 text-[8px] font-bold text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex-shrink-0"
+                                title={`Ditunda sampai ${format(new Date(conversation.snoozed_until), 'd MMM HH:mm', { locale: id })}`}
+                            >
+                                <Clock className="w-2.5 h-2.5 mr-0.5 text-amber-600 dark:text-amber-400" />
+                                Snoozed
+                            </span>
+                        )}
 
 
                         {/* Labels */}
@@ -338,7 +360,7 @@ const MemoizedContactItem = memo(ContactItem);
         );
     });
 
-    export default function ConversationList({ conversations, selectedConvId, onSelect, isLoading, onArchive, onPin, onUnread, onDelete, isSelectionMode, selectedIds, onToggleSelection, onTransfer, onResolve, onLabel, onMute, onBlock, onClearChat, onLoadMore, hasMore, drafts, contactPresence }) {
+    export default function ConversationList({ conversations, selectedConvId, onSelect, isLoading, onArchive, onPin, onUnread, onDelete, isSelectionMode, selectedIds, onToggleSelection, onTransfer, onResolve, onLabel, onMute, onBlock, onClearChat, onSnooze, onLoadMore, hasMore, drafts, contactPresence }) {
     const [contextMenu, setContextMenu] = useState(null);
 
     const handleContextMenu = (e, conversation) => {
@@ -452,6 +474,11 @@ const MemoizedContactItem = memo(ContactItem);
                             label: contextMenu.conversation.is_pinned ? "Batal sematkan" : "Sematkan chat",
                             icon: <Pin className="w-4 h-4" />,
                             onClick: () => onPin(contextMenu.conversation.id, contextMenu.conversation.is_pinned)
+                        },
+                        {
+                            label: contextMenu.conversation.snoozed_until && new Date(contextMenu.conversation.snoozed_until) > new Date() ? "Batalkan tunda (Unsnooze)" : "Tunda chat (Snooze)",
+                            icon: <Clock className="w-4 h-4 text-amber-500" />,
+                            onClick: () => onSnooze && onSnooze(contextMenu.conversation)
                         },
                         {
                             label: contextMenu.conversation.unread_count > 0 ? "Tandai sudah dibaca" : "Tandai belum dibaca",

@@ -128,6 +128,7 @@ const LazyWaTemplateLibrary = lazy(() => import('./pages/Settings/WaTemplateLibr
 const LazyWorkflowRulesSettings = lazy(() => import('./pages/Settings/WorkflowRulesSettings'));
 const LazyWebhookSettingsPage = lazy(() => import('./pages/Settings/WebhookSettingsPage'));
 const LazySystemHealthPage = lazy(() => import('./pages/Settings/SystemHealthPage'));
+const LazyAuditLogPage = lazy(() => import('./pages/Settings/AuditLogPage'));
 
 // Account Module
 const LazyAccountLayout = lazy(() => import('./pages/Account/AccountLayout'));
@@ -584,6 +585,8 @@ function AppRoutes() {
                         <Route path="license" element={<PrivateRoute requiredPerm="manage_settings"><LazyLicensePage /></PrivateRoute>} />
                         <Route path="auto-archive" element={<PrivateRoute requiredPerm="manage_settings"><LazyAutoArchiveSettings /></PrivateRoute>} />
                         <Route path="system-health" element={<PrivateRoute requiredPerm="manage_system_health"><LazySystemHealthPage /></PrivateRoute>} />
+                        <Route path="audit-logs" element={<PrivateRoute requiredPerm="manage_settings"><LazyAuditLogPage /></PrivateRoute>} />
+                        <Route path="audit-log" element={<Navigate to="/settings/audit-logs" replace />} />
                         <Route path="billing" element={<Navigate to="/settings" replace />} />
 
                         {/* Backward compatibility redirects for externalized modules */}

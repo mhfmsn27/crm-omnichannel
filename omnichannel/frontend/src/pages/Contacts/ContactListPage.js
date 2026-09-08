@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Plus, Upload, Download, Trash2, Edit, Filter, Check, Smartphone, Mail, Globe, FileSpreadsheet, Tag, MoreHorizontal, BellOff, Bell, History, RotateCcw, MoreVertical } from 'lucide-react';
+import { Search, Plus, Upload, Download, Trash2, Edit, Filter, Check, Smartphone, Mail, Globe, FileSpreadsheet, Tag, MoreHorizontal, BellOff, Bell, History, RotateCcw, MoreVertical, GitMerge } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import ContactFormModal from '../../components/contacts/ContactFormModal';
 import ImportContactModal from '../../components/contacts/ImportContactModal';
+import ContactMergeModal from '../../components/contacts/ContactMergeModal.jsx';
 import LabelSelector from '../../components/labels/LabelSelector';
 import { Skeleton } from '../../components/common/Skeleton';
 import { toast } from 'react-hot-toast';
@@ -136,6 +137,15 @@ export default function ContactListPage() {
     const [isImportOpen, setIsImportOpen] = useState(false);
     const [editingContact, setEditingContact] = useState(null);
     const [isUnsubLogOpen, setIsUnsubLogOpen] = useState(false);
+    const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
+    const [mergePrimaryContact, setMergePrimaryContact] = useState(null);
+    const [mergeSecondaryContact, setMergeSecondaryContact] = useState(null);
+
+    const handleOpenMerge = (primary = null, secondary = null) => {
+        setMergePrimaryContact(primary);
+        setMergeSecondaryContact(secondary);
+        setIsMergeModalOpen(true);
+    };
 
     // Initialize filters from URL
     useEffect(() => {
@@ -321,6 +331,9 @@ export default function ContactListPage() {
                     <button onClick={() => setIsImportOpen(true)} className="flex-1 md:flex-none px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2 text-xs font-medium transition-colors">
                         <Upload className="w-4 h-4" /> Import
                     </button>
+                    <button onClick={() => handleOpenMerge()} className="flex-1 md:flex-none px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2 text-xs font-medium transition-colors" title="Smart Contact Merge">
+                        <GitMerge className="w-4 h-4 text-indigo-500" /> <span className="hidden md:inline">Gabung Kontak</span>
+                    </button>
                     <button onClick={() => { setEditingContact(null); setIsFormOpen(true); }} className="flex-1 md:flex-none px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 text-xs font-medium shadow-sm transition-colors">
                         <Plus className="w-4 h-4" /> <span className="hidden md:inline">Tambah Kontak</span><span className="md:hidden">Add</span>
                     </button>
@@ -332,6 +345,19 @@ export default function ContactListPage() {
                 <div className="bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 p-3 rounded-xl mb-4 flex justify-between items-center animate-in slide-in-from-top-2 sticky top-0 z-20 shadow-md">
                     <span className="text-sm font-bold text-indigo-800 dark:text-indigo-300 pl-2">{selectedContactIds.length} Selected</span>
                     <div className="flex gap-2">
+                        {selectedContactIds.length === 2 && (
+                            <button
+                                onClick={() => {
+                                    const c1 = contacts.find(c => c.id === selectedContactIds[0]);
+                                    const c2 = contacts.find(c => c.id === selectedContactIds[1]);
+                                    handleOpenMerge(c1, c2);
+                                }}
+                                className="px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded hover:bg-indigo-700 flex items-center gap-1.5 transition-colors shadow-sm"
+                                title="Gabungkan 2 kontak yang dipilih"
+                            >
+                                <GitMerge className="w-3.5 h-3.5" /> Gabung 2 Kontak
+                            </button>
+                        )}
                         <button onClick={handleBulkLabel} className="px-3 py-1.5 bg-white dark:bg-dark-surface text-indigo-600 dark:text-indigo-400 text-xs font-bold rounded border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 flex items-center gap-1 transition-colors">
                             <Tag className="w-3 h-3" /> Add Label
                         </button>
@@ -506,6 +532,9 @@ export default function ContactListPage() {
                                     </td>
                                     <td className="px-4 py-2 text-right">
                                         <div className="flex justify-end gap-1">
+                                            <button onClick={() => handleOpenMerge(contact, null)} className="p-1 text-gray-400 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded transition-colors" title="Gabung Kontak Ini">
+                                                <GitMerge className="w-3.5 h-3.5" />
+                                            </button>
                                             <button onClick={() => { setEditingContact(contact); setIsFormOpen(true); }} className="p-1 text-gray-400 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded transition-colors">
                                                 <Edit className="w-3.5 h-3.5" />
                                             </button>
@@ -637,6 +666,22 @@ export default function ContactListPage() {
                 isOpen={isUnsubLogOpen}
                 onClose={() => setIsUnsubLogOpen(false)}
                 onResubscribe={handleResubscribe}
+            />
+
+            {/* Smart Contact Merge Modal */}
+            <ContactMergeModal
+                isOpen={isMergeModalOpen}
+                onClose={() => {
+                    setIsMergeModalOpen(false);
+                    setMergePrimaryContact(null);
+                    setMergeSecondaryContact(null);
+                }}
+                initialPrimaryContact={mergePrimaryContact}
+                initialSecondaryContact={mergeSecondaryContact}
+                onSuccess={() => {
+                    setSelectedContactIds([]);
+                    fetchContacts();
+                }}
             />
         </div>
     );

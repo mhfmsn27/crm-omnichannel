@@ -170,7 +170,7 @@ initAiFollowUpWorker(io);
 startStuckMessageMonitor();
 
 // Background Intervals
-setInterval(() => ticketController.checkSLABreaches().catch(e => console.error('[SLA] Breach check error:', e.message)), 5 * 60 * 1000);
+setInterval(() => ticketController.checkSLABreaches(io).catch(e => console.error('[SLA] Breach check error:', e.message)), 5 * 60 * 1000);
 setInterval(() => scheduledMessageController.processScheduledMessages(io).catch(e => console.error('[ScheduledMsg] Error:', e.message)), 60 * 1000);
 setInterval(() => {
     import('./src/services/bookingReminderService.js')

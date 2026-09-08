@@ -76,11 +76,111 @@
         <li>Pesan berlabel <strong>Internal Note</strong> hanya terlihat oleh tim CRMHUB dan <strong>100% tidak pernah terkirim ke WhatsApp/channel pelanggan</strong>.</li>
       </ol>
 
-      <!-- TELEFONI & CSAT -->
-      <h2 id="telephony-csat">📞 Click-to-Call &amp; Automated CSAT Survey</h2>
+      <!-- 1-CLICK AGENT WORKFLOW MACROS -->
+      <h2 id="macros">⚡ 1-Click Agent Workflow Macros (Enterprise Automation)</h2>
+      <p>Macro adalah pintasan cerdas yang memungkinkan agen CS mengeksekusi serangkaian tindakan repetitif secara serentak hanya dalam <strong>1 kali klik</strong>. Tidak perlu lagi mengetik pesan salam penutup, memasang label secara manual, dan mengubah status obrolan secara terpisah.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">🚀</span>
+        <div class="callout-content">
+          <strong>Otomasi Instan Multi-Aksi</strong>
+          <p>Dalam 1 kali klik, sistem dapat secara otomatis: (1) Mengirim pesan WhatsApp berformat dengan variabel nama pelanggan, (2) Menyematkan label kontak (otomatis dibuat jika belum ada), (3) Mengubah status percakapan (Resolved, Pending, Open), (4) Memindahkan tahapan deal CRM, dan (5) Menugaskan agen.</p>
+        </div>
+      </div>
+
+      <h3>Cara Menggunakan Macro:</h3>
+      <ol class="steps">
+        <li>Buka percakapan aktif di Inbox.</li>
+        <li>Klik tombol petir (<strong>⚡ Macro</strong>) di sebelah kolom pengetikan pesan, atau klik menu lampiran (<strong>+</strong>) &rarr; pilih <strong>"1-Click Macro"</strong>.</li>
+        <li>Jendela modal daftar macro akan terbuka dengan kolom pencarian instan.</li>
+        <li>Klik tombol <strong>"Eksekusi"</strong> pada macro yang diinginkan (contoh: <em>"Closing Deal &amp; Label VIP"</em> atau <em>"Eskalasi Kendala Teknis"</em>).</li>
+        <li>Sistem mengeksekusi semua aksi secara atomik di latar belakang, mencatat log keamanan, dan memperbarui tampilan chat secara real-time via Socket.io.</li>
+      </ol>
+
+      <h3>Cara Membuat Macro Kustom Baru:</h3>
+      <ol class="steps">
+        <li>Di dalam modal Macro, klik tombol <strong>"+ Buat Macro"</strong> di sudut kanan atas.</li>
+        <li>Masukkan <strong>Nama Macro</strong> (contoh: <em>Follow-up Tertunda &amp; Label Pending</em>).</li>
+        <li>Isi <strong>Deskripsi Singkat</strong> untuk memandu anggota tim lain.</li>
+        <li>Konfigurasi kombinasi aksi yang ingin dijalankan:
+          <ul>
+            <li><strong>Pesan Otomatis</strong>: Ketik teks yang ingin dikirimkan. Anda dapat menggunakan placeholder <code>{name}</code> yang otomatis digantikan nama panggilan pelanggan.</li>
+            <li><strong>Sematkan Label</strong>: Ketik nama label (misal: <code>VIP</code>, <code>Deal Selesai</code>, <code>Komplain Ekspedisi</code>).</li>
+            <li><strong>Ubah Status Obrolan</strong>: Pilih apakah status diubah menjadi <em>Resolved</em>, <em>Pending</em>, atau <em>Open</em>.</li>
+          </ul>
+        </li>
+        <li>Klik <strong>"Simpan Macro"</strong>. Macro langsung tersedia untuk seluruh agen di organisasi Anda.</li>
+      </ol>
+
+      <!-- CONVERSATION SNOOZE -->
+      <h2 id="snooze">⏳ Tunda Obrolan (Conversation Snooze)</h2>
+      <p>Fitur Snooze memungkinkan agen menunda obrolan yang sedang menunggu respons dari pihak ketiga (misal: konfirmasi gudang atau bukti transfer bank) agar tidak memenuhi daftar inbox aktif.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">⏱️</span>
+          <div><h4>Pilihan Durasi Fleksibel</h4><p>Pilihan tunda cepat: <strong>1 Jam</strong>, <strong>3 Jam</strong>, <strong>Besok Pagi (09:00 WIB)</strong>, atau <strong>Kustom Tanggal &amp; Jam</strong>.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🏷️</span>
+          <div><h4>Indikator Visual Snooze</h4><p>Percakapan yang ditunda ditandai dengan badge amber <code>Snoozed</code> lengkap dengan timestamp waktu bangun.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🔔</span>
+          <div><h4>Auto-Unsnooze Cerdas</h4><p>Jika pelanggan membalas pesan sebelum waktu tunda habis, percakapan otomatis bangun dan kembali ke antrean teratas.</p></div>
+        </div>
+      </div>
+
+      <h3>Langkah Menunda Obrolan:</h3>
+      <ol class="steps">
+        <li>Pada daftar obrolan di panel kiri, <strong>klik kanan</strong> pada percakapan yang ingin ditunda.</li>
+        <li>Pilih opsi <strong>"Tunda chat (Snooze)"</strong>.</li>
+        <li>Pilih preset waktu atau tentukan jadwal kustom, lalu klik <strong>"Tunda Percakapan"</strong>.</li>
+        <li>Obrolan akan disembunyikan dari tab aktif dan otomatis muncul kembali saat waktu tunda tercapai. Untuk membatalkan lebih awal, klik kanan &rarr; <strong>"Batalkan tunda (Unsnooze)"</strong>.</li>
+      </ol>
+
+      <!-- IN-CHAT SEARCH & PIN -->
+      <h2 id="search-pin">🔍 Pencarian Percakapan &amp; Sematkan Pesan (Pinned Messages)</h2>
+      
+      <h3>1. Pencarian Kata Kunci Cepat (In-Chat Search)</h3>
+      <p>Temukan riwayat kesepakatan, nomor resi, atau informasi spesifik di dalam percakapan panjang tanpa perlu scroll manual:</p>
       <ul>
-        <li><strong>Click-to-Call Telephony</strong>: Klik ikon telepon di header chat untuk melakukan panggilan langsung ke nomor pelanggan serta mencatat durasi dan notula percakapan (<em>Call Notes</em>).</li>
-        <li><strong>Automated CSAT on Resolve</strong>: Saat agen menekan tombol <strong>"Resolve / Selesaikan Chat"</strong>, sistem otomatis mengirimkan kuesioner survei kepuasan bintang 1–5 ke WhatsApp pelanggan.</li>
+        <li>Klik ikon kaca pembesar (<strong>🔍</strong>) di header ruang obrolan atau tekan shortcut keyboard.</li>
+        <li>Ketik kata kunci yang dicari. Sistem langsung menghitung jumlah kecocokan (contoh: <em>1 dari 8</em>).</li>
+        <li>Gunakan tombol panah <strong>&lt; (Sebelumnya)</strong> dan <strong>&gt; (Berikutnya)</strong> untuk melompat langsung ke posisi gelembung pesan dengan efek sorotan (highlight).</li>
+      </ul>
+
+      <h3>2. Sematkan Pesan Penting (Pinned Messages Banner)</h3>
+      <p>Sematkan pesan penting (seperti instruksi khusus pelanggan, alamat pengiriman, atau kesepakatan harga) agar tetap terpampang di bagian atas ruang obrolan:</p>
+      <ul>
+        <li>Arahkan kursor ke gelembung pesan yang ingin disematkan &rarr; klik ikon menu tiga titik &rarr; pilih <strong>"Sematkan Pesan"</strong>.</li>
+        <li>Pesan akan muncul dalam <strong>Pinned Message Banner</strong> di bawah header chat.</li>
+        <li>Klik banner untuk langsung melompat ke posisi asli pesan tersebut dalam riwayat chat.</li>
+      </ul>
+
+      <!-- QUICK INVOICE MODAL -->
+      <h2 id="quick-invoice">🧾 Pembuat Faktur Kilat Langsung dari Chat (Quick Invoice)</h2>
+      <p>Jangan biarkan pembeli menunggu atau berpindah halaman. Buat dan kirim invoice WhatsApp profesional langsung dari jendela obrolan:</p>
+      <ol class="steps">
+        <li>Klik ikon faktur (<strong>🧾 Buat Invoice</strong>) di toolbar input chat.</li>
+        <li>Pilih produk dari katalog atau ketik deskripsi barang dan harga satuan secara kustom.</li>
+        <li>Tentukan diskon, pajak PPN (11%/12%), atau biaya ongkos kirim jika ada.</li>
+        <li>Pilih metode pembayaran (Transfer Bank Manual atau Payment Gateway Xendit otomatis).</li>
+        <li>Klik <strong>"Kirim Invoice ke Pelanggan"</strong>. Sistem otomatis:
+          <ul>
+            <li>Menerbitkan nomor invoice resmi berurutan (<code>INV/...</code>).</li>
+            <li>Mengirimkan ringkasan faktur rapi ke WhatsApp pelanggan lengkap dengan tombol tautan pembayaran (Payment Link).</li>
+            <li>Mencatat transaksi ke database keuangan dan Customer 360 Drawer.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <!-- SLA BREACHED BADGE -->
+      <h2 id="sla-badge">🚨 Indikator Visual Eskalasi SLA (SLA Breached Badge)</h2>
+      <p>Untuk memastikan standar kepatuhan layanan korporat terpenuhi:</p>
+      <ul>
+        <li>Setiap percakapan atau tiket yang melampaui batas waktu respons pertama (<em>First Response Time</em>) atau batas waktu penyelesaian (<em>Resolution Time</em>) akan menampilkan badge merah animasi berkedip: <strong>SLA BREACHED</strong>.</li>
+        <li>Badge ini memastikan supervisor dan agen dapat mengidentifikasi percakapan gawat darurat dalam sekejap tanpa harus membuka detail satu per satu.</li>
       </ul>
 
       <div class="page-nav">
@@ -94,6 +194,11 @@
       <a href="#ai-features">Fitur AI Supercharged</a>
       <a href="#whisper">Mode Bisikan Internal</a>
       <a href="#telephony-csat">Telepon &amp; CSAT</a>
+      <a href="#macros">1-Click Agent Macros</a>
+      <a href="#snooze">Tunda Obrolan (Snooze)</a>
+      <a href="#search-pin">Pencarian &amp; Pin Pesan</a>
+      <a href="#quick-invoice">Quick Invoice Langsung</a>
+      <a href="#sla-badge">Indikator SLA Breached</a>
     </aside>
   </div>
 </div>

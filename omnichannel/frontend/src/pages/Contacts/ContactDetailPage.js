@@ -4,11 +4,12 @@ import axios from 'axios';
 import {
     User, Mail, Smartphone, MapPin, Calendar, Tag, MessageSquare,
     ArrowLeft, Phone, Send, Clock, CheckCircle, XCircle, FileText,
-    TrendingUp, Star, Loader2, ExternalLink
+    TrendingUp, Star, Loader2, ExternalLink, GitMerge
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import toast from 'react-hot-toast';
+import ContactMergeModal from '../../components/contacts/ContactMergeModal.jsx';
 
 const ACTIVITY_ICONS = {
     message:    { icon: MessageSquare, color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20' },
@@ -99,6 +100,7 @@ export default function ContactDetailPage() {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('timeline');
+    const [isMergeOpen, setIsMergeOpen] = useState(false);
 
     const fetchContact = useCallback(async () => {
         try {
@@ -143,11 +145,18 @@ export default function ContactDetailPage() {
 
     return (
         <div className="h-full flex flex-col overflow-hidden">
-            {/* Back button */}
-            <div className="px-4 sm:px-6 pt-4 pb-2 flex items-center gap-2 flex-shrink-0">
+            {/* Back button and Actions */}
+            <div className="px-4 sm:px-6 pt-4 pb-2 flex items-center justify-between gap-2 flex-shrink-0">
                 <button onClick={() => navigate('/contacts/list')}
                     className="flex items-center gap-1 text-sm text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
                     <ArrowLeft className="w-4 h-4" /> Kembali
+                </button>
+                <button
+                    onClick={() => setIsMergeOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors shadow-sm"
+                    title="Gabungkan kontak ini dengan kontak duplikat"
+                >
+                    <GitMerge className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> Gabung Kontak
                 </button>
             </div>
 
@@ -253,6 +262,21 @@ export default function ContactDetailPage() {
                     </div>
                 )}
             </div>
+
+            {/* Smart Contact Merge Modal */}
+            <ContactMergeModal
+                isOpen={isMergeOpen}
+                onClose={() => setIsMergeOpen(false)}
+                initialPrimaryContact={contact}
+                onSuccess={(result) => {
+                    if (result?.mergedContactId && String(result.mergedContactId) !== String(contact.id)) {
+                        navigate(`/contacts/${result.mergedContactId}`);
+                    } else {
+                        fetchContact();
+                        fetchActivities();
+                    }
+                }}
+            />
         </div>
     );
 }

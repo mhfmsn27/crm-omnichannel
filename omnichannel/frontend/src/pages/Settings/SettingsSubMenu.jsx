@@ -5,7 +5,7 @@ import {
     Users, Zap, ArrowRight,
     UserCheck, Clock, ShieldAlert, Tag,
     Shield, Archive, Headphones, Key, MessageSquare, Building2, Inbox, Type, LayoutTemplate, Workflow,
-    Search, ChevronDown, ChevronRight, Activity
+    Search, ChevronDown, ChevronRight, Activity, FileText
 } from 'lucide-react';
 
 import { hasPerm } from '../../utils/rbac';
@@ -121,6 +121,7 @@ export default function SettingsSubMenu({ isCollapsed }) {
             ...(canManageRoles ? [{ to: "roles", icon: Key, label: "Role & Akses" }] : []),
             ...(canManageSettings ? [{ to: "divisions", icon: Building2, label: "Divisi" }] : []),
             ...(canManageSystemHealth ? [{ to: "system-health", icon: Activity, label: "Server Health & Backup", badge: "PRO" }] : []),
+            ...(canManageSettings ? [{ to: "audit-logs", icon: FileText, label: "Audit Logs & Security", badge: "NEW" }] : []),
             ...(canManageSettings ? [{ to: "license", icon: Shield, label: "Lisensi Domain", badge: "NEW" }] : []),
         ],
         automation: [

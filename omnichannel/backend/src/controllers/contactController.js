@@ -332,7 +332,19 @@ export const updateContact = async (req, res) => {
 export const deleteContact = async (req, res) => {
     const { id } = req.params;
     try {
-        await pool.query('DELETE FROM contacts WHERE id = $1 AND organization_id = $2', [id, req.user.organization_id]);
+        const deletedRes = await pool.query('DELETE FROM contacts WHERE id = $1 AND organization_id = $2 RETURNING name, phone_number', [id, req.user.organization_id]);
+        if (deletedRes.rows.length > 0) {
+            import('../services/auditLogService.js').then(({ logActivity }) => {
+                logActivity({
+                    organizationId: req.user.organization_id,
+                    userId: req.user.id,
+                    action: 'DELETE_CONTACT',
+                    module: 'contacts',
+                    details: { contactId: id, name: deletedRes.rows[0].name, phone: deletedRes.rows[0].phone_number },
+                    req
+                });
+            }).catch(() => {});
+        }
         res.json({ message: 'Contact deleted' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -511,6 +523,16 @@ export const bulkDelete = async (req, res) => {
             'DELETE FROM contacts WHERE id = ANY($1::int[]) AND organization_id = $2',
             [ids, organization_id]
         );
+        import('../services/auditLogService.js').then(({ logActivity }) => {
+            logActivity({
+                organizationId: organization_id,
+                userId: req.user.id,
+                action: 'BULK_DELETE_CONTACTS',
+                module: 'contacts',
+                details: { count: ids.length, contactIds: ids },
+                req
+            });
+        }).catch(() => {});
         res.json({ message: `${ids.length} contacts deleted` });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -911,5 +933,161 @@ export const getContactLTV = async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+};
+
+// --- SMART CONTACT MERGE ---
+export const mergeContacts = async (req, res) => {
+    const { organization_id } = req.user;
+    const { primaryContactId, secondaryContactId } = req.body;
+
+    if (!primaryContactId || !secondaryContactId) {
+        return res.status(400).json({ error: 'ID kontak utama dan kontak sekunder wajib diisi' });
+    }
+
+    if (String(primaryContactId) === String(secondaryContactId)) {
+        return res.status(400).json({ error: 'Kontak utama dan kontak sekunder tidak boleh sama' });
+    }
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        // 1. Verify both contacts exist and belong to organization
+        const pRes = await client.query('SELECT * FROM contacts WHERE id = $1 AND organization_id = $2', [primaryContactId, organization_id]);
+        const sRes = await client.query('SELECT * FROM contacts WHERE id = $1 AND organization_id = $2', [secondaryContactId, organization_id]);
+
+        if (pRes.rows.length === 0 || sRes.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Salah satu atau kedua kontak tidak ditemukan' });
+        }
+
+        const primary = pRes.rows[0];
+        const secondary = sRes.rows[0];
+
+        const checkTable = async (tableName) => {
+            const r = await client.query(
+                "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = $1)",
+                [tableName]
+            );
+            return r.rows[0]?.exists;
+        };
+
+        // 2. Relocate conversations (including tickets & SLAs stored on conversations)
+        await client.query(
+            'UPDATE conversations SET contact_id = $1 WHERE contact_id = $2 AND organization_id = $3',
+            [primaryContactId, secondaryContactId, organization_id]
+        );
+
+        // 3. Relocate invoices
+        await client.query(
+            'UPDATE invoices SET contact_id = $1 WHERE contact_id = $2 AND organization_id = $3',
+            [primaryContactId, secondaryContactId, organization_id]
+        );
+
+        // 4. Relocate tasks if tasks table exists
+        if (await checkTable('tasks')) {
+            await client.query(
+                'UPDATE tasks SET contact_id = $1 WHERE contact_id = $2 AND organization_id = $3',
+                [primaryContactId, secondaryContactId, organization_id]
+            );
+        }
+
+        // 5. Relocate bookings if table exists
+        if (await checkTable('bookings')) {
+            await client.query(
+                'UPDATE bookings SET contact_id = $1 WHERE contact_id = $2',
+                [primaryContactId, secondaryContactId]
+            );
+        }
+
+        // 6. Relocate agent_notes if table exists
+        if (await checkTable('agent_notes')) {
+            await client.query(
+                'UPDATE agent_notes SET contact_id = $1 WHERE contact_id = $2',
+                [primaryContactId, secondaryContactId]
+            );
+        }
+
+        // 7. Relocate call_logs if table exists
+        if (await checkTable('call_logs')) {
+            await client.query(
+                'UPDATE call_logs SET contact_id = $1 WHERE contact_id = $2 AND organization_id = $3',
+                [primaryContactId, secondaryContactId, organization_id]
+            );
+        }
+
+        // 8. Relocate customer_journeys if table exists
+        if (await checkTable('customer_journeys')) {
+            await client.query(
+                'UPDATE customer_journeys SET contact_id = $1 WHERE contact_id = $2',
+                [primaryContactId, secondaryContactId]
+            );
+        }
+
+        // 9. Relocate short_links if table exists
+        if (await checkTable('short_links')) {
+            await client.query(
+                'UPDATE short_links SET contact_id = $1 WHERE contact_id = $2 AND organization_id = $3',
+                [primaryContactId, secondaryContactId, organization_id]
+            );
+        }
+
+        // 10. Merge contact_labels
+        await client.query(
+            `INSERT INTO contact_labels (contact_id, label_id)
+             SELECT $1, label_id FROM contact_labels WHERE contact_id = $2
+             ON CONFLICT DO NOTHING`,
+            [primaryContactId, secondaryContactId]
+        );
+        await client.query('DELETE FROM contact_labels WHERE contact_id = $1', [secondaryContactId]);
+
+        // 11. Merge custom fields (contact_field_values) if table exists
+        if (await checkTable('contact_field_values')) {
+            await client.query(
+                `INSERT INTO contact_field_values (contact_id, organization_id, field_key, value)
+                 SELECT $1, organization_id, field_key, value FROM contact_field_values WHERE contact_id = $2
+                 ON CONFLICT (contact_id, field_key) DO UPDATE SET value = EXCLUDED.value 
+                 WHERE contact_field_values.value IS NULL OR contact_field_values.value = ''`,
+                [primaryContactId, secondaryContactId]
+            );
+            await client.query('DELETE FROM contact_field_values WHERE contact_id = $1', [secondaryContactId]);
+        }
+
+        // 12. Fill in missing profile data on primary contact from secondary
+        const newEmail = primary.email || secondary.email;
+        const newPic = primary.profile_pic_url || secondary.profile_pic_url;
+        const newLeadScore = Math.max(primary.lead_score || 0, secondary.lead_score || 0);
+        const combinedNotes = primary.internal_note 
+            ? (secondary.internal_note ? `${primary.internal_note}\n\n[Penggabungan Kontak]: ${secondary.internal_note}` : primary.internal_note)
+            : secondary.internal_note;
+
+        await client.query(
+            `UPDATE contacts 
+             SET email = COALESCE($1, email),
+                 profile_pic_url = COALESCE($2, profile_pic_url),
+                 internal_note = COALESCE($3, internal_note),
+                 lead_score = GREATEST(COALESCE(lead_score, 0), $4),
+                 updated_at = NOW()
+             WHERE id = $5 AND organization_id = $6`,
+            [newEmail, newPic, combinedNotes, newLeadScore, primaryContactId, organization_id]
+        );
+
+        // 13. Safely delete secondary contact
+        await client.query('DELETE FROM contacts WHERE id = $1 AND organization_id = $2', [secondaryContactId, organization_id]);
+
+        await client.query('COMMIT');
+
+        res.json({
+            success: true,
+            message: `Kontak "${secondary.name || secondary.phone_number}" berhasil digabungkan ke "${primary.name || primary.phone_number}".`,
+            primaryContactId
+        });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('[mergeContacts] Error:', err);
+        res.status(500).json({ error: err.message });
+    } finally {
+        client.release();
     }
 };

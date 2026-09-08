@@ -138,6 +138,54 @@
         <li>Tiket akan berpindah ke tab Resolved dan SLA tracking berhenti.</li>
       </ol>
 
+      <!-- ACTIVE SLA ESCALATION ENGINE -->
+      <h2 id="sla-escalation">🚨 Multi-Channel Active SLA Escalation Engine (Real-Time Alerts)</h2>
+      <p>Bukan sekadar mencatat status, CRMHUB dilengkapi dengan <strong>Active SLA Escalation Engine</strong> yang bertindak secara proaktif untuk mencegah keluhan pelanggan terlantar melewati batas toleransi layanan.</p>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">🚨</span>
+        <div class="callout-content">
+          <strong>Eskalasi Multi-Sensori Instan</strong>
+          <p>Ketika tiket atau percakapan mendeteksi pelanggaran batas waktu (<em>First Response Time</em> atau <em>Resolution Time</em>), sistem langsung memancarkan eskalasi gawat darurat ke seluruh agen dan supervisor yang bertugas.</p>
+        </div>
+      </div>
+
+      <h3>Mekanisme Kerja Eskalasi Otomatis:</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">🔄</span>
+          <div><h4>Background Watchdog</h4><p>Daemon otomatis berjalan setiap 5 menit memindai seluruh tiket berstatus belum selesai yang melewati <code>sla_deadline_at</code>.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">⚡</span>
+          <div><h4>Socket.io Real-Time Push</h4><p>Memancarkan event <code>sla_breach_alert</code> langsung ke room organisasi agen yang sedang login tanpa perlu refresh halaman.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🔊</span>
+          <div><h4>Audio Chime Alert</h4><p>Memainkan suara peringatan lonceng notifikasi audio secara otomatis pada komputer agen.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🖥️</span>
+          <div><h4>Desktop Browser Push</h4><p>Mengirim notifikasi pop-up desktop native bahkan saat agen sedang membuka tab lain atau aplikasi lain.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🔴</span>
+          <div><h4>Visual Pulsing Badge</h4><p>Menampilkan badge berkedip merah terang <code>SLA BREACHED</code> di panel daftar obrolan Inbox.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🍞</span>
+          <div><h4>High-Visibility Toast</h4><p>Memunculkan banner peringatan merah pekat di sudut kanan atas layar dengan nomor tiket dan waktu breach.</p></div>
+        </div>
+      </div>
+
+      <h3>Prosedur Respon Cepat Saat Terjadi SLA Breach:</h3>
+      <ol class="steps">
+        <li><strong>Klik Banner Notifikasi</strong>: Agen atau supervisor dapat langsung mengeklik toast notifikasi untuk membuka obrolan yang tereskalasi.</li>
+        <li><strong>Analisis Kendala</strong>: Periksa riwayat chat dan catatan internal (Whisper Note) untuk memahami akar permasalahan.</li>
+        <li><strong>Balas Pelanggan Segera</strong>: Kirim tanggapan awal atau update solusi menggunakan fitur template / AI Copilot.</li>
+        <li><strong>Tandai Resolved / Alihkan</strong>: Jika masalah membutuhkan penanganan divisi lain, gunakan fitur <strong>Transfer Chat</strong> atau selesaikan dengan tombol <strong>"Resolve"</strong>. Begitu tiket berstatus Resolved, pelacak SLA otomatis berhenti.</li>
+      </ol>
+
       <div class="callout callout-success">
         <span class="callout-icon">✨</span>
         <div class="callout-content">
@@ -156,6 +204,7 @@
       <a href="#gambaran">Gambaran Fitur</a>
       <a href="#status-prioritas">Status &amp; Prioritas</a>
       <a href="#sla">SLA Tracking</a>
+      <a href="#sla-escalation">Active SLA Escalation</a>
       <a href="#membuat-tiket">Membuat Tiket</a>
       <a href="#statistik">Statistik</a>
       <a href="#filter-pencarian">Filter &amp; Pencarian</a>

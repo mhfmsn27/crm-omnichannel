@@ -73,4 +73,17 @@ router.get('/gamification/me', gamificationController.getAgentStats);
 router.post('/gamification/award', gamificationController.awardPoints);
 router.post('/gamification/streak', gamificationController.updateStreak);
 
+// --- Enterprise Audit Logs ---
+router.get('/audit-logs/export', auditLogController.exportAuditLogs);
+router.get('/audit-logs', auditLogController.getAuditLogs);
+
+// --- 1-Click Agent Workflow Macros ---
+import * as macroController from '../controllers/macroController.js';
+router.get('/macros', macroController.getMacros);
+router.post('/macros', macroController.createMacro);
+router.put('/macros/:id', macroController.updateMacro);
+router.delete('/macros/:id', macroController.deleteMacro);
+router.post('/macros/:id/execute', macroController.executeMacro);
+router.post('/conversations/:id/execute-macro', macroController.executeMacro);
+
 export default router;

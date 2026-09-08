@@ -16,6 +16,7 @@ const CampaignDetailModal = ({ campaign, onClose }) => {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState([]);
     const [clickStats, setClickStats] = useState({ clicks: 0, unsubscribes: 0, read: 0 });
+    const [abStats, setAbStats] = useState(null);
     const [showFailedOnly, setShowFailedOnly] = useState(false);
 
     // Non-retryable error patterns (invalid numbers, number not registered, etc.)
@@ -40,12 +41,13 @@ const CampaignDetailModal = ({ campaign, onClose }) => {
             // Fetch recipients & stats
             const res = await axios.get(`/api/app/broadcast/campaigns/${campaign.id}`);
 
-            // New Response Structure: { recipients: [], stats: { clicks: 0, unsubscribes: 0, read: 0 } }
+            // Response Structure: { campaign: {}, recipients: [], stats: { clicks: 0, unsubscribes: 0, read: 0 }, abStats: [] }
             const recipients = res.data.recipients || [];
             const serverStats = res.data.stats || { clicks: 0, unsubscribes: 0, read: 0 };
 
             setDetails(recipients);
             setClickStats(serverStats);
+            setAbStats(res.data.abStats || null);
 
             // Compute Chart Stats
             const read = recipients.filter(r => r.status === 'read').length;
@@ -192,6 +194,77 @@ const CampaignDetailModal = ({ campaign, onClose }) => {
                     </div>
                 </div>
 
+                {/* A/B Split Test Comparison Card */}
+                {abStats && abStats.length > 0 && (
+                    <div className="mb-8 p-5 rounded-2xl border border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/40 dark:bg-indigo-950/20 shadow-sm">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold bg-indigo-600 text-white uppercase tracking-wider shadow-sm">
+                                    A/B SPLIT TEST
+                                </span>
+                                <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                                    Performa Varian A vs Varian B
+                                </h4>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {abStats.map((v) => {
+                                const vTotal = parseInt(v.total) || 0;
+                                const vSent = parseInt(v.sent) || 0;
+                                const vRead = parseInt(v.read) || 0;
+                                const vFailed = parseInt(v.failed) || 0;
+                                const vReadRate = vSent > 0 ? ((vRead / vSent) * 100).toFixed(1) : 0;
+                                const vDelivRate = vTotal > 0 ? ((vSent / vTotal) * 100).toFixed(1) : 0;
+
+                                return (
+                                    <div
+                                        key={v.variant}
+                                        className={`p-4 rounded-xl border shadow-sm ${
+                                            v.variant === 'A'
+                                                ? 'bg-white dark:bg-slate-800 border-indigo-200 dark:border-indigo-800/60'
+                                                : 'bg-white dark:bg-slate-800 border-purple-200 dark:border-purple-800/60'
+                                        }`}
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${
+                                                    v.variant === 'A' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300' : 'bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300'
+                                                }`}>
+                                                    {v.variant}
+                                                </span>
+                                                <span className="font-bold text-sm text-gray-900 dark:text-white">
+                                                    Varian {v.variant}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300">
+                                                {vTotal} target
+                                            </span>
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-2 text-center pt-3 border-t border-gray-100 dark:border-slate-700 text-xs">
+                                            <div>
+                                                <span className="text-[10px] text-gray-400 uppercase font-semibold">Terkirim</span>
+                                                <p className="font-bold text-sm text-gray-800 dark:text-gray-200">{vSent}</p>
+                                                <span className="text-[10px] text-green-500 font-medium">{vDelivRate}%</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-[10px] text-gray-400 uppercase font-semibold">Dibaca</span>
+                                                <p className="font-bold text-sm text-purple-600 dark:text-purple-400">{vRead}</p>
+                                                <span className="text-[10px] text-purple-500 font-medium">{vReadRate}% rate</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-[10px] text-gray-400 uppercase font-semibold">Gagal</span>
+                                                <p className="font-bold text-sm text-rose-500">{vFailed}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
                 {/* Detailed Logs Table */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
@@ -210,6 +283,9 @@ const CampaignDetailModal = ({ campaign, onClose }) => {
                             <thead className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                                 <tr>
                                     <th className="px-6 py-3 font-bold text-gray-500 dark:text-gray-400 uppercase text-xs">Recipient</th>
+                                    {(campaign?.is_ab_test || (abStats && abStats.length > 0)) && (
+                                        <th className="px-4 py-3 font-bold text-gray-500 dark:text-gray-400 uppercase text-xs text-center">Varian</th>
+                                    )}
                                     <th className="px-6 py-3 font-bold text-gray-500 dark:text-gray-400 uppercase text-xs">Status</th>
                                     <th className="px-6 py-3 font-bold text-gray-500 dark:text-gray-400 uppercase text-xs text-center">Is Read</th>
                                     <th className="px-6 py-3 font-bold text-gray-500 dark:text-gray-400 uppercase text-xs">Sent At</th>
@@ -219,7 +295,7 @@ const CampaignDetailModal = ({ campaign, onClose }) => {
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
                                 {loading ? (
-                                    <tr><td colSpan="6" className="p-8 text-center text-gray-400 dark:text-gray-500">Loading details...</td></tr>
+                                    <tr><td colSpan="7" className="p-8 text-center text-gray-400 dark:text-gray-500">Loading details...</td></tr>
                                 ) : (
                                     details
                                         .filter(row => !showFailedOnly || row.status === 'failed')
@@ -231,6 +307,13 @@ const CampaignDetailModal = ({ campaign, onClose }) => {
                                                         <div className="font-bold">{row.name || 'Unknown'}</div>
                                                         <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">{row.phone_number}</div>
                                                     </td>
+                                                    {(campaign?.is_ab_test || (abStats && abStats.length > 0)) && (
+                                                        <td className="px-4 py-3 text-center">
+                                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+                                                                Varian {row.message_variant || 'A'}
+                                                            </span>
+                                                        </td>
+                                                    )}
                                                     <td className="px-6 py-3">
                                                         <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${
                                                             row.status === 'read' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
@@ -466,7 +549,14 @@ export default function BroadcastReports() {
                             >
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
-                                        <h4 className="font-bold text-gray-900 dark:text-white text-sm truncate">{c.name}</h4>
+                                        <h4 className="font-bold text-gray-900 dark:text-white text-sm truncate flex items-center gap-1.5">
+                                            <span>{c.name}</span>
+                                            {c.is_ab_test && (
+                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-extrabold bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 uppercase">
+                                                    A/B
+                                                </span>
+                                            )}
+                                        </h4>
                                         <p className="text-xs text-gray-400 mt-0.5">{new Date(c.created_at).toLocaleDateString()}</p>
                                     </div>
                                     <div className="shrink-0">
@@ -578,12 +668,19 @@ export default function BroadcastReports() {
                                     onClick={() => setSelectedCampaign(c)}
                                 >
                                     <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
-                                        {c.name}
-                                        {isThrottled && (
-                                            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-200" title="Kecepatan dibatasi sementara karena antrean global penuh (>800)">
-                                                🐢 Melambat
-                                            </span>
-                                        )}
+                                        <div className="flex items-center gap-2">
+                                            <span>{c.name}</span>
+                                            {c.is_ab_test && (
+                                                <span className="px-2 py-0.5 rounded text-[9px] font-extrabold bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 uppercase tracking-wider">
+                                                    A/B TEST
+                                                </span>
+                                            )}
+                                            {isThrottled && (
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 text-orange-700 border border-orange-200" title="Kecepatan dibatasi sementara karena antrean global penuh (>800)">
+                                                    🐢 Melambat
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs">{new Date(c.created_at).toLocaleDateString()}</td>
                                     <td className="px-6 py-4 text-center font-mono text-gray-700 dark:text-gray-300">{c.total}</td>

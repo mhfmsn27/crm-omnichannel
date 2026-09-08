@@ -626,3 +626,84 @@ export const bulkActionConversations = async (req, res) => {
     }
 };
 
+// --- CHAT SNOOZE / FOLLOW-UP REMINDER ---
+const ensureSnoozeSchema = async () => {
+    try {
+        await pool.query(`
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS snoozed_until TIMESTAMPTZ;
+            ALTER TABLE conversations ADD COLUMN IF NOT EXISTS snooze_reason TEXT;
+        `);
+    } catch (e) {
+        console.warn("[ConversationAction] Snooze schema check notice:", e.message);
+    }
+};
+ensureSnoozeSchema();
+
+export const snoozeConversation = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+    const { snoozed_until, reason } = req.body;
+
+    if (!snoozed_until) {
+        return res.status(400).json({ error: 'Waktu tunda (snoozed_until) wajib diisi' });
+    }
+
+    try {
+        await ensureSnoozeSchema();
+        const result = await pool.query(
+            `UPDATE conversations 
+             SET snoozed_until = $1, snooze_reason = $2, updated_at = NOW() 
+             WHERE id = $3 AND organization_id = $4 
+             RETURNING id, snoozed_until, snooze_reason`,
+            [snoozed_until, reason || 'Follow-up pelanggan', id, organization_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Percakapan tidak ditemukan' });
+        }
+
+        const conv = result.rows[0];
+        req.io?.to(`org_${organization_id}`).emit('conversation_snoozed', {
+            conversationId: parseInt(id),
+            snoozed_until: conv.snoozed_until,
+            snooze_reason: conv.snooze_reason
+        });
+
+        res.json({
+            success: true,
+            message: 'Percakapan berhasil ditunda',
+            conversation: conv
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const unsnoozeConversation = async (req, res) => {
+    const { id } = req.params;
+    const { organization_id } = req.user;
+
+    try {
+        await ensureSnoozeSchema();
+        const result = await pool.query(
+            `UPDATE conversations 
+             SET snoozed_until = NULL, snooze_reason = NULL, updated_at = NOW() 
+             WHERE id = $1 AND organization_id = $2 
+             RETURNING id`,
+            [id, organization_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Percakapan tidak ditemukan' });
+        }
+
+        req.io?.to(`org_${organization_id}`).emit('conversation_unsnoozed', {
+            conversationId: parseInt(id)
+        });
+
+        res.json({ success: true, message: 'Status tunda dibatalkan' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+

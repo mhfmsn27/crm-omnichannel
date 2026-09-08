@@ -60,6 +60,74 @@
         </div>
       </div>
 
+      <!-- AB SPLIT TESTING -->
+      <h2 id="ab-testing">🧪 Broadcast A/B Split Testing (Head-to-Head Analytics)</h2>
+      <p>A/B Split Testing memungkinkan Anda menguji 2 variasi pesan berbeda (Varian A vs Varian B) kepada audiens yang sama untuk mengetahui pesan mana yang menghasilkan rasio baca (<em>Read Rate</em>), klik link, dan konversi closing tertinggi.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <strong>Optimasi Konversi Berbasis Data Nyata</strong>
+          <p>Bandingkan gaya penulisan headline yang berbeda, tawaran promo diskon % vs potongan nominal Rp, atau CTA link yang berbeda untuk memaksimalkan ROI broadcast Anda.</p>
+        </div>
+      </div>
+
+      <h3>Cara Mengaktifkan A/B Split Testing:</h3>
+      <ol class="steps">
+        <li>Buka <strong>Broadcast &rarr; Buat Campaign</strong>.</li>
+        <li>Aktifkan sakelar toggle <strong>"A/B Split Testing"</strong> (ikon tabung reaksi 🧪).</li>
+        <li><strong>Susun Pesan Varian A</strong>: Tulis draft penawaran pertama Anda di editor pesan utama.</li>
+        <li><strong>Susun Pesan Varian B</strong>: Tulis draft alternatif pada kolom <em>"Pesan Varian B"</em> yang muncul di bawahnya.</li>
+        <li><strong>Atur Rasio Pembagian (Split Ratio)</strong>: Geser slider persentase target:
+          <ul>
+            <li><strong>50% : 50%</strong> (Rekomendasi default untuk pengujian berimbang).</li>
+            <li><strong>70% : 30%</strong> atau rasio lainnya antara 10% hingga 90%.</li>
+          </ul>
+        </li>
+        <li>Sistem akan mendistribusikan antrean pesan BullMQ secara adil dan acak sesuai rasio yang ditentukan.</li>
+      </ol>
+
+      <h3>Membaca Laporan Head-to-Head Varian:</h3>
+      <p>Buka <strong>Broadcast &rarr; Laporan</strong> lalu klik campaign berlabel <span class="badge badge-blue">A/B TEST</span>:</p>
+      <ul>
+        <li><strong>Kartu Komparasi Head-to-Head</strong>: Tampil ringkasan perbandingan metrik Varian A vs Varian B (Total Target, Terkirim, Diterima, Dibaca, Rasio Read Rate %, dan Gagal).</li>
+        <li><strong>Log Detail Penerima</strong>: Kolom khusus <strong>"Varian"</strong> menampilkan varian pesan mana yang diterima oleh setiap nomor kontak.</li>
+      </ul>
+
+      <!-- ANTI-BAN VALIDATION -->
+      <h2 id="anti-ban">🛡️ Smart Anti-Ban: Pre-Send WhatsApp Validation</h2>
+      <p>Mengirim pesan massal ke nomor yang tidak terdaftar di WhatsApp adalah penyebab nomor pengirim sering ditandai spam dan diblokir oleh sistem Meta. CRMHUB dilengkapi dengan proteksi <strong>Smart Anti-Ban</strong> berbasis verifikasi sebelum pengiriman.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">🔍</span>
+          <div><h4>Pengecekan Gateway Instan</h4><p>Sistem memverifikasi status registrasi WhatsApp nomor penerima sebelum pesan ditembakkan.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">⚡</span>
+          <div><h4>Caching Redis 7 Hari</h4><p>Hasil validasi disimpan di Redis selama 7 hari untuk efisiensi dan kecepatan tanpa membebani gateway.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🚫</span>
+          <div><h4>Otomatis Melewati Nomor Pasif</h4><p>Nomor tidak aktif dilewati (skipped) otomatis, status dicatat <em>Failed (Anti-Ban Protected)</em>, dan nomor pengirim tetap 100% aman.</p></div>
+        </div>
+      </div>
+
+      <!-- QUIET HOURS -->
+      <h2 id="quiet-hours">🌙 Quiet Hours (Penjadwalan Otomatis Jam Istirahat)</h2>
+      <p>Mengirim broadcast promosi pada tengah malam dapat mengganggu kenyamanan pelanggan dan meningkatkan risiko laporan nomor (report spam). CRMHUB menyediakan fitur <strong>Quiet Hours</strong>:</p>
+      <ul>
+        <li><strong>Jam Istirahat Terlindungi</strong>: Default pukul <strong>23:00 – 04:00 WIB</strong> (dapat dikonfigurasi).</li>
+        <li><strong>Auto-Reschedule Cerdas</strong>: Jika antrean broadcast belum selesai dan jam telah memasuki periode istirahat, pengiriman akan dijeda secara otomatis dan dilanjutkan kembali tepat pukul 04:00 WIB keesokan harinya tanpa intervensi manual.</li>
+      </ul>
+
+      <!-- LINK TRACKING & UNSUBSCRIBE -->
+      <h2 id="link-unsubscribe">🔗 Link Tracking &amp; Tombol Berhenti Berlangganan (Unsubscribe)</h2>
+      <ul>
+        <li><strong>Short URL &amp; Click Tracking</strong>: Tautan website yang disematkan dalam pesan otomatis diubah menjadi short link unik (<code>/r/:slug</code>) untuk melacak berapa banyak penerima yang mengeklik tautan tersebut.</li>
+        <li><strong>Opt-Out Unsubscribe Link</strong>: Aktifkan opsi <em>"Sertakan link berhenti berlangganan"</em> di bagian bawah formulir campaign. Pelanggan yang mengeklik link ini akan otomatis dinonaktifkan dari daftar penerima broadcast berikutnya, menjaga kepatuhan dan integritas reputasi pengirim Anda.</li>
+      </ul>
+
       <!-- ROTATOR -->
       <h2 id="rotator">Rotator Perangkat</h2>
       <p>Rotator adalah grup dari beberapa perangkat WhatsApp yang bekerja bersama untuk mendistribusikan pengiriman broadcast. Saat menggunakan rotator, setiap pesan dikirim dari nomor yang berbeda secara bergantian.</p>
@@ -154,6 +222,10 @@
       <div class="toc-title">Di halaman ini</div>
       <a href="#overview">Gambaran Fitur</a>
       <a href="#buat-campaign">Buat Campaign</a>
+      <a href="#ab-testing">A/B Split Testing</a>
+      <a href="#anti-ban">Smart Anti-Ban</a>
+      <a href="#quiet-hours">Quiet Hours</a>
+      <a href="#link-unsubscribe">Link Tracking &amp; Unsubscribe</a>
       <a href="#rotator">Rotator Perangkat</a>
       <a href="#meta-templates">Template Meta (Cloud API)</a>
       <a href="#upselling">Upselling Broadcast</a>

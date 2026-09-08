@@ -396,7 +396,8 @@ const MessageBubble = ({
     isLastInGroup,
     showSender,
     showTime,
-    isGroupChat = false
+    isGroupChat = false,
+    searchHighlightTerm = ''
 }) => {
     const isOutbound = message.from_me;
     const isStarred = message.is_starred;
@@ -539,7 +540,7 @@ const MessageBubble = ({
 
                                     {/* Main Text */}
                                     {(!message.original_content || isOutbound) && (
-                                        <FormatText text={message.content} />
+                                        <FormatText text={message.content} highlightTerm={searchHighlightTerm} />
                                     )}
                                 </div>
                             )}

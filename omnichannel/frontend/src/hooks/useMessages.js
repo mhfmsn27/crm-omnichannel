@@ -245,23 +245,70 @@ export default function useMessages({ selectedConvId, socket, user, setConversat
         }
     }, [socket, user, selectedConvId]);
 
-    // Handle File Upload
-    const handleFileUpload = async (file, type) => {
-        if (!file) return;
+    // Handle File Upload (Single or Multiple)
+    const handleFileUpload = async (filesOrFile, type) => {
+        if (!filesOrFile) return;
+        const fileList = Array.isArray(filesOrFile) ? filesOrFile : [filesOrFile];
+        if (fileList.length === 0) return;
+
         const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-        if (file.size > MAX_FILE_SIZE) {
-            toast.error(`Ukuran file maksimal adalah 50MB (Ukuran file ini: ${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-            return;
+        const validFiles = [];
+        for (const f of fileList) {
+            if (f.size > MAX_FILE_SIZE) {
+                toast.error(`File "${f.name}" melebihi batas 50MB (${(f.size / 1024 / 1024).toFixed(1)}MB)`);
+            } else {
+                validFiles.push(f);
+            }
         }
+
+        if (validFiles.length === 0) return;
+
         setIsSending(true);
-        const formData = new FormData();
-        formData.append('file', file);
+        const toastId = validFiles.length > 1 ? toast.loading(`Mengunggah 1 dari ${validFiles.length} lampiran...`) : null;
+
         try {
-            const res = await axios.post('/api/app/inbox/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-            const mediaData = res.data;
-            await handleSendMessage('', type, mediaData);
+            for (let i = 0; i < validFiles.length; i++) {
+                const currentFile = validFiles[i];
+                if (toastId && i > 0) {
+                    toast.loading(`Mengunggah ${i + 1} dari ${validFiles.length} lampiran...`, { id: toastId });
+                }
+
+                const formData = new FormData();
+                formData.append('file', currentFile);
+
+                const res = await axios.post('/api/app/inbox/upload', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                const mediaData = res.data;
+
+                // Auto-detect type if generic
+                let fileType = type;
+                if (!fileType || fileType === 'document') {
+                    if (currentFile.type.startsWith('image/')) fileType = 'image';
+                    else if (currentFile.type.startsWith('video/')) fileType = 'video';
+                    else if (currentFile.type.startsWith('audio/')) fileType = 'audio';
+                    else fileType = 'document';
+                }
+
+                await handleSendMessage('', fileType, mediaData);
+
+                // Slight safe pause between multiple files to prevent socket/gateway collisions
+                if (i < validFiles.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 350));
+                }
+            }
+
+            if (toastId) {
+                toast.success(`${validFiles.length} lampiran berhasil dikirim!`, { id: toastId });
+            }
         } catch (err) {
-            toast.error("Upload failed");
+            console.error('[useMessages] Upload error:', err);
+            if (toastId) {
+                toast.error('Gagal mengunggah lampiran', { id: toastId });
+            } else {
+                toast.error('Upload failed');
+            }
+        } finally {
             setIsSending(false);
         }
     };

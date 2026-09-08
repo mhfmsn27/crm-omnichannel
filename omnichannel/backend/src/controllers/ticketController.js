@@ -288,7 +288,7 @@ export const getTicketStats = async (req, res) => {
 // BACKGROUND: Check and mark SLA breaches
 // Run this via a cron/worker every few minutes
 // ============================================================
-export const checkSLABreaches = async () => {
+export const checkSLABreaches = async (io = null) => {
     try {
         const result = await pool.query(
             `UPDATE conversations
@@ -297,10 +297,21 @@ export const checkSLABreaches = async () => {
                AND sla_deadline_at < NOW()
                AND sla_breached = false
                AND status != 'resolved'
-             RETURNING id, organization_id, ticket_number`
+             RETURNING id, organization_id, ticket_number, priority, sla_deadline_at`
         );
         if (result.rows.length > 0) {
             console.log(`[SLA] Marked ${result.rows.length} conversations as breached`);
+            if (io) {
+                for (const row of result.rows) {
+                    io.to(`org_${row.organization_id}`).emit('sla_breach_alert', {
+                        conversationId: row.id,
+                        ticketNumber: row.ticket_number,
+                        priority: row.priority,
+                        slaDeadlineAt: row.sla_deadline_at,
+                        message: `Peringatan: Tiket #${row.ticket_number || row.id} telah melewati batas waktu SLA!`
+                    });
+                }
+            }
         }
         return result.rows;
     } catch (err) {
