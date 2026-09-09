@@ -1,4 +1,5 @@
 import pool from '../config/db.js';
+import * as journeyService from '../services/journeyService.js';
 
 // --- AUTO MIGRATION FOR PIPELINE ---
 export const ensurePipelineSchema = async () => {
@@ -286,6 +287,35 @@ export const setConversationStage = async (req, res) => {
                 "INSERT INTO pipeline_stage_history (conversation_id, pipeline_id, from_stage_id, to_stage_id, changed_by) VALUES ($1, $2, $3, $4, $5)",
                 [conversationId, pipelineId, fromStageId, stageId, userId]
             );
+
+            // Cross-module conversion trigger if moved to Won stage
+            try {
+                const targetStageRes = await pool.query("SELECT name, is_closed_stage FROM pipeline_stages WHERE id = $1", [stageId]);
+                const targetStage = targetStageRes.rows[0];
+                const isWon = targetStage && (
+                    targetStage.name.toLowerCase().includes('won') ||
+                    targetStage.name.toLowerCase().includes('lunas') ||
+                    targetStage.name.toLowerCase().includes('deal') ||
+                    targetStage.name.toLowerCase().includes('closing')
+                );
+
+                if (isWon) {
+                    const convInfo = await pool.query("SELECT contact_id, value FROM conversations WHERE id = $1", [conversationId]);
+                    const contactId = convInfo.rows[0]?.contact_id;
+                    const dealVal = convInfo.rows[0]?.value || 0;
+                    if (contactId) {
+                        journeyService.markJourneyConverted(
+                            req.user.organization_id,
+                            contactId,
+                            'deal_won',
+                            dealVal,
+                            `Deal moved to ${targetStage.name} by user #${userId}`
+                        ).catch(e => console.warn('[Pipeline Won Journey Sync] Warning:', e.message));
+                    }
+                }
+            } catch (convErr) {
+                console.warn('[Pipeline Won Sync] Warning:', convErr.message);
+            }
         }
 
         // Emit Socket Event (Optional for later)

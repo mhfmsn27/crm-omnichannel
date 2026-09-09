@@ -4,6 +4,8 @@ import CTAManager from '../CTAManager';
 import RichMediaManager from '../RichMediaManager';
 import SmartReplySuggestions from './SmartReplySuggestions';
 import SuggestionPopover from './SuggestionPopover';
+import MentionPopover from './MentionPopover';
+import ListMessageModal from './ListMessageModal';
 import AttachmentMenu from './AttachmentMenu';
 import PaymentLinkModal from './PaymentLinkModal';
 import WAFlowModal from './WAFlowModal';
@@ -13,15 +15,12 @@ import PollModal from './PollModal';
 import EventModal from './EventModal';
 import QuickInvoiceModal from './QuickInvoiceModal.jsx';
 import MacroModal from './MacroModal.jsx';
-import { Send, Plus, Smile, Mic, Loader2, FileText, Image as ImageIcon, X, Truck, Package, ExternalLink, Sparkles, CreditCard, FormInput, Pencil, Lock, MessageSquare, Clock, Check, Zap } from 'lucide-react';
+import { Send, Plus, Smile, Mic, Loader2, FileText, Image as ImageIcon, X, Truck, Package, ExternalLink, Sparkles, CreditCard, FormInput, Pencil, Lock, MessageSquare, Clock, Check, Zap, AtSign } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
-// Note: SuggestionPopover, AttachmentMenu, PaymentLinkModal, and WAFlowModal
-// are imported from separate files for better code organization
-
-export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSendProduct, onSendPaymentLink, templates, conversationId, editingMessage, onCancelEdit, onSubmitEdit, isGroupChat = false, contactPhone, contactId, contactName, draftText, onDraftChange }) {
+export default function ChatInput({ agents = [], onSendMessage, onUploadFile, onSendCTA, onSendProduct, onSendPaymentLink, templates, conversationId, editingMessage, onCancelEdit, onSubmitEdit, isGroupChat = false, contactPhone, contactId, contactName, draftText, onDraftChange }) {
     const [inputText, setInputText] = useState('');
     const [isInternal, setIsInternal] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -53,6 +52,15 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [suggestionIndex, setSuggestionIndex] = useState(0);
+
+    // Mention state
+    const [showMentionSuggestions, setShowMentionSuggestions] = useState(false);
+    const [mentionSuggestions, setMentionSuggestions] = useState([]);
+    const [mentionIndex, setMentionIndex] = useState(0);
+    const mentionedUserIdsRef = useRef(new Set());
+
+    // List Message Modal
+    const [isListModalOpen, setIsListModalOpen] = useState(false);
 
     const textareaRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -98,6 +106,13 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
         if (type === 'cta') {
             setIsAttachMenuOpen(false);
             setIsCTAModalOpen(true);
+            return;
+        }
+
+        // Handle List Message
+        if (type === 'list_message') {
+            setIsAttachMenuOpen(false);
+            setIsListModalOpen(true);
             return;
         }
 
@@ -276,11 +291,13 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
         }
 
         const cursor = e.target.selectionStart;
-        // Support spaces, hyphens, underscores in shortcut name or bare slash
-        const match = val.slice(0, cursor).match(/(?:\s|^)\/([a-zA-Z0-9_ \-]*)$/);
+        // 1. Template quick-reply slash match
+        const matchSlash = val.slice(0, cursor).match(/(?:\s|^)\/([a-zA-Z0-9_ \-]*)$/);
+        // 2. Teammate mention @ match
+        const matchAt = val.slice(0, cursor).match(/(?:\s|^)@([a-zA-Z0-9_\s]*)$/);
 
-        if (match && templates && templates.length > 0) {
-            const keyword = match[1].toLowerCase().trim();
+        if (matchSlash && templates && templates.length > 0) {
+            const keyword = matchSlash[1].toLowerCase().trim();
             const filtered = keyword 
                 ? templates.filter(t => 
                     (t.shortcut && t.shortcut.toLowerCase().includes(keyword)) ||
@@ -293,11 +310,31 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                 setSuggestions(filtered.slice(0, 10));
                 setShowSuggestions(true);
                 setSuggestionIndex(0);
+                setShowMentionSuggestions(false);
             } else {
                 setShowSuggestions(false);
             }
+        } else if (matchAt && agents && agents.length > 0) {
+            const keyword = matchAt[1].toLowerCase().trim();
+            const filtered = keyword
+                ? agents.filter(a =>
+                    (a.name && a.name.toLowerCase().includes(keyword)) ||
+                    (a.email && a.email.toLowerCase().includes(keyword)) ||
+                    (a.division && a.division.toLowerCase().includes(keyword))
+                  )
+                : agents;
+
+            if (filtered.length > 0) {
+                setMentionSuggestions(filtered.slice(0, 8));
+                setShowMentionSuggestions(true);
+                setMentionIndex(0);
+                setShowSuggestions(false);
+            } else {
+                setShowMentionSuggestions(false);
+            }
         } else {
             setShowSuggestions(false);
+            setShowMentionSuggestions(false);
         }
     };
 
@@ -326,6 +363,33 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
         }
     };
 
+    const selectMention = (agent) => {
+        const cursor = textareaRef.current ? textareaRef.current.selectionStart : inputText.length;
+        const val = inputText;
+        const match = val.slice(0, cursor).match(/(?:\s|^)@([a-zA-Z0-9_\s]*)$/);
+
+        if (match) {
+            const startOfAt = match.index + (match[0].startsWith('@') ? 0 : 1);
+            const endOfKeyword = cursor;
+            const before = val.substring(0, startOfAt);
+            const after = val.substring(endOfKeyword);
+
+            const mentionTag = `@${agent.name} `;
+            const newVal = before + mentionTag + after;
+            setInputText(newVal);
+            mentionedUserIdsRef.current.add(agent.id);
+            setShowMentionSuggestions(false);
+
+            setTimeout(() => {
+                if (textareaRef.current) {
+                    textareaRef.current.focus();
+                    const newCursorPos = before.length + mentionTag.length;
+                    textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+                }
+            }, 0);
+        }
+    };
+
     const handleKeyDown = (e) => {
         if (showSuggestions) {
             if (e.key === 'ArrowUp') {
@@ -339,6 +403,19 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                 selectTemplate(suggestions[suggestionIndex]);
             } else if (e.key === 'Escape') {
                 setShowSuggestions(false);
+            }
+        } else if (showMentionSuggestions) {
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setMentionIndex(prev => (prev > 0 ? prev - 1 : mentionSuggestions.length - 1));
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                setMentionIndex(prev => (prev < mentionSuggestions.length - 1 ? prev + 1 : 0));
+            } else if (e.key === 'Enter' || e.key === 'Tab') {
+                e.preventDefault();
+                selectMention(mentionSuggestions[mentionIndex]);
+            } else if (e.key === 'Escape') {
+                setShowMentionSuggestions(false);
             }
         } else {
             if (e.key === 'Escape' && editingMessage) {
@@ -382,9 +459,12 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
             return;
         }
 
-        onSendMessage(inputText, 'text', null, isInternal);
+        const targetMentionedIds = Array.from(mentionedUserIdsRef.current);
+        onSendMessage(inputText, 'text', null, isInternal, targetMentionedIds);
+        mentionedUserIdsRef.current.clear();
         setInputText('');
         setShowEmojiPicker(false);
+        setShowMentionSuggestions(false);
         setAiSuggestion('');
         if (textareaRef.current) textareaRef.current.style.height = 'auto';
     };
@@ -647,6 +727,18 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                     onSelect={selectTemplate}
                 />
             )}
+            {showMentionSuggestions && (
+                <MentionPopover
+                    agents={mentionSuggestions}
+                    selectedIndex={mentionIndex}
+                    onSelect={selectMention}
+                />
+            )}
+            <ListMessageModal
+                isOpen={isListModalOpen}
+                onClose={() => setIsListModalOpen(false)}
+                conversationId={conversationId}
+            />
             <input type="file" className="hidden" ref={fileInputRef} onChange={handleFileChange} multiple />
             <AttachmentMenu isOpen={isAttachMenuOpen} onSelect={triggerFileUpload} onClose={() => setIsAttachMenuOpen(false)} isGroupChat={isGroupChat} />
             {showEmojiPicker && (
@@ -702,21 +794,37 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
             )}
 
             {/* Input Mode Toggle (Reply vs Internal Note) */}
-            <div className="flex gap-2 mx-2 mb-2">
-                <button
-                    type="button"
-                    onClick={() => setIsInternal(false)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-sm font-medium transition-colors ${!isInternal ? 'bg-white dark:bg-[#2a3942] text-[#00a884] border-b-2 border-[#00a884]' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
-                >
-                    <MessageSquare className="w-4 h-4" /> Balas Pelanggan
-                </button>
-                <button
-                    type="button"
-                    onClick={() => setIsInternal(true)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-sm font-medium transition-colors ${isInternal ? 'bg-[#fff9c4] dark:bg-[#ffe082]/20 text-[#f57f17] border-b-2 border-[#f57f17]' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
-                >
-                    <Lock className="w-4 h-4" /> Catatan Internal
-                </button>
+            <div className="flex flex-col gap-1 mx-2 mb-1.5">
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setIsInternal(false)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-bold transition-all ${
+                            !isInternal
+                                ? 'bg-white dark:bg-[#2a3942] text-[#00a884] border-b-2 border-[#00a884] shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium'
+                        }`}
+                    >
+                        <MessageSquare className="w-3.5 h-3.5" /> Balas Pelanggan
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setIsInternal(true)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-bold transition-all ${
+                            isInternal
+                                ? 'bg-[#fff9c4] dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-b-2 border-amber-500 shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium'
+                        }`}
+                    >
+                        <Lock className="w-3.5 h-3.5" /> Catatan Internal (Whisper)
+                    </button>
+                </div>
+                {isInternal && (
+                    <div className="flex items-center gap-1.5 text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 px-2.5 py-1 rounded-md border border-amber-200/60 dark:border-amber-800/40 animate-fadeIn">
+                        <Lock className="w-3 h-3 text-amber-600 flex-shrink-0" />
+                        <span>Hanya terlihat oleh tim internal (tidak dikirim ke pelanggan). Ketik <strong className="font-mono bg-amber-100 dark:bg-amber-900/60 px-1 py-0.5 rounded">@</strong> untuk mention rekan.</span>
+                    </div>
+                )}
             </div>
 
             {/* Input Row */}
@@ -729,8 +837,10 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                 className={`flex-1 rounded-[24px] px-2 py-1.5 shadow-[0_2px_5px_rgba(0,0,0,0.05)] border transition-all duration-300 flex items-end gap-1 ${
                     isDraggingOver 
                         ? 'border-dashed border-emerald-500 ring-2 ring-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-950/40' 
-                        : 'border-transparent focus-within:border-indigo-100 dark:focus-within:border-slate-600 focus-within:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
-                } ${isInternal ? 'bg-[#fff9c4] dark:bg-[#ffe082]/20' : 'bg-white dark:bg-[#2a3942]'}`}
+                        : isInternal
+                            ? 'border-amber-300 dark:border-amber-700/60 focus-within:border-amber-500 ring-1 ring-amber-400/20'
+                            : 'border-transparent focus-within:border-indigo-100 dark:focus-within:border-slate-600 focus-within:shadow-[0_4px_12px_rgba(0,0,0,0.08)]'
+                } ${isInternal ? 'bg-[#fffde7] dark:bg-[#202528]' : 'bg-white dark:bg-[#2a3942]'}`}
             >
 
                 {/* Emoji Button */}
@@ -761,7 +871,13 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     onPaste={handlePaste}
-                    placeholder={isDraggingOver ? "Lepaskan file di sini untuk mengunggah..." : "Ketik pesan"}
+                    placeholder={
+                        isDraggingOver 
+                            ? "Lepaskan file di sini untuk mengunggah..." 
+                            : isInternal 
+                                ? "Ketik catatan internal. Ketik @ untuk mention rekan/supervisor..." 
+                                : "Ketik pesan"
+                    }
                     className="flex-1 w-full resize-none outline-none text-[15px] leading-[22px] chat-input-area text-[#111b21] dark:text-[#d1d7db] placeholder-[#8696a0] dark:placeholder-[#8696a0] custom-scrollbar px-2 mb-1.5"
                     rows={1}
                     style={{ minHeight: '24px', maxHeight: '120px', backgroundColor: 'transparent' }}
@@ -881,10 +997,16 @@ export default function ChatInput({ onSendMessage, onUploadFile, onSendCTA, onSe
                             )}
                             <button
                                 onClick={handleSendMessage}
-                                className={`p-2 rounded-full transition-colors ${scheduleDate ? 'bg-blue-500 text-white hover:bg-blue-600' : 'text-[#54656f] dark:text-[#8696a0] hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-                                title={scheduleDate ? "Kirim Terjadwal" : "Send"}
+                                className={`p-2 rounded-full transition-all ${
+                                    scheduleDate 
+                                        ? 'bg-blue-500 text-white hover:bg-blue-600 shadow' 
+                                        : isInternal
+                                            ? 'bg-amber-500 hover:bg-amber-600 text-white shadow'
+                                            : 'text-[#54656f] dark:text-[#8696a0] hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                                title={scheduleDate ? "Kirim Terjadwal" : isInternal ? "Simpan Catatan Internal" : "Kirim Pesan"}
                             >
-                                {scheduleDate ? <Check className="w-5 h-5" /> : <Send className="w-5 h-5 fill-current" />}
+                                {scheduleDate ? <Check className="w-5 h-5" /> : isInternal ? <Lock className="w-5 h-5" /> : <Send className="w-5 h-5 fill-current" />}
                             </button>
                         </>
                     )}

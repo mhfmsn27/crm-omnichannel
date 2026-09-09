@@ -4,7 +4,7 @@ import { AudioPlayer, VideoPlayer, DocumentCard } from './MediaComponents';
 import { getApiUrl } from '../../config/api';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { RotateCw, Languages, ChevronDown, ChevronUp, Star, X, ArrowRightLeft, Smartphone, Lock, Pin } from 'lucide-react';
+import { RotateCw, Languages, ChevronDown, ChevronUp, Star, X, ArrowRightLeft, Smartphone, Lock, Pin, ListFilter } from 'lucide-react';
 
 // Extracted Components
 import FormatText from './FormatText.jsx';
@@ -526,8 +526,15 @@ const MessageBubble = ({
                             />
 
                             {/* Text Content - Hide for structured message types (contact, poll, event, location) */}
-                            {message.content && (message.type === 'text' || message.type === 'image' || message.type === 'video') && (
+                            {message.content && (message.type === 'text' || message.type === 'image' || message.type === 'video' || message.type === 'list_message') && (
                                 <div className="break-words whitespace-pre-wrap min-w-[60px]">
+                                    {message.type === 'list_message' && (
+                                        <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1.5 pb-1 border-b border-emerald-500/20">
+                                            <ListFilter className="w-3.5 h-3.5" />
+                                            <span>Menu Pilihan Interaktif</span>
+                                        </div>
+                                    )}
+
                                     {/* Translation UI */}
                                     <TranslationUI
                                         message={message}

@@ -134,7 +134,7 @@ export const getMessages = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
     const { id } = req.params;
-    const { content, type, media_url, mimetype, filename, is_internal } = req.body;
+    const { content, type, media_url, mimetype, filename, is_internal, mentioned_user_ids } = req.body;
     const { organization_id, id: userId } = req.user;
 
     try {
@@ -221,6 +221,33 @@ export const sendMessage = async (req, res) => {
             const internalMsg = msgResInternal.rows[0];
             if (internalMsg) {
                 internalMsg.sender_name = userRes.rows[0]?.name || 'Agent';
+            }
+
+            // Save and notify @mentioned agents
+            const targetMentionIds = Array.isArray(mentioned_user_ids)
+                ? [...new Set(mentioned_user_ids.map(uid => parseInt(uid)).filter(n => !isNaN(n) && n > 0))]
+                : [];
+
+            if (targetMentionIds.length > 0) {
+                for (const mUserId of targetMentionIds) {
+                    try {
+                        await pool.query(
+                            `INSERT INTO agent_mentions (organization_id, conversation_id, message_id, mentioned_user_id, created_by)
+                             VALUES ($1, $2, $3, $4, $5)`,
+                            [organization_id, id, internalMsg.id, mUserId, userId]
+                        );
+                        req.io?.to(`user_${mUserId}`).emit('agent_mentioned', {
+                            conversationId: id,
+                            messageId: internalMsg.id,
+                            senderName: internalMsg.sender_name,
+                            senderId: userId,
+                            preview: (content || '').substring(0, 120),
+                            createdAt: internalMsg.created_at
+                        });
+                    } catch (mErr) {
+                        console.warn('[Mention] Record warning:', mErr.message);
+                    }
+                }
             }
             
             req.io?.to(`org_${organization_id}`).emit('new_message', {
@@ -732,6 +759,96 @@ export const sendInteractive = async (req, res) => {
     }
 };
 
+export const sendListMessage = async (req, res) => {
+    const { id } = req.params;
+    const { title, description, buttonText, sections } = req.body;
+    const { organization_id, id: userId } = req.user;
+
+    try {
+        const convRes = await pool.query(
+            `SELECT c.contact_id, c.whatsapp_session_id, c.channel,
+              c.assigned_to_agent_id, c.status,
+              ct.phone_number,
+              ws.session_id as wa_uuid,
+              tb.bot_token as tg_token,
+              ia.access_token as ig_access_token,
+              mp.access_token as page_access_token
+       FROM conversations c 
+       JOIN contacts ct ON c.contact_id = ct.id
+       LEFT JOIN whatsapp_sessions ws ON c.whatsapp_session_id = ws.id
+       LEFT JOIN telegram_bots tb ON c.telegram_bot_id = tb.id
+       LEFT JOIN instagram_accounts ia ON c.instagram_account_id = ia.id
+       LEFT JOIN messenger_pages mp ON c.messenger_page_id = mp.id
+       WHERE c.id = $1 AND c.organization_id = $2`,
+            [id, organization_id]
+        );
+
+        if (convRes.rows.length === 0) return res.status(404).json({ error: 'Conversation not found' });
+        const sessionData = convRes.rows[0];
+
+        if (!sessionData.assigned_to_agent_id || sessionData.status === 'needs_agent') {
+            await pool.query("UPDATE conversations SET assigned_to_agent_id = $1, status = 'open' WHERE id = $2", [userId, id]);
+        }
+
+        const validSections = Array.isArray(sections) ? sections : [];
+        let dbContent = `[List Message: ${title || 'Pilihan'}]\n${description || ''}\n`;
+        let optNum = 1;
+        validSections.forEach(sec => {
+            if (sec.title) dbContent += `\n*${sec.title}*\n`;
+            (sec.rows || []).forEach(row => {
+                dbContent += `${optNum}. ${row.title}${row.description ? ` (${row.description})` : ''}\n`;
+                optNum++;
+            });
+        });
+
+        if (sessionData.channel === 'whatsapp' && sessionData.wa_uuid) {
+            await waService.sendListMessage(
+                sessionData.wa_uuid,
+                sessionData.phone_number,
+                title || 'Menu Pilihan',
+                description || 'Silakan pilih opsi:',
+                buttonText || 'Pilih Menu',
+                validSections
+            );
+        } else {
+            let fallbackText = `*${title || 'Menu Pilihan'}*\n${description ? `${description}\n\n` : '\n'}`;
+            let fNum = 1;
+            validSections.forEach(sec => {
+                if (sec.title) fallbackText += `*--- ${sec.title} ---*\n`;
+                (sec.rows || []).forEach(row => {
+                    fallbackText += `${fNum}. *${row.title}*${row.description ? ` - ${row.description}` : ''}\n`;
+                    fNum++;
+                });
+                fallbackText += `\n`;
+            });
+            fallbackText += `_(Silakan balas dengan nomor opsi pilihan Anda)_`;
+            dbContent = fallbackText;
+
+            if (sessionData.channel === 'telegram' && sessionData.tg_token) {
+                await TelegramService.sendMessage(sessionData.tg_token, sessionData.phone_number, fallbackText);
+            } else if (sessionData.channel === 'instagram' && sessionData.ig_access_token) {
+                await InstagramService.sendMessage(sessionData.ig_access_token, sessionData.phone_number, fallbackText);
+            } else if (sessionData.channel === 'messenger' && sessionData.page_access_token) {
+                await MessengerService.sendMessage(sessionData.page_access_token, sessionData.phone_number, fallbackText);
+            }
+        }
+
+        const msgRes = await pool.query(
+            `INSERT INTO messages (conversation_id, organization_id, sender_id, from_me, content, type, status)
+             VALUES ($1, $2, $3, true, $4, 'list_message', 'sent')
+             RETURNING *`,
+            [id, organization_id, userId, dbContent]
+        );
+
+        const newMsg = msgRes.rows[0];
+        req.io?.to(`org_${organization_id}`).emit('new_message', { conversationId: id, message: newMsg });
+        return res.json({ success: true, message: newMsg });
+    } catch (err) {
+        console.error('[sendListMessage] Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
 export const uploadMedia = async (req, res) => {
     const files = req.allFiles || (req.file ? [req.file] : []);
     if (files.length === 0) return res.status(400).json({ error: "No file uploaded" });
@@ -1094,6 +1211,48 @@ export const retryMessage = async (req, res) => {
             retryCount: currentRetry,
             maxRetries: MAX_RETRIES
         });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const getAgentMentions = async (req, res) => {
+    const { organization_id, id: userId } = req.user;
+    try {
+        const result = await pool.query(
+            `SELECT m.id, m.conversation_id, m.message_id, m.is_read, m.created_at,
+                    u.name as sender_name,
+                    msg.content as message_preview, c.contact_id,
+                    ct.name as contact_name, ct.phone_number
+             FROM agent_mentions m
+             JOIN users u ON m.created_by = u.id
+             JOIN messages msg ON m.message_id = msg.id
+             JOIN conversations c ON m.conversation_id = c.id
+             LEFT JOIN contacts ct ON c.contact_id = ct.id
+             WHERE m.organization_id = $1 AND m.mentioned_user_id = $2
+             ORDER BY m.created_at DESC
+             LIMIT 30`,
+            [organization_id, userId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error('[Mentions] Get error:', err);
+        if (err.message && err.message.includes('agent_mentions')) {
+            return res.json([]);
+        }
+        res.status(500).json({ error: err.message });
+    }
+};
+
+export const markMentionRead = async (req, res) => {
+    const { organization_id, id: userId } = req.user;
+    const { id } = req.params;
+    try {
+        await pool.query(
+            `UPDATE agent_mentions SET is_read = TRUE WHERE id = $1 AND organization_id = $2 AND mentioned_user_id = $3`,
+            [id, organization_id, userId]
+        );
+        res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

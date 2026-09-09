@@ -208,6 +208,46 @@ export const sendButtons = async (sessionId, to, text, footer, buttons) => {
   }
 };
 
+// 4.6 Send Interactive List Message (Sections & Rows with graceful text fallback)
+export const sendListMessage = async (sessionId, to, title, description, buttonText, sections) => {
+  const normalizedTo = normalizeJid(to);
+  try {
+    const payload = {
+      sessionId,
+      to: normalizedTo,
+      title: title || 'Pilihan',
+      description: description || '',
+      buttonText: buttonText || 'Pilih Menu',
+      sections: Array.isArray(sections) ? sections : []
+    };
+    const res = await axios.post(`${GATEWAY_URL}/message/send-list`, payload, { headers: getHeaders(), timeout: TIMEOUT });
+    return res.data;
+  } catch (error) {
+    const msg = String(error.response?.data?.message || error.response?.data?.error || error.message || '');
+    if (msg.includes('not active') || msg.includes('not connected') || msg.includes('Session not found')) {
+      handleSendError(error, normalizedTo, 'Send List Message');
+    }
+    console.warn(`[WA Gateway] Send List Error (${normalizedTo}), falling back to text:`, msg);
+
+    // Bulletproof Fallback: Format as clean structured text
+    let fallbackText = `*${title || 'Pilihan'}*\n${description ? `${description}\n\n` : '\n'}`;
+    let optionIdx = 1;
+    for (const sec of (sections || [])) {
+      if (sec && sec.title) fallbackText += `*--- ${sec.title} ---*\n`;
+      for (const row of (sec?.rows || [])) {
+        if (!row) continue;
+        fallbackText += `${optionIdx}. *${row.title || 'Opsi'}*`;
+        if (row.description) fallbackText += ` - ${row.description}`;
+        fallbackText += `\n`;
+        optionIdx++;
+      }
+      fallbackText += `\n`;
+    }
+    fallbackText += `_(Silakan balas dengan nomor opsi pilihan Anda)_`;
+    return sendText(sessionId, to, fallbackText.trim());
+  }
+};
+
 // 5. Send Media
 export const sendMedia = async (sessionId, to, mediaUrl, caption, mimetype, filename) => {
   const normalizedTo = normalizeJid(to);

@@ -14,7 +14,8 @@ import {
     BarChart3,
     Calendar,
     Receipt,
-    Zap
+    Zap,
+    ListFilter
 } from 'lucide-react';
 
 /**
@@ -41,6 +42,7 @@ export default function AttachmentMenu({ isOpen, onSelect, onClose, isGroupChat 
         { type: 'event', icon: Calendar, label: 'Acara', color: 'purple', groupOnly: true },
         { divider2: true },
         { type: 'cta', icon: ExternalLink, label: 'CTA Buttons', color: 'indigo' },
+        { type: 'list_message', icon: ListFilter, label: 'Menu Pilihan (List)', color: 'emerald' },
         { type: 'product', icon: Package, label: 'Product Catalog', color: 'green' },
         { divider2: true },
         { type: 'ongkir', icon: Truck, label: 'Cek Ongkir', color: 'green' },

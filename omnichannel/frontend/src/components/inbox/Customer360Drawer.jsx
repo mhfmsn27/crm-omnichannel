@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { User, Phone, DollarSign, FileText, Tag, Clock, CheckCircle, AlertCircle, X, ChevronRight, ShoppingBag, ShieldAlert, Sparkles, Plus, Lock } from 'lucide-react';
+import { User, Phone, DollarSign, FileText, Tag, Clock, CheckCircle, AlertCircle, X, ChevronRight, ShoppingBag, ShieldAlert, Sparkles, Plus, Lock, MessageSquare, Star, TrendingUp, Globe, Filter, Calendar } from 'lucide-react';
 import { getApiUrl } from '../../config/api';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 export const Customer360Drawer = ({ contact, conversation, isOpen, onClose }) => {
-    const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'invoices' | 'deals' | 'tickets'
+    const [activeTab, setActiveTab] = useState('timeline'); // 'timeline' | 'overview' | 'invoices' | 'deals'
     const [invoices, setInvoices] = useState([]);
     const [deals, setDeals] = useState([]);
     const [tickets, setTickets] = useState([]);
+    const [timeline, setTimeline] = useState([]);
+    const [timelineFilter, setTimelineFilter] = useState('all'); // 'all' | 'conversation' | 'invoice' | 'deal' | 'csat'
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -24,7 +26,7 @@ export const Customer360Drawer = ({ contact, conversation, isOpen, onClose }) =>
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
             // Fetch Invoices for this customer
-            const invoiceReq = axios.get(`/api/app/invoices?search=${encodeURIComponent(contact.phone_number || contact.name)}&limit=5`, { headers })
+            const invoiceReq = axios.get(`/api/app/invoices?search=${encodeURIComponent(contact.phone_number || contact.name)}&limit=10`, { headers })
                 .then(r => r.data?.data || r.data?.invoices || [])
                 .catch(() => []);
 
@@ -38,10 +40,16 @@ export const Customer360Drawer = ({ contact, conversation, isOpen, onClose }) =>
                 .then(r => r.data?.data || r.data || [])
                 .catch(() => []);
 
-            const [invRes, dealRes, tickRes] = await Promise.all([invoiceReq, dealReq, ticketReq]);
+            // Fetch Customer 360 Activity Timeline
+            const timelineReq = axios.get(`/api/app/journeys/${contact.id}/timeline`, { headers })
+                .then(r => r.data?.events || [])
+                .catch(() => []);
+
+            const [invRes, dealRes, tickRes, timeRes] = await Promise.all([invoiceReq, dealReq, ticketReq, timelineReq]);
             setInvoices(invRes);
             setDeals(dealRes);
             setTickets(tickRes);
+            setTimeline(timeRes);
         } catch (e) {
             console.error('[Customer360] Fetch error:', e);
         } finally {
@@ -55,17 +63,51 @@ export const Customer360Drawer = ({ contact, conversation, isOpen, onClose }) =>
         .filter(inv => inv.status === 'paid')
         .reduce((sum, inv) => sum + Number(inv.total_amount || 0), 0);
 
+    const filteredTimeline = timeline.filter(event => {
+        if (timelineFilter === 'all') return true;
+        if (timelineFilter === 'conversation') return event.type === 'conversation';
+        if (timelineFilter === 'invoice') return event.type.startsWith('invoice');
+        if (timelineFilter === 'deal') return event.type === 'deal_stage_changed';
+        if (timelineFilter === 'csat') return event.type === 'csat_survey';
+        return true;
+    });
+
+    const formatTimestamp = (dateStr) => {
+        if (!dateStr) return '-';
+        try {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return String(dateStr);
+        }
+    };
+
+    const getTimelineIcon = (type) => {
+        if (type === 'conversation') return <MessageSquare className="w-3.5 h-3.5 text-blue-500" />;
+        if (type === 'invoice_paid') return <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />;
+        if (type === 'invoice_created') return <DollarSign className="w-3.5 h-3.5 text-amber-500" />;
+        if (type === 'deal_stage_changed') return <TrendingUp className="w-3.5 h-3.5 text-purple-500" />;
+        if (type === 'csat_survey') return <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />;
+        if (type === 'agent_note') return <Lock className="w-3.5 h-3.5 text-orange-500" />;
+        return <Globe className="w-3.5 h-3.5 text-teal-500" />;
+    };
+
     return (
-        <div className="fixed inset-y-0 right-0 w-full sm:w-[380px] bg-white dark:bg-[#111b21] shadow-2xl border-l border-gray-200 dark:border-slate-800 z-50 flex flex-col animate-slideLeft">
+        <div className="fixed inset-y-0 right-0 w-full sm:w-[420px] bg-white dark:bg-[#111b21] shadow-2xl border-l border-gray-200 dark:border-slate-800 z-50 flex flex-col animate-slideLeft">
             {/* Header */}
             <div className="p-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-gray-50/80 dark:bg-[#202c33]/50">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shadow-sm">
                         360°
                     </div>
                     <div>
                         <h3 className="text-sm font-bold text-gray-900 dark:text-white">Customer 360° View</h3>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400">Ringkasan profil terpadu</p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400">Ringkasan aktivitas & profil terpadu</p>
                     </div>
                 </div>
                 <button
@@ -96,7 +138,7 @@ export const Customer360Drawer = ({ contact, conversation, isOpen, onClose }) =>
                 {/* Key Metrics Stats */}
                 <div className="grid grid-cols-2 gap-2 mt-3.5">
                     <div className="p-2 rounded-lg bg-white/80 dark:bg-[#202c33] border border-gray-100 dark:border-slate-700 shadow-sm">
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400 block font-medium">Total Transaksi</span>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 block font-medium">Total Belanja</span>
                         <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                             Rp {totalSpend.toLocaleString('id-ID')}
                         </span>
@@ -111,22 +153,44 @@ export const Customer360Drawer = ({ contact, conversation, isOpen, onClose }) =>
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex border-b border-gray-100 dark:border-slate-800 text-xs font-semibold px-2 bg-gray-50/50 dark:bg-[#202c33]/30">
+            <div className="flex border-b border-gray-100 dark:border-slate-800 text-xs font-semibold px-2 bg-gray-50/50 dark:bg-[#202c33]/30 overflow-x-auto">
+                <button
+                    onClick={() => setActiveTab('timeline')}
+                    className={`py-2.5 px-3 border-b-2 transition-colors flex items-center gap-1 flex-shrink-0 ${
+                        activeTab === 'timeline' 
+                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' 
+                            : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
+                    }`}
+                >
+                    <Clock className="w-3.5 h-3.5" /> Timeline ({timeline.length})
+                </button>
                 <button
                     onClick={() => setActiveTab('overview')}
-                    className={`py-2.5 px-3 border-b-2 transition-colors ${activeTab === 'overview' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'}`}
+                    className={`py-2.5 px-3 border-b-2 transition-colors flex-shrink-0 ${
+                        activeTab === 'overview' 
+                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' 
+                            : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
+                    }`}
                 >
                     Ringkasan
                 </button>
                 <button
                     onClick={() => setActiveTab('invoices')}
-                    className={`py-2.5 px-3 border-b-2 transition-colors ${activeTab === 'invoices' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'}`}
+                    className={`py-2.5 px-3 border-b-2 transition-colors flex-shrink-0 ${
+                        activeTab === 'invoices' 
+                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' 
+                            : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
+                    }`}
                 >
                     Invoice ({invoices.length})
                 </button>
                 <button
                     onClick={() => setActiveTab('deals')}
-                    className={`py-2.5 px-3 border-b-2 transition-colors ${activeTab === 'deals' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'}`}
+                    className={`py-2.5 px-3 border-b-2 transition-colors flex-shrink-0 ${
+                        activeTab === 'deals' 
+                            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold' 
+                            : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
+                    }`}
                 >
                     Deals ({deals.length})
                 </button>
@@ -134,6 +198,108 @@ export const Customer360Drawer = ({ contact, conversation, isOpen, onClose }) =>
 
             {/* Tab Contents */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                {/* Timeline Tab */}
+                {activeTab === 'timeline' && (
+                    <div className="space-y-3">
+                        {/* Filter Pills */}
+                        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px]">
+                            {[
+                                { id: 'all', label: 'Semua' },
+                                { id: 'conversation', label: 'Obrolan' },
+                                { id: 'invoice', label: 'Invoice' },
+                                { id: 'deal', label: 'Deals' },
+                                { id: 'csat', label: 'CSAT' }
+                            ].map(filter => (
+                                <button
+                                    key={filter.id}
+                                    onClick={() => setTimelineFilter(filter.id)}
+                                    className={`px-2.5 py-1 rounded-full font-medium transition-all ${
+                                        timelineFilter === filter.id
+                                            ? 'bg-indigo-600 text-white shadow-sm'
+                                            : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
+                                    }`}
+                                >
+                                    {filter.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {loading ? (
+                            <div className="text-center py-8 text-xs text-gray-400">
+                                Memuat histori aktivitas pelanggan...
+                            </div>
+                        ) : filteredTimeline.length === 0 ? (
+                            <div className="text-center py-8 text-xs text-gray-400">
+                                Belum ada catatan aktivitas untuk filter ini.
+                            </div>
+                        ) : (
+                            <div className="relative pl-5 border-l-2 border-indigo-100 dark:border-slate-700 space-y-4 my-2">
+                                {filteredTimeline.map((item, idx) => (
+                                    <div key={item.id || idx} className="relative group">
+                                        {/* Timeline Node Bullet */}
+                                        <div className="absolute -left-[27px] top-1 w-5 h-5 rounded-full bg-white dark:bg-[#111b21] border-2 border-indigo-400 dark:border-indigo-500 flex items-center justify-center shadow-xs">
+                                            {getTimelineIcon(item.type)}
+                                        </div>
+
+                                        {/* Event Card */}
+                                        <div className="p-3 rounded-xl border border-gray-100 dark:border-slate-800 bg-white dark:bg-[#202c33] shadow-xs hover:shadow-sm transition-shadow">
+                                            <div className="flex items-center justify-between gap-1 mb-1">
+                                                <h5 className="text-xs font-bold text-gray-900 dark:text-white truncate">
+                                                    {item.title}
+                                                </h5>
+                                                <span className="text-[10px] text-gray-400 flex-shrink-0">
+                                                    {formatTimestamp(item.timestamp)}
+                                                </span>
+                                            </div>
+
+                                            {/* Details per Event Type */}
+                                            {item.type.startsWith('invoice') && (
+                                                <div className="text-[11px] text-gray-600 dark:text-gray-300 flex items-center justify-between pt-1">
+                                                    <span>Nominal: <strong className="text-emerald-600 dark:text-emerald-400">Rp {(item.amount || 0).toLocaleString('id-ID')}</strong></span>
+                                                    <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
+                                                        item.status === 'paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400'
+                                                    }`}>
+                                                        {item.status}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {item.type === 'deal_stage_changed' && (
+                                                <div className="text-[11px] text-gray-600 dark:text-gray-300 pt-1 space-y-0.5">
+                                                    <p>Tahap: <strong className="text-indigo-600 dark:text-indigo-400">{item.toStage}</strong></p>
+                                                    {item.agent && <p className="text-[10px] text-gray-400">Oleh: {item.agent}</p>}
+                                                </div>
+                                            )}
+
+                                            {item.type === 'csat_survey' && (
+                                                <div className="text-[11px] text-gray-600 dark:text-gray-300 pt-1">
+                                                    <div className="flex items-center gap-1 text-amber-500 font-bold">
+                                                        <span>★ {item.rating}/5</span>
+                                                        {item.feedback && <span className="text-gray-500 font-normal italic">"{item.feedback}"</span>}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {item.type === 'conversation' && (
+                                                <div className="text-[11px] text-gray-500 dark:text-gray-400 pt-0.5">
+                                                    {item.agent && <span className="block">Agen: {item.agent}</span>}
+                                                    {item.lastMessage && <span className="block truncate italic">"{item.lastMessage}"</span>}
+                                                </div>
+                                            )}
+
+                                            {item.type === 'agent_note' && (
+                                                <div className="text-[11px] text-amber-800 dark:text-amber-300 bg-amber-50/80 dark:bg-amber-950/30 p-2 rounded-lg mt-1 whitespace-pre-wrap">
+                                                    {item.note}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {activeTab === 'overview' && (
                     <div className="space-y-3">
                         {/* Internal Note */}

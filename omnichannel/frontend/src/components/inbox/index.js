@@ -22,9 +22,12 @@ export { default as TransferModal } from './TransferModal.jsx';
 export { default as ResolveModal } from './ResolveModal.jsx';
 export { default as FilterTabs } from './FilterTabs.jsx';
 export { default as SuggestionPopover } from './SuggestionPopover.jsx';
+export { default as MentionPopover } from './MentionPopover.jsx';
 export { default as AttachmentMenu } from './AttachmentMenu.jsx';
 export { default as PaymentLinkModal } from './PaymentLinkModal.jsx';
 export { default as WAFlowModal } from './WAFlowModal.jsx';
+export { default as ListMessageModal } from './ListMessageModal.jsx';
+export { default as Customer360Drawer } from './Customer360Drawer.jsx';
 
 // Main Components
 export { default as ConversationList } from './ConversationList.js';

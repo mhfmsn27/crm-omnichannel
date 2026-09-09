@@ -189,11 +189,11 @@ export default function useMessages({ selectedConvId, socket, user, setConversat
     };
 
     // Send text/media message
-    const handleSendMessage = async (content, type = 'text', mediaData = null, is_internal = false) => {
+    const handleSendMessage = async (content, type = 'text', mediaData = null, is_internal = false, mentioned_user_ids = []) => {
         if (!selectedConvId) return;
         if (mediaData) setIsSending(true);
         try {
-            const payload = { content, type, media_url: mediaData?.url, mimetype: mediaData?.mimetype, filename: mediaData?.filename, is_internal };
+            const payload = { content, type, media_url: mediaData?.url, mimetype: mediaData?.mimetype, filename: mediaData?.filename, is_internal, mentioned_user_ids };
             await axios.post(`/api/app/inbox/conversations/${selectedConvId}/send`, payload, { timeout: 30000 });
             setDrafts(prev => {
                 const next = { ...prev };

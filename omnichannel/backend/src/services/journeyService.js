@@ -204,89 +204,212 @@ export const getCustomerJourney = async (organizationId, contactId) => {
  */
 export const getJourneyTimeline = async (organizationId, contactId) => {
     try {
-        const timeline = [];
-
-        // Get all conversations
-        const convsRes = await pool.query(
-            `SELECT
-                c.id, c.channel, c.status, c.last_message, c.last_message_at, c.created_at,
-                c.first_reply_at, c.closed_at,
-                u.name as agent_name,
-                l.name as label_names
-             FROM conversations c
-             LEFT JOIN users u ON c.assigned_to_agent_id = u.id
-             LEFT JOIN contact_labels cl ON c.contact_id = cl.contact_id
-             LEFT JOIN labels l ON cl.label_id = l.id
-             WHERE c.contact_id = $1 AND c.organization_id = $2
-             ORDER BY c.created_at ASC`,
-            [contactId, organizationId]
-        );
-
-        // Get touchpoints
-        const touchRes = await pool.query(
-            `SELECT * FROM journey_touchpoints
-             WHERE organization_id = $1
-             AND journey_id = (SELECT id FROM customer_journeys WHERE contact_id = $2)
-             ORDER BY created_at ASC`,
-            [organizationId, contactId]
-        );
-
-        // Get messages as events
-        const msgsRes = await pool.query(
-            `SELECT m.created_at, m.from_me, m.type, m.content,
-                    CASE WHEN m.from_me THEN 'Agent' ELSE 'Customer' END as sender
-             FROM messages m
-             JOIN conversations c ON m.conversation_id = c.id
-             WHERE c.contact_id = $1 AND c.organization_id = $2
-             ORDER BY m.created_at ASC`,
-            [contactId, organizationId]
-        );
-
-        // Build unified timeline
         const events = [];
 
-        convsRes.rows.forEach(conv => {
-            events.push({
-                type: 'conversation',
-                timestamp: conv.created_at,
-                channel: conv.channel,
-                status: conv.status,
-                agent: conv.agent_name,
-                labels: conv.label_names
-            });
-        });
+        // 1. Conversations
+        try {
+            const convsRes = await pool.query(
+                `SELECT
+                    c.id, c.channel, c.status, c.last_message, c.last_message_at, c.created_at,
+                    c.first_reply_at, c.closed_at,
+                    u.name as agent_name,
+                    l.name as label_names
+                 FROM conversations c
+                 LEFT JOIN users u ON c.assigned_to_agent_id = u.id
+                 LEFT JOIN contact_labels cl ON c.contact_id = cl.contact_id
+                 LEFT JOIN labels l ON cl.label_id = l.id
+                 WHERE c.contact_id = $1 AND c.organization_id = $2
+                 ORDER BY c.created_at ASC`,
+                [contactId, organizationId]
+            );
 
-        touchRes.rows.forEach(touch => {
-            events.push({
-                type: 'touchpoint',
-                timestamp: touch.created_at,
-                touchpointType: touch.touchpoint_type,
-                interactionType: touch.interaction_type,
-                content: touch.content_preview,
-                utm: {
-                    source: touch.utm_source,
-                    medium: touch.utm_medium,
-                    campaign: touch.utm_campaign
+            convsRes.rows.forEach(conv => {
+                events.push({
+                    id: `conv-${conv.id}`,
+                    type: 'conversation',
+                    title: `Sesi Obrolan (${conv.channel?.toUpperCase() || 'CHAT'})`,
+                    timestamp: conv.created_at,
+                    channel: conv.channel,
+                    status: conv.status,
+                    agent: conv.agent_name,
+                    labels: conv.label_names,
+                    lastMessage: conv.last_message
+                });
+            });
+        } catch (e) {
+            console.warn('[Journey Timeline] Conv fetch warning:', e.message);
+        }
+
+        // 2. Journey Touchpoints (Web, UTM, Shortlinks)
+        try {
+            const touchRes = await pool.query(
+                `SELECT * FROM journey_touchpoints
+                 WHERE organization_id = $1
+                 AND journey_id = (SELECT id FROM customer_journeys WHERE contact_id = $2)
+                 ORDER BY created_at ASC`,
+                [organizationId, contactId]
+            );
+
+            touchRes.rows.forEach(touch => {
+                events.push({
+                    id: `touch-${touch.id}`,
+                    type: 'touchpoint',
+                    title: `Kunjungan / Interaksi (${touch.touchpoint_type || 'Web'})`,
+                    timestamp: touch.created_at,
+                    touchpointType: touch.touchpoint_type,
+                    interactionType: touch.interaction_type,
+                    content: touch.content_preview,
+                    utm: {
+                        source: touch.utm_source,
+                        medium: touch.utm_medium,
+                        campaign: touch.utm_campaign
+                    }
+                });
+            });
+        } catch (e) {
+            console.warn('[Journey Timeline] Touchpoint fetch warning:', e.message);
+        }
+
+        // 3. Invoices (Created & Paid Events)
+        try {
+            const invRes = await pool.query(
+                `SELECT id, invoice_number, total_amount, status, created_at, paid_at
+                 FROM invoices
+                 WHERE contact_id = $1 AND organization_id = $2
+                 ORDER BY created_at ASC`,
+                [contactId, organizationId]
+            );
+
+            invRes.rows.forEach(inv => {
+                events.push({
+                    id: `inv-${inv.id}`,
+                    type: 'invoice_created',
+                    title: `Invoice Diterbitkan #${inv.invoice_number}`,
+                    timestamp: inv.created_at,
+                    amount: Number(inv.total_amount || 0),
+                    status: inv.status,
+                    invoiceNumber: inv.invoice_number
+                });
+
+                if (inv.status === 'paid' && inv.paid_at) {
+                    events.push({
+                        id: `inv-paid-${inv.id}`,
+                        type: 'invoice_paid',
+                        title: `Pembayaran Lunas #${inv.invoice_number}`,
+                        timestamp: inv.paid_at,
+                        amount: Number(inv.total_amount || 0),
+                        status: 'paid',
+                        invoiceNumber: inv.invoice_number
+                    });
                 }
             });
-        });
+        } catch (e) {
+            console.warn('[Journey Timeline] Invoices fetch warning:', e.message);
+        }
 
-        // Sort by timestamp
-        events.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        // 4. Deals & Pipeline Movements
+        try {
+            const dealHistoryRes = await pool.query(
+                `SELECT psh.id, psh.created_at, psh.conversation_id,
+                        ps_from.name as from_stage, ps_to.name as to_stage, ps_to.color as stage_color,
+                        u.name as changed_by_name, c.value as deal_value
+                 FROM pipeline_stage_history psh
+                 JOIN conversations c ON psh.conversation_id = c.id
+                 LEFT JOIN pipeline_stages ps_from ON psh.from_stage_id = ps_from.id
+                 JOIN pipeline_stages ps_to ON psh.to_stage_id = ps_to.id
+                 LEFT JOIN users u ON psh.changed_by = u.id
+                 WHERE c.contact_id = $1 AND c.organization_id = $2
+                 ORDER BY psh.created_at ASC`,
+                [contactId, organizationId]
+            );
+
+            dealHistoryRes.rows.forEach(dh => {
+                events.push({
+                    id: `deal-stage-${dh.id}`,
+                    type: 'deal_stage_changed',
+                    title: `Deal Pindah ke: ${dh.to_stage}`,
+                    timestamp: dh.created_at,
+                    fromStage: dh.from_stage,
+                    toStage: dh.to_stage,
+                    color: dh.stage_color,
+                    agent: dh.changed_by_name,
+                    value: Number(dh.deal_value || 0)
+                });
+            });
+        } catch (e) {
+            console.warn('[Journey Timeline] Deal history fetch warning:', e.message);
+        }
+
+        // 5. CSAT Feedback
+        try {
+            const csatRes = await pool.query(
+                `SELECT s.id, s.rating, s.feedback, s.created_at, u.name as agent_name
+                 FROM csat_surveys s
+                 JOIN conversations c ON s.conversation_id = c.id
+                 LEFT JOIN users u ON s.agent_id = u.id
+                 WHERE c.contact_id = $1 AND s.organization_id = $2
+                 ORDER BY s.created_at ASC`,
+                [contactId, organizationId]
+            );
+
+            csatRes.rows.forEach(cs => {
+                events.push({
+                    id: `csat-${cs.id}`,
+                    type: 'csat_survey',
+                    title: `Ulasan CSAT: ${cs.rating}/5 ⭐`,
+                    timestamp: cs.created_at,
+                    rating: cs.rating,
+                    feedback: cs.feedback,
+                    agent: cs.agent_name
+                });
+            });
+        } catch (e) {
+            console.warn('[Journey Timeline] CSAT fetch warning:', e.message);
+        }
+
+        // 6. Agent Internal Notes
+        try {
+            const notesRes = await pool.query(
+                `SELECT n.id, n.note, n.note_type, n.created_at, u.name as author_name, n.is_internal
+                 FROM agent_notes n
+                 LEFT JOIN users u ON n.created_by = u.id
+                 WHERE n.contact_id = $1 AND n.organization_id = $2
+                 ORDER BY n.created_at ASC`,
+                [contactId, organizationId]
+            );
+
+            notesRes.rows.forEach(nt => {
+                events.push({
+                    id: `note-${nt.id}`,
+                    type: 'agent_note',
+                    title: nt.is_internal ? 'Catatan Internal (Whisper)' : 'Catatan Kontak',
+                    timestamp: nt.created_at,
+                    note: nt.note,
+                    noteType: nt.note_type,
+                    isInternal: nt.is_internal,
+                    agent: nt.author_name
+                });
+            });
+        } catch (e) {
+            console.warn('[Journey Timeline] Agent notes fetch warning:', e.message);
+        }
+
+        // Sort descending (newest first for clean activity feed)
+        events.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         return {
             events,
             summary: {
-                totalConversations: convsRes.rows.length,
-                totalTouchpoints: touchRes.rows.length,
-                channels: [...new Set(convsRes.rows.map(c => c.channel))],
-                startDate: convsRes.rows[0]?.created_at,
-                endDate: convsRes.rows[convsRes.rows.length - 1]?.created_at
+                totalEvents: events.length,
+                totalInvoices: events.filter(e => e.type.startsWith('invoice')).length,
+                totalConversations: events.filter(e => e.type === 'conversation').length,
+                totalTouchpoints: events.filter(e => e.type === 'touchpoint').length,
+                lastActivityAt: events[0]?.timestamp || null
             }
         };
     } catch (error) {
         console.error('[Journey] Error getting timeline:', error);
-        return { events: [], summary: { totalConversations: 0, totalTouchpoints: 0, channels: [], startDate: null, endDate: null } };
+        return { events: [], summary: { totalEvents: 0, totalInvoices: 0, totalConversations: 0, totalTouchpoints: 0, lastActivityAt: null } };
     }
 };
 

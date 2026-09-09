@@ -10,10 +10,23 @@
 
 import pool from '../config/db.js';
 
-// Schema Ensure for internal_note
+// Schema Ensure for internal_note and agent_mentions
 const ensureSchema = async () => {
     try {
         await pool.query('ALTER TABLE contacts ADD COLUMN IF NOT EXISTS internal_note TEXT');
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS agent_mentions (
+                id SERIAL PRIMARY KEY,
+                organization_id INTEGER NOT NULL,
+                conversation_id INTEGER NOT NULL,
+                message_id INTEGER,
+                mentioned_user_id INTEGER NOT NULL,
+                created_by INTEGER NOT NULL,
+                is_read BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            );
+            CREATE INDEX IF NOT EXISTS idx_agent_mentions_user ON agent_mentions(organization_id, mentioned_user_id, is_read);
+        `);
     } catch (e) {
         console.warn("Schema check warning:", e.message);
     }
@@ -64,6 +77,9 @@ export {
     sendStructuredMessage,
     sendRichMedia,
     sendInteractive,
+    sendListMessage,
+    getAgentMentions,
+    markMentionRead,
     uploadMedia,
     deleteMessage,
     editMessage,

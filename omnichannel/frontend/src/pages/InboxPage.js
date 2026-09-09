@@ -1144,6 +1144,7 @@ export default function InboxPage() {
 
                                 return (
                                     <ChatInput
+                                        agents={agents}
                                         onSendMessage={handleSendMessage}
                                         onTyping={async (isTyping) => {
                                             try {

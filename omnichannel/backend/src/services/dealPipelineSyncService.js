@@ -1,4 +1,5 @@
 import pool from '../config/db.js';
+import * as journeyService from './journeyService.js';
 
 /**
  * Deal Pipeline Sync Service
@@ -102,7 +103,20 @@ export const syncDealOnInvoicePaid = async ({ invoiceId, organizationId, amount,
             [conv.id, pipelineId, fromStageId, targetStage.id, userId]
         );
 
-        // 7. Emit WebSocket event if io provided
+        // 7. Record Customer 360 Journey conversion
+        try {
+            await journeyService.markJourneyConverted(
+                organizationId,
+                invoice.contact_id,
+                'invoice_paid',
+                finalAmount,
+                `Invoice #${invoice.invoice_number} paid in full`
+            );
+        } catch (jErr) {
+            console.warn('[DealPipelineSync] Journey sync warning:', jErr.message);
+        }
+
+        // 8. Emit WebSocket event if io provided
         if (io) {
             io.to(`org_${organizationId}`).emit('pipeline_update', {
                 conversationId: conv.id,

@@ -177,12 +177,69 @@ export default function GlobalNotificationManager() {
             );
         };
 
+        const handleAgentMentioned = (data) => {
+            if (!data) return;
+
+            // Play alert sound
+            try {
+                if (audioRef.current) {
+                    audioRef.current.currentTime = 0;
+                    audioRef.current.play().catch(() => {});
+                }
+            } catch (e) {}
+
+            const mentionMsg = `${data.senderName || 'Rekan'} menyebut Anda: "${data.preview || 'Catatan Internal'}"`;
+
+            // Desktop notification
+            if (typeof window !== 'undefined' && "Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification('🔔 Mention Catatan Internal', {
+                        body: mentionMsg,
+                        icon: '/vite.svg'
+                    });
+                } catch (e) {}
+            }
+
+            // High visibility Mention Toast
+            toast(
+                (t) => (
+                    <div
+                        className="flex items-start gap-2.5 cursor-pointer"
+                        onClick={() => {
+                            toast.dismiss(t.id);
+                            if (data.conversationId) {
+                                window.location.href = `/inbox?id=${data.conversationId}`;
+                            }
+                        }}
+                    >
+                        <div className="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm">
+                            @
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="font-bold text-xs text-amber-900 dark:text-amber-200">
+                                {data.senderName} menyebut Anda
+                            </p>
+                            <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5 line-clamp-2">
+                                {data.preview}
+                            </p>
+                            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold mt-1 inline-block">
+                                Klik untuk lihat obrolan →
+                            </span>
+                        </div>
+                    </div>
+                ),
+                { duration: 8000, position: 'top-right', className: 'bg-amber-50 dark:bg-[#202c33] border border-amber-300 dark:border-amber-700/60 shadow-xl' }
+            );
+        };
+
         socket.on('new_message', handleNewMessage);
         socket.on('sla_breach_alert', handleSlaBreachAlert);
+        socket.on('agent_mentioned', handleAgentMentioned);
 
         return () => {
             socket.off('new_message', handleNewMessage);
             socket.off('sla_breach_alert', handleSlaBreachAlert);
+            socket.off('agent_mentioned', handleAgentMentioned);
         };
     }, [socket, location.pathname, config, user]);
 

@@ -35,7 +35,12 @@ router.post('/conversations/:id/send', requireActiveSubscription, inboxControlle
 router.post('/conversations/:id/structured', requireActiveSubscription, inboxController.sendStructuredMessage);
 router.post('/conversations/:id/rich-media', requireActiveSubscription, inboxController.sendRichMedia);
 router.post('/conversations/:id/interactive', requireActiveSubscription, inboxController.sendInteractive);
+router.post('/conversations/:id/send-list', requireActiveSubscription, inboxController.sendListMessage);
 router.post('/upload', robustUpload, inboxController.uploadMedia);
+
+// --- Agent Mentions ---
+router.get('/mentions', inboxController.getAgentMentions);
+router.post('/mentions/:id/read', inboxController.markMentionRead);
 
 // --- Conversation Actions ---
 router.put('/conversations/:id/read', inboxController.markAsRead);

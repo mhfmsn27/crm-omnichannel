@@ -67,13 +67,86 @@
       <h3>3. 🌐 Real-Time Live Translation</h3>
       <p>Melayani pelanggan internasional tanpa kendala bahasa. Terjemahkan pesan masuk dari berbagai bahasa asing (Inggris, Mandarin, Arab, Jepang, dll.) dan ketik balasan dalam Bahasa Indonesia yang otomatis diterjemahkan kembali ke bahasa pelanggan.</p>
 
-      <!-- MODE BISIKAN INTERNAL -->
-      <h2 id="whisper">🤫 Mode Bisikan Supervisor (Internal Whisper Note)</h2>
-      <p>Berikan arahan atau koordinasi internal antar sesama agen dan supervisor di dalam ruang obrolan:</p>
+      <!-- MODE BISIKAN INTERNAL & @MENTION -->
+      <h2 id="whisper">🤫 Mode Bisikan Supervisor &amp; @Mention Tim (Internal Whisper Notes)</h2>
+      <p>Koordinasi internal rahasia antar sesama agen dan supervisor di dalam ruang obrolan tanpa khawatir terbaca oleh pelanggan:</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">🔄</span>
+          <div><h4>Dual-Mode Composer Switcher</h4><p>Beralih mudah antara mode <code>💬 Balas Pelanggan</code> (standar) dan <code>🔒 Catatan Internal (Whisper)</code> dengan tombol tab visual di atas input chat.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🏷️</span>
+          <div><h4>Panggilan Tim @Mention Cerdas</h4><p>Ketik <code>@</code> dalam mode whisper untuk memunculkan popover autocomplete supervisor dan rekan agen dengan avatar dan lencana peran.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🔔</span>
+          <div><h4>Notifikasi Real-Time Multi-Saluran</h4><p>Rekan yang di-mention langsung menerima peringatan audio chime, notifikasi desktop browser, dan toast interaktif yang bisa diklik langsung.</p></div>
+        </div>
+      </div>
+
+      <h3>Langkah Menggunakan Mode Bisikan &amp; @Mention:</h3>
       <ol class="steps">
-        <li>Aktifkan sakelar <strong>"Mode Bisikan / Internal Note"</strong> (gelembung kuning).</li>
-        <li>Ketik pesan internal (contoh: <em>"Beri diskon 5% saja untuk pelanggan ini"</em>).</li>
-        <li>Pesan berlabel <strong>Internal Note</strong> hanya terlihat oleh tim CRMHUB dan <strong>100% tidak pernah terkirim ke WhatsApp/channel pelanggan</strong>.</li>
+        <li>Di composer pesan, klik tab <strong>"🔒 Catatan Internal (Whisper)"</strong>. Kolom pengetikan akan berubah warna kuning amber lembut dengan ikon gembok pengaman.</li>
+        <li>Ketik tanda <strong><code>@</code></strong> untuk memanggil daftar rekan kerja / supervisor. Navigasi pilihan menggunakan tombol panah atas/bawah keyboard atau klik mouse, lalu tekan <strong>Enter</strong>.</li>
+        <li>Ketik instruksi internal Anda (contoh: <em>"@Andi Tolong review diskon 10% untuk closing hari ini ya"</em>).</li>
+        <li>Klik tombol kirim gembok amber atau tekan <strong>Ctrl+Enter</strong>. Pesan berlatar kuning amber akan tersimpan di ruang chat, rekan yang di-mention mendapatkan notifikasi instan, dan <strong>100% aman tidak pernah terkirim ke WhatsApp / channel pelanggan</strong>.</li>
+      </ol>
+
+      <!-- WHATSAPP INTERACTIVE LIST MESSAGES -->
+      <h2 id="list-messages">📋 Pesan Menu Pilihan Interaktif WhatsApp (Interactive List Messages)</h2>
+      <p>Kirimkan menu pilihan navigasi WhatsApp resmi dengan tombol dropdown interaktif hingga 10 opsi, menghadirkan pengalaman berbelanja dan pemilihan layanan profesional layaknya akun korporat perbankan atau telko.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">📑</span>
+          <div><h4>Dropdown Menu Elegan</h4><p>Menampilkan tombol menu (misal: <em>"Pilih Layanan"</em>) yang saat diklik memunculkan sheet pilihan kategori dan baris opsi rapi.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🗂️</span>
+          <div><h4>Multi-Section &amp; Row Descriptions</h4><p>Setiap pilihan dapat dikelompokkan dalam kategori (Section) dan dilengkapi deskripsi singkat pendukung.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🛡️</span>
+          <div><h4>Otomatis Teks Fallback</h4><p>Jika penerima menggunakan channel non-WhatsApp atau versi WhatsApp lama, sistem otomatis mengonversi menu menjadi teks bernomor terstruktur tanpa gagal.</p></div>
+        </div>
+      </div>
+
+      <h3>Cara Mengirimkan Interactive List Message:</h3>
+      <ol class="steps">
+        <li>Klik ikon lampiran (<strong>+</strong>) di sebelah kiri input chat, lalu pilih <strong>"Menu Pilihan (List)"</strong>.</li>
+        <li>Isi <strong>Judul Pesan</strong> (contoh: <em>"Katalog Paket Layanan CRMHUB"</em>).</li>
+        <li>Isi <strong>Teks Pengantar / Body</strong> (contoh: <em>"Silakan pilih paket langganan yang sesuai dengan skala bisnis Anda di bawah ini:"</em>).</li>
+        <li>Tentukan <strong>Teks Tombol Pilihan</strong> (contoh: <em>"Lihat Opsi Paket"</em>).</li>
+        <li>Atur <strong>Section Header</strong> dan tambahkan baris opsi (hingga 10 baris) lengkap dengan <em>Judul Opsi</em> dan <em>Deskripsi Singkat</em>.</li>
+        <li>Klik <strong>"Kirim List Message"</strong>. Pesan akan terkirim dengan tampilan resmi WhatsApp Interactive List.</li>
+      </ol>
+
+      <!-- CUSTOMER 360 UNIFIED ACTIVITY TIMELINE -->
+      <h2 id="activity-timeline">🌐 Customer 360° Unified Activity Timeline</h2>
+      <p>Dapatkan gambaran menyeluruh perjalanan pelanggan (Customer Journey) dalam satu jejak audit vertikal terpadu di panel kanan Customer 360 Drawer.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="fc-icon">⏱️</span>
+          <div><h4>Kronologis Terpadu (Newest First)</h4><p>Mengonsolidasikan obrolan masuk/keluar, sentuhan web &amp; shortlink, faktur diterbitkan &amp; pelunasan, pergerakan deal CRM, skor kepuasan CSAT, dan catatan internal dalam satu garis waktu.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🔍</span>
+          <div><h4>Filter Kategori Instan</h4><p>Tombol filter cepat untuk menyaring aktivitas spesifik: <strong>Semua</strong>, <strong>Obrolan</strong>, <strong>Invoice</strong>, <strong>Deals</strong>, dan <strong>CSAT</strong>.</p></div>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">⚡</span>
+          <div><h4>Sinkronisasi Otomatis Lintas Modul</h4><p>Setiap kali kesepakatan dipindahkan ke stage <em>Won</em> di Kanban atau invoice dinyatakan lunas, konversi pelanggan langsung dicatat secara otomatis ke Customer 360.</p></div>
+        </div>
+      </div>
+
+      <h3>Cara Mengakses Timeline Aktivitas:</h3>
+      <ol class="steps">
+        <li>Buka percakapan pelanggan di Inbox, lalu pastikan <strong>Panel Kanan (Customer 360 Drawer)</strong> terbuka.</li>
+        <li>Klik tab <strong>"Timeline Aktivitas"</strong> di samping tab Overview dan Transaksi.</li>
+        <li>Gunakan tombol filter di bagian atas untuk melihat riwayat tertentu, atau gulir ke bawah untuk menelusuri seluruh rekam jejak interaksi pelanggan sejak pertama kali kontak terdaftar.</li>
       </ol>
 
       <!-- 1-CLICK AGENT WORKFLOW MACROS -->
@@ -192,8 +265,9 @@
       <div class="toc-title">Di halaman ini</div>
       <a href="#tampilan">Tampilan 3-Panel</a>
       <a href="#ai-features">Fitur AI Supercharged</a>
-      <a href="#whisper">Mode Bisikan Internal</a>
-      <a href="#telephony-csat">Telepon &amp; CSAT</a>
+      <a href="#whisper">Bisikan &amp; @Mention Tim</a>
+      <a href="#list-messages">WhatsApp List Messages</a>
+      <a href="#activity-timeline">Customer 360 Timeline</a>
       <a href="#macros">1-Click Agent Macros</a>
       <a href="#snooze">Tunda Obrolan (Snooze)</a>
       <a href="#search-pin">Pencarian &amp; Pin Pesan</a>
