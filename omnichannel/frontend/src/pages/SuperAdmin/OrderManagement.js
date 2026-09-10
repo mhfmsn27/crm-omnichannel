@@ -20,11 +20,11 @@ const VerificationModal = ({ order, onClose, onApprove, onReject }) => {
             onClose={onClose}
             showClose={false}
             size="full"
-            className="max-w-4xl h-[600px] p-0"
+            className="max-w-4xl max-h-[90vh] md:h-[600px] p-0 overflow-hidden"
         >
-            <div className="w-full h-full flex overflow-hidden">
+            <div className="w-full h-full flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
                 {/* Left: Image */}
-                <div className="w-1/2 bg-gray-900 flex items-center justify-center relative p-4">
+                <div className="w-full md:w-1/2 min-h-[200px] max-h-[250px] md:max-h-none md:min-h-0 bg-gray-900 flex items-center justify-center relative p-4 shrink-0">
                     {order.payment_proof_url ? (
                         <a href={getApiUrl(order.payment_proof_url)} target="_blank" rel="noreferrer" className="w-full h-full flex items-center justify-center">
                             <img
@@ -42,10 +42,10 @@ const VerificationModal = ({ order, onClose, onApprove, onReject }) => {
                 </div>
 
                 {/* Right: Details */}
-                <div className="w-1/2 p-8 flex flex-col overflow-y-auto">
-                    <div className="flex justify-between items-start mb-6">
-                        <h2 className="text-xl font-bold text-gray-900">{isVerifiable ? 'Verify Payment' : 'Transaction Details'}</h2>
-                        <button onClick={onClose}><X className="w-6 h-6 text-gray-400 hover:text-gray-600" /></button>
+                <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col overflow-y-auto">
+                    <div className="flex justify-between items-start mb-4 sm:mb-6">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-900">{isVerifiable ? 'Verify Payment' : 'Transaction Details'}</h2>
+                        <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 rounded-lg"><X className="w-6 h-6" /></button>
                     </div>
 
                     <div className="space-y-6 mb-8 flex-1">
@@ -206,7 +206,51 @@ export default function OrderManagement() {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="overflow-x-auto w-full">
+                {/* Mobile Cards */}
+                <div className="md:hidden divide-y divide-gray-100">
+                    {loading ? (
+                        <div className="p-8 text-center text-gray-400 text-sm">Loading transactions...</div>
+                    ) : orders.map(order => (
+                        <div key={order.id} className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <button
+                                        onClick={() => setSelectedOrder(order)}
+                                        className="font-mono font-bold text-indigo-600 text-sm hover:underline text-left"
+                                    >
+                                        {order.invoice_number}
+                                    </button>
+                                    <p className="text-xs text-gray-400 mt-0.5">{new Date(order.created_at).toLocaleDateString()}</p>
+                                </div>
+                                <div className="shrink-0">{statusBadge(order.status)}</div>
+                            </div>
+
+                            <div className="bg-gray-50 p-2.5 rounded-lg flex justify-between items-center text-xs">
+                                <div>
+                                    <p className="font-bold text-gray-900">{order.org_name}</p>
+                                    <p className="text-[11px] text-gray-500">{order.item_name || 'Plan'}</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="font-mono font-bold text-gray-900 text-sm block">Rp {parseInt(order.amount).toLocaleString()}</span>
+                                    <span className="text-[10px] text-gray-400 uppercase">{order.payment_method}</span>
+                                </div>
+                            </div>
+
+                            {(order.status === 'pending_confirmation') && order.payment_method !== 'DOKU' && (
+                                <button
+                                    onClick={() => setSelectedOrder(order)}
+                                    className="w-full py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 shadow-sm flex items-center justify-center gap-1.5 transition-colors"
+                                >
+                                    <Eye className="w-4 h-4" /> Verify Payment Proof
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                    {!loading && orders.length === 0 && <div className="p-8 text-center text-gray-400 text-sm">No transactions found.</div>}
+                </div>
+
+                {/* Desktop Table */}
+                <div className="hidden md:block overflow-x-auto w-full">
                     <table className="w-full text-left min-w-[700px]">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>

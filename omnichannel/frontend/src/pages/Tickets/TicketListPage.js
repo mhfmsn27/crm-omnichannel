@@ -144,7 +144,7 @@ export default function TicketListPage() {
     const totalPages = Math.ceil(total / LIMIT);
 
     return (
-        <div className="p-4 md:p-6 max-w-7xl mx-auto">
+        <div className="p-3.5 sm:p-4 md:p-6 max-w-7xl mx-auto pb-24 md:pb-8">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
@@ -244,8 +244,67 @@ export default function TicketListPage() {
                         <p className="text-sm mt-1">Tiket muncul otomatis dari percakapan masuk</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto w-full">
-                        <table className="w-full text-sm min-w-[500px]">
+                    <>
+                        {/* MOBILE TICKET CARDS */}
+                        <div className="md:hidden divide-y divide-gray-100 dark:divide-dark-border">
+                            {tickets.map(ticket => {
+                                const pconf = PRIORITY_CONFIG[ticket.priority] || PRIORITY_CONFIG.medium;
+                                const sconf = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.open;
+                                return (
+                                    <div
+                                        key={ticket.id}
+                                        onClick={() => openInInbox(ticket.id)}
+                                        className="p-4 space-y-2.5 active:bg-gray-50 dark:active:bg-dark-bg cursor-pointer transition-colors"
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex items-center gap-1.5">
+                                                {ticket.sla_breached && <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />}
+                                                <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-xs">
+                                                    {ticket.ticket_number || `#${ticket.id}`}
+                                                </span>
+                                                <span className="text-sm">{CHANNEL_ICONS[ticket.channel] || '💬'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${pconf.color}`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${pconf.dot}`} />
+                                                    {pconf.label}
+                                                </span>
+                                                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${sconf.color}`}>
+                                                    {sconf.label}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
+                                                <User className="w-4 h-4 text-indigo-500" />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-semibold text-gray-800 dark:text-white text-xs truncate">{ticket.contact_name || 'Unknown'}</p>
+                                                <p className="text-gray-400 text-[11px] font-mono truncate">{ticket.contact_phone || ''}</p>
+                                            </div>
+                                            <div className="shrink-0">
+                                                <SLABadge
+                                                    sla_deadline_at={ticket.sla_deadline_at}
+                                                    sla_breached={ticket.sla_breached}
+                                                    status={ticket.status}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {ticket.last_message && (
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate bg-gray-50 dark:bg-dark-bg p-2 rounded-lg">
+                                                {ticket.last_message}
+                                            </p>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* DESKTOP TABLE */}
+                        <div className="hidden md:block overflow-x-auto w-full">
+                            <table className="w-full text-sm min-w-[500px]">
                             <thead>
                                 <tr className="border-b border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     <th className="text-left px-4 py-3">Tiket</th>
@@ -325,6 +384,7 @@ export default function TicketListPage() {
                             </tbody>
                         </table>
                     </div>
+                    </>
                 )}
 
                 {/* Pagination */}

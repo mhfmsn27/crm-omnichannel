@@ -309,24 +309,24 @@ export default function InvoiceList() {
     };
 
     return (
-        <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-20 md:pb-8">
             {/* Header & Tabs */}
-            <div className="flex flex-wrap justify-between items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                 <div>
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
-                        <div className="p-2 bg-indigo-600 text-white rounded-2xl shadow-md">
-                            <Receipt className="w-6 h-6" />
+                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <div className="p-2 bg-indigo-600 text-white rounded-xl sm:rounded-2xl shadow-md shrink-0">
+                            <Receipt className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
-                        Faktur Penjualan & Penawaran (SPO)
+                        <span>Faktur & Penawaran</span>
                     </h2>
                     <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-                        Kelola faktur, surat penawaran harga, pembayaran bertahap (DP), dan penagihan otomatis via WhatsApp.
+                        Kelola faktur, surat penawaran harga (SPO), pembayaran bertahap (DP), dan penagihan otomatis via WhatsApp.
                     </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full sm:w-auto">
                     <Button 
                         onClick={() => navigate('/invoicing/create')}
-                        className="!bg-indigo-600 hover:!bg-indigo-700 text-white font-bold shadow-md"
+                        className="!bg-indigo-600 hover:!bg-indigo-700 text-white font-bold shadow-md w-full sm:w-auto text-xs sm:text-sm py-2 sm:py-2.5"
                     >
                         + Buat Faktur / SPO
                     </Button>
@@ -334,11 +334,11 @@ export default function InvoiceList() {
             </div>
 
             {/* Filter Tabs & Search */}
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-gray-200 dark:border-slate-800">
-                <div className="flex gap-1.5">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-2xl border border-gray-200 dark:border-slate-800">
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto pb-1 sm:pb-0">
                     <button
                         onClick={() => setDocumentType('all')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                             documentType === 'all'
                                 ? 'bg-indigo-600 text-white shadow-sm'
                                 : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800'
@@ -348,7 +348,7 @@ export default function InvoiceList() {
                     </button>
                     <button
                         onClick={() => setDocumentType('invoice')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                             documentType === 'invoice'
                                 ? 'bg-indigo-600 text-white shadow-sm'
                                 : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800'
@@ -358,19 +358,19 @@ export default function InvoiceList() {
                     </button>
                     <button
                         onClick={() => setDocumentType('quotation')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                             documentType === 'quotation'
                                 ? 'bg-indigo-600 text-white shadow-sm'
                                 : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800'
                         }`}
                     >
-                        Surat Penawaran (Quotation)
+                        Penawaran (SPO)
                     </button>
                 </div>
-                <div className="relative w-full sm:w-64">
+                <div className="relative w-full sm:w-64 shrink-0">
                     <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
-                        className="w-full pl-9 pr-3 py-1.5 border rounded-xl text-xs bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full pl-9 pr-3 py-2 border rounded-xl text-xs bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-slate-500"
                         placeholder="Cari nomor faktur / kontak..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
@@ -396,7 +396,111 @@ export default function InvoiceList() {
                 />
             ) : (
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm">
-                    <div className="overflow-x-auto">
+                    {/* MOBILE CARD VIEW (Phone friendly, no horizontal overflow) */}
+                    <div className="md:hidden divide-y divide-gray-100 dark:divide-slate-800">
+                        {filteredInvoices.map(inv => (
+                            <div key={inv.id} className="p-4 space-y-3 hover:bg-gray-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                {/* Top Row: Number + Status */}
+                                <div className="flex justify-between items-start gap-2">
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                            <span className="font-black text-sm text-gray-900 dark:text-white">
+                                                {inv.invoice_number}
+                                            </span>
+                                            {inv.is_recurring && (
+                                                <span className="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 text-[9px] font-bold">
+                                                    Recurring
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5 flex items-center gap-2">
+                                            <span>Tgl: {inv.issue_date ? new Date(inv.issue_date).toLocaleDateString('id-ID') : '-'}</span>
+                                            <span>•</span>
+                                            <span className="text-rose-500 font-medium">Due: {inv.due_date ? new Date(inv.due_date).toLocaleDateString('id-ID') : '-'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="shrink-0">{getStatusBadge(inv)}</div>
+                                </div>
+
+                                {/* Customer Info & Balance */}
+                                <div className="bg-gray-50 dark:bg-slate-800/60 p-3 rounded-xl flex justify-between items-center text-xs">
+                                    <div className="min-w-0 flex-1 mr-2">
+                                        <div className="font-bold text-gray-800 dark:text-gray-200 truncate">{inv.contact_name || 'Tanpa Nama'}</div>
+                                        <div className="text-[11px] text-gray-400 font-mono truncate">{inv.contact_phone || '-'}</div>
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                        <div className="font-black text-indigo-600 dark:text-indigo-400 text-sm">{formatCurrency(inv.total_amount)}</div>
+                                        {inv.status !== 'paid' && inv.balance_due > 0 && (
+                                            <div className="text-[10px] text-rose-600 font-bold">Sisa: {formatCurrency(inv.balance_due)}</div>
+                                        )}
+                                        {inv.payment_type === 'partial' && (
+                                            <div className="text-[10px] text-amber-600 font-medium">Min DP: {formatCurrency(inv.down_payment_amount)}</div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Quick Actions */}
+                                <div className="flex flex-wrap items-center justify-end gap-1.5 pt-1">
+                                    {inv.document_type === 'quotation' ? (
+                                        <button
+                                            onClick={() => handleConvertToInvoice(inv.id)}
+                                            className="flex-1 py-2 px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                                        >
+                                            <CheckCircle2 className="w-4 h-4" /> Konversi ke Faktur
+                                        </button>
+                                    ) : (
+                                        inv.status !== 'paid' && (
+                                            <>
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedInvoiceForPayment(inv);
+                                                        setIsPartialModalOpen(true);
+                                                    }}
+                                                    className="flex-1 py-2 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                                                >
+                                                    <CreditCard className="w-4 h-4" /> Catat Bayar
+                                                </button>
+                                                <button
+                                                    onClick={() => handleSendDunningReminder(inv.id)}
+                                                    className="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/30 rounded-lg transition-colors"
+                                                    title="Pengingat WA"
+                                                >
+                                                    <Bell className="w-4 h-4" />
+                                                </button>
+                                            </>
+                                        )
+                                    )}
+
+                                    <button
+                                        onClick={() => handleSendClick(inv.id)}
+                                        className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 rounded-lg transition-colors"
+                                        title="Kirim ke WhatsApp"
+                                    >
+                                        <Send className="w-4 h-4" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleSendQrisClick(inv.id)}
+                                        className="p-2 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/30 rounded-lg transition-colors"
+                                        title="Kirim QRIS ke WhatsApp"
+                                    >
+                                        <QrCode className="w-4 h-4" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleDelete(inv.id)}
+                                        className="p-2 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                        title="Hapus"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* DESKTOP TABLE VIEW */}
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full text-left text-xs">
                             <thead className="bg-gray-50 dark:bg-slate-800/60 text-gray-500 uppercase font-black text-[10px] tracking-wider border-b border-gray-100 dark:border-slate-800">
                                 <tr>

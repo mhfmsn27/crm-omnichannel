@@ -80,59 +80,59 @@ export default function TemplatesPage() {
     };
 
     return (
-        <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="p-3.5 sm:p-6 pb-24 md:pb-6 space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                     <h1 className="text-xl font-bold flex items-center gap-2">
                         <MessageSquare className="w-6 h-6 text-indigo-600" /> Message Templates
                     </h1>
-                    <p className="text-sm text-gray-500">CTA Buttons, Product Cards, Rich Links</p>
+                    <p className="text-xs sm:text-sm text-gray-500">CTA Buttons, Product Cards, Rich Links</p>
                 </div>
                 <button onClick={() => setShow(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg">
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 active:scale-95 transition-all text-sm">
                     <Plus className="w-4 h-4" /> Tambah Template
                 </button>
             </div>
 
             {show && (
-                <form onSubmit={handleSubmit} className="bg-white border rounded-xl p-6">
+                <form onSubmit={handleSubmit} className="bg-white border rounded-xl p-4 sm:p-6 shadow-sm">
                     <h3 className="font-bold mb-4">Template Baru</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">Nama Template</label>
-                            <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2" />
+                            <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full border rounded-lg px-3 py-2 text-sm" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Tipe</label>
                             <select value={form.template_type} onChange={e => setForm({ ...form, template_type: e.target.value })}
-                                className="w-full border rounded-lg px-3 py-2">
+                                className="w-full border rounded-lg px-3 py-2 text-sm">
                                 {TEMPLATE_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
                             </select>
                         </div>
-                        <div className="col-span-2">
+                        <div className="col-span-1 sm:col-span-2">
                             <label className="block text-sm font-medium mb-1">Judul</label>
                             <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-                                className="w-full border rounded-lg px-3 py-2" />
+                                className="w-full border rounded-lg px-3 py-2 text-sm" />
                         </div>
-                        <div className="col-span-2">
+                        <div className="col-span-1 sm:col-span-2">
                             <label className="block text-sm font-medium mb-1">Deskripsi</label>
                             <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
-                                rows={2} className="w-full border rounded-lg px-3 py-2" />
+                                rows={2} className="w-full border rounded-lg px-3 py-2 text-sm" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Image URL</label>
                             <input value={form.image_url} onChange={e => setForm({ ...form, image_url: e.target.value })}
-                                placeholder="https://..." className="w-full border rounded-lg px-3 py-2" />
+                                placeholder="https://..." className="w-full border rounded-lg px-3 py-2 text-sm" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">CTA Button</label>
                             <input value={form.cta_text} onChange={e => setForm({ ...form, cta_text: e.target.value })}
-                                placeholder="Beli Sekarang" className="w-full border rounded-lg px-3 py-2" />
+                                placeholder="Beli Sekarang" className="w-full border rounded-lg px-3 py-2 text-sm" />
                         </div>
                     </div>
                     <div className="flex justify-end gap-2 mt-4">
-                        <button type="button" onClick={() => setShow(false)} className="px-4 py-2 border rounded-lg">Batal</button>
-                        <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Simpan</button>
+                        <button type="button" onClick={() => setShow(false)} className="px-4 py-2 border rounded-lg text-sm">Batal</button>
+                        <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold">Simpan</button>
                     </div>
                 </form>
             )}
@@ -143,10 +143,10 @@ export default function TemplatesPage() {
                 <div className="text-center py-12 text-gray-400">
                     <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
                     <p>Belum ada template</p>
-                    <button onClick={() => setShow(true)} className="mt-2 text-indigo-600">Buat pertama</button>
+                    <button onClick={() => setShow(true)} className="mt-2 text-indigo-600 font-medium">Buat pertama</button>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                     {templates.map(t => (
                         <TemplateCard key={t.id} template={t} onDelete={handleDelete} />
                     ))}

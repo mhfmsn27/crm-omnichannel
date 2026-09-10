@@ -348,7 +348,7 @@ export default function LoginPage({ initialView = 'login' }) {
                 {/* ========================================================= */}
                 {/* LEFT PANEL: AUTHENTICATION FORM (5 Cols LG)               */}
                 {/* ========================================================= */}
-                <div className="lg:col-span-5 flex flex-col justify-between bg-white dark:bg-slate-900 p-6 sm:p-10 md:p-12 lg:p-14 xl:p-16 border-r border-slate-200/80 dark:border-slate-800/80 shadow-sm z-10 overflow-y-auto">
+                <div className="lg:col-span-5 flex flex-col justify-between bg-white dark:bg-slate-900 p-4 sm:p-10 md:p-12 lg:p-14 xl:p-16 pt-[max(1rem,env(safe-area-inset-top,0px))] pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] border-r border-slate-200/80 dark:border-slate-800/80 shadow-sm z-10 overflow-y-auto">
                     
                     {/* Top Branding & Status Pill */}
                     <div className="flex items-center justify-between pb-4">

@@ -244,7 +244,7 @@ export default function TaskListPage() {
     );
 
     return (
-        <div className="p-4 md:p-8 h-full overflow-y-auto custom-scrollbar flex flex-col pb-20 md:pb-0 bg-gray-50 dark:bg-dark-bg">
+        <div className="p-3.5 sm:p-4 md:p-8 h-full overflow-y-auto custom-scrollbar flex flex-col pb-24 md:pb-8 bg-gray-50 dark:bg-dark-bg">
             <TaskFormModal
                 isOpen={isFormOpen}
                 onClose={() => { setIsFormOpen(false); setEditingTask(null); }}
@@ -254,17 +254,17 @@ export default function TaskListPage() {
             />
 
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <CheckSquare className="w-6 h-6 text-indigo-500" />
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <CheckSquare className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500" />
                         Tasks & Reminders
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Kelola tugas dan pengingat tim</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">Kelola tugas dan pengingat tim</p>
                 </div>
                 <button
                     onClick={() => { setEditingTask(null); setIsFormOpen(true); }}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium shadow-sm transition-colors"
                 >
                     <Plus className="w-4 h-4" /> Tambah Task
                 </button>
@@ -374,7 +374,7 @@ export default function TaskListPage() {
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
                                     <button
                                         onClick={() => { setEditingTask(task); setIsFormOpen(true); }}
                                         className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"

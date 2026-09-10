@@ -33,32 +33,32 @@ export default function AddonMarketplace() {
     if (loading) return <div className="p-8 text-center">Loading...</div>;
 
     return (
-        <div className="p-8">
+        <div className="p-3.5 sm:p-6 md:p-8">
             <h2 className="text-xl font-bold text-gray-800 mb-6">Marketplace Add-on</h2>
             
             {/* Warning Banner if No Plan */}
             {!hasActivePlan && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-center justify-between">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <AlertCircle className="w-6 h-6 text-red-600" />
+                        <AlertCircle className="w-6 h-6 text-red-600 shrink-0" />
                         <div>
                             <h4 className="font-bold text-red-800">Active Subscription Required</h4>
                             <p className="text-sm text-red-600">You must subscribe to a base plan first before purchasing add-ons.</p>
                         </div>
                     </div>
-                    <Link to="/order/plans" className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-700 flex items-center gap-1">
+                    <Link to="/order/plans" className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-700 flex items-center justify-center gap-1 w-full sm:w-auto shrink-0">
                         View Plans <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>
             )}
 
             {/* Categories */}
-            <div className="flex gap-2 mb-6">
+            <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-1">
                 {['all', 'boolean', 'limit'].map(cat => (
                     <button 
                         key={cat}
                         onClick={() => setCategory(cat)}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold capitalize border transition-colors ${category === cat ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold capitalize border transition-colors shrink-0 ${category === cat ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
                     >
                         {cat === 'boolean' ? 'Features' : cat === 'limit' ? 'Quotas' : 'All'}
                     </button>

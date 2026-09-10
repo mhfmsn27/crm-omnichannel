@@ -139,32 +139,32 @@ export default function MessageTemplates() {
     };
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
-            <div className="flex flex-wrap justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
+        <div className="p-3.5 sm:p-6 md:p-8 pb-24 md:pb-8 h-full overflow-y-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-3 sm:gap-4">
                 <div>
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         <FileText className="w-6 h-6 text-purple-600" /> Message Templates
                     </h2>
-                    <p className="text-gray-500 text-sm">Create reusable message templates with media & spintax.</p>
+                    <p className="text-gray-500 dark:text-slate-400 text-xs sm:text-sm">Create reusable message templates with media & spintax.</p>
                 </div>
-                <button onClick={openCreate} className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2 font-bold shadow-sm">
+                <button onClick={openCreate} className="w-full sm:w-auto px-4 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 flex items-center justify-center gap-2 font-bold shadow-sm active:scale-95 transition-all text-sm">
                     <Plus className="w-4 h-4" /> Create Template
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {templates.map(t => (
-                    <div key={t.id} onClick={() => openEdit({stopPropagation: () => {}}, t)} className="bg-white/90 dark:bg-dark-surface/90 backdrop-blur border border-gray-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:ring-2 hover:ring-purple-500/30 transition-all duration-300 flex flex-col h-full group cursor-pointer">
+                    <div key={t.id} onClick={() => openEdit({stopPropagation: () => {}}, t)} className="bg-white/90 dark:bg-dark-surface/90 backdrop-blur border border-gray-200 dark:border-slate-700 rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:ring-2 hover:ring-purple-500/30 transition-all duration-300 flex flex-col h-full group cursor-pointer">
                         <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <h4 className="font-bold text-gray-800 text-sm mb-1 truncate w-32" title={t.shortcut}>{t.shortcut}</h4>
-                                <span className="bg-purple-50 text-purple-700 px-2 py-0.5 rounded text-[10px] font-mono border border-purple-100">
+                            <div className="min-w-0 pr-2">
+                                <h4 className="font-bold text-gray-800 dark:text-gray-100 text-sm mb-1 truncate" title={t.shortcut}>{t.shortcut}</h4>
+                                <span className="bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 px-2 py-0.5 rounded text-[10px] font-mono border border-purple-100 dark:border-purple-800">
                                     /{t.shortcut}
                                 </span>
                             </div>
-                            <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                <button onClick={(e) => openEdit(e, t)} className="p-1.5 text-gray-400 hover:text-indigo-600 rounded hover:bg-gray-50"><Edit className="w-4 h-4" /></button>
-                                <button onClick={(e) => handleDelete(e, t.id)} className="p-1.5 text-gray-400 hover:text-red-600 rounded hover:bg-gray-50"><Trash2 className="w-4 h-4" /></button>
+                            <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
+                                <button onClick={(e) => openEdit(e, t)} className="p-1.5 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"><Edit className="w-4 h-4" /></button>
+                                <button onClick={(e) => handleDelete(e, t.id)} className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"><Trash2 className="w-4 h-4" /></button>
                             </div>
                         </div>
 

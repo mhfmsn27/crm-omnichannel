@@ -78,34 +78,34 @@ export default function PartnerProgram() {
     if (loading) return <div className="p-8 text-center">Loading Partner Data...</div>;
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-8">
+        <div className="p-3.5 sm:p-6 max-w-7xl mx-auto space-y-6 sm:space-y-8">
             <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                    <Users className="w-6 h-6 text-indigo-600" /> Affiliate Partner
+                <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                    <Users className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" /> Affiliate Partner
                 </h1>
-                <p className="text-gray-500">Share your link and earn commissions.</p>
+                <p className="text-gray-500 text-xs sm:text-sm">Share your link and earn commissions.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
                 {/* LEFT COLUMN - Main Info */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-6 sm:space-y-8">
 
                     {/* BANNER */}
-                    <div className="bg-indigo-600 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+                    <div className="bg-indigo-600 rounded-2xl p-5 sm:p-8 text-white shadow-xl relative overflow-hidden">
                         <div className="relative z-10">
-                            <h2 className="text-xl font-bold mb-2">Your Referral Link</h2>
-                            <p className="text-white/80 mb-6 text-sm">Share this link to track your referrals automatically.</p>
+                            <h2 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">Your Referral Link</h2>
+                            <p className="text-white/80 mb-4 sm:mb-6 text-xs sm:text-sm">Share this link to track your referrals automatically.</p>
 
-                            <div className="bg-white/10 backdrop-blur-md p-1 pl-4 rounded-xl flex items-center border border-white/20">
-                                <code className="flex-1 text-sm font-mono truncate">{refLink}</code>
+                            <div className="bg-white/10 backdrop-blur-md p-1.5 sm:p-1 sm:pl-4 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-white/20">
+                                <code className="flex-1 text-xs sm:text-sm font-mono truncate px-2 sm:px-0 py-1">{refLink}</code>
                                 <button
                                     onClick={handleCopy}
-                                    className="bg-white text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors"
+                                    className="bg-white text-indigo-600 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shrink-0"
                                 >
-                                    <Copy className="w-4 h-4" /> Copy
+                                    <Copy className="w-4 h-4" /> Copy Link
                                 </button>
                             </div>
-                            <div className="mt-4 text-xs font-mono opacity-70">Referral Code: {refCode}</div>
+                            <div className="mt-3 sm:mt-4 text-xs font-mono opacity-70">Referral Code: {refCode}</div>
                         </div>
                         {/* Decorative Circles */}
                         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>

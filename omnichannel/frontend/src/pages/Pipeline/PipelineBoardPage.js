@@ -173,19 +173,19 @@ export default function PipelineBoardPage() {
     return (
         <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden bg-white dark:bg-gray-900">
             {/* Header */}
-            <div className="flex-shrink-0 px-8 py-5 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-gray-900 z-40 relative">
+            <div className="flex-shrink-0 px-3 sm:px-8 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white dark:bg-gray-900 z-40 relative">
                 {/* Left: Add Lead */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                     <button
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center gap-2 font-medium transition-colors shadow-sm"
+                        className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center justify-center gap-2 font-medium transition-colors shadow-sm text-sm"
                         onClick={() => handleAddLead(stages[0]?.id)}
                     >
-                        <Plus className="w-5 h-5" /> Tambah Lead Masuk
+                        <Plus className="w-4 h-4 sm:w-5 sm:h-5" /> Tambah Lead Masuk
                     </button>
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
                     <button
                         onClick={handleExportCSV}
                         className="hidden sm:flex px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 items-center gap-2 text-sm text-gray-600 dark:text-gray-300 transition-colors"
@@ -193,18 +193,17 @@ export default function PipelineBoardPage() {
                         <Download className="w-4 h-4" /> Export CSV
                     </button>
 
-                    <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
+                    <div className="hidden sm:block h-8 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
 
-
-                    <div className="dropdown dropdown-end" ref={dropdownRef}>
+                    <div className="dropdown dropdown-end flex-1 sm:flex-initial" ref={dropdownRef}>
                         <div
                             tabIndex={0}
                             role="button"
-                            className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200 min-w-[180px] justify-between transition-all cursor-pointer"
+                            className="px-3 sm:px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-700 dark:text-gray-200 w-full sm:min-w-[180px] justify-between transition-all cursor-pointer"
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         >
-                            <span className="font-medium">{pipeline.name}</span>
-                            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                            <span className="font-medium truncate">{pipeline.name}</span>
+                            <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                         </div>
                         {isDropdownOpen && (
                             <ul tabIndex={0} className="dropdown-content z-[50] menu p-2 shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl w-60 mt-2 absolute top-full right-0">
@@ -225,7 +224,7 @@ export default function PipelineBoardPage() {
 
                     <button
                         onClick={() => navigate(`/pipelines/${id}/edit`)}
-                        className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 hover:text-indigo-600 transition-colors"
+                        className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 hover:text-indigo-600 transition-colors shrink-0"
                         title="Edit Pipeline Settings"
                     >
                         <Edit3 className="w-4 h-4" />
@@ -236,7 +235,7 @@ export default function PipelineBoardPage() {
             {/* Board Area */}
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex-1 overflow-x-auto overflow-y-hidden">
-                    <div className="h-full flex p-6 gap-6 min-w-max">
+                    <div className="h-full flex p-3 sm:p-6 gap-3 sm:gap-6 min-w-max pb-20 sm:pb-6">
                         {stages.map((stage, index) => (
                             <StageCard
                                 key={stage.id}
@@ -249,7 +248,7 @@ export default function PipelineBoardPage() {
                         ))}
 
                         {/* New Stage Button Column */}
-                        <div className="flex-shrink-0 w-80 h-16 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl flex items-center justify-center text-gray-400 hover:border-indigo-400 hover:text-indigo-500 cursor-pointer transition-colors"
+                        <div className="flex-shrink-0 w-[275px] sm:w-80 h-16 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl flex items-center justify-center text-gray-400 hover:border-indigo-400 hover:text-indigo-500 cursor-pointer transition-colors text-sm font-medium"
                             onClick={() => {
                                 const name = prompt("Stage Name:");
                                 if (name) {

@@ -461,22 +461,22 @@ export default function ProductListPage() {
     const totalPages = Math.ceil(total / LIMIT);
 
     return (
-        <div className="p-4 md:p-6 max-w-7xl mx-auto">
+        <div className="p-3.5 sm:p-4 md:p-6 max-w-7xl mx-auto pb-20 md:pb-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <Package className="w-6 h-6 text-indigo-500" /> Katalog Produk
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <Package className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500" /> Katalog Produk
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Kelola produk dan layanan yang Anda tawarkan</p>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Kelola produk dan layanan yang Anda tawarkan</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button onClick={() => setShowCategories(true)}
-                        className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-dark-border rounded-lg hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors">
+                        className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-dark-border rounded-lg hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors">
                         <Tag className="w-4 h-4" /> Kategori
                     </button>
                     <button onClick={() => { setEditProduct(null); setShowForm(true); }}
-                        className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+                        className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
                         <Plus className="w-4 h-4" /> Tambah Produk
                     </button>
                 </div>

@@ -10,7 +10,7 @@ export default function StageCard({ stage, items = [], index, onAddLead, onDelet
 
     return (
         <div
-            className="flex-shrink-0 w-80 flex flex-col h-full max-h-full bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700"
+            className="flex-shrink-0 w-[275px] sm:w-80 flex flex-col h-full max-h-full bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700"
         >
             {/* Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-t-xl">

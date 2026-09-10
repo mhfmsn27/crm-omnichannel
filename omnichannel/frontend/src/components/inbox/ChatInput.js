@@ -567,7 +567,7 @@ export default function ChatInput({ agents = [], onSendMessage, onUploadFile, on
     };
 
     return (
-        <div className="px-2 pt-1 pb-3 md:py-2 bg-[#f0f2f5] dark:bg-[#202c33] relative w-full flex flex-col gap-1 z-20">
+        <div className="px-2 pt-1 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] md:py-2 bg-[#f0f2f5] dark:bg-[#202c33] relative w-full flex flex-col gap-1 z-20">
 
             {/* Edit Message Banner */}
             {editingMessage && (
@@ -629,7 +629,7 @@ export default function ChatInput({ agents = [], onSendMessage, onUploadFile, on
                 onSend={(msg) => onSendMessage(msg)}
             />
             {isCTAModalOpen && (
-                <div className="absolute bottom-full mb-2 left-4 w-96 bg-white dark:bg-dark-surface rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border z-50">
+                <div className="absolute bottom-full mb-2 left-2 right-2 sm:right-auto sm:left-4 max-w-[calc(100vw-1rem)] sm:w-96 bg-white dark:bg-dark-surface rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border z-50">
                     <div className="flex justify-between items-center p-3 border-b dark:border-dark-border">
                         <h3 className="font-bold text-gray-800 dark:text-gray-100">Send CTA Buttons</h3>
                         <button onClick={() => setIsCTAModalOpen(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
@@ -702,7 +702,7 @@ export default function ChatInput({ agents = [], onSendMessage, onUploadFile, on
                 onExecuted={() => {}}
             />
             {isProductModalOpen && (
-                <div className="absolute bottom-full mb-2 left-4 w-96 bg-white dark:bg-dark-surface rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border z-50">
+                <div className="absolute bottom-full mb-2 left-2 right-2 sm:right-auto sm:left-4 max-w-[calc(100vw-1rem)] sm:w-96 bg-white dark:bg-dark-surface rounded-xl shadow-2xl border border-gray-200 dark:border-dark-border z-50">
                     <div className="flex justify-between items-center p-3 border-b dark:border-dark-border">
                         <h3 className="font-bold text-gray-800 dark:text-gray-100">Send Product Catalog</h3>
                         <button onClick={() => setIsProductModalOpen(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">

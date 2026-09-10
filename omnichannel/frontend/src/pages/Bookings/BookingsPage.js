@@ -105,18 +105,18 @@ export default function BookingsPage() {
     };
 
     return (
-        <div className="p-6 max-w-6xl mx-auto pb-20">
-            <div className="flex justify-between items-center mb-6">
+        <div className="p-3.5 sm:p-6 max-w-6xl mx-auto pb-24 md:pb-12">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                        <Calendar className="w-6 h-6 text-indigo-600" />
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                        <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
                         Jadwal Reservasi (Bookings)
                     </h1>
-                    <p className="text-gray-500 text-sm mt-1">Kelola jadwal pertemuan dan otomatis kirim pengingat WhatsApp H-24 dan H-1 jam.</p>
+                    <p className="text-gray-500 dark:text-slate-400 text-xs sm:text-sm mt-1">Kelola jadwal pertemuan dan otomatis kirim pengingat WhatsApp H-24 dan H-1 jam.</p>
                 </div>
                 <button 
                     onClick={openNew}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors text-sm shadow-sm"
                 >
                     <Plus className="w-4 h-4" /> Tambah Jadwal
                 </button>
@@ -150,11 +150,11 @@ export default function BookingsPage() {
                                 </div>
                             </div>
                             
-                            <div className="flex justify-end gap-2 pt-4 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => openEdit(b)} className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
+                            <div className="flex justify-end gap-2 pt-4 border-t border-gray-100 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                <button onClick={() => openEdit(b)} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
                                     <Edit className="w-4 h-4" />
                                 </button>
-                                <button onClick={() => handleDelete(b.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                                <button onClick={() => handleDelete(b.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg">
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
@@ -185,7 +185,7 @@ export default function BookingsPage() {
                                 </select>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-gray-700 mb-1">Mulai</label>
                                     <input type="datetime-local" required value={form.start_time} onChange={e => setForm({...form, start_time: e.target.value})} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />

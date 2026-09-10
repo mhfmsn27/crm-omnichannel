@@ -43,7 +43,7 @@ export default function AnalyticsPage() {
     if (!data) return <div className="p-8">Failed to load data</div>;
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen h-full overflow-y-auto">
+        <div className="p-3.5 sm:p-6 lg:p-8 bg-gray-50 min-h-screen h-full overflow-y-auto pb-20 md:pb-8">
             {/* HEADER */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>

@@ -37,7 +37,6 @@ import LoginPage from './pages/LoginPage';
 import FacebookCallback from './pages/Auth/FacebookCallback';
 import GoogleCallback from './pages/Auth/GoogleCallback';
 import PwaInstallBanner from './components/common/PwaInstallBanner';
-import MobileBottomNav from './components/layout/MobileBottomNav';
 
 // ================================
 // LAZY LOADED MODULES
@@ -614,7 +613,6 @@ function AppRoutes() {
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <PwaInstallBanner />
-            <MobileBottomNav />
         </>
     );
 }

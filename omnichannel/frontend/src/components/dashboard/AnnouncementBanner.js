@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X, Megaphone, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,9 +49,9 @@ export default function AnnouncementBanner({ data }) {
   };
 
   const bgColors = {
-      info: 'bg-indigo-500',
-      warning: 'bg-orange-400',
-      promo: 'bg-green-500'
+      info: 'bg-indigo-600',
+      warning: 'bg-amber-500',
+      promo: 'bg-emerald-600'
   };
 
   const Wrapper = ({ children }) => {
@@ -73,7 +72,7 @@ export default function AnnouncementBanner({ data }) {
 
   return (
     <div 
-        className={`mb-6 relative overflow-hidden rounded-xl shadow-md h-[120px] ${currentBanner.link_url ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
+        className={`mb-6 relative overflow-hidden rounded-xl sm:rounded-2xl shadow-md min-h-[105px] sm:min-h-[115px] ${currentBanner.link_url ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
     >
@@ -84,28 +83,28 @@ export default function AnnouncementBanner({ data }) {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{ duration: 0.5 }}
-                className={`absolute inset-0 ${bgColors[currentBanner.type] || bgColors.info} text-white`}
+                transition={{ duration: 0.4 }}
+                className={`relative sm:absolute sm:inset-0 ${bgColors[currentBanner.type] || bgColors.info} text-white min-h-[105px] sm:min-h-[115px] flex items-center`}
             >
                 <Wrapper>
-                    <div className="flex items-center h-full w-full p-5">
+                    <div className="flex items-center h-full w-full p-4 sm:p-5 pr-12">
                         {currentBanner.image_url && (
-                            <div className="mr-4 w-16 h-16 rounded-lg overflow-hidden bg-white/20 shrink-0 hidden sm:block">
+                            <div className="mr-3.5 sm:mr-4 w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white/20 shrink-0 hidden sm:block">
                                 <img src={getApiUrl(currentBanner.image_url)} alt="" className="w-full h-full object-cover" />
                             </div>
                         )}
                         
-                        <div className="flex-1 pr-8">
+                        <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                                <div className="bg-white/20 p-1 rounded-full">
-                                    <Megaphone className="w-4 h-4 text-white" />
+                                <div className="bg-white/20 p-1 rounded-full shrink-0">
+                                    <Megaphone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                                 </div>
-                                <h4 className="font-bold text-sm uppercase tracking-wider opacity-90">
-                                    {currentBanner.title || 'Announcement'}
-                                    {currentBanner.link_url && <ExternalLink className="w-3 h-3 inline ml-2 opacity-70" />}
+                                <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider opacity-90 truncate">
+                                    {currentBanner.title || 'Pengumuman'}
+                                    {currentBanner.link_url && <ExternalLink className="w-3 h-3 inline ml-1.5 opacity-70" />}
                                 </h4>
                             </div>
-                            <p className="text-sm sm:text-base font-medium leading-snug opacity-95 line-clamp-2">
+                            <p className="text-xs sm:text-sm font-medium leading-relaxed opacity-95 line-clamp-2">
                                 {currentBanner.message}
                             </p>
                         </div>
@@ -120,19 +119,21 @@ export default function AnnouncementBanner({ data }) {
         <div className="absolute top-3 right-3 z-10">
              <button 
                  onClick={(e) => handleDismiss(e, currentBanner.id)}
-                 className="text-white/70 hover:text-white bg-black/10 hover:bg-black/20 p-1 rounded-full transition-colors"
+                 className="text-white/80 hover:text-white bg-black/20 hover:bg-black/30 p-1.5 rounded-full transition-colors active:scale-90"
+                 title="Tutup pengumuman"
+                 aria-label="Tutup"
              >
-                 <X className="w-4 h-4" />
+                 <X className="w-3.5 h-3.5" />
              </button>
         </div>
 
         {/* Indicators */}
         {banners.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-10 pointer-events-none">
+            <div className="absolute bottom-2.5 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-10 pointer-events-none">
                 {banners.map((_, idx) => (
                     <div 
                         key={idx}
-                        className={`w-2 h-2 rounded-full transition-all ${idx === currentIndex ? 'bg-white w-4' : 'bg-white/40'}`}
+                        className={`h-1.5 rounded-full transition-all ${idx === currentIndex ? 'bg-white w-4' : 'bg-white/40 w-1.5'}`}
                     />
                 ))}
             </div>

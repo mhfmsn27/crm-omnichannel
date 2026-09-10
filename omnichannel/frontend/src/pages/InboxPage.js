@@ -643,7 +643,7 @@ export default function InboxPage() {
                     />
                 </div>
 
-                <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-[#1e293b]">
+                <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-[#1e293b] pb-16 md:pb-0">
                     {isSyncing && (
                         <div className="bg-indigo-50 dark:bg-indigo-900/30 border-b border-indigo-100 dark:border-indigo-800 p-2 flex items-center justify-center gap-2 flex-shrink-0">
                             <Loader2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400 animate-spin" />
@@ -724,7 +724,7 @@ export default function InboxPage() {
             </div>
 
             {/* MIDDLE COL: CHAT AREA */}
-            <div className={`flex-1 flex flex-col h-full relative min-w-0 overflow-hidden pb-[56px] md:pb-0 ${selectedConvId ? 'flex' : 'hidden md:flex'}`}>
+            <div className={`flex-1 flex flex-col h-full relative min-w-0 overflow-hidden pb-0 ${selectedConvId ? 'flex' : 'hidden md:flex'}`}>
                 {/* Real-time Socket Connection Status Banner */}
                 {!isConnected && (
                     <div className="bg-amber-500/95 dark:bg-amber-600/95 backdrop-blur text-white text-[11px] font-medium py-1 px-3 flex items-center justify-center gap-2 z-30 shadow-sm animate-pulse">

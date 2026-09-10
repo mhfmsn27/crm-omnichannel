@@ -103,15 +103,15 @@ export default function SalesVisitPage() {
     });
 
     return (
-        <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-20 md:pb-8">
             {/* Header */}
-            <div className="flex flex-wrap justify-between items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                 <div>
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
-                        <div className="p-2 bg-indigo-600 text-white rounded-2xl shadow-md">
-                            <Navigation className="w-6 h-6" />
+                    <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <div className="p-2 bg-indigo-600 text-white rounded-xl sm:rounded-2xl shadow-md shrink-0">
+                            <Navigation className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
-                        Field Sales GPS Visit Tracking
+                        <span>Field Sales GPS Visit</span>
                     </h2>
                     <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
                         Pencatatan check-in kunjungan sales lapangan dengan akurasi GPS real-time, foto toko/klien, dan notula meeting.
@@ -123,7 +123,7 @@ export default function SalesVisitPage() {
                         handleGetLocation();
                     }}
                     leftIcon={<Plus className="w-4 h-4" />}
-                    className="!bg-indigo-600 hover:!bg-indigo-700 text-white font-bold shadow-md"
+                    className="!bg-indigo-600 hover:!bg-indigo-700 text-white font-bold shadow-md w-full sm:w-auto text-xs sm:text-sm py-2 sm:py-2.5"
                 >
                     + Check-in Kunjungan Baru
                 </Button>

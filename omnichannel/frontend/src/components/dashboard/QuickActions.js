@@ -17,20 +17,24 @@ const ActionCard = ({ to, icon: Icon, label, color, desc }) => {
     return (
         <Link
             to={to}
-            className="flex flex-col items-center md:items-start text-center md:text-left p-2.5 md:p-4 bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-[#334155] rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 group h-full justify-center md:justify-start"
+            className="flex flex-col items-center md:items-start text-center md:text-left p-2.5 sm:p-3 md:p-4 bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-[#334155] rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 transition-all duration-200 group h-full justify-center md:justify-start min-h-[76px] sm:min-h-[88px]"
         >
-            <div className={`p-2 md:p-3 rounded-lg ${theme.bg} bg-opacity-10 dark:bg-opacity-20 group-hover:bg-opacity-20 dark:group-hover:bg-opacity-30 transition-colors mb-1.5 md:mb-3`}>
-                <Icon className={`w-5 h-5 md:w-6 md:h-6 ${theme.text} ${theme.darkText}`} />
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-lg sm:rounded-xl ${theme.bg} bg-opacity-10 dark:bg-opacity-20 group-hover:bg-opacity-25 transition-all flex items-center justify-center mb-1.5 sm:mb-2 md:mb-3 shrink-0`}>
+                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 ${theme.text} ${theme.darkText}`} />
             </div>
-            <h4 className="font-bold text-gray-800 dark:text-gray-100 text-[10px] md:text-sm leading-tight md:leading-normal">{label}</h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden md:block">{desc}</p>
+            <h4 className="font-bold text-gray-800 dark:text-gray-100 text-[11px] sm:text-xs md:text-sm leading-tight">
+                {label}
+            </h4>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 hidden md:block">
+                {desc}
+            </p>
         </Link>
     );
 };
 
 export default function QuickActions() {
     return (
-        <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4 mb-6 md:mb-8">
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4 mb-6 md:mb-8">
             <ActionCard to="/integrations" icon={Plus} label="Connect" desc="Add WA, IG, FB" color="indigo" />
             <ActionCard to="/broadcast/create" icon={Rocket} label="Campaign" desc="Send Broadcast" color="purple" />
             <ActionCard to="/tools/check-number" icon={ShieldCheck} label="Checker" desc="Validate WA" color="green" />

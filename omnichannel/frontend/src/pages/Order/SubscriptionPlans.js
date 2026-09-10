@@ -122,7 +122,7 @@ export default function SubscriptionPlans() {
     if (loading) return <div className="p-8 text-center">Loading Plans...</div>;
 
     return (
-        <div className="p-8">
+        <div className="p-3.5 sm:p-6 md:p-8">
             <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                 Pilih Paket Langganan
             </h2>

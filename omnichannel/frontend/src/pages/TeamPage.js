@@ -206,20 +206,21 @@ export default function TeamPage() {
     if (loading) return <div className="p-8 text-center">Loading team...</div>;
 
     return (
-        <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
-            <div className="flex flex-wrap justify-between items-start gap-4 mb-6 md:mb-8">
+        <div className="p-3.5 sm:p-6 md:p-8 pb-24 md:pb-8 h-full overflow-y-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-6 md:mb-8">
                 <div>
-                    <h2 className="text-xl md:text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Users className="w-6 h-6 md:w-8 md:h-8 text-indigo-600" /> Team Management
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <Users className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-600" /> Team Management
                     </h2>
-                    <p className="text-gray-500 text-sm">Add agents to manage your inbox collaboratively.</p>
+                    <p className="text-gray-500 text-xs sm:text-sm">Add agents to manage your inbox collaboratively.</p>
                 </div>
-                <button onClick={openCreate} className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 flex items-center gap-2 shadow-sm whitespace-nowrap">
+                <button onClick={openCreate} className="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 flex items-center justify-center gap-2 shadow-sm whitespace-nowrap active:scale-95 transition-transform">
                     <UserPlus className="w-4 h-4" /> Add Member
                 </button>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* Desktop Table View */}
+            <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="overflow-x-auto">
                 <table className="w-full text-left min-w-[640px]">
                     <thead className="bg-gray-50 border-b border-gray-200">
@@ -292,6 +293,65 @@ export default function TeamPage() {
                     </tbody>
                 </table>
                 </div>
+            </div>
+
+            {/* Mobile Card List View */}
+            <div className="md:hidden space-y-3">
+                {members.map(m => (
+                    <div key={m.id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs flex flex-col gap-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm shrink-0">
+                                    {m.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="font-bold text-gray-900 text-sm truncate">{m.name}</p>
+                                    <p className="text-xs text-gray-500 truncate">{m.email}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                                <button onClick={() => openEdit(m)} className="p-2 text-gray-500 bg-gray-50 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg border border-gray-200 transition-colors" title="Edit Member">
+                                    <Edit className="w-4 h-4" />
+                                </button>
+                                <button onClick={() => handleRemove(m.id)} className="p-2 text-gray-500 bg-gray-50 hover:bg-red-50 hover:text-red-600 rounded-lg border border-gray-200 transition-colors" title="Remove Member">
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-gray-100 text-xs">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold uppercase ${m.role === 'admin_member' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                                {m.role === 'admin_member' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                                {m.role.replace('_member', '')}
+                            </span>
+                            {m.division && (
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${DIVISION_COLORS[m.division] || 'bg-gray-100 text-gray-600'}`}>
+                                    <Briefcase className="w-3 h-3" />
+                                    {m.division}
+                                </span>
+                            )}
+                            {m.custom_role_name && (() => {
+                                const c = ROLE_COLOR_MAP[m.custom_role_color] || ROLE_COLOR_MAP.gray;
+                                return (
+                                    <span
+                                        className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-bold"
+                                        style={{ backgroundColor: c.bg, color: c.text }}
+                                    >
+                                        {m.custom_role_name}
+                                    </span>
+                                );
+                            })()}
+                            <span className="text-[11px] text-gray-400 ml-auto">
+                                {m.role === 'admin_member' ? 'Full Access' : (m.role_level >= 10 ? 'Supervisor' : 'Staff')}
+                            </span>
+                        </div>
+                    </div>
+                ))}
+                {members.length === 0 && (
+                    <div className="p-8 text-center text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                        Belum ada anggota tim.
+                    </div>
+                )}
             </div>
 
             {/* MODAL */}

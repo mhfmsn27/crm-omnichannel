@@ -321,21 +321,21 @@ export default function ContactListPage() {
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Database Kontak</h2>
                     <p className="text-sm text-gray-500 dark:text-slate-400">Total: {meta.total || 0} Kontak</p>
                 </div>
-                <div className="flex flex-wrap gap-2 w-full md:w-auto">
-                    <button onClick={() => setIsUnsubLogOpen(true)} className="flex-1 md:flex-none px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center justify-center gap-2 text-xs font-medium transition-colors">
-                        <History className="w-4 h-4" /> <span className="hidden md:inline">Logs</span>
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full md:w-auto">
+                    <button onClick={() => setIsUnsubLogOpen(true)} className="px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center justify-center gap-1.5 text-xs font-medium transition-colors">
+                        <History className="w-4 h-4" /> <span>Logs</span>
                     </button>
-                    <button onClick={handleExport} className="flex-1 md:flex-none px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2 text-xs font-medium transition-colors">
-                        <Download className="w-4 h-4" /> Export
+                    <button onClick={handleExport} className="px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-1.5 text-xs font-medium transition-colors">
+                        <Download className="w-4 h-4" /> <span>Export</span>
                     </button>
-                    <button onClick={() => setIsImportOpen(true)} className="flex-1 md:flex-none px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2 text-xs font-medium transition-colors">
-                        <Upload className="w-4 h-4" /> Import
+                    <button onClick={() => setIsImportOpen(true)} className="px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-1.5 text-xs font-medium transition-colors">
+                        <Upload className="w-4 h-4" /> <span>Import</span>
                     </button>
-                    <button onClick={() => handleOpenMerge()} className="flex-1 md:flex-none px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2 text-xs font-medium transition-colors" title="Smart Contact Merge">
-                        <GitMerge className="w-4 h-4 text-indigo-500" /> <span className="hidden md:inline">Gabung Kontak</span>
+                    <button onClick={() => handleOpenMerge()} className="px-3 py-2 bg-white dark:bg-dark-surface border border-gray-300 dark:border-dark-border rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 flex items-center justify-center gap-1.5 text-xs font-medium transition-colors" title="Smart Contact Merge">
+                        <GitMerge className="w-4 h-4 text-indigo-500" /> <span>Gabung</span>
                     </button>
-                    <button onClick={() => { setEditingContact(null); setIsFormOpen(true); }} className="flex-1 md:flex-none px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 text-xs font-medium shadow-sm transition-colors">
-                        <Plus className="w-4 h-4" /> <span className="hidden md:inline">Tambah Kontak</span><span className="md:hidden">Add</span>
+                    <button onClick={() => { setEditingContact(null); setIsFormOpen(true); }} className="col-span-2 sm:col-span-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-1.5 text-xs font-semibold shadow-sm transition-colors">
+                        <Plus className="w-4 h-4" /> <span>Tambah Kontak</span>
                     </button>
                 </div>
             </div>
@@ -558,26 +558,38 @@ export default function ContactListPage() {
                         ) : contacts.map(contact => (
                             <div key={contact.id} className={`bg-white dark:bg-dark-surface border rounded-xl p-4 shadow-sm ${selectedContactIds.includes(contact.id) ? 'border-indigo-500 ring-1 ring-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/20' : 'border-gray-200 dark:border-dark-border'}`}>
                                 <div className="flex justify-between items-start mb-3">
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3 flex-1 min-w-0">
                                         <input
                                             type="checkbox"
                                             checked={selectedContactIds.includes(contact.id)}
                                             onChange={() => handleSelectOne(contact.id)}
-                                            className="rounded border-gray-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 bg-white dark:bg-dark-bg"
+                                            className="rounded border-gray-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 w-5 h-5 bg-white dark:bg-dark-bg shrink-0"
                                         />
-                                        <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm">
-                                            {contact.name ? contact.name.charAt(0).toUpperCase() : '#'}
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-gray-900 dark:text-white text-sm">{contact.name || 'Tanpa Nama'}</h4>
-                                            <p className="text-xs text-gray-500 dark:text-slate-400 font-mono">{contact.phone_number}</p>
+                                        <div 
+                                            onClick={() => navigate(`/contacts/${contact.id}`)}
+                                            className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer group"
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-sm shrink-0 group-hover:scale-105 transition-transform">
+                                                {contact.name ? contact.name.charAt(0).toUpperCase() : '#'}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h4 className="font-bold text-gray-900 dark:text-white text-sm truncate group-hover:text-indigo-600 transition-colors">{contact.name || 'Tanpa Nama'}</h4>
+                                                <p className="text-xs text-gray-500 dark:text-slate-400 font-mono truncate">{contact.phone_number}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex gap-1">
-                                        <button onClick={() => { setEditingContact(contact); setIsFormOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded">
+                                    <div className="flex items-center gap-1 shrink-0">
+                                        <button 
+                                            onClick={() => navigate(`/inbox?search=${encodeURIComponent(contact.phone_number || '')}`)}
+                                            className="p-2 text-gray-400 hover:text-emerald-600 dark:text-slate-500 dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded transition-colors"
+                                            title="Chat WA"
+                                        >
+                                            <Smartphone className="w-4 h-4" />
+                                        </button>
+                                        <button onClick={() => { setEditingContact(contact); setIsFormOpen(true); }} className="p-2 text-gray-400 hover:text-indigo-600 dark:text-slate-500 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded transition-colors" title="Edit">
                                             <Edit className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => handleDelete(contact.id)} className="p-2 text-gray-400 hover:text-red-600 dark:text-slate-500 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded">
+                                        <button onClick={() => handleDelete(contact.id)} className="p-2 text-gray-400 hover:text-red-600 dark:text-slate-500 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded transition-colors" title="Hapus">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
