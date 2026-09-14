@@ -254,6 +254,13 @@ export default function Sidebar({ isExpanded, onToggle }) {
   const searchParams = new URLSearchParams(location.search);
   const isChatOpen = location.pathname.startsWith('/inbox') && (searchParams.has('id') || searchParams.has('conversationId'));
 
+  // Determine if current page is an authentication page or public non-dashboard page
+  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/landing'];
+  const isAuthPage = authRoutes.includes(location.pathname) || 
+                     location.pathname.startsWith('/auth') || 
+                     location.pathname.startsWith('/p/') ||
+                     (!user && location.pathname === '/');
+
   // Fetch inbox isolation setting and accessible inboxes
   useEffect(() => {
     const fetchInboxData = async () => {
@@ -320,7 +327,7 @@ export default function Sidebar({ isExpanded, onToggle }) {
     }
   };
 
-  if (!user) return null;
+  if (!user || isAuthPage) return null;
 
   const showLabel = isExpanded || isOpen;
 
@@ -606,7 +613,7 @@ export default function Sidebar({ isExpanded, onToggle }) {
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/50 z-[65] md:hidden backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -626,7 +633,7 @@ export default function Sidebar({ isExpanded, onToggle }) {
       <div className={`
           fixed top-0 left-0 h-full
           ${currentPresetConfig?.sidebarClass || 'bg-white border-r border-slate-200/90'}
-          flex flex-col py-3 z-50 shadow-sm
+          flex flex-col py-3 z-[70] shadow-sm
           transition-all duration-300 ease-in-out overflow-visible
           w-60
           ${isExpanded ? 'md:w-60' : 'md:w-16'}
@@ -857,8 +864,8 @@ export default function Sidebar({ isExpanded, onToggle }) {
       </div>
 
       {/* Mobile Bottom Navbar */}
-      {!isOpen && !isChatOpen && (
-        <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 z-[60] pb-[env(safe-area-inset-bottom,0px)] h-16 flex items-center justify-around px-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+      {!isOpen && !isChatOpen && !isAuthPage && (
+        <div className={`md:hidden fixed bottom-0 left-0 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 z-40 pb-[env(safe-area-inset-bottom,0px)] h-16 flex items-center justify-around px-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] select-none ${isOpen ? 'hidden pointer-events-none' : ''}`}>
           {menus.slice(0, 4).map((menu) => (
             <MobileNavItem
               key={menu.basePath || menu.path}

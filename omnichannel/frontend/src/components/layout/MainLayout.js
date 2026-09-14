@@ -41,6 +41,8 @@ export default function MainLayout({ children }) {
     
     // Logic to exclude Header on Inbox or any other specific full-screen pages
     const isInbox = location.pathname.startsWith('/inbox');
+    const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/landing'];
+    const isAuthPage = authRoutes.includes(location.pathname) || location.pathname.startsWith('/auth') || location.pathname.startsWith('/p/');
 
     // Check Device Status (Member routes only)
     const checkDevices = useCallback(async () => {
@@ -120,7 +122,7 @@ export default function MainLayout({ children }) {
                         </div>
                     )}
                     
-                    <div className={`flex-1 relative overflow-x-hidden w-full ${isInbox ? '' : 'pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:pb-0'}`}>
+                    <div className={`flex-1 relative overflow-x-hidden w-full ${isInbox || isAuthPage ? '' : 'pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:pb-0'}`}>
                         <Suspense fallback={<ContentLoader />}>
                             {children || <Outlet />}
                         </Suspense>
